@@ -33,7 +33,8 @@ public class BoardSprite extends BasicType
     public void setFileName(String fileName)
     {
         System.out.println("Loading Item: " + fileName);
-        spriteFile = new Item(new File(System.getProperty("project.path") + "/Item/" + fileName));
+        spriteFile = new Item(new File(System.getProperty("project.path") + 
+                "/Item/" + fileName));
         spriteFile.loadAnimations();
         spriteFile.setActiveAnimation(0); // SOUTH FACING
     }
@@ -141,6 +142,11 @@ public class BoardSprite extends BasicType
     public long getActivate()
     {
         return activate;
+    }
+    
+    public Item getSpriteFile() 
+    {
+        return spriteFile;
     }
 
     public String getInitialVariable()

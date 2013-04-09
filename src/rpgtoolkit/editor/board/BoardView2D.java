@@ -21,6 +21,9 @@ import rpgtoolkit.editor.exceptions.TilePixelOutOfRangeException;
  * drawing routines. It handles the drawing of individual layers, vectors,
  * tile based coordinates, and the grid.
  * 
+ * TBD: Create a grid drawing class and pull it out of here, a generic grid
+ * drawer can then be used for this and the tile set viewer.
+ * 
  * @author Geoff Wilson
  * @author Joshua Michael Daly
  * @version 0.1
@@ -231,7 +234,7 @@ public final class BoardView2D extends AbstractBoardView
      * "GridDrawer" this would save repeating the code on the TileSet viewer and
      *  potentially elsewhere. 
      * 
-     * @param g The graphics context to draw on.
+     * @param g The graphics context to draw too.
      */
     @Override
     protected void paintGrid(Graphics2D g) 
@@ -256,12 +259,14 @@ public final class BoardView2D extends AbstractBoardView
         
         for (int x = startX; x < endX; x += tileSize.width) 
         {
-            g.drawLine(x, clipRectangle.y, x, clipRectangle.y + clipRectangle.height - 1);
+            g.drawLine(x, clipRectangle.y, x, clipRectangle.y + 
+                    clipRectangle.height - 1);
         }
         
         for (int y = startY; y < endY; y += tileSize.height) 
         {
-            g.drawLine(clipRectangle.x, y, clipRectangle.x + clipRectangle.width - 1, y);
+            g.drawLine(clipRectangle.x, y, clipRectangle.x + 
+                    clipRectangle.width - 1, y);
         }
     }
     

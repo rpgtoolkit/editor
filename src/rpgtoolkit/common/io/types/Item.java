@@ -507,7 +507,8 @@ public class Item extends BasicType
             if (!anmFile.equals(""))
             {
                 anmFile = anmFile.replace("\\", "/");
-                Animation a = new Animation(new File(System.getProperty("project.path") + "/Misc/" + anmFile));
+                Animation a = new Animation(new File(System.getProperty(
+                        "project.path") + "/Misc/" + anmFile));
                 standardAnimations.add(a);
             }
         }
@@ -525,6 +526,11 @@ public class Item extends BasicType
     public BufferedImage getAnimationFrame()
     {
         return activeAnimation.getFrame(frameNumber).getFrameImage();
+    }
+    
+    public BufferedImage getAnimationFrame(int id)
+    {
+        return activeAnimation.getFrame(id).getFrameImage();
     }
 
     private class AnimationTimer extends TimerTask

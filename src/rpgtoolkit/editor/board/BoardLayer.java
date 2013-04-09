@@ -321,7 +321,8 @@ public final class BoardLayer implements Cloneable
         {
             for (int y = 0; y < height; y++)
             {
-                int tileIndex = parentBoard.getIndexAtLocation(x, y, layerNumber) - 1;
+                int tileIndex = parentBoard.getIndexAtLocation(x, y, 
+                        layerNumber) - 1;
 
                 // There is tile data on this layer 
                 if (tileIndex != -1)
@@ -421,7 +422,10 @@ public final class BoardLayer implements Cloneable
         {
             int x = (int)sprite.getX();
             int y = (int)sprite.getY();
-            g.drawImage(sprite.getAnimationFrame(), x - 16, y - 32, null);
+            
+            // Get the south facing frame.
+            g.drawImage(sprite.getSpriteFile().getAnimationFrame(2), x - 16, 
+                    y - 32, null);
         }
     }
     

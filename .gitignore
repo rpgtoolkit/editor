@@ -1,6 +1,15 @@
+# Compiled Source #
+###################
 *.class
 
 # Package Files #
+#################
 *.jar
 *.war
 *.ear
+
+# Testing Folders #
+###################
+main/
+game/
+/dist/
