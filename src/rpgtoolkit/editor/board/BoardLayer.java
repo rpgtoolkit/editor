@@ -12,7 +12,7 @@ import rpgtoolkit.editor.board.types.BoardVector;
 import rpgtoolkit.editor.exceptions.TilePixelOutOfRangeException;
 
 /**
- *
+ * 
  * 
  * @author Joshua Michael Daly
  * @version 0.1
@@ -32,7 +32,7 @@ public final class BoardLayer implements Cloneable
     /**
      * What number is this layer on the board?
      */
-    protected int layerNumber;
+    protected int number;
     /**
      * Is it visible?
      */
@@ -99,9 +99,9 @@ public final class BoardLayer implements Cloneable
     }
     
     /**
+     * Used to create a new layer from an existing board.
      * 
-     * 
-     * @param board 
+     * @param board board to copy layers from
      */
     public BoardLayer(Board board)
     {
@@ -112,12 +112,12 @@ public final class BoardLayer implements Cloneable
      * 
      * 
      * @param board Parent board.
-     * @param layerNumber The layers position on the board.
+     * @param number The layers position on the board.
      */
     public BoardLayer(Board board, int layerNumber)
     {
         this.parentBoard = board;
-        this.layerNumber = layerNumber;
+        this.number = layerNumber;
         this.tiles = new ArrayList();
         this.isVisible = true;
         this.initializeLayer();
@@ -253,7 +253,7 @@ public final class BoardLayer implements Cloneable
         {
             this.opacity = opacity;
 
-            if (this.getVisibility() && parentBoard != null) 
+            if (this.isVisible() && parentBoard != null) 
             {
                 //parentBoard.fireMapChanged();
             }
@@ -265,7 +265,7 @@ public final class BoardLayer implements Cloneable
      * 
      * @return The visibility <code>true</code> or <code>false</code>.
      */
-    public boolean getVisibility()
+    public boolean isVisible()
     {
         return isVisible;
     }
@@ -303,6 +303,66 @@ public final class BoardLayer implements Cloneable
         bounds.y = yOffset;
     }
     
+    public int getNumber()
+    {
+        return number;
+    }
+
+    public void setNumber(int number)
+    {
+        this.number = number;
+    }
+
+    public boolean isIsVisible()
+    {
+        return isVisible;
+    }
+
+    public void setIsVisible(boolean isVisible)
+    {
+        this.isVisible = isVisible;
+    }
+
+    public boolean isIsLocked()
+    {
+        return isLocked;
+    }
+
+    public void setIsLocked(boolean isLocked)
+    {
+        this.isLocked = isLocked;
+    }
+
+    public Board getParentBoard()
+    {
+        return parentBoard;
+    }
+
+    public void setParentBoard(Board parentBoard)
+    {
+        this.parentBoard = parentBoard;
+    }
+
+    public MultiLayerContainer getParentContainer()
+    {
+        return parentContainer;
+    }
+
+    public void setParentContainer(MultiLayerContainer parentContainer)
+    {
+        this.parentContainer = parentContainer;
+    }
+
+    public ArrayList<Tile> getTiles()
+    {
+        return tiles;
+    }
+
+    public void setTiles(ArrayList<Tile> tiles)
+    {
+        this.tiles = tiles;
+    }
+    
     /*
      * *************************************************************************
      * Public Methods
@@ -322,7 +382,7 @@ public final class BoardLayer implements Cloneable
             for (int y = 0; y < height; y++)
             {
                 int tileIndex = parentBoard.getIndexAtLocation(x, y, 
-                        layerNumber) - 1;
+                        number) - 1;
 
                 // There is tile data on this layer 
                 if (tileIndex != -1)
@@ -351,7 +411,7 @@ public final class BoardLayer implements Cloneable
             for (int y = 0; y < parentBoard.getHeight(); y++)
             {
                 int indexToPaint = parentBoard.getIndexAtLocation(x, y, 
-                        layerNumber) - 1;
+                        number) - 1;
 
                 if (indexToPaint >= 0)
                 {

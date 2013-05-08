@@ -174,7 +174,7 @@ public final class BoardView2D extends AbstractBoardView
         
         for (BoardLayer layer : layers)
         {
-            if (layer.getVisibility())
+            if (layer.isVisible())
             {
                 try 
                 {
@@ -182,7 +182,8 @@ public final class BoardView2D extends AbstractBoardView
                 } 
                 catch (TilePixelOutOfRangeException ex) 
                 {
-                    Logger.getLogger(BoardView2D.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(BoardView2D.class.getName()).
+                            log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -202,7 +203,7 @@ public final class BoardView2D extends AbstractBoardView
         
         for (BoardLayer layer : layers)
         {
-            if (layer.getVisibility())
+            if (layer.isVisible())
             {
                 layer.drawVectors(g);
             }
@@ -226,9 +227,6 @@ public final class BoardView2D extends AbstractBoardView
     /**
      * Handles the drawing of the grid on the graphics context. It draws a grid
      * based on the boards width and height in tiles.
-     * 
-     * BUG: The grid is being effected by the boards scaling factors, correct
-     * this.
      * 
      * IMPROVEMENT: Move this functionality to an external class named 
      * "GridDrawer" this would save repeating the code on the TileSet viewer and
@@ -307,8 +305,10 @@ public final class BoardView2D extends AbstractBoardView
                 bufferedImage.getHeight());
         int startX = clipRectangle.x / tileSize.width;
         int startY = clipRectangle.y / tileSize.height;
-        int endX = (clipRectangle.x + clipRectangle.width) / tileSize.width + 1;
-        int endY = (clipRectangle.y + clipRectangle.height) / tileSize.height + 1;
+        int endX = (clipRectangle.x + clipRectangle.width) / tileSize.width 
+                + 1;
+        int endY = (clipRectangle.y + clipRectangle.height) / tileSize.height 
+                + 1;
 
         // Draw the coordinates
         int gy = startY * tileSize.height;
@@ -323,8 +323,10 @@ public final class BoardView2D extends AbstractBoardView
                 Rectangle2D textSize =
                         font.getStringBounds(coordinates, fontRenderContext);
 
-                int fx = gx + (int) ((tileSize.width - textSize.getWidth()) / 2);
-                int fy = gy + (int) ((tileSize.height + textSize.getHeight()) / 2);
+                int fx = gx + (int) ((tileSize.width - textSize.getWidth()) 
+                        / 2);
+                int fy = gy + (int) ((tileSize.height + textSize.getHeight()) 
+                        / 2);
 
                 g.drawString(coordinates, fx, fy);
                 gx += tileSize.width;

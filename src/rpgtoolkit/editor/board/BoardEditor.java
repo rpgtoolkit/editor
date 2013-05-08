@@ -59,6 +59,11 @@ public class BoardEditor extends JInternalFrame
         scrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
         this.scrollPane.setVerticalScrollBarPolicy
                 (JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        
+        // Randomly create a Board Layer frame here for testing
+        LayerFrame layerFrame = new LayerFrame(this.boardView);
+        layerFrame.setLocation(100, 100);
+        layerFrame.setVisible(true);
      
         this.setTitle("Viewing " + fileName.getAbsolutePath());
         this.add(scrollPane);

@@ -122,7 +122,7 @@ public abstract class AbstractBoardView extends JPanel implements
     {
         this.board = new Board();
         this.boardEditor = boardEditor;
-        this.initializeBoardView();
+        this.initialize();
     }
     
     /**
@@ -135,7 +135,7 @@ public abstract class AbstractBoardView extends JPanel implements
     {
         this.board = board;
         this.boardEditor = boardEditor;
-        this.initializeBoardView();
+        this.initialize();
     }
     
     /*
@@ -711,7 +711,7 @@ public abstract class AbstractBoardView extends JPanel implements
      * Initializes a BoardView, it sets most of the BoardView's members but 
      * it does not do anything with regard to the board model or parent editor.
      */
-    private void initializeBoardView()
+    private void initialize()
     {
         this.layers = new ArrayList();
         this.bounds = new Rectangle();
@@ -762,7 +762,7 @@ public abstract class AbstractBoardView extends JPanel implements
         this.tileSetCache = new TileSetCache();
         board.initializeTileSetCache(this.tileSetCache);
         
-        int layerCount = board.getLayerCount();
+        int layerCount = board.getLayers();
         
         for (int i = 0; i < layerCount; i++)
         {

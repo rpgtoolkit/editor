@@ -1,11 +1,15 @@
 package rpgtoolkit.common.io.types;
 
-import rpgtoolkit.common.editor.types.Tile;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import rpgtoolkit.common.editor.types.Tile;
 import rpgtoolkit.common.utilities.TileSetCache;
+import rpgtoolkit.editor.board.event.BoardChangeListener;
+import rpgtoolkit.editor.board.event.BoardChangedEvent;
 import rpgtoolkit.editor.board.types.BoardImage;
 import rpgtoolkit.editor.board.types.BoardLayerShade;
 import rpgtoolkit.editor.board.types.BoardLight;
@@ -16,6 +20,9 @@ import rpgtoolkit.editor.exceptions.CorruptFileException;
 
 public final class Board extends BasicType
 {
+    // Non-IO
+    private final LinkedList boardChangeListeners = new LinkedList<>();
+    
     // Constants
     private final String FILE_HEADER = "RPGTLKIT BOARD";
     private final int MAJOR_VERSION = 2;
@@ -35,7 +42,7 @@ public final class Board extends BasicType
     private HashMap<String, TileSet> tileSetMap;
 
     private ArrayList<Tile> loadedTilesIndex;
-    private int[][][] board;
+    private int[][][] boardDimensions;
     private byte[] tileType;
     private ArrayList<BoardLayerShade> tileShading;
     private ArrayList<BoardImage> images;
@@ -64,6 +71,12 @@ public final class Board extends BasicType
     private String lastLoadedTileSet;
     private TileSet tileSet;
 
+     /*
+     * ************************************************************************* 
+     * Public Constructors
+     * *************************************************************************
+     */
+    
     /**
      * Create a blank board (for editor use)
      */
@@ -83,6 +96,379 @@ public final class Board extends BasicType
         System.out.println("Loading Board " + fileName);
         this.open();
     }
+    
+     /*
+     * ************************************************************************* 
+     * Public Getters and Setters
+     * *************************************************************************
+     */
+    
+    public Tile getTileFromIndex(int index)
+    {
+        return loadedTilesIndex.get(index);
+    }
+
+    public int getWidth()
+    {
+        return width;
+    }
+
+    public void setWidth(int width)
+    {
+        this.width = width;
+    }
+
+    public int getHeight()
+    {
+        return height;
+    }
+
+    public void setHeight(int height)
+    {
+        this.height = height;
+    }
+
+    public ArrayList<String> getTileIndex()
+    {
+        return tileIndex;
+    }
+
+    public void setTileIndex(ArrayList<String> tileIndex)
+    {
+        this.tileIndex = tileIndex;
+    }
+
+    public ArrayList<BoardImage> getBackgroundImages()
+    {
+        return backgroundImages;
+    }
+
+    public void setBackgroundImages(ArrayList<BoardImage> backgroundImages)
+    {
+        this.backgroundImages = backgroundImages;
+    }
+
+    public ArrayList<BoardProgram> getPrograms()
+    {
+        return programs;
+    }
+
+    public void setPrograms(ArrayList<BoardProgram> programs)
+    {
+        this.programs = programs;
+    }
+
+    public ArrayList<BoardVector> getVectors()
+    {
+        return vectors;
+    }
+
+    public void setVectors(ArrayList<BoardVector> vectors)
+    {
+        this.vectors = vectors;
+    }
+
+    public ArrayList<BoardSprite> getSprites()
+    {
+        return sprites;
+    }
+
+    public void setSprites(ArrayList<BoardSprite> sprites)
+    {
+        this.sprites = sprites;
+    }
+
+    public int getStartingPositionX()
+    {
+        return startingPositionX;
+    }
+
+    public void setStartingPositionX(int startingPositionX)
+    {
+        this.startingPositionX = startingPositionX;
+    }
+
+    public int getStartingPositionY()
+    {
+        return startingPositionY;
+    }
+
+    public void setStartingPositionY(int startingPositionY)
+    {
+        this.startingPositionY = startingPositionY;
+    }
+
+    public int getStartingLayer()
+    {
+        return startingLayer;
+    }
+
+    public void setStartingLayer(int startingLayer)
+    {
+        this.startingLayer = startingLayer;
+    }
+
+    public int getIndexAtLocation(int x, int y, int z)
+    {
+        return boardDimensions[x][y][z];
+    }
+    
+    public int getLayers()
+    {
+        return layers;
+    }
+
+    public void setLayers(int layers)
+    {
+        this.layers = layers;
+    }
+
+    public int getCoordinateType()
+    {
+        return coordinateType;
+    }
+
+    public void setCoordinateType(int coordinateType)
+    {
+        this.coordinateType = coordinateType;
+    }
+
+    public HashMap<String, TileSet> getTileSetMap()
+    {
+        return tileSetMap;
+    }
+
+    public void setTileSetMap(HashMap<String, TileSet> tileSetMap)
+    {
+        this.tileSetMap = tileSetMap;
+    }
+
+    public ArrayList<Tile> getLoadedTilesIndex()
+    {
+        return loadedTilesIndex;
+    }
+
+    public void setLoadedTilesIndex(ArrayList<Tile> loadedTilesIndex)
+    {
+        this.loadedTilesIndex = loadedTilesIndex;
+    }
+
+    public int[][][] getBoardDimensions()
+    {
+        return boardDimensions;
+    }
+
+    public void setBoardDimensions(int[][][] boardDimensions)
+    {
+        this.boardDimensions = boardDimensions;
+    }
+
+    public byte[] getTileType()
+    {
+        return tileType;
+    }
+
+    public void setTileType(byte[] tileType)
+    {
+        this.tileType = tileType;
+    }
+
+    public ArrayList<BoardLayerShade> getTileShading()
+    {
+        return tileShading;
+    }
+
+    public void setTileShading(ArrayList<BoardLayerShade> tileShading)
+    {
+        this.tileShading = tileShading;
+    }
+
+    public ArrayList<BoardImage> getImages()
+    {
+        return images;
+    }
+
+    public void setImages(ArrayList<BoardImage> images)
+    {
+        this.images = images;
+    }
+
+    public ArrayList<BoardImage> getSpriteImages()
+    {
+        return spriteImages;
+    }
+
+    public void setSpriteImages(ArrayList<BoardImage> spriteImages)
+    {
+        this.spriteImages = spriteImages;
+    }
+
+    public long getBackgroundColour()
+    {
+        return backgroundColour;
+    }
+
+    public void setBackgroundColour(long backgroundColour)
+    {
+        this.backgroundColour = backgroundColour;
+    }
+
+    public ArrayList<BoardLight> getLights()
+    {
+        return lights;
+    }
+
+    public void setLights(ArrayList<BoardLight> lights)
+    {
+        this.lights = lights;
+    }
+
+    public ArrayList<String> getThreads()
+    {
+        return threads;
+    }
+
+    public void setThreads(ArrayList<String> threads)
+    {
+        this.threads = threads;
+    }
+
+    public ArrayList<String> getConstants()
+    {
+        return constants;
+    }
+
+    public void setConstants(ArrayList<String> constants)
+    {
+        this.constants = constants;
+    }
+
+    public ArrayList<String> getLayerTitles()
+    {
+        return layerTitles;
+    }
+
+    public void setLayerTitles(ArrayList<String> layerTitles)
+    {
+        this.layerTitles = layerTitles;
+    }
+    
+    public String getLayerTitle(int index)
+    {
+        return this.layerTitles.get(index);
+    }
+    
+    public void setLayerTitle(int index, String title)
+    {
+        this.layerTitles.set(index, title);
+        this.fireBoardChanged();
+    }
+
+    public ArrayList<String> getDirectionalLinks()
+    {
+        return directionalLinks;
+    }
+
+    public void setDirectionalLinks(ArrayList<String> directionalLinks)
+    {
+        this.directionalLinks = directionalLinks;
+    }
+
+    public String getBackgroundMusic()
+    {
+        return backgroundMusic;
+    }
+
+    public void setBackgroundMusic(String backgroundMusic)
+    {
+        this.backgroundMusic = backgroundMusic;
+    }
+
+    public String getFirstRunProgram()
+    {
+        return firstRunProgram;
+    }
+
+    public void setFirstRunProgram(String firstRunProgram)
+    {
+        this.firstRunProgram = firstRunProgram;
+    }
+
+    public String getBattleBackground()
+    {
+        return battleBackground;
+    }
+
+    public void setBattleBackground(String battleBackground)
+    {
+        this.battleBackground = battleBackground;
+    }
+
+    public int getEnemyBattleLevel()
+    {
+        return enemyBattleLevel;
+    }
+
+    public void setEnemyBattleLevel(int enemyBattleLevel)
+    {
+        this.enemyBattleLevel = enemyBattleLevel;
+    }
+
+    public boolean isAllowBattles()
+    {
+        return allowBattles;
+    }
+
+    public void setAllowBattles(boolean allowBattles)
+    {
+        this.allowBattles = allowBattles;
+    }
+
+    public boolean isAllowSaving()
+    {
+        return allowSaving;
+    }
+
+    public void setAllowSaving(boolean allowSaving)
+    {
+        this.allowSaving = allowSaving;
+    }
+
+    public Color getAmbientEffect()
+    {
+        return ambientEffect;
+    }
+
+    public void setAmbientEffect(Color ambientEffect)
+    {
+        this.ambientEffect = ambientEffect;
+    }
+
+    public String getLastLoadedTileSet()
+    {
+        return lastLoadedTileSet;
+    }
+
+    public void setLastLoadedTileSet(String lastLoadedTileSet)
+    {
+        this.lastLoadedTileSet = lastLoadedTileSet;
+    }
+
+    public TileSet getTileSet()
+    {
+        return tileSet;
+    }
+
+    public void setTileSet(TileSet tileSet)
+    {
+        this.tileSet = tileSet;
+    }
+    
+     /*
+     * ************************************************************************* 
+     * Public Methods
+     * *************************************************************************
+     */
 
     /**
      * Method to performing opening of the board
@@ -128,13 +514,17 @@ public final class Board extends BasicType
                     height += tmpWidth;
                 }
 
-                board = new int[width][height][layers];
+                boardDimensions = new int[width][height][layers];
 
+                // Total number of distinct tile types used, if we add a 
+                // new tile we will have to check if the tileIndex already
+                // contains the name of the tile e.g. default.tst2
                 int lookUpTableSize = binaryIO.readBinaryInteger();
                 binaryIO.readBinaryByte();
 
                 for (int i = 0; i < lookUpTableSize; i++)
                 {
+                    // Read in the name of the tiles used on this board.
                     tileIndex.add(binaryIO.readBinaryString());
                 }
 
@@ -149,6 +539,7 @@ public final class Board extends BasicType
                 {
                     int index = binaryIO.readBinaryInteger();
                     int count = 1;
+                    
                     if (index < 0) // compressed data
                     {
                         count = -index;
@@ -157,7 +548,7 @@ public final class Board extends BasicType
 
                     for (int i = 0; i < count; i++)
                     {
-                        board[x][y][z] = index;
+                        boardDimensions[x][y][z] = index;
                         tilesLoaded++;
                         x++;
                         if (x == width)
@@ -172,7 +563,6 @@ public final class Board extends BasicType
                         }
                     }
                 }
-
 
                 /* Tile Shading Data Notes
                  *
@@ -210,7 +600,9 @@ public final class Board extends BasicType
                     int numberPoints = binaryIO.readBinaryInteger();
                     for (int j = 0; j < numberPoints + 1; j++)
                     {
-                        Point newPoint = new Point((int) binaryIO.readBinaryLong(), (int) binaryIO.readBinaryLong());
+                        Point newPoint = new Point((int) 
+                                binaryIO.readBinaryLong(), 
+                                (int) binaryIO.readBinaryLong());
                     }
 
                     int numColors = binaryIO.readBinaryInteger();
@@ -223,7 +615,8 @@ public final class Board extends BasicType
                     }
                 }
 
-                // Vector count is one less than it should be so +1 to vectors all round!
+                // Vector count is one less than it should be so +1 
+                // to vectors all round!
                 int numberVectors = binaryIO.readBinaryInteger();
                 for (int i = 0; i < numberVectors + 1; i++)
                 {
@@ -232,7 +625,8 @@ public final class Board extends BasicType
                     int numberPoints = binaryIO.readBinaryInteger();
                     for (int j = 0; j < numberPoints + 1; j++)
                     {
-                        newVector.addPoint(binaryIO.readBinaryLong(), binaryIO.readBinaryLong());
+                        newVector.addPoint(binaryIO.readBinaryLong(), 
+                                binaryIO.readBinaryLong());
                     }
 
                     newVector.setAttributes(binaryIO.readBinaryInteger());
@@ -243,7 +637,6 @@ public final class Board extends BasicType
 
                     vectors.add(newVector);
                 }
-
 
                 // Programs
                 int numberPrograms = binaryIO.readBinaryInteger();
@@ -267,7 +660,8 @@ public final class Board extends BasicType
                     int numberPoints = binaryIO.readBinaryInteger();
                     for (int j = 0; j < numberPoints + 1; j++)
                     {
-                        programVector.addPoint(binaryIO.readBinaryLong(), binaryIO.readBinaryLong());
+                        programVector.addPoint(binaryIO.readBinaryLong(), 
+                                binaryIO.readBinaryLong());
                     }
 
                     programVector.setClosed(binaryIO.readBinaryInteger() == 1);
@@ -363,7 +757,9 @@ public final class Board extends BasicType
                 enemyBattleLevel = binaryIO.readBinaryInteger();
                 allowBattles = binaryIO.readBinaryInteger() == -1;
                 allowSaving = !(binaryIO.readBinaryInteger() == -1);
-                ambientEffect = new Color(binaryIO.readBinaryInteger(), binaryIO.readBinaryInteger(), binaryIO.readBinaryInteger());
+                ambientEffect = new Color(binaryIO.readBinaryInteger(), 
+                        binaryIO.readBinaryInteger(), 
+                        binaryIO.readBinaryInteger());
                 startingPositionX = binaryIO.readBinaryInteger();
                 startingPositionY = binaryIO.readBinaryInteger();
                 startingLayer = binaryIO.readBinaryInteger();
@@ -373,12 +769,16 @@ public final class Board extends BasicType
         }
         catch (CorruptFileException e)
         {
-            
         }
 
         return true;
     }
 
+    /**
+     * NOTE: Make a global TileSetCache...
+     * 
+     * @param cache 
+     */
     public void initializeTileSetCache(TileSetCache cache)
     {
         // Load the tiles into memory
@@ -389,7 +789,9 @@ public final class Board extends BasicType
                 if (indexString.substring(indexString.length() - 3).equals("tan"))
                 {
                     // Animated Tile
-                    AnimatedTile aTile = new AnimatedTile(new File(System.getProperty("project.path") + "/tiles/" + indexString));
+                    AnimatedTile aTile = new AnimatedTile(new File(
+                            System.getProperty("project.path") + "/tiles/" 
+                            + indexString));
                     indexString = aTile.getFirstFrame();
                 }
 
@@ -403,7 +805,8 @@ public final class Board extends BasicType
                     tileSet = cache.getTileSet(tileSetName);
                 }
 
-                loadedTilesIndex.add(tileSet.getTile(Integer.parseInt(indexString.split(".tst")[1]) - 1));
+                loadedTilesIndex.add(tileSet.getTile(Integer.parseInt(
+                        indexString.split(".tst")[1]) - 1));
             }
             else
             {
@@ -411,71 +814,50 @@ public final class Board extends BasicType
             }
         }
     }
-
-    public ArrayList<String> getTileIndex()
+    
+    /**
+     * 
+     * 
+     * @param listener 
+     */
+    public void addBoardChangeListener(BoardChangeListener listener)
     {
-        return tileIndex;
+       this.boardChangeListeners.add(listener); 
     }
-
-    public Tile getTileFromIndex(int index)
+    
+    /**
+     * 
+     * 
+     * @param listener 
+     */
+    public void removeBoardChangeListener(BoardChangeListener listener)
     {
-        return loadedTilesIndex.get(index);
+       this.boardChangeListeners.remove(listener); 
     }
-
-    public int getIndexAtLocation(int x, int y, int z)
+    
+    /*
+     * ************************************************************************* 
+     * Protected Methods
+     * *************************************************************************
+     */
+    
+    /**
+     * 
+     */
+    protected void fireBoardChanged()
     {
-        return board[x][y][z];
-    }
+        BoardChangedEvent event = null;
+        Iterator iterator = this.boardChangeListeners.iterator();
 
-    public int getWidth()
-    {
-        return width;
-
-    }
-
-    public int getHeight()
-    {
-        return height;
-    }
-
-    public int getLayerCount()
-    {
-        return layers;
-    }
-
-    public ArrayList<BoardVector> getVectors()
-    {
-        return vectors;
-    }
-
-    public ArrayList<BoardImage> getBackgroundImages()
-    {
-        return backgroundImages;
-    }
-
-    public int getStartingPositionX()
-    {
-        return startingPositionX;
-    }
-
-    public int getStartingPositionY()
-    {
-        return startingPositionY;
-    }
-
-    public int getStartingLayer()
-    {
-        return startingLayer;
-    }
-
-    public ArrayList<BoardSprite> getSprites()
-    {
-        return sprites;
-    }
-
-    public ArrayList<BoardProgram> getPrograms()
-    {
-        return programs;
+        while (iterator.hasNext()) 
+        {
+            if (event == null) 
+            {
+                event = new BoardChangedEvent(this);
+            }
+            
+            ((BoardChangeListener)iterator.next()).boardChanged(event);
+        }
     }
 }
 
