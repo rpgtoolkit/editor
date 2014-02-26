@@ -63,6 +63,7 @@ public final class BoardLayer implements Cloneable
      * Layer opacity 100%, 80% etc.
      */
     protected float opacity;
+
     /**
      * Bounds of the layer.
      */
@@ -251,6 +252,16 @@ public final class BoardLayer implements Cloneable
     public void setBoard(Board board)
     {
         parentBoard = board;
+    }
+    
+    /**
+     * Gets the layers current opacity which is a value between 0.0f and 1.0f.
+     * 
+     * @return current layer opacity
+     */
+    public float getOpacity()
+    {
+        return opacity;
     }
 
     /**

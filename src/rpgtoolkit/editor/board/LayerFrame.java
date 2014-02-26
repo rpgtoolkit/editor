@@ -15,6 +15,8 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import rpgtoolkit.editor.utilities.LayerTableModel;
 
 /**
@@ -22,7 +24,8 @@ import rpgtoolkit.editor.utilities.LayerTableModel;
  * 
  * @author Joshua Michael Daly
  */
-public class LayerFrame extends JInternalFrame implements ChangeListener
+public class LayerFrame extends JInternalFrame implements ChangeListener,
+        ListSelectionListener
 {
     /*
      * *************************************************************************
@@ -40,6 +43,9 @@ public class LayerFrame extends JInternalFrame implements ChangeListener
     private JPanel sliderPanel;
     private JPanel layerPanel;
     private JPanel contentPanel;
+   
+    private int lastSelectedIndex; // Used to keep track of the previously
+                                   // selected layer.
     
     /*
      * *************************************************************************
@@ -57,6 +63,7 @@ public class LayerFrame extends JInternalFrame implements ChangeListener
         super("Board Layers", true, true, true, true);
         
         this.boardView = boardView;
+        this.lastSelectedIndex = 1;
         this.initialize();
     }
     
@@ -86,7 +93,7 @@ public class LayerFrame extends JInternalFrame implements ChangeListener
         this.layerTable = new JTable(new LayerTableModel(this.boardView));
         this.layerTable.getColumnModel().getColumn(0).setPreferredWidth(32);
         this.layerTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        //this.layerTable.getSelectionModel().addListSelectionListener(this);
+        this.layerTable.getSelectionModel().addListSelectionListener(this);
         
         this.layerScrollPane = new JScrollPane(this.layerTable);
         
@@ -119,8 +126,12 @@ public class LayerFrame extends JInternalFrame implements ChangeListener
     }
 
     /**
-     * Possibly consider moving this to a dedicated listener class later.
-     * For now leave it here for simplicity.
+     * TODO: Possibly consider moving this to a dedicated listener class later.
+     * For now leave it here for simplicity. 
+     * 
+     * Used to keep track of changes in on the opacity <code>JSlider</code>.
+     * If there is an open board and a layer is selected then the layers
+     * opacity will be updated.
      * 
      * @param e 
      */
@@ -137,6 +148,28 @@ public class LayerFrame extends JInternalFrame implements ChangeListener
                             setOpacity(this.opacitySlider.getValue() / 100.0f);
                 }
             }
+        }
+    }
+
+    /**
+     * TODO: It is possible that in the future other parts of the editor will 
+     * be interested in layer selection changes.
+     * 
+     * Handles selection changes on the Layer Table, updating the opacity slider
+     * with the selected layers current opacity.
+     * 
+     * @param e 
+     */
+    @Override
+    public void valueChanged(ListSelectionEvent e)
+    {
+        // If we have changed the selected layer up date the position of the 
+        // opacity slider to the new layers opacity.
+        if (this.layerTable.getSelectedRow() != this.lastSelectedIndex)
+        {
+            this.lastSelectedIndex = this.layerTable.getSelectedRow();
+            this.opacitySlider.setValue((int)(this.boardView.getLayer(
+                this.lastSelectedIndex).getOpacity() * 100));
         }
     }
 }

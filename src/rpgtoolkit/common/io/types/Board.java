@@ -807,7 +807,6 @@ public final class Board extends BasicType
                 {
                     // Ignore it for now...
                     ambientEffect = new Color(0, 0, 0);
-                    e.printStackTrace();
                 }
                 
                 startingPositionX = binaryIO.readBinaryInteger();
@@ -1116,7 +1115,7 @@ public final class Board extends BasicType
     }
 
     /**
-     * NOTE: Make a global TileSetCache...
+     * TODO: Make a global TileSetCache...
      *
      * @param cache
      */
