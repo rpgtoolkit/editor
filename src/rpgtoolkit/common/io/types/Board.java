@@ -31,8 +31,8 @@ import rpgtoolkit.editor.exceptions.CorruptFileException;
 public final class Board extends BasicType
 {
     // Non-IO
-
     private final LinkedList boardChangeListeners = new LinkedList<>();
+    
     // Constants
     private final String FILE_HEADER = "RPGTLKIT BOARD";
     private final int MAJOR_VERSION = 2;

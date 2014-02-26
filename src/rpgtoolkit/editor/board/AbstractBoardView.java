@@ -708,7 +708,7 @@ public abstract class AbstractBoardView extends JPanel implements
     {
         this.repaint();
     }
-    
+  
     /*
      * *************************************************************************
      * Private Methods 

@@ -138,7 +138,7 @@ public final class BoardView2D extends AbstractBoardView
     {
         Graphics2D g = bufferedImage.createGraphics();
 
-        // Draw background image first
+        // Draw background colour first.
         g.setColor(this.getDefaultBackgroudColor());
         g.fillRect(0, 0, (board.getWidth() * 32), (board.getHeight() * 32));
         

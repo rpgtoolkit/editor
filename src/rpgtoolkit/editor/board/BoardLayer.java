@@ -1,5 +1,6 @@
 package rpgtoolkit.editor.board;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -121,7 +122,7 @@ public final class BoardLayer implements Cloneable
      * 
      * 
      * @param board Parent board.
-     * @param number The layers position on the board.
+     * @param layerNumber
      */
     public BoardLayer(Board board, int layerNumber)
     {
@@ -129,6 +130,8 @@ public final class BoardLayer implements Cloneable
         this.number = layerNumber;
         this.tiles = new ArrayList();
         this.isVisible = true;
+        this.isLocked = false;
+        this.opacity = 1.0f;
         this.initializeLayer();
     }
     
@@ -264,7 +267,7 @@ public final class BoardLayer implements Cloneable
 
             if (this.isVisible() && parentBoard != null) 
             {
-                //parentBoard.fireMapChanged();
+                parentBoard.fireBoardChanged();
             }
         }
     }
@@ -415,6 +418,9 @@ public final class BoardLayer implements Cloneable
      */
     public void drawTiles(Graphics2D g) throws TilePixelOutOfRangeException
     {
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 
+                this.opacity));
+        
         for (int x = 0; x < parentBoard.getWidth(); x++)
         {
             for (int y = 0; y < parentBoard.getHeight(); y++)
@@ -444,6 +450,9 @@ public final class BoardLayer implements Cloneable
      */
     public void drawVectors(Graphics2D g)
     {
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 
+                this.opacity));
+        
         // Draw Vectors
         ArrayList<BoardVector> vectors = parentBoard.getVectors();
         
@@ -487,6 +496,9 @@ public final class BoardLayer implements Cloneable
      */
     public void drawSprites(Graphics2D g)
     {
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 
+                this.opacity));
+        
         for (BoardSprite sprite : parentBoard.getSprites())
         {
             int x = (int)sprite.getX();

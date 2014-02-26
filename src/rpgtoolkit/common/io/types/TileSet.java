@@ -21,7 +21,7 @@ import rpgtoolkit.editor.exceptions.TilePixelOutOfRangeException;
  */
 public class TileSet extends BasicType
 {
-    private DOSColors dosColors = new DOSColors(); // Needed for low colour tilesets
+    private final DOSColors dosColors = new DOSColors(); // Needed for low colour tilesets
 
     private ArrayList<Tile> tileset;
 

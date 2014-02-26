@@ -13,6 +13,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import rpgtoolkit.editor.utilities.LayerTableModel;
 
 /**
@@ -20,8 +22,14 @@ import rpgtoolkit.editor.utilities.LayerTableModel;
  * 
  * @author Joshua Michael Daly
  */
-public class LayerFrame extends JInternalFrame 
+public class LayerFrame extends JInternalFrame implements ChangeListener
 {
+    /*
+     * *************************************************************************
+     * Class Members
+     * *************************************************************************
+     */
+    
     private AbstractBoardView boardView;
     
     private JSlider opacitySlider;
@@ -32,6 +40,12 @@ public class LayerFrame extends JInternalFrame
     private JPanel sliderPanel;
     private JPanel layerPanel;
     private JPanel contentPanel;
+    
+    /*
+     * *************************************************************************
+     * Public Constructors
+     * *************************************************************************
+     */
     
     public LayerFrame()
     {
@@ -46,10 +60,16 @@ public class LayerFrame extends JInternalFrame
         this.initialize();
     }
     
+    /*
+     * *************************************************************************
+     * Private Methods
+     * *************************************************************************
+     */
+    
     private void initialize()
     {
         this.opacitySlider = new JSlider(0, 100, 100);
-        //this.opacitySlider.addChangeListener(this);
+        this.opacitySlider.addChangeListener(this);
         
         this.opacitySliderLabel = new JLabel("Opacity");
         this.opacitySliderLabel.setLabelFor(this.opacitySlider);
@@ -96,5 +116,27 @@ public class LayerFrame extends JInternalFrame
         
         this.setContentPane(this.contentPanel);
         this.pack();
+    }
+
+    /**
+     * Possibly consider moving this to a dedicated listener class later.
+     * For now leave it here for simplicity.
+     * 
+     * @param e 
+     */
+    @Override
+    public void stateChanged(ChangeEvent e)
+    {
+        if (e.getSource().equals(this.opacitySlider))
+        {
+            if (this.boardView != null)
+            {
+                if (this.layerTable.getSelectedRow() > -1)
+                {
+                    this.boardView.getLayer(this.layerTable.getSelectedRow()).
+                            setOpacity(this.opacitySlider.getValue() / 100.0f);
+                }
+            }
+        }
     }
 }
