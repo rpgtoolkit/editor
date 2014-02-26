@@ -1,9 +1,8 @@
 package rpgtoolkit.common.io.types;
 
-import rpgtoolkit.editor.exceptions.CorruptFileException;
-
 import java.io.File;
 import java.io.IOException;
+import rpgtoolkit.editor.exceptions.CorruptFileException;
 
 public class Background extends BasicType
 {

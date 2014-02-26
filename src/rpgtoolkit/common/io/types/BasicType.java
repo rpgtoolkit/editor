@@ -8,7 +8,6 @@ import rpgtoolkit.common.utilities.BinaryIO;
 
 public class BasicType
 {
-
     protected File fileName;
     protected FileInputStream inputStream;
     protected FileOutputStream outputStream;

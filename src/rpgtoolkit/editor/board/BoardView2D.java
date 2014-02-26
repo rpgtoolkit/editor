@@ -335,7 +335,7 @@ public final class BoardView2D extends AbstractBoardView
             gy += tileSize.height;
         }
     }
-    
+
     /*
      * *************************************************************************
      * Private Methods

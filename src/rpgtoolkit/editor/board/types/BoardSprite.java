@@ -7,6 +7,7 @@ import rpgtoolkit.common.io.types.Item;
 
 public class BoardSprite extends BasicType
 {
+    private String fileName;
     private long x;
     private long y;
     private long layer;
@@ -29,9 +30,16 @@ public class BoardSprite extends BasicType
     {
         super();
     }
+    
+    public String getFileName()
+    {
+        return this.fileName;
+    }
 
     public void setFileName(String fileName)
     {
+        this.fileName = fileName;
+        
         System.out.println("Loading Item: " + fileName);
         spriteFile = new Item(new File(System.getProperty("project.path") + 
                 "/Item/" + fileName));

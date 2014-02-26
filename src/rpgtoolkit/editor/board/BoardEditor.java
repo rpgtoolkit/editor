@@ -37,7 +37,7 @@ public class BoardEditor extends JInternalFrame
      */
     public BoardEditor()
     {
-
+        
     }
 
     /**
@@ -62,9 +62,11 @@ public class BoardEditor extends JInternalFrame
         
         // Randomly create a Board Layer frame here for testing
         LayerFrame layerFrame = new LayerFrame(this.boardView);
-        layerFrame.setLocation(100, 100);
         layerFrame.setVisible(true);
-     
+        layerFrame.pack();
+        
+        this.parent.getDesktopPane().add(layerFrame);
+        
         this.setTitle("Viewing " + fileName.getAbsolutePath());
         this.add(scrollPane);
         this.pack();

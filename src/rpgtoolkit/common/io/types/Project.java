@@ -101,8 +101,6 @@ public class Project extends BasicType
         try
         {
             // Prepare objects be we begin
-            inputStream = new FileInputStream(fileName);
-            binaryIO = new BinaryIO(inputStream);
             runTimeArray = new ArrayList<RunTimeKey>();
             enemyArray = new ArrayList<EnemySkillPair>();
             pluginArray = new ArrayList<String>();
@@ -306,8 +304,8 @@ public class Project extends BasicType
             }
 
             // Release the file
-
-            inputStream.close();
+            this.inputStream.close();
+            this.binaryIO.closeInput();
 
             return true;
         }

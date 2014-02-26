@@ -15,11 +15,37 @@ public class BoardLight
     private long layer;
     private long type;
     private Color color;
+    private ArrayList<Color> colors;
     private ArrayList<Point> points;
 
     public BoardLight()
     {
 
+    }
+    
+    public long getLayer()
+    {
+        return layer;
+    }
+
+    public long getType()
+    {
+        return type;
+    }
+
+    public Color getColor()
+    {
+        return color;
+    }
+    
+    public ArrayList<Color> getColors()
+    {
+        return colors;
+    }
+
+    public ArrayList<Point> getPoints()
+    {
+        return points;
     }
 
     public void setLayer(long layer)
@@ -35,5 +61,10 @@ public class BoardLight
     public void addPoint(Point point)
     {
         this.points.add(point);
+    }
+    
+    public void addColor(Color color)
+    {
+        this.colors.add(color);
     }
 }

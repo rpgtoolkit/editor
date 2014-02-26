@@ -47,7 +47,7 @@ public class BinaryIO
     }
 
     /**
-     * Reads bytes from the input stream untill a null value is read
+     * Reads bytes from the input stream until a null value is read.
      *
      * @return String of bytes read from the input stream
      * @throws CorruptFileException
@@ -62,6 +62,7 @@ public class BinaryIO
             while (loop)
             {
                 int asciiChar = inputStream.read();
+                
                 if (asciiChar == 0)
                 {
                     loop = false;
@@ -92,6 +93,7 @@ public class BinaryIO
             {
                 outputStream.write((int) aStringArray);
             }
+            
             outputStream.write(0); // Strings are null terminated
 
         }
@@ -103,7 +105,7 @@ public class BinaryIO
     }
 
     /**
-     * Reads an integer from the input stream, in this case Intger = 2 bytes
+     * Reads an integer from the input stream, in this case Integer = 2 bytes
      *
      * @return Integer value of the bytes read from the input stream
      * @throws CorruptFileException Details of exception thrown
@@ -113,17 +115,21 @@ public class BinaryIO
         try
         {
             byte[] byteArray = new byte[2];
+            
             for (int i = 0; i < 2; i++)
             {
                 byteArray[i] = (byte) inputStream.read();
             }
+            
             buffer = ByteBuffer.wrap(byteArray);
             buffer.order(ByteOrder.LITTLE_ENDIAN);
+            
             return buffer.getShort();
         }
         catch (IOException e)
         {
             e.printStackTrace();
+            
             return 0;
         }
     }
@@ -136,6 +142,7 @@ public class BinaryIO
             buffer.order(ByteOrder.LITTLE_ENDIAN);
             buffer.putShort((short) data);
             buffer.rewind();
+            
             channel.write(buffer);
         }
         catch (IOException e)
@@ -156,17 +163,21 @@ public class BinaryIO
         try
         {
             byte[] byteArray = new byte[4];
+            
             for (int i = 0; i < 4; i++)
             {
                 byteArray[i] = (byte) inputStream.read();
             }
+            
             buffer = ByteBuffer.wrap(byteArray);
             buffer.order(ByteOrder.LITTLE_ENDIAN);
+            
             return buffer.getInt();
         }
         catch (IOException e)
         {
             e.printStackTrace();
+            
             return 0;
         }
     }
@@ -179,6 +190,7 @@ public class BinaryIO
             buffer.order(ByteOrder.LITTLE_ENDIAN);
             buffer.putInt((int) data);
             buffer.rewind();
+            
             channel.write(buffer);
         }
         catch (IOException e)
@@ -193,17 +205,21 @@ public class BinaryIO
         try
         {
             byte[] byteArray = new byte[8];
+            
             for (int i = 0; i < 8; i++)
             {
                 byteArray[i] = (byte) inputStream.read();
             }
+            
             buffer = ByteBuffer.wrap(byteArray);
             buffer.order(ByteOrder.LITTLE_ENDIAN);
+            
             return buffer.getDouble();
         }
         catch (IOException e)
         {
             e.printStackTrace();
+            
             return 0;
         }
     }
@@ -216,6 +232,7 @@ public class BinaryIO
             buffer.order(ByteOrder.LITTLE_ENDIAN);
             buffer.putDouble(data);
             buffer.rewind();
+            
             channel.write(buffer);
         }
         catch (IOException e)
@@ -234,6 +251,7 @@ public class BinaryIO
         catch (IOException e)
         {
             e.printStackTrace();
+            
             return 0;
         }
     }
@@ -258,8 +276,20 @@ public class BinaryIO
         }
         catch (IOException e)
         {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();  
         }
 
+    }
+    
+    public void closeOutput()
+    {
+        try 
+        {
+            this.outputStream.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 }

@@ -7,7 +7,6 @@ import javax.imageio.ImageIO;
 
 public class BoardImage
 {
-
     private long drawType;
     private long layer;
     private long boundLeft; // should be RECT
@@ -33,6 +32,51 @@ public class BoardImage
     }
 
     public BufferedImage getAsImage()
+    {
+        return image;
+    }
+    
+    public long getDrawType()
+    {
+        return drawType;
+    }
+
+    public long getLayer()
+    {
+        return layer;
+    }
+
+    public long getBoundLeft()
+    {
+        return boundLeft;
+    }
+
+    public long getBoundTop()
+    {
+        return boundTop;
+    }
+
+    public long getTransparentColour()
+    {
+        return transparentColour;
+    }
+
+    public long getCanvasPointer()
+    {
+        return canvasPointer;
+    }
+
+    public double getScrollX()
+    {
+        return scrollX;
+    }
+
+    public double getScrollY()
+    {
+        return scrollY;
+    }
+
+    public BufferedImage getImage()
     {
         return image;
     }

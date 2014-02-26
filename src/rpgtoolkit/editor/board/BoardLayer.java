@@ -4,9 +4,13 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import rpgtoolkit.common.editor.types.MultiLayerContainer;
 import rpgtoolkit.common.editor.types.Tile;
 import rpgtoolkit.common.io.types.Board;
+import rpgtoolkit.editor.board.event.LayerChangeListener;
+import rpgtoolkit.editor.board.event.LayerChangedEvent;
 import rpgtoolkit.editor.board.types.BoardSprite;
 import rpgtoolkit.editor.board.types.BoardVector;
 import rpgtoolkit.editor.exceptions.TilePixelOutOfRangeException;
@@ -24,6 +28,11 @@ public final class BoardLayer implements Cloneable
      * Class Members
      * *************************************************************************
      */
+    
+    /**
+     * 
+     */
+    private final LinkedList layerChangeListeners = new LinkedList<>();
     
     /**
      * The name of the layer.
@@ -285,7 +294,7 @@ public final class BoardLayer implements Cloneable
             
             if (parentBoard != null) 
             {
-                //parentBoard.fireMapChanged();
+                this.parentBoard.fireBoardChanged();
             }
         }
     }
@@ -489,6 +498,26 @@ public final class BoardLayer implements Cloneable
         }
     }
     
+     /**
+     * 
+     * 
+     * @param listener 
+     */
+    public void addLayerChangeListener(LayerChangeListener listener)
+    {
+       this.layerChangeListeners.add(listener); 
+    }
+    
+    /**
+     * 
+     * 
+     * @param listener 
+     */
+    public void removeLayerChangeListener(LayerChangeListener listener)
+    {
+       this.layerChangeListeners.remove(listener); 
+    }
+    
     /*
      * *************************************************************************
      * Protected Methods
@@ -503,5 +532,22 @@ public final class BoardLayer implements Cloneable
      * *************************************************************************
      */
     
-    // None yet.
+    /**
+     * Currently redundant...
+     */
+    private void fireLayerChanged()
+    {
+        LayerChangedEvent event = null;
+        Iterator iterator = this.layerChangeListeners.iterator();
+
+        while (iterator.hasNext()) 
+        {
+            if (event == null) 
+            {
+                event = new LayerChangedEvent(this);
+            }
+            
+            ((LayerChangeListener)iterator.next()).layerChanged(event);
+        }
+    }
 }

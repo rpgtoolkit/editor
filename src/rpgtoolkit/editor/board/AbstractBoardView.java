@@ -14,6 +14,8 @@ import javax.swing.JPanel;
 import rpgtoolkit.common.editor.types.MultiLayerContainer;
 import rpgtoolkit.common.io.types.Board;
 import rpgtoolkit.common.utilities.TileSetCache;
+import rpgtoolkit.editor.board.event.BoardChangeListener;
+import rpgtoolkit.editor.board.event.BoardChangedEvent;
 import rpgtoolkit.editor.exceptions.TilePixelOutOfRangeException;
 
 /**
@@ -32,7 +34,7 @@ import rpgtoolkit.editor.exceptions.TilePixelOutOfRangeException;
  * @version 0.1
  */
 public abstract class AbstractBoardView extends JPanel implements 
-        MultiLayerContainer
+        MultiLayerContainer, BoardChangeListener
 {
     /*
      * *************************************************************************
@@ -701,6 +703,12 @@ public abstract class AbstractBoardView extends JPanel implements
         return this.layers.iterator();
     }
     
+    @Override
+    public void boardChanged(BoardChangedEvent e)
+    {
+        this.repaint();
+    }
+    
     /*
      * *************************************************************************
      * Private Methods 
@@ -713,6 +721,8 @@ public abstract class AbstractBoardView extends JPanel implements
      */
     private void initialize()
     {
+        this.board.addBoardChangeListener(this);
+        
         this.layers = new ArrayList();
         this.bounds = new Rectangle();
         
