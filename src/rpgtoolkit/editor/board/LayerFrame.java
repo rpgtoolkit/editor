@@ -4,8 +4,11 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -40,7 +43,14 @@ public class LayerFrame extends JInternalFrame implements ChangeListener,
     private JTable layerTable;
     private JScrollPane layerScrollPane;
     
+    private JButton newLayerButton;
+    private JButton moveLayerUpButton;
+    private JButton moveLayerDownButton;
+    private JButton cloneLayerButton;
+    private JButton deleteLayerButton;
+    
     private JPanel sliderPanel;
+    private JPanel buttonPanel;
     private JPanel layerPanel;
     private JPanel contentPanel;
    
@@ -97,6 +107,35 @@ public class LayerFrame extends JInternalFrame implements ChangeListener,
         
         this.layerScrollPane = new JScrollPane(this.layerTable);
         
+        this.newLayerButton = new JButton("New");
+        this.newLayerButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                boardView.board.addLayer();
+            }
+        });
+        
+        this.moveLayerUpButton = new JButton("Move Up");
+        this.moveLayerDownButton = new JButton("Move Down");
+        this.cloneLayerButton = new JButton("Clone");
+        this.deleteLayerButton = new JButton("Delete");
+        
+        this.buttonPanel = new JPanel();
+        this.buttonPanel.setLayout(new GridBagLayout());
+        GridBagConstraints buttonsConstraints = new GridBagConstraints();
+        buttonsConstraints.fill = GridBagConstraints.BOTH;
+        buttonsConstraints.weightx = 1;
+        this.buttonPanel.add(this.newLayerButton, buttonsConstraints);
+        this.buttonPanel.add(this.moveLayerUpButton, buttonsConstraints);
+        this.buttonPanel.add(this.moveLayerDownButton, buttonsConstraints);
+        this.buttonPanel.add(this.cloneLayerButton, buttonsConstraints);
+        this.buttonPanel.add(this.deleteLayerButton, buttonsConstraints);
+        this.buttonPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE,
+            this.buttonPanel.getPreferredSize().height));
+        
         this.layerPanel = new JPanel();
         this.layerPanel.setLayout(new GridBagLayout());
         //this.layerPanel.setPreferredSize(new Dimension(120, 120));
@@ -117,6 +156,7 @@ public class LayerFrame extends JInternalFrame implements ChangeListener,
         constraints.weighty = 0;
         constraints.insets = new Insets(0, 0, 0, 0);
         constraints.gridy++;
+        this.layerPanel.add(buttonPanel, constraints);
         
         this.contentPanel = new JPanel();
         this.contentPanel.add(this.layerPanel);

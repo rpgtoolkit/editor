@@ -56,7 +56,7 @@ public class BoardEditor extends JInternalFrame
         this.boardView = new BoardView2D(this, board);
         
         this.scrollPane = new JScrollPane(this.boardView);
-        scrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
+        this.scrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
         this.scrollPane.setVerticalScrollBarPolicy
                 (JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         

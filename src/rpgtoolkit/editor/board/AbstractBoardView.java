@@ -708,6 +708,13 @@ public abstract class AbstractBoardView extends JPanel implements
     {
         this.repaint();
     }
+    
+    @Override 
+    public void boardLayerAdded(BoardChangedEvent e)
+    {
+        this.addLayer(new BoardLayer(this.board, this.board.getLayers() - 1));
+        this.repaint();
+    }
   
     /*
      * *************************************************************************

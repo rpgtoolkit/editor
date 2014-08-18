@@ -763,7 +763,9 @@ public final class Board extends BasicType
                 }
 
                 // Layer Titles
-                for (int i = 0; i < layers + 1; i++)
+                // Geoff's random +1 here causes problems at save time!
+                //for (int i = 0; i < layers + 1; i++) 
+                for (int i = 0; i < layers; i++)
                 {
                     layerTitles.add(binaryIO.readBinaryString());
                 }
@@ -1192,6 +1194,82 @@ public final class Board extends BasicType
 
             ((BoardChangeListener) iterator.next()).boardChanged(event);
         }
+    }
+    
+    public void fireBoardLayerAdded()
+    {
+        BoardChangedEvent event = null;
+        Iterator iterator = this.boardChangeListeners.iterator();
+
+        while (iterator.hasNext())
+        {
+            if (event == null)
+            {
+                event = new BoardChangedEvent(this);
+            }
+
+            ((BoardChangeListener) iterator.next()).boardLayerAdded(event);
+        }
+    }
+    
+    public void addLayer()
+    {
+        this.layers++;
+        int layerNumber = this.layers;
+        
+        this.layerTitles.add("Untitled Layer " + layerNumber);
+        
+        int[][][] newDimensions = new int[this.width][this.height][this.layers];
+        
+        int count = this.width * this.height * (this.layers - 1);
+        int x = 0;
+        int y = 0;
+        int z = 0;
+        
+        for (int i = 0; i < count; i++)
+        {
+            newDimensions[x][y][z] = this.boardDimensions[x][y][z];
+            
+            x++;
+            if (x == this.width)
+            {
+                x = 0;
+                y++;
+                if (y == this.height)
+                {
+                    y = 0;
+                    z++;
+                }
+            }
+        }
+        
+        // Check if we have the blank tile index in default tileset.
+        if(!this.tileIndex.contains("default.tst1"))
+        {
+            this.tileIndex.add("default.tst1");
+        }
+        
+        int index = this.tileIndex.indexOf("default.tst1");
+        x = 0;
+        y = 0;
+        
+        for (int i = 0; i < this.width * this.height; i++)
+        {
+            newDimensions[x][y][layerNumber - 1] = 0;
+            x++;
+            if (x == width)
+            {
+                x = 0;
+                y++;
+                if (y == height)
+                {
+                    break;
+                }
+            }
+        }
+        
+        this.boardDimensions = newDimensions;
+        this.fireBoardLayerAdded();
     }
     
     /*

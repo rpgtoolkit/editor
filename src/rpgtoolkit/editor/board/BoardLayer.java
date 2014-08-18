@@ -128,6 +128,7 @@ public final class BoardLayer implements Cloneable
     public BoardLayer(Board board, int layerNumber)
     {
         this.parentBoard = board;
+        this.name = board.getLayerTitle(layerNumber);
         this.number = layerNumber;
         this.tiles = new ArrayList();
         this.isVisible = true;

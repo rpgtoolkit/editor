@@ -15,4 +15,11 @@ public interface BoardChangeListener extends EventListener
      * @param e
      */
     public void boardChanged(BoardChangedEvent e);
+    
+    /**
+     * 
+     * 
+     * @param e 
+     */
+    public void boardLayerAdded(BoardChangedEvent e);
 }
