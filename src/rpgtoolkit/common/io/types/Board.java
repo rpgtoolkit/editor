@@ -25,7 +25,7 @@ import rpgtoolkit.editor.exceptions.CorruptFileException;
  * file more than once corrupts the trailing data, see end of open and save
  * methods for more details.
  * 
- * @autho Geoff Wilson
+ * @author Geoff Wilson
  * @author Joshua Michael Daly
  */
 public final class Board extends BasicType
@@ -43,7 +43,7 @@ public final class Board extends BasicType
     // Variables
     private int width;
     private int height;
-    private int layers;
+    private int layerCount;
     private int coordinateType;
     private ArrayList<String> tileIndex;
     private HashMap<String, TileSet> tileSetMap;
@@ -226,12 +226,12 @@ public final class Board extends BasicType
 
     public int getLayers()
     {
-        return layers;
+        return layerCount;
     }
 
     public void setLayers(int layers)
     {
-        this.layers = layers;
+        this.layerCount = layers;
     }
 
     public int getCoordinateType()
@@ -513,7 +513,7 @@ public final class Board extends BasicType
 
                 width = binaryIO.readBinaryInteger();
                 height = binaryIO.readBinaryInteger();
-                layers = binaryIO.readBinaryInteger();
+                layerCount = binaryIO.readBinaryInteger();
                 coordinateType = binaryIO.readBinaryInteger();
 
                 if (coordinateType == ISO_ROTATED)
@@ -525,7 +525,7 @@ public final class Board extends BasicType
                     height += tmpWidth;
                 }
 
-                boardDimensions = new int[width][height][layers];
+                boardDimensions = new int[width][height][layerCount];
 
                 // Total number of distinct tile types used, if we add a 
                 // new tile we will have to check if the tileIndex already
@@ -543,7 +543,7 @@ public final class Board extends BasicType
                     tileIndex.add(binaryIO.readBinaryString());
                 }
 
-                int totalTiles = width * height * layers;
+                int totalTiles = width * height * layerCount;
 
                 int x = 0;
                 int y = 0;
@@ -583,7 +583,7 @@ public final class Board extends BasicType
                  *
                  * Unsure why ubShading and then shadingLayer are read since 
                  * the shading is only applied to one(?)
-                 * layer, perhaps this was to allow for more shading layers in 
+                 * layer, perhaps this was to allow for more shading layerCount in 
                  * the future, however it is now unnecessary
                  * and so the ubShading will be ignored.
                  */
@@ -764,8 +764,8 @@ public final class Board extends BasicType
 
                 // Layer Titles
                 // Geoff's random +1 here causes problems at save time!
-                //for (int i = 0; i < layers + 1; i++) 
-                for (int i = 0; i < layers; i++)
+                //for (int i = 0; i < layerCount + 1; i++) 
+                for (int i = 0; i < layerCount; i++)
                 {
                     layerTitles.add(binaryIO.readBinaryString());
                 }
@@ -846,7 +846,7 @@ public final class Board extends BasicType
 
             this.binaryIO.writeBinaryInteger(this.width);
             this.binaryIO.writeBinaryInteger(this.height);
-            this.binaryIO.writeBinaryInteger(this.layers);
+            this.binaryIO.writeBinaryInteger(this.layerCount);
             this.binaryIO.writeBinaryInteger(this.coordinateType);
             
             this.binaryIO.writeBinaryInteger(this.tileIndex.size());
@@ -865,7 +865,7 @@ public final class Board extends BasicType
             int index;
             int[] array;
             
-            for (int k = 0; k < layers; k++)
+            for (int k = 0; k < layerCount; k++)
             {
                 for (int j = 0; j < height; j++)
                 {
@@ -1214,18 +1214,19 @@ public final class Board extends BasicType
     
     public void addLayer()
     {
-        this.layers++;
-        int layerNumber = this.layers;
+        this.layerCount++;
+        int layerNumber = this.layerCount;
         
         this.layerTitles.add("Untitled Layer " + layerNumber);
         
-        int[][][] newDimensions = new int[this.width][this.height][this.layers];
+        int[][][] newDimensions = new int[this.width][this.height][this.layerCount];
         
-        int count = this.width * this.height * (this.layers - 1);
+        int count = this.width * this.height * (this.layerCount - 1);
         int x = 0;
         int y = 0;
         int z = 0;
         
+        // Copy tile data into the larger board.
         for (int i = 0; i < count; i++)
         {
             newDimensions[x][y][z] = this.boardDimensions[x][y][z];
@@ -1243,29 +1244,311 @@ public final class Board extends BasicType
             }
         }
         
-        // Check if we have the blank tile index in default tileset.
-        if(!this.tileIndex.contains("default.tst1"))
-        {
-            this.tileIndex.add("default.tst1");
-        }
-        
-        int index = this.tileIndex.indexOf("default.tst1");
         x = 0;
         y = 0;
         
+        // Populate our new layer with blank tile data.
         for (int i = 0; i < this.width * this.height; i++)
         {
-            newDimensions[x][y][layerNumber - 1] = 0;
+            newDimensions[x][y][layerNumber - 1] = 0; // Blank tile data.
             x++;
-            if (x == width)
+            if (x == this.width)
             {
                 x = 0;
                 y++;
-                if (y == height)
+                if (y == this.height)
                 {
                     break;
                 }
             }
+        }
+        
+        this.boardDimensions = newDimensions;
+        this.fireBoardLayerAdded();
+    }
+    
+    public void moveLayerUp(int layer)
+    {
+        // Highest possible layer, can't be move up!
+        if (layer == this.layerCount - 1)
+        {
+            return;
+        }
+        
+        int x = 0;
+        int y = 0;
+        
+        for (int i = 0; i < this.width * this.height; i++)
+        {
+            // Swap the tiles from each layer with each other.
+            int temporaryTile = this.boardDimensions[x][y][layer + 1];
+            this.boardDimensions[x][y][layer + 1] = this.boardDimensions[x][y][layer];
+            this.boardDimensions[x][y][layer] = temporaryTile;
+            
+            x++;
+            if (x == this.width)
+            {
+                x = 0;
+                y++;
+                if (y == this.height)
+                {
+                    break;
+                }
+            }
+        }
+        
+        for (BoardLight light : this.lights)
+        {
+            if (light.getLayer() == layer)
+            {
+                light.setLayer(light.getLayer() + 1);
+            }
+            else if (light.getLayer() == layer + 1)
+            {
+                light.setLayer(layer);
+            }
+        }
+        
+        for (BoardVector vector : this.vectors)
+        {
+            if (vector.getLayer() == layer)
+            {
+                vector.setLayer(vector.getLayer() + 1);
+            }
+            else if (vector.getLayer() == layer + 1)
+            {
+                vector.setLayer(layer);
+            }
+        }
+        
+        for (BoardProgram program : this.programs)
+        {
+            if (program.getLayer() == layer)
+            {
+                program.setLayer(program.getLayer() + 1);
+            }
+            else if (program.getLayer() == layer + 1)
+            {
+                program.setLayer(layer);
+            }
+        }
+        
+        for (BoardSprite sprite : this.sprites)
+        {
+            if (sprite.getLayer() == layer)
+            {
+                sprite.setLayer(sprite.getLayer() + 1);
+            }
+            else if (sprite.getLayer() == layer + 1)
+            {
+                sprite.setLayer(layer);
+            }
+        }
+        
+        for (BoardImage image : this.images)
+        {
+            if (image.getLayer() == layer)
+            {
+                image.setLayer(image.getLayer() + 1);
+            }
+            else if (image.getLayer() == layer + 1)
+            {
+                image.setLayer(layer);
+            }
+        }
+        
+        this.fireBoardChanged();
+    }
+    
+    public void moveLayerDown(int layer)
+    {
+        // Lowest possible layer, can't be move down!
+        if (layer == 0)
+        {
+            return;
+        }
+        
+        int x = 0;
+        int y = 0;
+        
+        for (int i = 0; i < this.width * this.height; i++)
+        {
+            // Swap the tiles from each layer with each other.
+            int temporaryTile = this.boardDimensions[x][y][layer - 1];
+            this.boardDimensions[x][y][layer - 1] = this.boardDimensions[x][y][layer];
+            this.boardDimensions[x][y][layer] = temporaryTile;
+            
+            x++;
+            if (x == this.width)
+            {
+                x = 0;
+                y++;
+                if (y == this.height)
+                {
+                    break;
+                }
+            }
+        }
+        
+        for (BoardLight light : this.lights)
+        {
+            if (light.getLayer() == layer)
+            {
+                light.setLayer(light.getLayer() - 1);
+            }
+            else if (light.getLayer() == layer - 1)
+            {
+                light.setLayer(layer);
+            }
+        }
+        
+        for (BoardVector vector : this.vectors)
+        {
+            if (vector.getLayer() == layer)
+            {
+                vector.setLayer(vector.getLayer() - 1);
+            }
+            else if (vector.getLayer() == layer - 1)
+            {
+                vector.setLayer(layer);
+            }
+        }
+        
+        for (BoardProgram program : this.programs)
+        {
+            if (program.getLayer() == layer)
+            {
+                program.setLayer(program.getLayer() - 1);
+            }
+            else if (program.getLayer() == layer - 1)
+            {
+                program.setLayer(layer);
+            }
+        }
+        
+        for (BoardSprite sprite : this.sprites)
+        {
+            if (sprite.getLayer() == layer)
+            {
+                sprite.setLayer(sprite.getLayer() - 1);
+            }
+            else if (sprite.getLayer() == layer - 1)
+            {
+                sprite.setLayer(layer);
+            }
+        }
+        
+        for (BoardImage image : this.images)
+        {
+            if (image.getLayer() == layer)
+            {
+                image.setLayer(image.getLayer() - 1);
+            }
+            else if (image.getLayer() == layer - 1)
+            {
+                image.setLayer(layer);
+            }
+        }
+        
+        this.fireBoardChanged();
+    }
+    
+    public void cloneLayer(int layer)
+    {
+        this.layerCount++;
+        this.layerTitles.add("Untitled Layer " + this.layerCount);
+        
+        int[][][] newDimensions = new int[this.width][this.height][this.layerCount];
+        
+        int count = this.width * this.height * this.layerCount;
+        int x = 0;
+        int y = 0;
+        int z = 0;
+        int j = 0;
+        
+        // Copy tile data into the larger board.
+        for (int i = 0; i < count; i++)
+        {
+            if (z == layer + 1) // We're at the cloned layer.
+            {
+                // Copy the previous layer into our new j.
+                j--;
+                newDimensions[x][y][z] = this.boardDimensions[x][y][j];
+            }
+            else
+            {
+                newDimensions[x][y][z] = this.boardDimensions[x][y][j];
+            }
+            
+            x++;
+            if (x == this.width)
+            {
+                x = 0;
+                y++;
+                if (y == this.height)
+                {
+                    y = 0;
+                    z++;
+                    j++;
+                }
+            }
+        }
+        
+        try
+        {
+            for (BoardLight light : this.lights)
+            {
+                if (light.getLayer() == layer)
+                {
+                    BoardLight clone = (BoardLight)light.clone();
+                    clone.setLayer(layer + 1);
+                    this.lights.add(clone);
+                }
+            }
+
+            for (BoardVector vector : this.vectors)
+            {
+                if (vector.getLayer() == layer)
+                {
+                    BoardVector clone = (BoardVector)vector.clone();
+                    clone.setLayer(layer + 1);
+                    this.vectors.add(clone);
+                }
+            }
+
+            for (BoardProgram program : this.programs)
+            {
+                if (program.getLayer() == layer)
+                {
+                    BoardProgram clone = (BoardProgram)program.clone();
+                    clone.setLayer(layer + 1);
+                    this.programs.add(clone);
+                }
+            }
+
+            for (BoardSprite sprite : this.sprites)
+            {
+                if (sprite.getLayer() == layer)
+                {
+                    BoardSprite clone = (BoardSprite)sprite.clone();
+                    clone.setLayer(layer + 1);
+                    this.sprites.add(clone);
+                }
+            }
+
+            for (BoardImage image : this.images)
+            {
+                if (image.getLayer() == layer)
+                {
+                    BoardImage clone = (BoardImage)image.clone();
+                    clone.setLayer(layer + 1);
+                    this.images.add(clone);
+                }
+            }
+        }
+        catch (CloneNotSupportedException ex)
+        {
+            
         }
         
         this.boardDimensions = newDimensions;
@@ -1290,7 +1573,7 @@ public final class Board extends BasicType
      * 
      * @param x starting x position (width)
      * @param y starting y position (height)
-     * @param z starting z position (layers)
+     * @param z starting z position (layerCount)
      * @return returns an array containing 4 <code>int</code>'s, the first
      * element contains the number of duplicate tile, the others contain the
      * positions of x, y, and z at the end of the loop. They would have 
@@ -1305,7 +1588,7 @@ public final class Board extends BasicType
         int j = 0;
         int i = 0;
         
-        for (k = z; k < layers; k++)
+        for (k = z; k < layerCount; k++)
         {
             for (j = y; j < height; j++)
             {

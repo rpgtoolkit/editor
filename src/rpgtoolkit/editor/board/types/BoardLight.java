@@ -1,16 +1,16 @@
 package rpgtoolkit.editor.board.types;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
 import java.util.ArrayList;
 
 /**
- * Created by IntelliJ IDEA.
- * User: geoff
- * Date: 19/12/10
- * Time: 00:47
- * To change this template use File | Settings | File Templates.
+ * 
+ * 
+ * @author Geoff Wilson
+ * @author Joshua Michael Daly
  */
-public class BoardLight
+public class BoardLight implements Cloneable
 {
     private long layer;
     private long type;
@@ -18,10 +18,22 @@ public class BoardLight
     private ArrayList<Color> colors;
     private ArrayList<Point> points;
 
+    /*
+     * ************************************************************************* 
+     * Public Constructors
+     * *************************************************************************
+     */
+    
     public BoardLight()
     {
 
     }
+    
+    /*
+     * ************************************************************************* 
+     * Public Getters and Setters
+     * *************************************************************************
+     */
     
     public long getLayer()
     {
@@ -57,6 +69,21 @@ public class BoardLight
     {
         this.type = eType;
     }
+    
+    public void setColor(Color color)
+    {
+        this.color = color;
+    }
+    
+    public void setColors(ArrayList<Color> colors)
+    {
+        this.colors = colors;
+    }
+    
+    public void setPoints(ArrayList<Point> points)
+    {
+        this.points = points;
+    }
 
     public void addPoint(Point point)
     {
@@ -66,5 +93,26 @@ public class BoardLight
     public void addColor(Color color)
     {
         this.colors.add(color);
+    }
+    
+    /*
+     * ************************************************************************* 
+     * Public Methods
+     * *************************************************************************
+     */
+    
+    @Override
+    public Object clone() throws CloneNotSupportedException 
+    {
+        super.clone();
+        
+        BoardLight clone = new BoardLight();
+        clone.setLayer(this.getLayer());
+        clone.setType(this.type);
+        clone.setColor(this.color);
+        clone.setColors((ArrayList<Color>)this.colors.clone());
+        clone.setPoints((ArrayList < Point>)this.points.clone());
+        
+        return clone;
     }
 }

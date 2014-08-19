@@ -5,7 +5,7 @@ import java.io.File;
 import rpgtoolkit.common.io.types.BasicType;
 import rpgtoolkit.common.io.types.Item;
 
-public class BoardSprite extends BasicType
+public class BoardSprite extends BasicType implements Cloneable
 {
     private String fileName;
     private long x;
@@ -26,10 +26,22 @@ public class BoardSprite extends BasicType
 
     private BoardVector boardPath; // TK3.10 relic - not used.
 
+    /*
+     * ************************************************************************* 
+     * Public Constructors
+     * *************************************************************************
+     */
+    
     public BoardSprite()
     {
         super();
     }
+    
+    /*
+     * ************************************************************************* 
+     * Public Getters and Setters
+     * *************************************************************************
+     */
     
     public String getFileName()
     {
@@ -205,6 +217,43 @@ public class BoardSprite extends BasicType
     public BoardVector getBoardPath()
     {
         return boardPath;
+    }
+    
+    /*
+     * ************************************************************************* 
+     * Public Methods
+     * *************************************************************************
+     */
+
+    /**
+     *
+     * @return
+     * @throws CloneNotSupportedException
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+       super.clone();
+       
+       BoardSprite clone = new BoardSprite();
+       clone.activate = this.activate;
+       clone.activationProgram = this.activationProgram;
+       clone.activationType = this.activationType;
+       clone.boardPath = (BoardVector)this.boardPath.clone();
+       clone.finalValue = this.finalValue;
+       clone.finalVariable = this.finalVariable;
+       clone.initialValue = this.initialValue;
+       clone.initialVariable = this.initialVariable;
+       clone.layer = this.layer;
+       clone.loadingValue = this.loadingValue;
+       clone.loadingVariable = this.loadingVariable;
+       clone.multitaskingProgram = this.multitaskingProgram;
+       clone.spriteFile = this.spriteFile;
+       clone.fileName = this.fileName;
+       clone.x = this.x;
+       clone.y = this.y;
+       
+       return clone;
     }
 }
 

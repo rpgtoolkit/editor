@@ -2,7 +2,7 @@ package rpgtoolkit.editor.board.types;
 
 import rpgtoolkit.common.io.types.BasicType;
 
-public class BoardProgram extends BasicType
+public class BoardProgram extends BasicType implements Cloneable
 {
     private long layer;
     private String graphic;
@@ -17,11 +17,23 @@ public class BoardProgram extends BasicType
     private BoardVector vector;
     private long distanceRepeat;
 
+    /*
+     * ************************************************************************* 
+     * Public Constructors
+     * *************************************************************************
+     */
+    
     public BoardProgram()
     {
         super();
     }
 
+    /*
+     * ************************************************************************* 
+     * Public Getters and Setters
+     * *************************************************************************
+     */
+    
     public long getLayer()
     {
         return layer;
@@ -130,5 +142,37 @@ public class BoardProgram extends BasicType
     public void setDistanceRepeat(long distanceRepeat)
     {
         this.distanceRepeat = distanceRepeat;
+    }
+    
+    /*
+     * ************************************************************************* 
+     * Public Methods
+     * *************************************************************************
+     */
+
+    /**
+     *
+     * @return
+     * @throws CloneNotSupportedException
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        super.clone();
+        
+        BoardProgram clone = new BoardProgram();
+        clone.activate = this.activate;
+        clone.activationType = this.activationType;
+        clone.distanceRepeat = this.distanceRepeat;
+        clone.fileName = this.fileName;
+        clone.finalValue = this.finalValue;
+        clone.finalVariable = this.finalVariable;
+        clone.graphic = this.graphic;
+        clone.initialValue = this.initialValue;
+        clone.initialVariable = this.initialVariable;
+        clone.layer = this.layer;
+        clone.vector = (BoardVector)this.vector.clone();
+        
+        return clone;
     }
 }

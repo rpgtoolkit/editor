@@ -1,6 +1,7 @@
 package rpgtoolkit.editor.board.types;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Polygon;
 import java.util.ArrayList;
 
 /**
@@ -8,7 +9,7 @@ import java.util.ArrayList;
  * @author Geoff Wilson
  * @author Joshua Michael Daly
  */
-public class BoardVector
+public class BoardVector implements Cloneable
 {
     private int layer;                  //layer the vector is on
     private int attributes;             //???
@@ -18,6 +19,12 @@ public class BoardVector
     private int tileType;
     private Polygon polygon;
 
+    /*
+     * ************************************************************************* 
+     * Public Constructors
+     * *************************************************************************
+     */
+    
     public BoardVector()
     {
         layer = 0;
@@ -38,6 +45,12 @@ public class BoardVector
     TT_WAYPOINT = 16
     */
 
+    /*
+     * ************************************************************************* 
+     * Public Getters and Setters
+     * *************************************************************************
+     */
+    
     public ArrayList<Point> getPoints()
     {
         return points;
@@ -117,5 +130,48 @@ public class BoardVector
     public Polygon getPolygon()
     {
         return polygon;
+    }
+    
+    public void setIsClosed(boolean isClosed)
+    {
+        this.isClosed = isClosed;
+    }
+
+    public void setPoints(ArrayList<Point> points)
+    {
+        this.points = points;
+    }
+
+    public void setPolygon(Polygon polygon)
+    {
+        this.polygon = polygon;
+    }
+    
+    /*
+     * ************************************************************************* 
+     * Public Methods
+     * *************************************************************************
+     */
+
+    /**
+     *
+     * @return
+     * @throws CloneNotSupportedException
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        super.clone();
+        
+        BoardVector clone = new BoardVector();
+        clone.layer = this.layer;
+        clone.attributes = this.attributes;
+        clone.handle = this.handle;
+        clone.isClosed = this.isClosed;
+        clone.points = (ArrayList<Point>)this.points.clone();
+        clone.polygon = this.polygon;
+        clone.tileType = this.tileType;
+        
+        return clone;
     }
 }

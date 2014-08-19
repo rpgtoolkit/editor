@@ -119,9 +119,51 @@ public class LayerFrame extends JInternalFrame implements ChangeListener,
         });
         
         this.moveLayerUpButton = new JButton("Move Up");
+        this.moveLayerUpButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                boardView.board.moveLayerUp((boardView.board.getLayers() -
+                        layerTable.getSelectedRow()) - 1);
+            }
+        });
+        
         this.moveLayerDownButton = new JButton("Move Down");
+        this.moveLayerDownButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                boardView.board.moveLayerDown((boardView.board.getLayers() -
+                        layerTable.getSelectedRow()) - 1);
+            }
+        });
+        
         this.cloneLayerButton = new JButton("Clone");
+        this.cloneLayerButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                boardView.board.cloneLayer((boardView.board.getLayers() -
+                        layerTable.getSelectedRow()) - 1);
+            }
+        });
+        
         this.deleteLayerButton = new JButton("Delete");
+        this.deleteLayerButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                
+            }
+        });
         
         this.buttonPanel = new JPanel();
         this.buttonPanel.setLayout(new GridBagLayout());
@@ -203,7 +245,7 @@ public class LayerFrame extends JInternalFrame implements ChangeListener,
     @Override
     public void valueChanged(ListSelectionEvent e)
     {
-        // If we have changed the selected layer up date the position of the 
+        // If we have changed the selected layer update the position of the 
         // opacity slider to the new layers opacity.
         if (this.layerTable.getSelectedRow() != this.lastSelectedIndex)
         {

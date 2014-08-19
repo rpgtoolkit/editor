@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-public class BoardImage
+public class BoardImage implements Cloneable
 {
     private long drawType;
     private long layer;
@@ -21,11 +21,23 @@ public class BoardImage
     // For now you will have to manually set this in code (there is no ToolkitCE board editor yet! :)
     private int scrollRatio; // Toolkit CE Only - The first new data!
 
+    /*
+     * ************************************************************************* 
+     * Public Constructors
+     * *************************************************************************
+     */
+    
     public BoardImage()
     {
 
     }
 
+    /*
+     * ************************************************************************* 
+     * Public Getters and Setters
+     * *************************************************************************
+     */
+    
     public String getFileName()
     {
         return fileName;
@@ -146,5 +158,37 @@ public class BoardImage
     public int getScrollRatio()
     {
         return this.scrollRatio;
+    }
+    
+    /*
+     * ************************************************************************* 
+     * Public Methods
+     * *************************************************************************
+     */
+
+    /**
+     *
+     * @return
+     * @throws CloneNotSupportedException
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+       super.clone();
+       
+       BoardImage clone = new BoardImage();
+       clone.boundLeft = this.boundLeft;
+       clone.boundTop = this.boundTop;
+       clone.canvasPointer = this.canvasPointer;
+       clone.drawType = this.drawType;
+       clone.fileName = this.fileName;
+       clone.image = this.image;
+       clone.layer = this.layer;
+       clone.scrollRatio = this.scrollRatio;
+       clone.scrollX = this.scrollX;
+       clone.scrollY = this.scrollY;
+       clone.transparentColour = this.transparentColour;
+       
+       return clone;
     }
 }
