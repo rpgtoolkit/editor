@@ -190,7 +190,7 @@ public class LayerTableModel extends AbstractTableModel implements BoardChangeLi
     @Override
     public void boardChanged(BoardChangedEvent e)
     {
-        this.fireTableDataChanged();
+        // Do not respond to this, or the opacity slider will not work!
     }
 
     @Override

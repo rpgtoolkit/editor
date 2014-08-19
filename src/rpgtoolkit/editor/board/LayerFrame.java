@@ -73,7 +73,7 @@ public class LayerFrame extends JInternalFrame implements ChangeListener,
         super("Board Layers", true, true, true, true);
         
         this.boardView = boardView;
-        this.lastSelectedIndex = 1;
+        this.lastSelectedIndex = -1;
         this.initialize();
     }
     
@@ -240,7 +240,8 @@ public class LayerFrame extends JInternalFrame implements ChangeListener,
                 if (this.layerTable.getSelectedRow() > -1 && 
                         this.layerTable.getRowCount() > 0)
                 {
-                    this.boardView.getLayer(this.layerTable.getSelectedRow()).
+                    this.boardView.getLayer((boardView.board.getLayers() -
+                            layerTable.getSelectedRow()) - 1).
                             setOpacity(this.opacitySlider.getValue() / 100.0f);
                 }
             }
@@ -261,12 +262,11 @@ public class LayerFrame extends JInternalFrame implements ChangeListener,
     {
         // If we have changed the selected layer update the position of the 
         // opacity slider to the new layers opacity.
-        if (this.layerTable.getSelectedRow() != this.lastSelectedIndex &&
-                this.layerTable.getSelectedRow() > -1)
+        if (this.layerTable.getSelectedRow() > -1)
         {
-            this.lastSelectedIndex = this.layerTable.getSelectedRow();
             this.opacitySlider.setValue((int)(this.boardView.getLayer(
-                this.lastSelectedIndex).getOpacity() * 100));
+                (boardView.board.getLayers() -
+                            layerTable.getSelectedRow()) - 1).getOpacity() * 100));
         }
     }
 }

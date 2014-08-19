@@ -795,8 +795,6 @@ public final class Board extends BasicType
                 allowBattles = binaryIO.readBinaryInteger() == -1;
                 allowSaving = !(binaryIO.readBinaryInteger() == -1);
 
-                // After saving twice these values,
-                // are becoming corrupted?!?
                 try
                 {
                     ambientEffect = new Color(
@@ -828,7 +826,7 @@ public final class Board extends BasicType
     /**
      * This save routine does not work correctly, or so it appears! It is
      * identical with regard to the new open routine and the previous save
-     * routine. Do not use it!
+     * routine!
      *
      * @return
      */
@@ -1523,14 +1521,20 @@ public final class Board extends BasicType
         int y = 0;
         int z = 0;
         int j = 0;
+        boolean isDecremented = false;
 
         // Copy tile data into the larger board.
         for (int i = 0; i < count; i++)
         {
             if (z == layer + 1) // We're at the cloned layer.
-            {
-                // Copy the previous layer into our new j.
-                j--;
+            {  
+                if (!isDecremented)
+                {
+                    j--; 
+                    isDecremented = true;
+                }
+                
+                // Copy the previous layer into our new clone.
                 newDimensions[x][y][z] = this.boardDimensions[x][y][j];
             }
             else
@@ -1704,6 +1708,9 @@ public final class Board extends BasicType
      * Protected Methods
      * *************************************************************************
      */
+    
+    
+    
     /*
      * ************************************************************************* 
      * Private Methods
@@ -1742,6 +1749,7 @@ public final class Board extends BasicType
                         {
                             count, i, j, k
                         };
+                        
                         return array;
                     }
 

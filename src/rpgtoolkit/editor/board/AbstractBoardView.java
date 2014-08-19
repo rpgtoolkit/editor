@@ -654,7 +654,12 @@ public abstract class AbstractBoardView extends JPanel implements
         }
 
         BoardLayerView hold = this.layers.get(index + 1);
-        this.layers.set(index + 1, getLayer(index));
+        hold.setNumber(hold.getNumber() - 1);
+        
+        BoardLayerView move = this.layers.get(index);
+        move.setNumber(move.getNumber() + 1);
+        
+        this.layers.set(index + 1, move);
         this.layers.set(index, hold);
     }
 
@@ -673,7 +678,12 @@ public abstract class AbstractBoardView extends JPanel implements
         }
 
         BoardLayerView hold = this.layers.get(index - 1);
-        this.layers.set(index - 1, getLayer(index));
+        hold.setNumber(hold.getNumber() + 1);
+        
+        BoardLayerView move = this.layers.get(index);
+        move.setNumber(move.getNumber() - 1);
+        
+        this.layers.set(index - 1, move);
         this.layers.set(index, hold);
     }
 
