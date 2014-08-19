@@ -3,7 +3,9 @@ package rpgtoolkit.editor.utilities;
 import javax.swing.table.AbstractTableModel;
 import rpgtoolkit.common.io.types.Board;
 import rpgtoolkit.editor.board.AbstractBoardView;
-import rpgtoolkit.editor.board.BoardLayer;
+import rpgtoolkit.editor.board.BoardLayerView;
+import rpgtoolkit.editor.board.event.BoardChangeListener;
+import rpgtoolkit.editor.board.event.BoardChangedEvent;
 
 /**
  * We want to update the board model here, not the view. After updating the
@@ -12,7 +14,7 @@ import rpgtoolkit.editor.board.BoardLayer;
  * @author Joshua Michael Daly
  * @version 0.1
  */
-public class LayerTableModel extends AbstractTableModel
+public class LayerTableModel extends AbstractTableModel implements BoardChangeListener
 {
     private AbstractBoardView boardView;
    
@@ -31,7 +33,7 @@ public class LayerTableModel extends AbstractTableModel
      */
     public LayerTableModel()
     {
-        
+       
     }
     
     /**
@@ -41,6 +43,7 @@ public class LayerTableModel extends AbstractTableModel
     public LayerTableModel(AbstractBoardView board)
     {
         this.boardView = board;
+        this.boardView.getBoard().addBoardChangeListener(this);
     }
     
     /*
@@ -112,7 +115,7 @@ public class LayerTableModel extends AbstractTableModel
     @Override
     public Object getValueAt(int rowIndex, int columnIndex)
     {
-        BoardLayer layer = this.boardView.getLayer(this.getRowCount() - 
+        BoardLayerView layer = this.boardView.getLayer(this.getRowCount() - 
                 rowIndex - 1);
         
         if (layer != null)
@@ -145,7 +148,7 @@ public class LayerTableModel extends AbstractTableModel
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex)
     {
-        BoardLayer layer = this.boardView.getLayer(this.getRowCount() - 
+        BoardLayerView layer = this.boardView.getLayer(this.getRowCount() - 
                 rowIndex - 1);
         
         return !(columnIndex == 0 && layer != null && !layer.isVisible());
@@ -157,7 +160,7 @@ public class LayerTableModel extends AbstractTableModel
         // The layer locking and visibility is solely view related so we 
         // don't have to worry about the model there, but the name is 
         // linked to the model board in the background.
-        BoardLayer layer = this.boardView.getLayer(this.getRowCount() - 
+        BoardLayerView layer = this.boardView.getLayer(this.getRowCount() - 
                 rowIndex - 1);
         
         if (layer != null)
@@ -182,6 +185,38 @@ public class LayerTableModel extends AbstractTableModel
             
             this.fireTableCellUpdated(rowIndex, columnIndex);
         }
+    }
+
+    @Override
+    public void boardChanged(BoardChangedEvent e)
+    {
+        this.fireTableDataChanged();
+    }
+
+    @Override
+    public void boardLayerAdded(BoardChangedEvent e)
+    {
+        this.fireTableDataChanged();
+    }
+    
+    @Override
+    public void boardLayerMovedUp(BoardChangedEvent e)
+    {
+        //this.fireTableRowsUpdated(firstRow, lastRow);
+        this.fireTableDataChanged();
+    }
+
+    @Override
+    public void boardLayerMovedDown(BoardChangedEvent e)
+    {
+        //this.fireTableRowsUpdated(firstRow, lastRow);
+        this.fireTableDataChanged();
+    }
+
+    @Override
+    public void boardLayerDeleted(BoardChangedEvent e)
+    {
+        this.fireTableDataChanged();
     }
     
 }

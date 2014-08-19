@@ -22,7 +22,7 @@ import rpgtoolkit.editor.exceptions.TilePixelOutOfRangeException;
  * @author Joshua Michael Daly
  * @version 0.1
  */
-public final class BoardLayer implements Cloneable
+public final class BoardLayerView implements Cloneable
 {
     /*
      * *************************************************************************
@@ -83,7 +83,7 @@ public final class BoardLayer implements Cloneable
     /**
      * Default constructor.
      */
-    public BoardLayer()
+    public BoardLayerView()
     {
         
     }
@@ -94,7 +94,7 @@ public final class BoardLayer implements Cloneable
      * @param width Width to use.
      * @param height Height to use.
      */
-    public BoardLayer(int width, int height)
+    public BoardLayerView(int width, int height)
     {
         
     }
@@ -104,7 +104,7 @@ public final class BoardLayer implements Cloneable
      * 
      * @param rectangle Rectangle to get the bounds from.
      */
-    public BoardLayer(Rectangle rectangle)
+    public BoardLayerView(Rectangle rectangle)
     {
         
     }
@@ -114,7 +114,7 @@ public final class BoardLayer implements Cloneable
      * 
      * @param board board to copy layers from
      */
-    public BoardLayer(Board board)
+    public BoardLayerView(Board board)
     {
         
     }
@@ -125,7 +125,7 @@ public final class BoardLayer implements Cloneable
      * @param board Parent board.
      * @param layerNumber
      */
-    public BoardLayer(Board board, int layerNumber)
+    public BoardLayerView(Board board, int layerNumber)
     {
         this.parentBoard = board;
         this.name = board.getLayerTitle(layerNumber);
@@ -144,7 +144,7 @@ public final class BoardLayer implements Cloneable
      * @param width Width to use.
      * @param height Height to use.
      */
-    public BoardLayer(Board board, int width, int height)
+    public BoardLayerView(Board board, int width, int height)
     {
         
     }

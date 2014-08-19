@@ -170,9 +170,9 @@ public final class BoardView2D extends AbstractBoardView
     @Override
     protected void paintLayers(Graphics2D g)
     {
-        ArrayList<BoardLayer> layers = this.getLayerArrayList();
+        ArrayList<BoardLayerView> layers = this.getLayerArrayList();
         
-        for (BoardLayer layer : layers)
+        for (BoardLayerView layer : layers)
         {
             if (layer.isVisible())
             {
@@ -199,9 +199,9 @@ public final class BoardView2D extends AbstractBoardView
     @Override
     protected void paintVectors(Graphics2D g) 
     {
-        ArrayList<BoardLayer> layers = this.getLayerArrayList();
+        ArrayList<BoardLayerView> layers = this.getLayerArrayList();
         
-        for (BoardLayer layer : layers)
+        for (BoardLayerView layer : layers)
         {
             if (layer.isVisible())
             {
@@ -216,9 +216,9 @@ public final class BoardView2D extends AbstractBoardView
      */
     protected void paintSprites(Graphics2D g)
     {
-        ArrayList<BoardLayer> layers = this.getLayerArrayList();
+        ArrayList<BoardLayerView> layers = this.getLayerArrayList();
         
-        for (BoardLayer layer : layers)
+        for (BoardLayerView layer : layers)
         {
             layer.drawSprites(g);
         }

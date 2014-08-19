@@ -53,7 +53,7 @@ public abstract class AbstractBoardView extends JPanel implements
     private TileSetCache tileSetCache;
     
     // Layer properties
-    private ArrayList<BoardLayer> layers;
+    private ArrayList<BoardLayerView> layers;
     private Rectangle bounds;   // in tiles
     
     // Zooming properties
@@ -405,7 +405,7 @@ public abstract class AbstractBoardView extends JPanel implements
      *         bounds.
      */
     @Override
-    public BoardLayer getLayer(int index) 
+    public BoardLayerView getLayer(int index) 
     {
         try 
         {
@@ -427,7 +427,7 @@ public abstract class AbstractBoardView extends JPanel implements
      * @param layer The layer we want to add.
      */
     @Override
-    public void setLayer(int index, BoardLayer layer) 
+    public void setLayer(int index, BoardLayerView layer) 
     {
         layer.setBoard(this.board);
         this.layers.set(index, layer);
@@ -439,7 +439,7 @@ public abstract class AbstractBoardView extends JPanel implements
      * @return The layer ArrayList.
      */
     @Override
-    public ArrayList<BoardLayer> getLayerArrayList() 
+    public ArrayList<BoardLayerView> getLayerArrayList() 
     {
         return this.layers;
     }
@@ -450,7 +450,7 @@ public abstract class AbstractBoardView extends JPanel implements
      * @param layers The new set of layers.
      */
     @Override
-    public void setLayerArrayList(ArrayList<BoardLayer> layers) 
+    public void setLayerArrayList(ArrayList<BoardLayerView> layers) 
     {
         this.layers = layers;
     }
@@ -461,7 +461,7 @@ public abstract class AbstractBoardView extends JPanel implements
      * @return A listIterator.
      */
     @Override
-    public ListIterator<BoardLayer> getLayers() 
+    public ListIterator<BoardLayerView> getLayers() 
     {
         return this.layers.listIterator();
     }
@@ -583,20 +583,20 @@ public abstract class AbstractBoardView extends JPanel implements
      * @return The layer passed to the method.
      */
     @Override
-    public BoardLayer addLayer(BoardLayer layer) 
+    public BoardLayerView addLayer(BoardLayerView layer) 
     {
         this.layers.add(layer);
         return layer;
     }
 
     /**
-     * Adds the BoardLayer <code>l</code> after the MapLayer <code>after</code>.
+     * Adds the BoardLayerView <code>l</code> after the MapLayer <code>after</code>.
      *
      * @param layer The layer to add.
      * @param after Specifies the layer to add <code>l</code> after.
      */
     @Override
-    public void addLayerAfter(BoardLayer layer, BoardLayer after) 
+    public void addLayerAfter(BoardLayerView layer, BoardLayerView after) 
     {
         this.layers.add(this.layers.indexOf(after) + 1, layer);
     }
@@ -609,7 +609,7 @@ public abstract class AbstractBoardView extends JPanel implements
      * @param layer The layer to add.
      */
     @Override
-    public void addLayer(int index, BoardLayer layer) 
+    public void addLayer(int index, BoardLayerView layer) 
     {
         layer.setBoard(this.board);
         this.layers.add(index, layer);
@@ -621,7 +621,7 @@ public abstract class AbstractBoardView extends JPanel implements
      * @param layers A collection of layers to add.
      */
     @Override
-    public void addAllLayers(Collection<BoardLayer> layers) 
+    public void addAllLayers(Collection<BoardLayerView> layers) 
     {
         this.layers.addAll(layers);
     }
@@ -634,7 +634,7 @@ public abstract class AbstractBoardView extends JPanel implements
      * @return The layer that was removed from the list.
      */
     @Override
-    public BoardLayer removeLayer(int index) 
+    public BoardLayerView removeLayer(int index) 
     {
         return this.layers.remove(index);
     }
@@ -653,7 +653,7 @@ public abstract class AbstractBoardView extends JPanel implements
                     "Can't swap up when already at the top.");
         }
 
-        BoardLayer hold = this.layers.get(index + 1);
+        BoardLayerView hold = this.layers.get(index + 1);
         this.layers.set(index + 1, getLayer(index));
         this.layers.set(index, hold);
     }
@@ -672,7 +672,7 @@ public abstract class AbstractBoardView extends JPanel implements
                     "Can't swap down when already at the bottom.");
         }
 
-        BoardLayer hold = this.layers.get(index - 1);
+        BoardLayerView hold = this.layers.get(index - 1);
         this.layers.set(index - 1, getLayer(index));
         this.layers.set(index, hold);
     }
@@ -698,7 +698,7 @@ public abstract class AbstractBoardView extends JPanel implements
      * @return The iterator.
      */
     @Override
-    public Iterator<BoardLayer> iterator() 
+    public Iterator<BoardLayerView> iterator() 
     {
         return this.layers.iterator();
     }
@@ -712,7 +712,33 @@ public abstract class AbstractBoardView extends JPanel implements
     @Override 
     public void boardLayerAdded(BoardChangedEvent e)
     {
-        this.addLayer(new BoardLayer(this.board, this.board.getLayers() - 1));
+        this.addLayer(new BoardLayerView(this.board, this.board.getLayers() - 1));
+        this.repaint();
+    }
+    
+    @Override
+    public void boardLayerMovedUp(BoardChangedEvent e)
+    {
+        this.swapLayerUp(e.getLayer());
+    }
+    
+    @Override
+    public void boardLayerMovedDown(BoardChangedEvent e)
+    {
+        this.swapLayerDown(e.getLayer());
+    }
+    
+    @Override
+    public void boardLayerDeleted(BoardChangedEvent e)
+    {
+        this.removeLayer(e.getLayer());
+        
+        for (BoardLayerView layer : this.layers)
+        {
+            if (layer.getNumber() > 0)
+                layer.setNumber(layer.getNumber() - 1);
+        }
+        
         this.repaint();
     }
   
@@ -783,7 +809,7 @@ public abstract class AbstractBoardView extends JPanel implements
         
         for (int i = 0; i < layerCount; i++)
         {
-            BoardLayer layer = new BoardLayer(board, i);
+            BoardLayerView layer = new BoardLayerView(board, i);
             this.addLayer(layer);
         }
     }

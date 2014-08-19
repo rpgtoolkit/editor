@@ -10,6 +10,8 @@ import rpgtoolkit.common.io.types.Board;
  */
 public class BoardChangedEvent extends EventObject
 {
+    private int layer;
+    
     /*
      * ************************************************************************* 
      * Public Constructors
@@ -19,5 +21,21 @@ public class BoardChangedEvent extends EventObject
     public BoardChangedEvent(Board board)
     {
         super(board);
+    }
+    
+    /*
+     * ************************************************************************* 
+     * Public Getters and Setters
+     * *************************************************************************
+     */
+    
+    public int getLayer()
+    {
+        return this.layer;
+    }
+    
+    public void setLayer(int layer)
+    {
+        this.layer = layer;
     }
 }

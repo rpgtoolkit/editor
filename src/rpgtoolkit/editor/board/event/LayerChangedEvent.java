@@ -1,7 +1,7 @@
 package rpgtoolkit.editor.board.event;
 
 import java.util.EventObject;
-import rpgtoolkit.editor.board.BoardLayer;
+import rpgtoolkit.editor.board.BoardLayerView;
 
 /**
  * 
@@ -16,7 +16,7 @@ public class LayerChangedEvent extends EventObject
      * *************************************************************************
      */
     
-    public LayerChangedEvent(BoardLayer layer)
+    public LayerChangedEvent(BoardLayerView layer)
     {
         super(layer);
     }
