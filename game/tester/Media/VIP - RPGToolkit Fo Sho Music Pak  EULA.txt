@@ -1,0 +1,30 @@
+RPGToolkit Fo' Sho' Music Pak v2.18 
+End User Licsence Agreement (EULA)
+
+RPGToolkit Fo' Sho' Music Pak v2.18 -- Original music compositions by VIP Entertainment 
+for RPGToolkit by Christopher B. Matthews, original music compositions with filenames, 
+VIP - xxxxx.mid, June 8, 2000 Copyright (C) 2000 Chris Reeves and Craig Reeves. 
+These music compositions are provided 'as-is', without any express or implied warranty. 
+In no event will the authors be held liable for any damages arising from the use of 
+these music compositions. These music compositions are completely original, any 
+similarities to any other music compositions are completely coincidental. Permission 
+is granted to anyone to use these music compositions for commercial use with RPGToolkit, 
+any other commercial use of these music compositions is prohibited, however, these 
+music compositions can be distributed freely by any means subject to the following 
+restrictions: 1. The origin of these music compositions must not be misrepresented; 
+you must not claim that you wrote the original music. If you use these music compositions 
+commercially in RPGToolkit, an acknowledgment in the product documentation is welcome, 
+but not required. 2. Altered source versions must be plainly marked as such, and must 
+not be misrepresented as being the original music composition. 3. This notice may not 
+be removed or altered from any source distribution. Chris Reeves, Craig Reeves, 
+http://www.vipcouncil.com, vipgames@hotmail.com, Chris@ivitcom.net 
+
+1. You can distribute these files freely and use them in your games or any 
+way as long as it is being distributed freely.
+
+2. You can convert these to MP3's/WAV/WMA files and use them in your games or 
+distribute them  freely.
+
+3. You can sell this music commercially royalty-free as long as it is with a game 
+created with RPGToolkit or any other Awsome Computing product. All other commercial 
+use is prohibited.

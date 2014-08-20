@@ -10,6 +10,6 @@
 
 # Testing Folders #
 ###################
-main/
-game/
-/dist/
+#main/
+#game/
+#/dist/

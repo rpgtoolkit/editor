@@ -1,4 +1,4 @@
-package rpgtoolkit.editor.board;
+package rpgtoolkit.editor.main.panels;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -20,6 +20,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import rpgtoolkit.editor.board.AbstractBoardView;
 import rpgtoolkit.editor.utilities.LayerTableModel;
 
 /**
@@ -30,11 +31,6 @@ import rpgtoolkit.editor.utilities.LayerTableModel;
 public class LayerPanel extends JPanel implements ChangeListener,
         ListSelectionListener
 {
-    /*
-     * *************************************************************************
-     * Class Members
-     * *************************************************************************
-     */
 
     private AbstractBoardView boardView;
 
@@ -70,6 +66,18 @@ public class LayerPanel extends JPanel implements ChangeListener,
         this.boardView = boardView;
         this.lastSelectedIndex = -1;
         this.initialize();
+    }
+    
+    /*
+     * *************************************************************************
+     * Public Getters and Setters
+     * *************************************************************************
+     */
+    public void setBoardView(AbstractBoardView boardView)
+    {
+        this.boardView = boardView;
+        
+        this.layerTable = new JTable(new LayerTableModel(this.boardView));
     }
 
     /*
@@ -119,7 +127,7 @@ public class LayerPanel extends JPanel implements ChangeListener,
             {
                 if (boardView != null)
                 {
-                    boardView.board.addLayer();
+                    boardView.getBoard().addLayer();
                 }
             }
         });
@@ -135,9 +143,9 @@ public class LayerPanel extends JPanel implements ChangeListener,
             {
                 if (boardView != null)
                 {
-                    if (boardView.board.getLayers().size() > 0)
+                    if (boardView.getBoard().getLayers().size() > 0)
                     {
-                        boardView.board.moveLayerUp((boardView.board.getLayers().size()
+                        boardView.getBoard().moveLayerUp((boardView.getBoard().getLayers().size()
                                 - layerTable.getSelectedRow()) - 1);
                     }
                 }
@@ -157,7 +165,7 @@ public class LayerPanel extends JPanel implements ChangeListener,
                 {
                     if (layerTable.getSelectedRow() > -1)
                     {
-                        boardView.board.moveLayerDown((boardView.board.getLayers().size()
+                        boardView.getBoard().moveLayerDown((boardView.getBoard().getLayers().size()
                                 - layerTable.getSelectedRow()) - 1);
                     }
                 }
@@ -177,7 +185,7 @@ public class LayerPanel extends JPanel implements ChangeListener,
                 {
                     if (layerTable.getSelectedRow() > -1)
                     {
-                        boardView.board.cloneLayer((boardView.board.getLayers().size()
+                        boardView.getBoard().cloneLayer((boardView.getBoard().getLayers().size()
                                 - layerTable.getSelectedRow()) - 1);
                     }
                 }
@@ -197,7 +205,7 @@ public class LayerPanel extends JPanel implements ChangeListener,
                 {
                     if (layerTable.getSelectedRow() > -1)
                     {
-                        boardView.board.deleteLayer((boardView.board.getLayers().size()
+                        boardView.getBoard().deleteLayer((boardView.getBoard().getLayers().size()
                                 - layerTable.getSelectedRow()) - 1);
                     }
                 }
@@ -257,7 +265,7 @@ public class LayerPanel extends JPanel implements ChangeListener,
                 if (this.layerTable.getSelectedRow() > -1
                         && this.layerTable.getRowCount() > 0)
                 {
-                    this.boardView.getLayer((boardView.board.getLayers().size()
+                    this.boardView.getLayer((boardView.getBoard().getLayers().size()
                             - layerTable.getSelectedRow()) - 1).
                             setOpacity(this.opacitySlider.getValue() / 100.0f);
                 }
@@ -284,7 +292,7 @@ public class LayerPanel extends JPanel implements ChangeListener,
             if (this.layerTable.getSelectedRow() > -1)
             {
                 this.opacitySlider.setValue((int) (this.boardView.getLayer(
-                        (boardView.board.getLayers().size()
+                        (boardView.getBoard().getLayers().size()
                         - layerTable.getSelectedRow()) - 1).getOpacity() * 100));
             }
         }
