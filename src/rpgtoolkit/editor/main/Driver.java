@@ -12,7 +12,7 @@ public class Driver
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             
             // Don't make the mainWindow visible by default...
-            MainWindow mainWindow = new MainWindow();
+            MainWindow.getInstance().setVisible(true);
         }
         catch (Exception e)
         {

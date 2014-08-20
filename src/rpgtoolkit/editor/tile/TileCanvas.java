@@ -36,7 +36,8 @@ public class TileCanvas extends JPanel implements MouseListener, MouseMotionList
         this.addMouseMotionListener(this);
         try
         {
-            transpImage = ImageIO.read(getClass().getResourceAsStream("rpgtoolkit/resources/transp.png"));
+            transpImage = ImageIO.read(getClass().getResourceAsStream(
+                    "rpgtoolkit/resources/transp.png"));
         }
         catch (IOException e)
         {
@@ -98,11 +99,14 @@ public class TileCanvas extends JPanel implements MouseListener, MouseMotionList
                 for (int y = 0; y < 32; y++)
                 {
                     g.setColor(this.tile.getPixel(x, y));
-                    g.fillRect((x * pixelWidth + 1), (y * pixelHeight + 1), pixelWidth, pixelHeight);
+                    g.fillRect((x * pixelWidth + 1), (y * pixelHeight + 1), 
+                            pixelWidth, pixelHeight);
+                    
                     if (pixelWidth > 5)
                     {
                         g.setColor(Color.BLACK);
-                        g.drawRect((x * pixelWidth + 1), (y * pixelHeight + 1), pixelWidth, pixelHeight);
+                        g.drawRect((x * pixelWidth + 1), (y * pixelHeight + 1), 
+                                pixelWidth, pixelHeight);
                     }
                 }
 

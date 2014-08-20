@@ -9,6 +9,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 import rpgtoolkit.editor.main.MainWindow;
+import rpgtoolkit.editor.main.ToolkitEditorWindow;
 
 /**
  *
@@ -155,7 +156,26 @@ public final class FileMenu extends JMenu
         saveMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
         saveMenuItem.setMnemonic(KeyEvent.VK_N);
-        saveMenuItem.setEnabled(false);
+        saveMenuItem.setEnabled(true);
+        saveMenuItem.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if (parent.getDesktopPane().getSelectedFrame() != null)
+                {
+                    if (parent.getDesktopPane().getSelectedFrame() instanceof 
+                            ToolkitEditorWindow)
+                    {
+                        ToolkitEditorWindow window = (ToolkitEditorWindow)
+                                parent.getDesktopPane().getSelectedFrame();
+                        
+                        window.save();
+                    }
+                }
+            }
+        });
     }
     
     /**

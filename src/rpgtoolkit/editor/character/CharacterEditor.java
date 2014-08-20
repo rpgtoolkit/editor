@@ -5,7 +5,7 @@ import rpgtoolkit.common.io.types.Player;
 import rpgtoolkit.editor.main.MainWindow;
 import rpgtoolkit.editor.main.ToolkitEditorWindow;
 
-public class CharacterEditor extends JInternalFrame implements ToolkitEditorWindow
+public class CharacterEditor extends ToolkitEditorWindow
 {
     public CharacterEditor(Player character)
     {

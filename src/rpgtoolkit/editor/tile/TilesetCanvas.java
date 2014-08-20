@@ -9,10 +9,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 
-public class TilesetCanvas extends JPanel implements MouseListener
+public final class TilesetCanvas extends JPanel implements MouseListener
 {
-    private TileSet tileset;
-    private BufferedImage bi;
+    private final TileSet tileset;
+    private final BufferedImage bufferedImage;
 
 
     public TilesetCanvas(TileSet tileset)
@@ -20,15 +20,17 @@ public class TilesetCanvas extends JPanel implements MouseListener
         super();
 
         this.tileset = tileset;
-        bi = new BufferedImage(480, (32 * ((tileset.getTileCount() / 15) + 1)), BufferedImage.TYPE_INT_ARGB);
+        bufferedImage = new BufferedImage(480, (32 * ((tileset.getTileCount() 
+                / 15) + 1)), BufferedImage.TYPE_INT_ARGB);
         this.testPaint();
         this.repaint();
         this.addMouseListener(this);
     }
 
+    @Override
     public void paint(Graphics g)
     {
-        g.drawImage(bi, 0, 0, this);
+        g.drawImage(bufferedImage, 0, 0, this);
     }
 
     @Override
@@ -39,12 +41,12 @@ public class TilesetCanvas extends JPanel implements MouseListener
 
     private Dimension createPreferredSize()
     {
-        return new Dimension(bi.getWidth(), bi.getHeight());
+        return new Dimension(bufferedImage.getWidth(), bufferedImage.getHeight());
     }
 
     public void testPaint()
     {
-        Graphics2D g = bi.createGraphics();
+        Graphics2D g = bufferedImage.createGraphics();
         int x = 0, y = 0, i = 0;
 
         for (Tile tile : tileset.getTiles())
@@ -63,28 +65,33 @@ public class TilesetCanvas extends JPanel implements MouseListener
 
     }
 
+    @Override
     public void mouseClicked(MouseEvent e)
     {
         System.out.println(e.getX());
     }
 
+    @Override
     public void mousePressed(MouseEvent e)
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        
     }
 
+    @Override
     public void mouseReleased(MouseEvent e)
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        
     }
 
+    @Override
     public void mouseEntered(MouseEvent e)
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        
     }
 
+    @Override
     public void mouseExited(MouseEvent e)
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        
     }
 }

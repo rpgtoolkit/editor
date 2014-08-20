@@ -73,11 +73,15 @@ public class LayerPanel extends JPanel implements ChangeListener,
      * Public Getters and Setters
      * *************************************************************************
      */
+    public AbstractBoardView getBoardView()
+    {
+        return this.boardView;
+    }
+    
     public void setBoardView(AbstractBoardView boardView)
     {
-        this.boardView = boardView;
-        
-        this.layerTable = new JTable(new LayerTableModel(this.boardView));
+        this.boardView = boardView; 
+        this.layerTable.setModel(new LayerTableModel(this.boardView));
     }
 
     /*
@@ -296,5 +300,10 @@ public class LayerPanel extends JPanel implements ChangeListener,
                         - layerTable.getSelectedRow()) - 1).getOpacity() * 100));
             }
         }
+    }
+    
+    public void clearTable()
+    {
+        this.layerTable.setModel(new LayerTableModel());
     }
 }

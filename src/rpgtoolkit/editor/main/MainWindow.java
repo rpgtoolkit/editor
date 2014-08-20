@@ -3,53 +3,68 @@ package rpgtoolkit.editor.main;
 import java.awt.*;
 import java.beans.PropertyVetoException;
 import java.io.File;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import rpgtoolkit.common.io.types.Animation;
 import rpgtoolkit.common.io.types.Project;
+import rpgtoolkit.common.io.types.TileSet;
 import rpgtoolkit.editor.animation.AnimationEditor;
 import rpgtoolkit.editor.board.BoardEditor;
 import rpgtoolkit.editor.main.panels.LayerPanel;
 import rpgtoolkit.editor.main.menus.MainMenuBar;
 import rpgtoolkit.editor.main.menus.MainToolBar;
+import rpgtoolkit.editor.main.panels.ProjectPanel;
+import rpgtoolkit.editor.main.panels.PropertiesPanel;
+import rpgtoolkit.editor.main.panels.TileSetPanel;
 import rpgtoolkit.editor.project.ProjectEditor;
 import rpgtoolkit.editor.tile.TileEditor;
-import rpgtoolkit.editor.tile.TilesetViewer;
+import rpgtoolkit.editor.tile.TilesetCanvas;
 
 /**
  * Currently opening Tilesets, tiles, programs, boards, animations, characters
  * etc.
- * 
+ *
  * @author Geoff Wilson
  * @author Joshua Michael Daly
  */
-public class MainWindow extends JFrame
+public class MainWindow extends JFrame implements InternalFrameListener
 {
-    private JDesktopPane desktopPane;
+    private static final MainWindow instance = new MainWindow();
     
+    private JDesktopPane desktopPane;
+
     private final JPanel toolboxPanel;
     private final JTabbedPane upperTabbedPane;
     private final JTabbedPane lowerTabbedPane;
-    private LayerPanel layerPanel;
-    
-    private JPanel debugPane;
-    private JTextField debugLog;
+    private final ProjectPanel projectPanel;
+    private final TileSetPanel tileSetPanel;
+    private final PropertiesPanel propertiesPanel;
+    private final LayerPanel layerPanel;
+
+    private final JPanel debugPane;
+    private final JTextField debugLog;
     private Project activeProject;
-    private MainToolBar toolBar;
-    private JFileChooser fileChooser;
+    private final MainToolBar toolBar;
+    private final JFileChooser fileChooser;
     private final String workingDir = System.getProperty("user.dir");
-    private ArrayList<ToolkitEditorWindow> activeWindows;
+    private final LinkedList<ToolkitEditorWindow> activeWindows;
 
     /*
      * *************************************************************************
      * Public Getters and Setters
      * *************************************************************************
      */
+    public static MainWindow getInstance()
+    {
+        return instance;
+    }
     
-     public JDesktopPane getDesktopPane()
+    public JDesktopPane getDesktopPane()
     {
         return this.desktopPane;
     }
@@ -58,29 +73,34 @@ public class MainWindow extends JFrame
     {
         this.desktopPane = desktopPane;
     }
-    
+
     /*
      * *************************************************************************
-     * Public Constructors
+     * Private Constructors
      * *************************************************************************
      */
-    
-    public MainWindow()
+    private MainWindow()
     {
         super("RPG Toolkit");
 
-        activeWindows = new ArrayList();
+        this.activeWindows = new LinkedList<>();
 
-        desktopPane = new JDesktopPane();
-        desktopPane.setDesktopManager(new ToolkitDesktopManager(this));
-        desktopPane.setBackground(Color.LIGHT_GRAY);
-        
+        this.desktopPane = new JDesktopPane();
+        this.desktopPane.setDesktopManager(new ToolkitDesktopManager(this));
+        this.desktopPane.setBackground(Color.LIGHT_GRAY);
+
+        this.projectPanel = new ProjectPanel();
+        this.tileSetPanel = new TileSetPanel();
         this.upperTabbedPane = new JTabbedPane();
-        
+        this.upperTabbedPane.addTab("Project", this.projectPanel);
+        this.upperTabbedPane.addTab("Tileset", this.tileSetPanel);
+
+        this.propertiesPanel = new PropertiesPanel();
         this.layerPanel = new LayerPanel();
         this.lowerTabbedPane = new JTabbedPane();
+        this.lowerTabbedPane.addTab("Properties", this.propertiesPanel);
         this.lowerTabbedPane.addTab("Layers", this.layerPanel);
-        
+
         this.toolboxPanel = new JPanel(new GridLayout(2, 1));
         this.toolboxPanel.setPreferredSize(new Dimension(320, 0));
         this.toolboxPanel.add(upperTabbedPane);
@@ -90,56 +110,119 @@ public class MainWindow extends JFrame
                 .getResource("/rpgtoolkit/editor/resources/application.png"))
                 .getImage());
 
-        debugPane = new JPanel();
-        debugLog = new JTextField("Debug Messages:");
-        debugLog.setEditable(false);
-        debugLog.setFocusable(false);
+        this.debugPane = new JPanel();
+        this.debugLog = new JTextField("Debug Messages:");
+        this.debugLog.setEditable(false);
+        this.debugLog.setFocusable(false);
 
-        debugLog.setText(System.getProperty("user.dir"));
+        this.debugLog.setText(System.getProperty("user.dir"));
 
-        debugPane.setLayout(new BorderLayout());
-        debugPane.add(debugLog, BorderLayout.CENTER);
+        this.debugPane.setLayout(new BorderLayout());
+        this.debugPane.add(debugLog, BorderLayout.CENTER);
 
         this.setLayout(new BorderLayout());
 
-        fileChooser = new JFileChooser();
-        fileChooser.setCurrentDirectory(new File(System.
+        this.fileChooser = new JFileChooser();
+        this.fileChooser.setCurrentDirectory(new File(System.
                 getProperty("user.dir")));
 
-        toolBar = new MainToolBar(this);
+        this.toolBar = new MainToolBar(this);
 
-        this.add(toolBar, BorderLayout.NORTH);
-        this.add(desktopPane, BorderLayout.CENTER);
-        this.add(debugPane, BorderLayout.SOUTH);
-        this.add(this.toolboxPanel, BorderLayout.EAST);   
-        
+        this.add(this.toolBar, BorderLayout.NORTH);
+        this.add(this.desktopPane, BorderLayout.CENTER);
+        this.add(this.debugPane, BorderLayout.SOUTH);
+        this.add(this.toolboxPanel, BorderLayout.EAST);
+
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setJMenuBar(new MainMenuBar(this));
         this.setSize(new Dimension(1024, 768));
         this.setLocationByPlatform(true);
-        this.setVisible(true);
-        
+
         this.testEditor();
     }
-    
+
     /*
      * *************************************************************************
      * Public Methods
      * *************************************************************************
      */
+    @Override
+    public void internalFrameOpened(InternalFrameEvent e)
+    {
+        System.out.println("opened");
+    }
+
+    @Override
+    public void internalFrameClosing(InternalFrameEvent e)
+    {
+        System.out.println("closing");
+    }
+
+    @Override
+    public void internalFrameClosed(InternalFrameEvent e)
+    {
+        if (this.activeWindows.contains((ToolkitEditorWindow) e.getInternalFrame()))
+        {
+            this.activeWindows.remove((ToolkitEditorWindow) e.getInternalFrame());
+        }
+    }
+
+    @Override
+    public void internalFrameIconified(InternalFrameEvent e)
+    {
+        System.out.println("iconified");
+    }
+
+    @Override
+    public void internalFrameDeiconified(InternalFrameEvent e)
+    {
+        System.out.println("deciconified");
+    }
+
+    @Override
+    public void internalFrameActivated(InternalFrameEvent e)
+    {
+        if (e.getInternalFrame() instanceof BoardEditor)
+        {
+            BoardEditor editor = (BoardEditor) e.getInternalFrame();
+            this.layerPanel.setBoardView(editor.getBoardView());
+
+            this.upperTabbedPane.setSelectedComponent(this.tileSetPanel);
+            this.lowerTabbedPane.setSelectedComponent(this.layerPanel);
+        }
+
+        if (!this.activeWindows.contains((ToolkitEditorWindow) e.getInternalFrame()))
+        {
+            this.activeWindows.add((ToolkitEditorWindow) e.getInternalFrame());
+        }
+    }
+
+    @Override
+    public void internalFrameDeactivated(InternalFrameEvent e)
+    {
+        if (e.getInternalFrame() instanceof BoardEditor)
+        {
+            BoardEditor editor = (BoardEditor) e.getInternalFrame();
+
+            if (this.layerPanel.getBoardView().equals(editor.getBoardView()))
+            {
+                this.layerPanel.clearTable();
+            }
+        }
+    }
 
     public void openProject()
     {
-        FileNameExtensionFilter filter = 
-                new FileNameExtensionFilter("Toolkit Project", "gam");
+        FileNameExtensionFilter filter
+                = new FileNameExtensionFilter("Toolkit Project", "gam");
         fileChooser.setFileFilter(filter);
 
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
         {
             activeProject = new Project(fileChooser.getSelectedFile());
             ProjectEditor projectEditor = new ProjectEditor(activeProject);
-            this.setTitle(this.getTitle() + " - " + activeProject.getGameTitle() 
+            this.setTitle(this.getTitle() + " - " + activeProject.getGameTitle()
                     + " project loaded");
             desktopPane.add(projectEditor, BorderLayout.CENTER);
             projectEditor.setWindowParent(this);
@@ -147,19 +230,19 @@ public class MainWindow extends JFrame
             //toolBar.enableRun();
         }
     }
-    
+
     public void openFile()
-    { 
+    {
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
         {
             this.checkFileExtension(fileChooser.getSelectedFile());
         }
     }
-    
+
     public void checkFileExtension(File file)
     {
         String fileName = file.getName().toLowerCase();
-        
+
         if (fileName.endsWith(".anm"))
         {
             this.openAnimation();
@@ -170,16 +253,16 @@ public class MainWindow extends JFrame
         }
         else if (fileName.endsWith(".prg"))
         {
-            
+
         }
         else if (fileName.endsWith(".tst"))
         {
             this.openTileset();
         }
     }
-    
+
     /**
-     * Creates an animation editor window for modifying the specified animation 
+     * Creates an animation editor window for modifying the specified animation
      * file.
      */
     public void openAnimation()
@@ -191,29 +274,23 @@ public class MainWindow extends JFrame
 
     public void openBoard()
     {
-        BoardEditor boardEditor = new BoardEditor(this, 
+        BoardEditor boardEditor = new BoardEditor(this,
                 fileChooser.getSelectedFile());
         boardEditor.setVisible(true);
         boardEditor.toFront();
+        boardEditor.addInternalFrameListener(this);
 
-        if (this.layerPanel == null)
-        {
-            this.layerPanel = new LayerPanel(boardEditor.getBoardView());
-            this.layerPanel.setPreferredSize(this.toolboxPanel.getSize());
-            this.toolboxPanel.add(this.layerPanel);
-        }
-        
-        try 
+        this.desktopPane.add(boardEditor);
+
+        try
         {
             boardEditor.setSelected(true);
-        } 
-        catch (PropertyVetoException ex) 
+        }
+        catch (PropertyVetoException ex)
         {
             Logger.getLogger(MainWindow.class.getName()).
                     log(Level.SEVERE, null, ex);
         }
-        
-        this.desktopPane.add(boardEditor);
     }
 
     /**
@@ -228,82 +305,81 @@ public class MainWindow extends JFrame
 
     public void openTileset()
     {
-        TilesetViewer testTileEditor = new TilesetViewer(
-                fileChooser.getSelectedFile());
-        desktopPane.add(testTileEditor);
+        this.tileSetPanel.setTilesetCanvas(new TilesetCanvas(
+                new TileSet(fileChooser.getSelectedFile())));
     }
 
     public void openBoardForView()
     {
-        BoardEditor testBoardEditor = new BoardEditor(this, 
+        BoardEditor testBoardEditor = new BoardEditor(this,
                 fileChooser.getSelectedFile());
         testBoardEditor.setVisible(true);
         desktopPane.add(testBoardEditor);
         testBoardEditor.toFront();
-        
-        try 
+
+        try
         {
             testBoardEditor.setSelected(true);
-        } 
-        catch (PropertyVetoException ex) 
+        }
+        catch (PropertyVetoException ex)
         {
             Logger.getLogger(MainWindow.class.getName()).
                     log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public void removeActiveWindow(ToolkitEditorWindow window)
     {
         activeWindows.remove(window);
     }
-    
+
     public void zoomInOnBoardEditor()
     {
         if (desktopPane.getSelectedFrame() instanceof BoardEditor)
         {
-            BoardEditor editor = (BoardEditor)desktopPane.getSelectedFrame();
+            BoardEditor editor = (BoardEditor) desktopPane.getSelectedFrame();
             editor.zoomIn();
         }
     }
-    
+
     public void zoomOutOnBoardEditor()
     {
         if (desktopPane.getSelectedFrame() instanceof BoardEditor)
         {
-            BoardEditor editor = (BoardEditor)desktopPane.getSelectedFrame();
+            BoardEditor editor = (BoardEditor) desktopPane.getSelectedFrame();
             editor.zoomOut();
         }
     }
-    
+
     public void toogleGridOnBoardEditor(boolean isVisible)
     {
         if (desktopPane.getSelectedFrame() instanceof BoardEditor)
         {
-            BoardEditor editor = (BoardEditor)desktopPane.getSelectedFrame();
+            BoardEditor editor = (BoardEditor) desktopPane.getSelectedFrame();
             editor.toggleGrid(isVisible);
         }
     }
-    
+
     public void toogleCoordinatesOnBoardEditor(boolean isVisible)
     {
         if (desktopPane.getSelectedFrame() instanceof BoardEditor)
         {
-            BoardEditor editor = (BoardEditor)desktopPane.getSelectedFrame();
+            BoardEditor editor = (BoardEditor) desktopPane.getSelectedFrame();
             editor.toogleCoordinates(isVisible);
         }
     }
-    
+
     /*
      * *************************************************************************
      * Private Methods
      * *************************************************************************
      */
-    
     /**
      * Saves having to open file menu all the time!
      */
     private void testEditor()
     {
-        
+
     }
+
 }

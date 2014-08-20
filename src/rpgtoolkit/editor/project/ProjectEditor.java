@@ -16,7 +16,7 @@ import rpgtoolkit.editor.main.ToolkitEditorWindow;
  * @author Geoff Wilson 
  * @author Joshua Michael Daly
  */
-public class ProjectEditor extends JInternalFrame implements ToolkitEditorWindow, InternalFrameListener
+public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameListener
 {
     // Key Values for project settings
     private final int KEY_LEFT_UP = 0;

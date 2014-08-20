@@ -1,10 +1,38 @@
 package rpgtoolkit.editor.main;
 
-public interface ToolkitEditorWindow
+import javax.swing.JInternalFrame;
+
+public abstract class ToolkitEditorWindow extends JInternalFrame
 {
-    public boolean save();
+    
+    /*
+     * *************************************************************************
+     * Public Constructors
+     * *************************************************************************
+     */
+    public ToolkitEditorWindow()
+    {
+        
+    }
+    
+    public ToolkitEditorWindow (String title, boolean resizeable, boolean closeable,
+            boolean maximizable, boolean iconifiable)
+    {
+        super(title, resizeable, closeable, maximizable, iconifiable);
+    }
+    
+    /*
+     * *************************************************************************
+     * Public Methods
+     * *************************************************************************
+     */
+    
+    
+    /*
+     * *************************************************************************
+     * Public Abstract Methods
+     * *************************************************************************
+     */
+    public abstract boolean save();
 
-    public void gracefulClose();
-
-    public void setWindowParent(MainWindow parent);
 }

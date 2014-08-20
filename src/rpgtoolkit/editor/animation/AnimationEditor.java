@@ -16,7 +16,7 @@ import rpgtoolkit.editor.main.ToolkitEditorWindow;
  * @author Geoff Wilson
  * @author Joshua Michael Daly
  */
-public class AnimationEditor extends JInternalFrame implements ToolkitEditorWindow
+public class AnimationEditor extends ToolkitEditorWindow
 {
     private final int JTF_HEIGHT = 24;
 
@@ -33,11 +33,6 @@ public class AnimationEditor extends JInternalFrame implements ToolkitEditorWind
     private JTextField frameTime;
     private JTextField frameFile;
     private JTextField frameSound;
-
-    public AnimationEditor()
-    {
-
-    }
 
     public AnimationEditor(Animation theAnimation)
     {

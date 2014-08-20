@@ -4,6 +4,7 @@ import java.io.File;
 import javax.swing.*;
 import rpgtoolkit.common.io.types.Board;
 import rpgtoolkit.editor.main.MainWindow;
+import rpgtoolkit.editor.main.ToolkitEditorWindow;
 
 /**
  * 
@@ -11,7 +12,7 @@ import rpgtoolkit.editor.main.MainWindow;
  * @author Geoff Wilson
  * @author Joshua Michael Daly
  */
-public class BoardEditor extends JInternalFrame
+public class BoardEditor extends ToolkitEditorWindow
 {
     /*
      * *************************************************************************
@@ -151,4 +152,11 @@ public class BoardEditor extends JInternalFrame
     {
         boardView.setShowCoordinates(isVisible);
     }
+
+    @Override
+    public boolean save()
+    {
+        return this.board.save();
+    }
+    
 }
