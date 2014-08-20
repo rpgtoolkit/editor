@@ -39,6 +39,12 @@ public interface BoardChangeListener extends EventListener
     
     /**
      * 
+     * @param e 
+     */
+    public void boardLayerCloned(BoardChangedEvent e);
+    
+    /**
+     * 
      * 
      * @param e 
      */

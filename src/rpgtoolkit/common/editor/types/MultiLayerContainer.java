@@ -38,7 +38,7 @@ public interface MultiLayerContainer
      * @param layer The {@link MapLayer} to add
      * @return the layer passed to the function
      */
-    public BoardLayerView addLayer(BoardLayerView layer);
+    public BoardLayerView addLayerView(BoardLayerView layer);
 
     /**
      * Adds the MapLayer <code>l</code> after the MapLayer <code>after</code>.

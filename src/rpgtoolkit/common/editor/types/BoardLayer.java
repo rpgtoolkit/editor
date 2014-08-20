@@ -9,13 +9,13 @@ import rpgtoolkit.editor.board.types.BoardSprite;
 import rpgtoolkit.editor.board.types.BoardVector;
 
 /**
- * 
- * 
+ *
+ *
  * @author Joshua Michael Daly
  */
-public class BoardLayer
+public class BoardLayer implements Cloneable
 {
-    
+
     /**
      * The name of the layer.
      */
@@ -31,7 +31,7 @@ public class BoardLayer
     /**
      * A list of all the tiles used on this layer.
      */
-    private ArrayList<Tile> tiles;
+    private int[][] tiles;
     /**
      * A list of all the lights used on this layer.
      */
@@ -52,24 +52,30 @@ public class BoardLayer
      * A list of all the images on this layer.
      */
     private ArrayList<BoardImage> images;
-    
+
     /*
      * *************************************************************************
      * Public Constructors
      * *************************************************************************
      */
-    
     public BoardLayer(Board parentBoard)
     {
         this.parent = parentBoard;
+        this.tiles = new int[this.parent.getWidth()][this.parent.getHeight()];
+        this.lights = new ArrayList<>();
+        this.vectors = new ArrayList<>();
+        this.programs = new ArrayList<>();
+        this.sprites = new ArrayList<>();
+        this.images = new ArrayList<>();
+        
+        this.clearTiles();
     }
-    
+
     /*
      * *************************************************************************
      * Public Getters and Setters
      * *************************************************************************
      */
-    
     public String getName()
     {
         return name;
@@ -100,12 +106,12 @@ public class BoardLayer
         this.parent = parent;
     }
 
-    public ArrayList<Tile> getTiles()
+    public int[][] getTiles()
     {
         return tiles;
     }
 
-    public void setTiles(ArrayList<Tile> tiles)
+    public void setTiles(int[][] tiles)
     {
         this.tiles = tiles;
     }
@@ -159,13 +165,116 @@ public class BoardLayer
     {
         this.images = images;
     }
-    
+
     /*
      * *************************************************************************
      * Public Methods
      * *************************************************************************
      */
+    public void moveLayerUp()
+    {
+        this.number++;
+        
+        for (BoardLight light : this.lights)
+        {
+            light.setLayer(this.number);
+        }
+
+        for (BoardVector vector : this.vectors)
+        {
+            vector.setLayer(this.number);
+        }
+
+        for (BoardProgram program : this.programs)
+        {
+            program.setLayer(this.number);
+        }
+
+        for (BoardSprite sprite : this.sprites)
+        {
+            sprite.setLayer(this.number);
+        }
+
+        for (BoardImage image : this.images)
+        {
+            image.setLayer(this.number);
+        }
+    }
     
+    public void moveLayerDown()
+    {
+        this.number--;
+        
+        for (BoardLight light : this.lights)
+        {
+            light.setLayer(this.number);
+        }
+
+        for (BoardVector vector : this.vectors)
+        {
+            vector.setLayer(this.number);
+        }
+
+        for (BoardProgram program : this.programs)
+        {
+            program.setLayer(this.number);
+        }
+
+        for (BoardSprite sprite : this.sprites)
+        {
+            sprite.setLayer(this.number);
+        }
+
+        for (BoardImage image : this.images)
+        {
+            image.setLayer(this.number);
+        }
+    }
     
-    
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        BoardLayer layer = new BoardLayer(this.parent);
+        layer.images = (ArrayList<BoardImage>)this.images.clone();
+        layer.lights = (ArrayList<BoardLight>)this.lights.clone();
+        layer.name = this.name + "_clone";
+        layer.number = this.number;
+        layer.programs = (ArrayList<BoardProgram>)this.programs.clone();
+        layer.sprites = (ArrayList<BoardSprite>)this.sprites.clone();
+        layer.tiles = (int[][])this.tiles.clone();
+        layer.vectors = (ArrayList<BoardVector>)this.vectors.clone();
+        layer.moveLayerUp();
+        
+        return layer;
+    }
+
+    /*
+     * *************************************************************************
+     * Private Methods
+     * *************************************************************************
+     */
+    private void clearTiles()
+    {
+        int count = this.parent.getWidth() * this.parent.getHeight();
+        int x = 0;
+        int y = 0;
+
+        // Clear all the tiles.
+        for (int i = 0; i < count; i++)
+        {
+            this.tiles[x][y] = 0;
+
+            x++;
+            if (x == this.parent.getWidth())
+            {
+                x = 0;
+                y++;
+                if (y == this.parent.getHeight())
+                {
+                    break;
+                }
+            }
+        }
+    }
+
 }

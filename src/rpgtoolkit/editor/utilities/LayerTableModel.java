@@ -115,24 +115,23 @@ public class LayerTableModel extends AbstractTableModel implements BoardChangeLi
     @Override
     public Object getValueAt(int rowIndex, int columnIndex)
     {
-        BoardLayerView layer = this.boardView.getLayer(this.getRowCount() - 
+        BoardLayerView layerView = this.boardView.getLayer(this.getRowCount() - 
                 rowIndex - 1);
         
-        if (layer != null)
+        if (layerView != null)
         {
             if (columnIndex == 0)
             {
                 return null;
-                //return layer.isLocked();
+                //return layerView.isLocked();
             }
             else if (columnIndex == 1)
             {
-                return layer.isVisible();
+                return layerView.isVisible();
             }
             else if (columnIndex == 2)
             {
-                Board board = this.boardView.getBoard();
-                return board.getLayerTitle(this.getRowCount() - rowIndex - 1);
+                return layerView.getLayer().getName();
             }
             else
             {
@@ -157,13 +156,13 @@ public class LayerTableModel extends AbstractTableModel implements BoardChangeLi
     @Override
     public void setValueAt(Object value, int rowIndex, int columnIndex)
     {
-        // The layer locking and visibility is solely view related so we 
+        // The layerView locking and visibility is solely view related so we 
         // don't have to worry about the model there, but the name is 
         // linked to the model board in the background.
-        BoardLayerView layer = this.boardView.getLayer(this.getRowCount() - 
+        BoardLayerView layerView = this.boardView.getLayer(this.getRowCount() - 
                 rowIndex - 1);
         
-        if (layer != null)
+        if (layerView != null)
         {
             if (columnIndex == 0)
             {
@@ -171,16 +170,14 @@ public class LayerTableModel extends AbstractTableModel implements BoardChangeLi
             }
             else if (columnIndex == 1)
             {
-                layer.setVisibility((Boolean)value);
+                layerView.setVisibility((Boolean)value);
             }
             else if (columnIndex == 2)
             {
                 // View need to do this using the board models layerTitles
                 // the model will then need to update the view, not the other
                 // way around.
-                Board board = this.boardView.getBoard();
-                board.setLayerTitle(this.getRowCount() - rowIndex - 1, 
-                        value.toString());
+                layerView.getLayer().setName(value.toString());
             }
             
             this.fireTableCellUpdated(rowIndex, columnIndex);
@@ -210,6 +207,12 @@ public class LayerTableModel extends AbstractTableModel implements BoardChangeLi
     public void boardLayerMovedDown(BoardChangedEvent e)
     {
         //this.fireTableRowsUpdated(firstRow, lastRow);
+        this.fireTableDataChanged();
+    }
+    
+    @Override
+    public void boardLayerCloned(BoardChangedEvent e)
+    {
         this.fireTableDataChanged();
     }
 

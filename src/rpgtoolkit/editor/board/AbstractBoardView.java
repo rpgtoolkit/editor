@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.ListIterator;
 import javax.swing.JPanel;
+import rpgtoolkit.common.editor.types.BoardLayer;
 import rpgtoolkit.common.editor.types.MultiLayerContainer;
 import rpgtoolkit.common.io.types.Board;
 import rpgtoolkit.common.utilities.TileSetCache;
@@ -345,7 +346,7 @@ public abstract class AbstractBoardView extends JPanel implements
         if (zoom > 0) 
         {
             this.zoom = zoom;
-            this.reScale();
+            this.rescale();
         }
     }
     
@@ -429,7 +430,6 @@ public abstract class AbstractBoardView extends JPanel implements
     @Override
     public void setLayer(int index, BoardLayerView layer) 
     {
-        layer.setBoard(this.board);
         this.layers.set(index, layer);
     }
     
@@ -524,7 +524,7 @@ public abstract class AbstractBoardView extends JPanel implements
         if (this.zoomLevel < zoomLevels.length - 1) 
         {
             this.setZoomLevel(this.zoomLevel + 1);
-            this.reScale();
+            this.rescale();
         }
 
         return this.zoomLevel < zoomLevels.length - 1;
@@ -540,7 +540,7 @@ public abstract class AbstractBoardView extends JPanel implements
         if (this.zoomLevel > 0) 
         {
             this.setZoomLevel(this.zoomLevel - 1);
-            this.reScale();
+            this.rescale();
         }
 
         return this.zoomLevel > 0;
@@ -583,7 +583,7 @@ public abstract class AbstractBoardView extends JPanel implements
      * @return The layer passed to the method.
      */
     @Override
-    public BoardLayerView addLayer(BoardLayerView layer) 
+    public BoardLayerView addLayerView(BoardLayerView layer) 
     {
         this.layers.add(layer);
         return layer;
@@ -611,7 +611,6 @@ public abstract class AbstractBoardView extends JPanel implements
     @Override
     public void addLayer(int index, BoardLayerView layer) 
     {
-        layer.setBoard(this.board);
         this.layers.add(index, layer);
     }
 
@@ -654,11 +653,7 @@ public abstract class AbstractBoardView extends JPanel implements
         }
 
         BoardLayerView hold = this.layers.get(index + 1);
-        hold.setNumber(hold.getNumber() - 1);
-        
         BoardLayerView move = this.layers.get(index);
-        move.setNumber(move.getNumber() + 1);
-        
         this.layers.set(index + 1, move);
         this.layers.set(index, hold);
     }
@@ -678,11 +673,7 @@ public abstract class AbstractBoardView extends JPanel implements
         }
 
         BoardLayerView hold = this.layers.get(index - 1);
-        hold.setNumber(hold.getNumber() + 1);
-        
         BoardLayerView move = this.layers.get(index);
-        move.setNumber(move.getNumber() - 1);
-        
         this.layers.set(index - 1, move);
         this.layers.set(index, hold);
     }
@@ -722,33 +713,35 @@ public abstract class AbstractBoardView extends JPanel implements
     @Override 
     public void boardLayerAdded(BoardChangedEvent e)
     {
-        this.addLayer(new BoardLayerView(this.board, this.board.getLayers() - 1));
+        this.addLayerView(new BoardLayerView(e.getLayer()));
         this.repaint();
     }
     
     @Override
     public void boardLayerMovedUp(BoardChangedEvent e)
     {
-        this.swapLayerUp(e.getLayer());
+        this.swapLayerUp(e.getLayer().getNumber() - 1);
+        this.repaint();
     }
     
     @Override
     public void boardLayerMovedDown(BoardChangedEvent e)
     {
-        this.swapLayerDown(e.getLayer());
+        this.swapLayerDown(e.getLayer().getNumber() + 1);
+        this.repaint();
+    }
+    
+    @Override
+    public void boardLayerCloned(BoardChangedEvent e)
+    {
+        this.addLayer(e.getLayer().getNumber(), new BoardLayerView(e.getLayer()));
+        this.repaint();
     }
     
     @Override
     public void boardLayerDeleted(BoardChangedEvent e)
     {
-        this.removeLayer(e.getLayer());
-        
-        for (BoardLayerView layer : this.layers)
-        {
-            if (layer.getNumber() > 0)
-                layer.setNumber(layer.getNumber() - 1);
-        }
-        
+        this.removeLayer(e.getLayer().getNumber());
         this.repaint();
     }
   
@@ -793,7 +786,7 @@ public abstract class AbstractBoardView extends JPanel implements
     /**
      * Re-scales this board view based on the current zoom level.
      */
-    private void reScale() 
+    private void rescale() 
     {  
         this.affineTransform = AffineTransform.getScaleInstance(this.zoom, 
                 this.zoom); 
@@ -815,12 +808,10 @@ public abstract class AbstractBoardView extends JPanel implements
         this.tileSetCache = new TileSetCache();
         board.initializeTileSetCache(this.tileSetCache);
         
-        int layerCount = board.getLayers();
-        
-        for (int i = 0; i < layerCount; i++)
+        for (BoardLayer layer : board.getLayers())
         {
-            BoardLayerView layer = new BoardLayerView(board, i);
-            this.addLayer(layer);
+            BoardLayerView layerView = new BoardLayerView(layer);
+            this.addLayerView(layerView);
         }
     }
 }

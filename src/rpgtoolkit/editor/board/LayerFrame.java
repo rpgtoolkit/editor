@@ -125,9 +125,9 @@ public class LayerFrame extends JInternalFrame implements ChangeListener,
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (boardView.board.getLayers() > 0)
+                if (boardView.board.getLayerCount() > 0)
                 {
-                    boardView.board.moveLayerUp((boardView.board.getLayers() -
+                    boardView.board.moveLayerUp((boardView.board.getLayerCount() -
                             layerTable.getSelectedRow()) - 1);
                 }
             }
@@ -142,7 +142,7 @@ public class LayerFrame extends JInternalFrame implements ChangeListener,
             {
                 if(layerTable.getSelectedRow() > -1)
                 {
-                    boardView.board.moveLayerDown((boardView.board.getLayers() -
+                    boardView.board.moveLayerDown((boardView.board.getLayerCount() -
                             layerTable.getSelectedRow()) - 1);
                 }
             }
@@ -157,7 +157,7 @@ public class LayerFrame extends JInternalFrame implements ChangeListener,
             {
                 if (layerTable.getSelectedRow() > -1)
                 {
-                    boardView.board.cloneLayer((boardView.board.getLayers() -
+                    boardView.board.cloneLayer((boardView.board.getLayerCount() -
                             layerTable.getSelectedRow()) - 1);
                 }
             }
@@ -172,7 +172,7 @@ public class LayerFrame extends JInternalFrame implements ChangeListener,
             {
                 if (layerTable.getSelectedRow() > -1)
                 {
-                    boardView.board.deleteLayer((boardView.board.getLayers() -
+                    boardView.board.deleteLayer((boardView.board.getLayerCount() -
                             layerTable.getSelectedRow()) - 1);
                 }
             }
@@ -240,7 +240,7 @@ public class LayerFrame extends JInternalFrame implements ChangeListener,
                 if (this.layerTable.getSelectedRow() > -1 && 
                         this.layerTable.getRowCount() > 0)
                 {
-                    this.boardView.getLayer((boardView.board.getLayers() -
+                    this.boardView.getLayer((boardView.board.getLayerCount() -
                             layerTable.getSelectedRow()) - 1).
                             setOpacity(this.opacitySlider.getValue() / 100.0f);
                 }
@@ -265,7 +265,7 @@ public class LayerFrame extends JInternalFrame implements ChangeListener,
         if (this.layerTable.getSelectedRow() > -1)
         {
             this.opacitySlider.setValue((int)(this.boardView.getLayer(
-                (boardView.board.getLayers() -
+                (boardView.board.getLayerCount() -
                             layerTable.getSelectedRow()) - 1).getOpacity() * 100));
         }
     }

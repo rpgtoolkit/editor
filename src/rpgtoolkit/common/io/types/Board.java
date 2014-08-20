@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import rpgtoolkit.common.editor.types.BoardLayer;
 import rpgtoolkit.common.editor.types.Tile;
 import rpgtoolkit.common.utilities.TileSetCache;
 import rpgtoolkit.editor.board.event.BoardChangeListener;
@@ -32,7 +33,8 @@ public final class Board extends BasicType
 {
 
     // Non-IO
-    private final LinkedList boardChangeListeners = new LinkedList<>();
+    private final LinkedList<BoardChangeListener> boardChangeListeners = new LinkedList<>();
+    private final LinkedList<BoardLayer> layers = new LinkedList<>();
 
     // Constants
     private final String FILE_HEADER = "RPGTLKIT BOARD";
@@ -41,6 +43,7 @@ public final class Board extends BasicType
     private final int STANDARD = 1;
     private final int ISO_STACKED = 2;
     private final int ISO_ROTATED = 6;
+    
     // Variables
     private int width;
     private int height;
@@ -114,6 +117,11 @@ public final class Board extends BasicType
      * Public Getters and Setters
      * *************************************************************************
      */
+    public LinkedList<BoardLayer> getLayers()
+    {
+        return this.layers;
+    }
+    
     public Tile getTileFromIndex(int index)
     {
         return loadedTilesIndex.get(index);
@@ -221,17 +229,18 @@ public final class Board extends BasicType
 
     public int getIndexAtLocation(int x, int y, int z)
     {
-        return boardDimensions[x][y][z];
+        return this.layers.get(z).getTiles()[x][y];
+        //return boardDimensions[x][y][z];
     }
 
-    public int getLayers()
+    public int getLayerCount()
     {
         return layerCount;
     }
 
-    public void setLayers(int layers)
+    public void setLayerCount(int count)
     {
-        this.layerCount = layers;
+        this.layerCount = count;
     }
 
     public int getCoordinateType()
@@ -482,6 +491,8 @@ public final class Board extends BasicType
      */
     /**
      * Method to performing opening of the board
+     * 
+     * TODO: Need to account for the new way layers are stored at run time!
      *
      * @return true for success, false for failure
      */
@@ -819,6 +830,8 @@ public final class Board extends BasicType
         {
 
         }
+        
+        this.createLayers();
 
         return true;
     }
@@ -828,6 +841,8 @@ public final class Board extends BasicType
      * identical with regard to the new open routine and the previous save
      * routine!
      *
+     * TODO: Need to account for the new way layers are stored at run time! 
+     * 
      * @return
      */
     public boolean save()
@@ -1193,7 +1208,7 @@ public final class Board extends BasicType
         }
     }
 
-    public void fireBoardLayerAdded()
+    public void fireBoardLayerAdded(BoardLayer layer)
     {
         BoardChangedEvent event = null;
         Iterator iterator = this.boardChangeListeners.iterator();
@@ -1203,13 +1218,14 @@ public final class Board extends BasicType
             if (event == null)
             {
                 event = new BoardChangedEvent(this);
+                event.setLayer(layer);
             }
 
             ((BoardChangeListener) iterator.next()).boardLayerAdded(event);
         }
     }
     
-    public void fireBoardLayerMovedUp(int layer)
+    public void fireBoardLayerMovedUp(BoardLayer layer)
     {
         BoardChangedEvent event = null;
         Iterator iterator = this.boardChangeListeners.iterator();
@@ -1226,7 +1242,7 @@ public final class Board extends BasicType
         }
     }
     
-    public void fireBoardLayerMovedDown(int layer)
+    public void fireBoardLayerMovedDown(BoardLayer layer)
     {
         BoardChangedEvent event = null;
         Iterator iterator = this.boardChangeListeners.iterator();
@@ -1242,8 +1258,25 @@ public final class Board extends BasicType
             ((BoardChangeListener) iterator.next()).boardLayerMovedDown(event);
         }
     }
+    
+    public void fireBoardLayerCloned(BoardLayer layer)
+    {
+        BoardChangedEvent event = null;
+        Iterator iterator = this.boardChangeListeners.iterator();
 
-    public void fireBoardLayerDeleted(int layer)
+        while (iterator.hasNext())
+        {
+            if (event == null)
+            {
+                event = new BoardChangedEvent(this);
+                event.setLayer(layer);
+            }
+
+            ((BoardChangeListener) iterator.next()).boardLayerCloned(event);
+        }
+    }
+
+    public void fireBoardLayerDeleted(BoardLayer layer)
     {
         BoardChangedEvent event = null;
         Iterator iterator = this.boardChangeListeners.iterator();
@@ -1264,443 +1297,95 @@ public final class Board extends BasicType
     {
         this.layerCount++;
         int layerNumber = this.layerCount;
-
-        this.layerTitles.add("Untitled Layer " + layerNumber);
-
-        int[][][] newDimensions = new int[this.width][this.height][this.layerCount];
-
-        int count = this.width * this.height * (this.layerCount - 1);
-        int x = 0;
-        int y = 0;
-        int z = 0;
-
-        // Copy tile data into the larger board.
-        for (int i = 0; i < count; i++)
-        {
-            newDimensions[x][y][z] = this.boardDimensions[x][y][z];
-
-            x++;
-            if (x == this.width)
-            {
-                x = 0;
-                y++;
-                if (y == this.height)
-                {
-                    y = 0;
-                    z++;
-                }
-            }
-        }
-
-        x = 0;
-        y = 0;
-
-        // Populate our new layer with blank tile data.
-        for (int i = 0; i < this.width * this.height; i++)
-        {
-            newDimensions[x][y][layerNumber - 1] = 0; // Blank tile data.
-            x++;
-            if (x == this.width)
-            {
-                x = 0;
-                y++;
-                if (y == this.height)
-                {
-                    break;
-                }
-            }
-        }
-
-        this.boardDimensions = newDimensions;
-        this.fireBoardLayerAdded();
+        
+        BoardLayer layer = new BoardLayer(this);
+        layer.setName("Untitled Layer " + layerNumber);
+        layer.setNumber(this.layerCount - 1);
+        this.layers.add(layer);
+        
+        this.fireBoardLayerAdded(layer);
     }
 
-    public void moveLayerUp(int layer)
+    public void moveLayerUp(int index)
     {
-        // Highest possible layer, can't be move up!
-        if (layer == this.layerCount - 1)
+        // Highest possible index, can't be move up!
+        if (index == this.layerCount - 1)
         {
             return;
         }
         
-        String hold = this.layerTitles.get(layer + 1);
-        this.layerTitles.set(layer + 1, this.layerTitles.get(layer));
-        this.layerTitles.set(layer, hold);
+        BoardLayer down = this.layers.get(index + 1);
+        BoardLayer up = this.layers.get(index);
+        this.layers.set(index + 1, up);
+        this.layers.set(index, down);
+        
+        down.moveLayerDown();
+        up.moveLayerUp();
 
-        int x = 0;
-        int y = 0;
-
-        for (int i = 0; i < this.width * this.height; i++)
-        {
-            // Swap the tiles from each layer with each other.
-            int temporaryTile = this.boardDimensions[x][y][layer + 1];
-            this.boardDimensions[x][y][layer + 1] = this.boardDimensions[x][y][layer];
-            this.boardDimensions[x][y][layer] = temporaryTile;
-
-            x++;
-            if (x == this.width)
-            {
-                x = 0;
-                y++;
-                if (y == this.height)
-                {
-                    break;
-                }
-            }
-        }
-
-        for (BoardLight light : this.lights)
-        {
-            if (light.getLayer() == layer)
-            {
-                light.setLayer(light.getLayer() + 1);
-            }
-            else if (light.getLayer() == layer + 1)
-            {
-                light.setLayer(layer);
-            }
-        }
-
-        for (BoardVector vector : this.vectors)
-        {
-            if (vector.getLayer() == layer)
-            {
-                vector.setLayer(vector.getLayer() + 1);
-            }
-            else if (vector.getLayer() == layer + 1)
-            {
-                vector.setLayer(layer);
-            }
-        }
-
-        for (BoardProgram program : this.programs)
-        {
-            if (program.getLayer() == layer)
-            {
-                program.setLayer(program.getLayer() + 1);
-            }
-            else if (program.getLayer() == layer + 1)
-            {
-                program.setLayer(layer);
-            }
-        }
-
-        for (BoardSprite sprite : this.sprites)
-        {
-            if (sprite.getLayer() == layer)
-            {
-                sprite.setLayer(sprite.getLayer() + 1);
-            }
-            else if (sprite.getLayer() == layer + 1)
-            {
-                sprite.setLayer(layer);
-            }
-        }
-
-        for (BoardImage image : this.images)
-        {
-            if (image.getLayer() == layer)
-            {
-                image.setLayer(image.getLayer() + 1);
-            }
-            else if (image.getLayer() == layer + 1)
-            {
-                image.setLayer(layer);
-            }
-        }
-
-        this.fireBoardLayerMovedUp(layer);
+        this.fireBoardLayerMovedUp(up);
     }
 
-    public void moveLayerDown(int layer)
+    public void moveLayerDown(int index)
     {
         // Lowest possible layer, can't be move down!
-        if (layer == 0)
+        if (index == 0)
         {
             return;
         }
         
-        String hold = this.layerTitles.get(layer - 1);
-        this.layerTitles.set(layer - 1, this.layerTitles.get(layer));
-        this.layerTitles.set(layer, hold);
+        BoardLayer down = this.layers.get(index);
+        BoardLayer up = this.layers.get(index - 1);
+        this.layers.set(index - 1, down);
+        this.layers.set(index, up);
+        
+        down.moveLayerDown();
+        up.moveLayerUp();
 
-        int x = 0;
-        int y = 0;
-
-        for (int i = 0; i < this.width * this.height; i++)
-        {
-            // Swap the tiles from each layer with each other.
-            int temporaryTile = this.boardDimensions[x][y][layer - 1];
-            this.boardDimensions[x][y][layer - 1] = this.boardDimensions[x][y][layer];
-            this.boardDimensions[x][y][layer] = temporaryTile;
-
-            x++;
-            if (x == this.width)
-            {
-                x = 0;
-                y++;
-                if (y == this.height)
-                {
-                    break;
-                }
-            }
-        }
-
-        for (BoardLight light : this.lights)
-        {
-            if (light.getLayer() == layer)
-            {
-                light.setLayer(light.getLayer() - 1);
-            }
-            else if (light.getLayer() == layer - 1)
-            {
-                light.setLayer(layer);
-            }
-        }
-
-        for (BoardVector vector : this.vectors)
-        {
-            if (vector.getLayer() == layer)
-            {
-                vector.setLayer(vector.getLayer() - 1);
-            }
-            else if (vector.getLayer() == layer - 1)
-            {
-                vector.setLayer(layer);
-            }
-        }
-
-        for (BoardProgram program : this.programs)
-        {
-            if (program.getLayer() == layer)
-            {
-                program.setLayer(program.getLayer() - 1);
-            }
-            else if (program.getLayer() == layer - 1)
-            {
-                program.setLayer(layer);
-            }
-        }
-
-        for (BoardSprite sprite : this.sprites)
-        {
-            if (sprite.getLayer() == layer)
-            {
-                sprite.setLayer(sprite.getLayer() - 1);
-            }
-            else if (sprite.getLayer() == layer - 1)
-            {
-                sprite.setLayer(layer);
-            }
-        }
-
-        for (BoardImage image : this.images)
-        {
-            if (image.getLayer() == layer)
-            {
-                image.setLayer(image.getLayer() - 1);
-            }
-            else if (image.getLayer() == layer - 1)
-            {
-                image.setLayer(layer);
-            }
-        }
-
-        this.fireBoardLayerMovedDown(layer);
+        this.fireBoardLayerMovedDown(down);
     }
 
-    public void cloneLayer(int layer)
+    public void cloneLayer(int index)
     {
         this.layerCount++;
-        this.layerTitles.add(layer + 1, "Untitled Layer " + this.layerCount);
-
-        int[][][] newDimensions = new int[this.width][this.height][this.layerCount];
-
-        int count = this.width * this.height * this.layerCount;
-        int x = 0;
-        int y = 0;
-        int z = 0;
-        int j = 0;
-        boolean isDecremented = false;
-
-        // Copy tile data into the larger board.
-        for (int i = 0; i < count; i++)
-        {
-            if (z == layer + 1) // We're at the cloned layer.
-            {  
-                if (!isDecremented)
-                {
-                    j--; 
-                    isDecremented = true;
-                }
-                
-                // Copy the previous layer into our new clone.
-                newDimensions[x][y][z] = this.boardDimensions[x][y][j];
-            }
-            else
-            {
-                newDimensions[x][y][z] = this.boardDimensions[x][y][j];
-            }
-
-            x++;
-            if (x == this.width)
-            {
-                x = 0;
-                y++;
-                if (y == this.height)
-                {
-                    y = 0;
-                    z++;
-                    j++;
-                }
-            }
-        }
 
         try
         {
-            for (BoardLight light : this.lights)
-            {
-                if (light.getLayer() == layer)
-                {
-                    BoardLight clone = (BoardLight) light.clone();
-                    clone.setLayer(layer + 1);
-                    this.lights.add(clone);
-                }
-            }
+            Iterator iterator = this.layers.listIterator(index + 1);
 
-            for (BoardVector vector : this.vectors)
+            while (iterator.hasNext())
             {
-                if (vector.getLayer() == layer)
-                {
-                    BoardVector clone = (BoardVector) vector.clone();
-                    clone.setLayer(layer + 1);
-                    this.vectors.add(clone);
-                }
+                BoardLayer layer = (BoardLayer) iterator.next();
+                layer.moveLayerUp();
             }
-
-            for (BoardProgram program : this.programs)
-            {
-                if (program.getLayer() == layer)
-                {
-                    BoardProgram clone = (BoardProgram) program.clone();
-                    clone.setLayer(layer + 1);
-                    this.programs.add(clone);
-                }
-            }
-
-            for (BoardSprite sprite : this.sprites)
-            {
-                if (sprite.getLayer() == layer)
-                {
-                    BoardSprite clone = (BoardSprite) sprite.clone();
-                    clone.setLayer(layer + 1);
-                    this.sprites.add(clone);
-                }
-            }
-
-            for (BoardImage image : this.images)
-            {
-                if (image.getLayer() == layer)
-                {
-                    BoardImage clone = (BoardImage) image.clone();
-                    clone.setLayer(layer + 1);
-                    this.images.add(clone);
-                }
-            }
+            
+            BoardLayer clone = (BoardLayer)this.layers.get(index).clone();
+            this.layers.add(index + 1, clone);
+            
+            this.fireBoardLayerCloned(clone);
         }
         catch (CloneNotSupportedException ex)
         {
 
         }
-
-        this.boardDimensions = newDimensions;
-        this.fireBoardLayerAdded();
+        
     }
 
-    public void deleteLayer(int layer)
+    public void deleteLayer(int index)
     {
         this.layerCount--;
-        this.layerTitles.remove(layer); // Probably a bit wrong...
 
-        int[][][] newDimensions = new int[this.width][this.height][this.layerCount];
+        Iterator iterator = this.layers.listIterator(index + 1);
 
-        int count = this.width * this.height * this.layerCount;
-        int x = 0;
-        int y = 0;
-        int z = 0;
-        int j = 0;
-
-        // Copy tile data into the smaller board.
-        for (int i = 0; i < count; i++)
+        while (iterator.hasNext())
         {
-            newDimensions[x][y][z] = this.boardDimensions[x][y][j];
-
-            x++;
-            if (x == this.width)
-            {
-                x = 0;
-                y++;
-                if (y == this.height)
-                {
-                    y = 0;
-                    z++;
-                    j++;
-
-                    if (j == layer) // Skip the layer to be deleted.
-                    {
-                        j++;
-
-                        if (j == this.layerCount)
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
+            BoardLayer layer = (BoardLayer)iterator.next();
+            layer.moveLayerDown();
         }
-
-        for (BoardLight light : this.lights)
-        {
-            if (light.getLayer() == layer)
-            {
-                this.lights.remove(light);
-            }
-        }
-
-        for (BoardVector vector : this.vectors)
-        {
-            if (vector.getLayer() == layer)
-            {
-                this.vectors.remove(vector);
-            }
-        }
-
-        for (BoardProgram program : this.programs)
-        {
-            if (program.getLayer() == layer)
-            {
-                this.programs.remove(program);
-            }
-        }
-
-        for (BoardSprite sprite : this.sprites)
-        {
-            if (sprite.getLayer() == layer)
-            {
-                this.sprites.remove(sprite);
-            }
-        }
-
-        for (BoardImage image : this.images)
-        {
-            if (image.getLayer() == layer)
-            {
-                this.images.remove(image);
-            }
-        }
-
-        this.boardDimensions = newDimensions;
-        this.fireBoardLayerDeleted(layer);
+        
+        BoardLayer removedLayer = this.layers.get(index);
+        this.layers.remove(index);
+        
+        this.fireBoardLayerDeleted(removedLayer);
     }
 
     /*
@@ -1716,6 +1401,7 @@ public final class Board extends BasicType
      * Private Methods
      * *************************************************************************
      */
+    
     /**
      * Searches ahead of a given position for duplicate tiles, and returns the
      * amount followed by the position at which they end at.
@@ -1768,5 +1454,82 @@ public final class Board extends BasicType
         };
 
         return array;
+    }
+    
+    /**
+     * An inefficient routine used to create the BoardLayers, currently this is
+     * need for testing. Later this will be integrated into the open and save
+     * methods.
+     */
+    private void createLayers()
+    {
+        for (int i = 0; i < this.layerCount; i++)
+        {
+            BoardLayer layer = new BoardLayer(this);
+            layer.setName(this.layerTitles.get(i));
+            layer.setNumber(i);
+            
+            int count = this.width * this.height;
+            int x = 0;
+            int y = 0;
+            
+            for (int j = 0; j < count; j++)
+            {
+                layer.getTiles()[x][y] = this.boardDimensions[x][y][i];
+                
+                x++;
+                if (x == this.width)
+                {
+                    x = 0;
+                    y++;
+                    if (y == this.height)
+                    {
+                        break;
+                    }
+                }
+            }
+            
+            for (BoardLight light : this.lights)
+            {
+                if (light.getLayer() == i)
+                {
+                    layer.getLights().add(light);
+                }
+            }
+
+            for (BoardVector vector : this.vectors)
+            {
+                if (vector.getLayer() == i)
+                {
+                    layer.getVectors().add(vector);
+                }
+            }
+
+            for (BoardProgram program : this.programs)
+            {
+                if (program.getLayer() == i)
+                {
+                    layer.getPrograms().add(program);
+                }
+            }
+
+            for (BoardSprite sprite : this.sprites)
+            {
+                if (sprite.getLayer() == i)
+                {
+                    layer.getSprites().add(sprite);
+                }
+            }
+
+            for (BoardImage image : this.images)
+            {
+                if (image.getLayer() == i)
+                {
+                    layer.getImages().add(image);
+                }
+            }
+            
+            this.layers.add(layer);
+        }
     }
 }

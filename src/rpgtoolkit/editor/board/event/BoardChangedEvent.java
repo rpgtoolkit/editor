@@ -1,6 +1,7 @@
 package rpgtoolkit.editor.board.event;
 
 import java.util.EventObject;
+import rpgtoolkit.common.editor.types.BoardLayer;
 import rpgtoolkit.common.io.types.Board;
 
 /**
@@ -10,7 +11,7 @@ import rpgtoolkit.common.io.types.Board;
  */
 public class BoardChangedEvent extends EventObject
 {
-    private int layer;
+    private BoardLayer layer;
     
     /*
      * ************************************************************************* 
@@ -29,12 +30,12 @@ public class BoardChangedEvent extends EventObject
      * *************************************************************************
      */
     
-    public int getLayer()
+    public BoardLayer getLayer()
     {
         return this.layer;
     }
     
-    public void setLayer(int layer)
+    public void setLayer(BoardLayer layer)
     {
         this.layer = layer;
     }
