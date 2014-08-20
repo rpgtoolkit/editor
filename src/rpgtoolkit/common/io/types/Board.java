@@ -840,13 +840,13 @@ public final class Board extends BasicType
      * This save routine does not work correctly, or so it appears! It is
      * identical with regard to the new open routine and the previous save
      * routine!
-     *
-     * TODO: Need to account for the new way layers are stored at run time! 
      * 
      * @return
      */
     public boolean save()
     {
+        this.updateBoardIO();
+        
         try
         {
             this.outputStream = new FileOutputStream(this.fileName);
@@ -1295,12 +1295,11 @@ public final class Board extends BasicType
 
     public void addLayer()
     {
-        this.layerCount++;
-        int layerNumber = this.layerCount;
+        int layerNumber = this.layers.size() + 1;
         
         BoardLayer layer = new BoardLayer(this);
         layer.setName("Untitled Layer " + layerNumber);
-        layer.setNumber(this.layerCount - 1);
+        layer.setNumber(this.layers.size());
         this.layers.add(layer);
         
         this.fireBoardLayerAdded(layer);
@@ -1309,7 +1308,7 @@ public final class Board extends BasicType
     public void moveLayerUp(int index)
     {
         // Highest possible index, can't be move up!
-        if (index == this.layerCount - 1)
+        if (index == this.layers.size())
         {
             return;
         }
@@ -1346,8 +1345,6 @@ public final class Board extends BasicType
 
     public void cloneLayer(int index)
     {
-        this.layerCount++;
-
         try
         {
             Iterator iterator = this.layers.listIterator(index + 1);
@@ -1372,8 +1369,6 @@ public final class Board extends BasicType
 
     public void deleteLayer(int index)
     {
-        this.layerCount--;
-
         Iterator iterator = this.layers.listIterator(index + 1);
 
         while (iterator.hasNext())
@@ -1530,6 +1525,58 @@ public final class Board extends BasicType
             }
             
             this.layers.add(layer);
+        }
+    }
+    
+    /**
+     * Updates all of the IO attributes used in saving, gets the new information
+     * from all of the layers that have been created. Maintains compatability
+     * with Geoff's original open and save routines.
+     */
+    private void updateBoardIO()
+    {
+        this.layerCount = this.layers.size();
+        this.layerTitles.clear();
+        this.lights.clear();
+        this.vectors.clear();
+        this.programs.clear();
+        this.sprites.clear();
+        this.images.clear();
+        
+        this.boardDimensions = new int[this.width][this.height][this.layerCount];
+        int count = this.width * this.height;
+        int layerIndex = 0;
+        
+        for (BoardLayer layer : this.layers)
+        {
+            this.layerTitles.add(layer.getName());
+            
+            int x = 0;
+            int y = 0;
+            
+            for (int i = 0; i < count; i++)
+            {
+                this.boardDimensions[x][y][layerIndex] = layer.getTiles()[x][y];
+                
+                x++;
+                if (x == this.width)
+                {
+                    x = 0;
+                    y++;
+                    if (y == this.height)
+                    {
+                        break;
+                    }
+                }
+            }
+            
+            this.lights.addAll(layer.getLights());
+            this.vectors.addAll(layer.getVectors());
+            this.programs.addAll(layer.getPrograms());
+            this.sprites.addAll(layer.getSprites());
+            this.images.addAll(layer.getImages());
+            
+            layerIndex++;
         }
     }
 }

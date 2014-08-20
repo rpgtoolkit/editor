@@ -8,8 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -23,11 +23,11 @@ import javax.swing.event.ListSelectionListener;
 import rpgtoolkit.editor.utilities.LayerTableModel;
 
 /**
- * 
- * 
+ *
+ *
  * @author Joshua Michael Daly
  */
-public class LayerFrame extends JInternalFrame implements ChangeListener,
+public class LayerPanel extends JPanel implements ChangeListener,
         ListSelectionListener
 {
     /*
@@ -35,149 +35,175 @@ public class LayerFrame extends JInternalFrame implements ChangeListener,
      * Class Members
      * *************************************************************************
      */
-    
+
     private AbstractBoardView boardView;
-    
+
     private JSlider opacitySlider;
     private JLabel opacitySliderLabel;
     private JTable layerTable;
     private JScrollPane layerScrollPane;
-    
+
     private JButton newLayerButton;
     private JButton moveLayerUpButton;
     private JButton moveLayerDownButton;
     private JButton cloneLayerButton;
     private JButton deleteLayerButton;
-    
+
     private JPanel sliderPanel;
     private JPanel buttonPanel;
-    private JPanel layerPanel;
-    private JPanel contentPanel;
-   
+
     private int lastSelectedIndex; // Used to keep track of the previously
-                                   // selected layer.
-    
+    // selected layer.
+
     /*
      * *************************************************************************
      * Public Constructors
      * *************************************************************************
      */
-    
-    public LayerFrame()
+    public LayerPanel()
     {
-        
+        this.initialize();
     }
-    
-    public LayerFrame(AbstractBoardView boardView)
+
+    public LayerPanel(AbstractBoardView boardView)
     {
-        super("Board Layers", true, true, true, true);
-        
         this.boardView = boardView;
         this.lastSelectedIndex = -1;
         this.initialize();
     }
-    
+
     /*
      * *************************************************************************
      * Private Methods
      * *************************************************************************
      */
-    
     private void initialize()
     {
         this.opacitySlider = new JSlider(0, 100, 100);
         this.opacitySlider.addChangeListener(this);
-        
+
         this.opacitySliderLabel = new JLabel("Opacity");
         this.opacitySliderLabel.setLabelFor(this.opacitySlider);
-        
+
         this.sliderPanel = new JPanel();
         this.sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.X_AXIS));
         this.sliderPanel.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 3));
         this.sliderPanel.add(this.opacitySliderLabel);
         this.sliderPanel.add(this.opacitySlider);
         this.sliderPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE,
-                                            this.sliderPanel.getPreferredSize()
-                                                    .height));
-        
-        this.layerTable = new JTable(new LayerTableModel(this.boardView));
+                this.sliderPanel.getPreferredSize().height));
+
+        if (this.boardView != null)
+        {
+            this.layerTable = new JTable(new LayerTableModel(this.boardView));
+        }
+        else
+        {
+            this.layerTable = new JTable(new LayerTableModel());
+        }
+
         this.layerTable.getColumnModel().getColumn(0).setPreferredWidth(32);
         this.layerTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         this.layerTable.getSelectionModel().addListSelectionListener(this);
-        
+
         this.layerScrollPane = new JScrollPane(this.layerTable);
-        
-        this.newLayerButton = new JButton("New");
+
+        this.newLayerButton = new JButton();
+        this.newLayerButton.setIcon(new ImageIcon(getClass()
+                .getResource("/rpgtoolkit/editor/resources/new.png")));
         this.newLayerButton.addActionListener(new ActionListener()
         {
 
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                boardView.board.addLayer();
+                if (boardView != null)
+                {
+                    boardView.board.addLayer();
+                }
             }
         });
-        
-        this.moveLayerUpButton = new JButton("Move Up");
+
+        this.moveLayerUpButton = new JButton();
+        this.moveLayerUpButton.setIcon(new ImageIcon(getClass()
+                .getResource("/rpgtoolkit/editor/resources/arrow-090.png")));
         this.moveLayerUpButton.addActionListener(new ActionListener()
         {
 
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (boardView.board.getLayerCount() > 0)
+                if (boardView != null)
                 {
-                    boardView.board.moveLayerUp((boardView.board.getLayerCount() -
-                            layerTable.getSelectedRow()) - 1);
+                    if (boardView.board.getLayers().size() > 0)
+                    {
+                        boardView.board.moveLayerUp((boardView.board.getLayers().size()
+                                - layerTable.getSelectedRow()) - 1);
+                    }
                 }
             }
         });
-        
-        this.moveLayerDownButton = new JButton("Move Down");
+
+        this.moveLayerDownButton = new JButton();
+        this.moveLayerDownButton.setIcon(new ImageIcon(getClass()
+                .getResource("/rpgtoolkit/editor/resources/arrow-270.png")));
         this.moveLayerDownButton.addActionListener(new ActionListener()
         {
 
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if(layerTable.getSelectedRow() > -1)
+                if (boardView != null)
                 {
-                    boardView.board.moveLayerDown((boardView.board.getLayerCount() -
-                            layerTable.getSelectedRow()) - 1);
+                    if (layerTable.getSelectedRow() > -1)
+                    {
+                        boardView.board.moveLayerDown((boardView.board.getLayers().size()
+                                - layerTable.getSelectedRow()) - 1);
+                    }
                 }
             }
         });
-        
-        this.cloneLayerButton = new JButton("Clone");
+
+        this.cloneLayerButton = new JButton();
+        this.cloneLayerButton.setIcon(new ImageIcon(getClass()
+                .getResource("/rpgtoolkit/editor/resources/copy.png")));
         this.cloneLayerButton.addActionListener(new ActionListener()
         {
 
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (layerTable.getSelectedRow() > -1)
+                if (boardView != null)
                 {
-                    boardView.board.cloneLayer((boardView.board.getLayerCount() -
-                            layerTable.getSelectedRow()) - 1);
+                    if (layerTable.getSelectedRow() > -1)
+                    {
+                        boardView.board.cloneLayer((boardView.board.getLayers().size()
+                                - layerTable.getSelectedRow()) - 1);
+                    }
                 }
             }
         });
-        
-        this.deleteLayerButton = new JButton("Delete");
+
+        this.deleteLayerButton = new JButton();
+        this.deleteLayerButton.setIcon(new ImageIcon(getClass()
+                .getResource("/rpgtoolkit/editor/resources/delete.png")));
         this.deleteLayerButton.addActionListener(new ActionListener()
         {
 
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (layerTable.getSelectedRow() > -1)
+                if (boardView != null)
                 {
-                    boardView.board.deleteLayer((boardView.board.getLayerCount() -
-                            layerTable.getSelectedRow()) - 1);
+                    if (layerTable.getSelectedRow() > -1)
+                    {
+                        boardView.board.deleteLayer((boardView.board.getLayers().size()
+                                - layerTable.getSelectedRow()) - 1);
+                    }
                 }
             }
         });
-        
+
         this.buttonPanel = new JPanel();
         this.buttonPanel.setLayout(new GridBagLayout());
         GridBagConstraints buttonsConstraints = new GridBagConstraints();
@@ -189,12 +215,9 @@ public class LayerFrame extends JInternalFrame implements ChangeListener,
         this.buttonPanel.add(this.cloneLayerButton, buttonsConstraints);
         this.buttonPanel.add(this.deleteLayerButton, buttonsConstraints);
         this.buttonPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE,
-            this.buttonPanel.getPreferredSize().height));
-        
-        this.layerPanel = new JPanel();
-        this.layerPanel.setLayout(new GridBagLayout());
-        //this.layerPanel.setPreferredSize(new Dimension(120, 120));
-        
+                this.buttonPanel.getPreferredSize().height));
+
+        this.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.insets = new Insets(3, 0, 0, 0);
         constraints.weightx = 1;
@@ -204,31 +227,25 @@ public class LayerFrame extends JInternalFrame implements ChangeListener,
         constraints.gridy = 0;
         constraints.weighty = 0;
         constraints.gridy++;
-        this.layerPanel.add(this.sliderPanel, constraints);
+        this.add(this.sliderPanel, constraints);
         constraints.weighty = 1;
         constraints.gridy++;
-        this.layerPanel.add(layerScrollPane, constraints);
+        this.add(this.layerScrollPane, constraints);
         constraints.weighty = 0;
         constraints.insets = new Insets(0, 0, 0, 0);
         constraints.gridy++;
-        this.layerPanel.add(buttonPanel, constraints);
-        
-        this.contentPanel = new JPanel();
-        this.contentPanel.add(this.layerPanel);
-        
-        this.setContentPane(this.contentPanel);
-        this.pack();
+        this.add(this.buttonPanel, constraints);
     }
 
     /**
      * TODO: Possibly consider moving this to a dedicated listener class later.
-     * For now leave it here for simplicity. 
-     * 
-     * Used to keep track of changes in on the opacity <code>JSlider</code>.
-     * If there is an open board and a layer is selected then the layers
-     * opacity will be updated.
-     * 
-     * @param e 
+     * For now leave it here for simplicity.
+     *
+     * Used to keep track of changes in on the opacity <code>JSlider</code>. If
+     * there is an open board and a layer is selected then the layers opacity
+     * will be updated.
+     *
+     * @param e
      */
     @Override
     public void stateChanged(ChangeEvent e)
@@ -237,11 +254,11 @@ public class LayerFrame extends JInternalFrame implements ChangeListener,
         {
             if (this.boardView != null)
             {
-                if (this.layerTable.getSelectedRow() > -1 && 
-                        this.layerTable.getRowCount() > 0)
+                if (this.layerTable.getSelectedRow() > -1
+                        && this.layerTable.getRowCount() > 0)
                 {
-                    this.boardView.getLayer((boardView.board.getLayerCount() -
-                            layerTable.getSelectedRow()) - 1).
+                    this.boardView.getLayer((boardView.board.getLayers().size()
+                            - layerTable.getSelectedRow()) - 1).
                             setOpacity(this.opacitySlider.getValue() / 100.0f);
                 }
             }
@@ -249,24 +266,27 @@ public class LayerFrame extends JInternalFrame implements ChangeListener,
     }
 
     /**
-     * TODO: It is possible that in the future other parts of the editor will 
-     * be interested in layer selection changes.
-     * 
+     * TODO: It is possible that in the future other parts of the editor will be
+     * interested in layer selection changes.
+     *
      * Handles selection changes on the Layer Table, updating the opacity slider
      * with the selected layers current opacity.
-     * 
-     * @param e 
+     *
+     * @param e
      */
     @Override
     public void valueChanged(ListSelectionEvent e)
     {
         // If we have changed the selected layer update the position of the 
         // opacity slider to the new layers opacity.
-        if (this.layerTable.getSelectedRow() > -1)
+        if (this.boardView != null)
         {
-            this.opacitySlider.setValue((int)(this.boardView.getLayer(
-                (boardView.board.getLayerCount() -
-                            layerTable.getSelectedRow()) - 1).getOpacity() * 100));
+            if (this.layerTable.getSelectedRow() > -1)
+            {
+                this.opacitySlider.setValue((int) (this.boardView.getLayer(
+                        (boardView.board.getLayers().size()
+                        - layerTable.getSelectedRow()) - 1).getOpacity() * 100));
+            }
         }
     }
 }

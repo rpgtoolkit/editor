@@ -19,7 +19,7 @@ public class BoardEditor extends JInternalFrame
      * *************************************************************************
      */
     
-    private MainWindow parent;
+    private MainWindow parentWindow;
 
     private JScrollPane scrollPane;
     
@@ -51,7 +51,7 @@ public class BoardEditor extends JInternalFrame
     {
         super("Board Viewer", true, true, true, true);
     
-        this.parent = parent;
+        this.parentWindow = parent;
         this.board = new Board(fileName);
         this.boardView = new BoardView2D(this, board);
         
@@ -59,17 +59,55 @@ public class BoardEditor extends JInternalFrame
         this.scrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
         this.scrollPane.setVerticalScrollBarPolicy
                 (JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        
-        // Randomly create a Board Layer frame here for testing
-        LayerFrame layerFrame = new LayerFrame(this.boardView);
-        layerFrame.setVisible(true);
-        layerFrame.pack();
-        
-        this.parent.getDesktopPane().add(layerFrame);
-        
+
         this.setTitle("Viewing " + fileName.getAbsolutePath());
         this.add(scrollPane);
         this.pack();
+    }
+    
+    /*
+     * *************************************************************************
+     * Public Getters and Setters
+     * *************************************************************************
+     */
+    public MainWindow getParentWindow()
+    {
+        return parentWindow;
+    }
+
+    public void setParentWindow(MainWindow parent)
+    {
+        this.parentWindow = parent;
+    }
+
+    public JScrollPane getScrollPane()
+    {
+        return scrollPane;
+    }
+
+    public void setScrollPane(JScrollPane scrollPane)
+    {
+        this.scrollPane = scrollPane;
+    }
+
+    public BoardView2D getBoardView()
+    {
+        return boardView;
+    }
+
+    public void setBoardView(BoardView2D boardView)
+    {
+        this.boardView = boardView;
+    }
+
+    public Board getBoard()
+    {
+        return board;
+    }
+
+    public void setBoard(Board board)
+    {
+        this.board = board;
     }
     
     /*
