@@ -31,11 +31,17 @@ public class TileSet extends BasicType
     private int numberOfTiles;
     private int tilesetType;
 
-    private int tileX;
-    private int tileY;
+    private int tileWidth;
+    private int tileHeight;
     private boolean rgbColor = false;
     private boolean hasAlpha = false;
 
+    /*
+     * *************************************************************************
+     * Public Constructors
+     * *************************************************************************
+     */
+    
     /**
      * Creates a new tileset
      */
@@ -63,17 +69,12 @@ public class TileSet extends BasicType
         super(fileName);
     }
 
-    public static void main(String[] args)
-    {
-        JFileChooser fileChooser = new JFileChooser();
-
-        fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
-        if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
-        {
-            TileSet test = new TileSet(fileChooser.getSelectedFile());
-        }
-    }
-
+    /*
+     * *************************************************************************
+     * Public Getters and Setters
+     * *************************************************************************
+     */
+    
     public Tile getSingleTileFromSet(int index)
     {
         try
@@ -89,41 +90,41 @@ public class TileSet extends BasicType
             switch (tilesetType)
             {
                 case 1:
-                    tileX = 32;
-                    tileY = 32;
+                    tileWidth = 32;
+                    tileHeight = 32;
                     rgbColor = true;
                     break;
                 case 2:
-                    tileX = 16;
-                    tileY = 16;
+                    tileWidth = 16;
+                    tileHeight = 16;
                     rgbColor = true;
                     break;
                 case 3:
                 case 5:
-                    tileX = 32;
-                    tileY = 32;
+                    tileWidth = 32;
+                    tileHeight = 32;
                     break;
                 case 4:
                 case 6:
-                    tileX = 16;
-                    tileY = 16;
+                    tileWidth = 16;
+                    tileHeight = 16;
                     break;
                 case 10:
-                    tileX = 32;
-                    tileY = 32;
+                    tileWidth = 32;
+                    tileHeight = 32;
                     rgbColor = true;
             }
 
             Tile newTile = new Tile();
 
             // Calculate data to skip
-            int sizeOfTile = tileX * tileY * 3;
+            int sizeOfTile = tileWidth * tileHeight * 3;
             inputStream.skip(sizeOfTile * (index));
 
             // Read the next tile into memory
-            for (int x = 0; x < tileX; x++) // Go through each row
+            for (int x = 0; x < tileWidth; x++) // Go through each row
             {
-                for (int y = 0; y < tileY; y++) // Go through each column
+                for (int y = 0; y < tileHeight; y++) // Go through each column
                 {
                     if (rgbColor) // is this tile using RGB color space or DOS pallet
                     {
@@ -163,7 +164,48 @@ public class TileSet extends BasicType
             return null;
         }
     }
+    
+    /**
+     * Gets a tile from a specified locaiton in the array
+     *
+     * @param index Index of the array to get the tile from
+     * @return Tile object representing the tile from the requested index
+     */
+    public Tile getTile(int index)
+    {
+        return tileset.get(index);
+    }
 
+    /**
+     * Returns an array of all the tiles in the tileset
+     *
+     * @return Object array of all the tiles in the tileset
+     */
+    public ArrayList<Tile> getTiles()
+    {
+        return tileset;
+    }
+
+    public int getTileCount()
+    {
+        return numberOfTiles;
+    }
+
+    public int getTileWidth()
+    {
+        return tileWidth;
+    }
+
+    public int getTileHeight()
+    {
+        return tileHeight;
+    }
+    
+    /*
+     * *************************************************************************
+     * Public Methods
+     * *************************************************************************
+     */
     /**
      * Opens the specified tileset uses the following parameters depending
      * on tile types
@@ -193,33 +235,33 @@ public class TileSet extends BasicType
             switch (tilesetType)
             {
                 case 1:
-                    tileX = 32;
-                    tileY = 32;
+                    tileWidth = 32;
+                    tileHeight = 32;
                     rgbColor = true;
                     break;
                 case 2:
-                    tileX = 16;
-                    tileY = 16;
+                    tileWidth = 16;
+                    tileHeight = 16;
                     rgbColor = true;
                     break;
                 case 3:
                 case 5:
-                    tileX = 32;
-                    tileY = 32;
+                    tileWidth = 32;
+                    tileHeight = 32;
                     break;
                 case 4:
                 case 6:
-                    tileX = 16;
-                    tileY = 16;
+                    tileWidth = 16;
+                    tileHeight = 16;
                     break;
                 case 10:
-                    tileX = 32;
-                    tileY = 32;
+                    tileWidth = 32;
+                    tileHeight = 32;
                     rgbColor = true;
                     hasAlpha = true;
                 case 150: // Isometric Tile Set : [
-                    tileX = 32;
-                    tileY = 32;
+                    tileWidth = 32;
+                    tileHeight = 32;
                     rgbColor = true;
             }
 
@@ -230,9 +272,9 @@ public class TileSet extends BasicType
             {
                 // Read the next tile into memory
                 Tile newTile = new Tile();
-                for (int x = 0; x < tileX; x++) // Go through each row
+                for (int x = 0; x < tileWidth; x++) // Go through each row
                 {
-                    for (int y = 0; y < tileY; y++) // Go through each column
+                    for (int y = 0; y < tileHeight; y++) // Go through each column
                     {
                         if (rgbColor) // is this tile using RGB color space or DOS pallet
                         {
@@ -364,30 +406,15 @@ public class TileSet extends BasicType
         hasChanged = true;
         return hasChanged;
     }
-
-    /**
-     * Gets a tile from a specified locaiton in the array
-     *
-     * @param index Index of the array to get the tile from
-     * @return Tile object representing the tile from the requested index
-     */
-    public Tile getTile(int index)
+    
+    public static void main(String[] args)
     {
-        return tileset.get(index);
-    }
+        JFileChooser fileChooser = new JFileChooser();
 
-    /**
-     * Returns an array of all the tiles in the tileset
-     *
-     * @return Object array of all the tiles in the tileset
-     */
-    public ArrayList<Tile> getTiles()
-    {
-        return tileset;
-    }
-
-    public int getTileCount()
-    {
-        return numberOfTiles;
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+        if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
+        {
+            TileSet test = new TileSet(fileChooser.getSelectedFile());
+        }
     }
 }

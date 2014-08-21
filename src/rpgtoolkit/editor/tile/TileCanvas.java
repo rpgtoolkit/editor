@@ -12,16 +12,17 @@ import rpgtoolkit.common.editor.types.Tile;
 import rpgtoolkit.editor.exceptions.TilePixelOutOfRangeException;
 
 /**
- * TileCanvas class is responsible for managing the drawing
- * and editing of a tile on screen. The canvas is split up
- * into 32x32 "pixels" where each pixel is scaled correctly
- * to match the screen resolution
+ * TileCanvas class is responsible for managing the drawing and editing of a
+ * tile on screen. The canvas is split up into 32x32 "pixels" where each pixel
+ * is scaled correctly to match the screen resolution
  *
  * @author Geoff Wilson
+ * @author Joshua Michael Daly
  * @version 0.1
  */
 public class TileCanvas extends JPanel implements MouseListener, MouseMotionListener
 {
+
     private Tile tile;
     private int pixelWidth = 10;
     private int pixelHeight = 10;
@@ -99,13 +100,13 @@ public class TileCanvas extends JPanel implements MouseListener, MouseMotionList
                 for (int y = 0; y < 32; y++)
                 {
                     g.setColor(this.tile.getPixel(x, y));
-                    g.fillRect((x * pixelWidth + 1), (y * pixelHeight + 1), 
+                    g.fillRect((x * pixelWidth + 1), (y * pixelHeight + 1),
                             pixelWidth, pixelHeight);
-                    
+
                     if (pixelWidth > 5)
                     {
                         g.setColor(Color.BLACK);
-                        g.drawRect((x * pixelWidth + 1), (y * pixelHeight + 1), 
+                        g.drawRect((x * pixelWidth + 1), (y * pixelHeight + 1),
                                 pixelWidth, pixelHeight);
                     }
                 }
@@ -129,7 +130,7 @@ public class TileCanvas extends JPanel implements MouseListener, MouseMotionList
 
     public void mouseReleased(MouseEvent e)
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        
     }
 
     public void mouseEntered(MouseEvent e)
