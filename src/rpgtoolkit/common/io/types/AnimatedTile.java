@@ -34,7 +34,7 @@ public class AnimatedTile extends BasicType
     {
         try
         {
-            inputStream = new FileInputStream(this.fileName);
+            inputStream = new FileInputStream(this.file);
             binaryIO = new BinaryIO(inputStream);
             frames = new ArrayList<>();
 
@@ -79,7 +79,7 @@ public class AnimatedTile extends BasicType
     {
         try
         {
-            outputStream = new FileOutputStream(this.fileName);
+            outputStream = new FileOutputStream(this.file);
             binaryIO.setOutputStream(outputStream);
 
             binaryIO.writeBinaryString(FILE_HEADER);
@@ -109,7 +109,7 @@ public class AnimatedTile extends BasicType
 
     public boolean saveAs(File fileName)
     {
-        this.fileName = fileName;
+        this.file = fileName;
         return this.save();
     }
 }

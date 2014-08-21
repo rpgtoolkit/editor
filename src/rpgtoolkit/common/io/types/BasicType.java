@@ -8,11 +8,17 @@ import rpgtoolkit.common.utilities.BinaryIO;
 
 public class BasicType
 {
-    protected File fileName;
+
+    protected File file;
     protected FileInputStream inputStream;
     protected FileOutputStream outputStream;
     protected BinaryIO binaryIO;
 
+    /*
+     * *************************************************************************
+     * Public Constructors
+     * *************************************************************************
+     */
     public BasicType()
     {
 
@@ -22,13 +28,29 @@ public class BasicType
     {
         try
         {
-            this.fileName = fileName;
-            inputStream = new FileInputStream(this.fileName);
+            this.file = fileName;
+            inputStream = new FileInputStream(this.file);
             binaryIO = new BinaryIO(inputStream);
         }
         catch (FileNotFoundException e)
         {
-            
+
         }
     }
+    
+    /*
+     * *************************************************************************
+     * Public Getters and Setters
+     * *************************************************************************
+     */
+    public File getFile()
+    {
+        return file;
+    }
+
+    public void setFile(File fileName)
+    {
+        this.file = fileName;
+    }
+    
 }

@@ -1,8 +1,14 @@
 package rpgtoolkit.editor.board;
 
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import javax.swing.*;
+import rpgtoolkit.common.editor.types.BoardLayer;
+import rpgtoolkit.common.editor.types.Tile;
 import rpgtoolkit.common.io.types.Board;
+import rpgtoolkit.editor.board.brush.ShapeBrush;
 import rpgtoolkit.editor.main.MainWindow;
 import rpgtoolkit.editor.main.ToolkitEditorWindow;
 
@@ -14,18 +20,15 @@ import rpgtoolkit.editor.main.ToolkitEditorWindow;
  */
 public class BoardEditor extends ToolkitEditorWindow
 {
-    /*
-     * *************************************************************************
-     * Class Members
-     * *************************************************************************
-     */
-    
+
     private MainWindow parentWindow;
 
     private JScrollPane scrollPane;
     
     private BoardView2D boardView;
     private Board board;
+    
+    private BoardMouseAdapter boardMouseAdapter;
 
     /*
      * *************************************************************************
@@ -52,9 +55,13 @@ public class BoardEditor extends ToolkitEditorWindow
     {
         super("Board Viewer", true, true, true, true);
     
+        this.boardMouseAdapter = new BoardMouseAdapter();
+        
         this.parentWindow = parent;
         this.board = new Board(fileName);
         this.boardView = new BoardView2D(this, board);
+        this.boardView.addMouseListener(this.boardMouseAdapter);
+        this.boardView.addMouseMotionListener(this.boardMouseAdapter);
         
         this.scrollPane = new JScrollPane(this.boardView);
         this.scrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
@@ -157,6 +164,50 @@ public class BoardEditor extends ToolkitEditorWindow
     public boolean save()
     {
         return this.board.save();
+    }
+    
+    /*
+     * *************************************************************************
+     * Private Inner Classes 
+     * *************************************************************************
+     */
+    private class BoardMouseAdapter extends MouseAdapter
+    {
+        /*
+         * *********************************************************************
+         * Public Constructors
+         * *********************************************************************
+         */
+        public BoardMouseAdapter()
+        {
+            
+        }
+        
+        /*
+         * *********************************************************************
+         * Public Methods
+         * *********************************************************************
+         */
+        @Override
+        public void mouseClicked(MouseEvent e)
+        {
+            if (boardView.getCurrentSelectedLayer() != null)
+            {
+                if (MainWindow.getInstance().getCurrentBrush() instanceof ShapeBrush)
+                {
+                    Point point = boardView.getTileCoordinates(e.getX(), e.getY());
+                    BoardLayer layer = boardView.getCurrentSelectedLayer().getLayer();
+
+                    Tile tile = ((ShapeBrush)MainWindow.getInstance()
+                            .getCurrentBrush()).getTile();
+                    
+                    if (tile != null)
+                    {
+                        layer.setTileAt((int)point.getX(), (int)point.getY(), tile);
+                    }
+                }
+            }
+        }
     }
     
 }

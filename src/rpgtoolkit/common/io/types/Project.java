@@ -331,7 +331,7 @@ public class Project extends BasicType
     {
         try
         {
-            outputStream = new FileOutputStream(this.fileName);
+            outputStream = new FileOutputStream(this.file);
             binaryIO.setOutputStream(outputStream);
 
             binaryIO.writeBinaryString(FILE_HEADER);
@@ -422,7 +422,7 @@ public class Project extends BasicType
 
     public boolean saveAs(File fileName)
     {
-        this.fileName = fileName;
+        this.file = fileName;
         return this.save();
     }
 

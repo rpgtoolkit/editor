@@ -32,7 +32,7 @@ public class ShowGridItemListener implements ItemListener
 
     /**
      * 
-     * @param ie 
+     * @param e 
      */
     @Override
     public void itemStateChanged(ItemEvent e) 

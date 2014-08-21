@@ -229,7 +229,7 @@ public class Item extends BasicType
         try
         {
             //setup
-            inputStream = new FileInputStream(this.fileName);
+            inputStream = new FileInputStream(this.file);
             binaryIO = new BinaryIO(inputStream);
             animationCustom = new ArrayList<String>();
             animationCustomHandle = new ArrayList<String>();
@@ -392,7 +392,7 @@ public class Item extends BasicType
     {
         try
         {
-            outputStream = new FileOutputStream(this.fileName);
+            outputStream = new FileOutputStream(this.file);
             binaryIO.setOutputStream(outputStream);
             //header
             binaryIO.writeBinaryString(FILE_HEADER);
@@ -483,7 +483,7 @@ public class Item extends BasicType
 
     public boolean saveAs(File fileName)
     {
-        this.fileName = fileName;
+        this.file = fileName;
         return this.save();
     }
 

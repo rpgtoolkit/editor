@@ -13,8 +13,11 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import rpgtoolkit.common.io.types.Animation;
 import rpgtoolkit.common.io.types.Project;
 import rpgtoolkit.common.io.types.TileSet;
+import rpgtoolkit.common.utilities.TileSetCache;
 import rpgtoolkit.editor.animation.AnimationEditor;
 import rpgtoolkit.editor.board.BoardEditor;
+import rpgtoolkit.editor.board.brush.AbstractBrush;
+import rpgtoolkit.editor.board.brush.ShapeBrush;
 import rpgtoolkit.editor.main.panels.LayerPanel;
 import rpgtoolkit.editor.main.menus.MainMenuBar;
 import rpgtoolkit.editor.main.menus.MainToolBar;
@@ -23,6 +26,8 @@ import rpgtoolkit.editor.main.panels.PropertiesPanel;
 import rpgtoolkit.editor.main.panels.TileSetPanel;
 import rpgtoolkit.editor.project.ProjectEditor;
 import rpgtoolkit.editor.tile.TileEditor;
+import rpgtoolkit.editor.tile.TileSelectionEvent;
+import rpgtoolkit.editor.tile.TileSelectionListener;
 import rpgtoolkit.editor.tile.TilesetCanvas;
 
 /**
@@ -34,8 +39,9 @@ import rpgtoolkit.editor.tile.TilesetCanvas;
  */
 public class MainWindow extends JFrame implements InternalFrameListener
 {
+
     private static final MainWindow instance = new MainWindow();
-    
+
     private JDesktopPane desktopPane;
 
     private final JPanel toolboxPanel;
@@ -53,26 +59,15 @@ public class MainWindow extends JFrame implements InternalFrameListener
     private final JFileChooser fileChooser;
     private final String workingDir = System.getProperty("user.dir");
     private final LinkedList<ToolkitEditorWindow> activeWindows;
-
-    /*
-     * *************************************************************************
-     * Public Getters and Setters
-     * *************************************************************************
-     */
-    public static MainWindow getInstance()
-    {
-        return instance;
-    }
     
-    public JDesktopPane getDesktopPane()
-    {
-        return this.desktopPane;
-    }
-
-    public void setDesktopPane(JDesktopPane desktopPane)
-    {
-        this.desktopPane = desktopPane;
-    }
+    // Board Related.
+    private boolean isShowGrid;
+    private boolean isShowCoordinates;
+    
+    private AbstractBrush currentBrush;
+    
+    // Listeners
+    private final TileSetSelectionListener tileSetSelectionListener;
 
     /*
      * *************************************************************************
@@ -127,6 +122,8 @@ public class MainWindow extends JFrame implements InternalFrameListener
                 getProperty("user.dir")));
 
         this.toolBar = new MainToolBar(this);
+        
+        this.tileSetSelectionListener = new TileSetSelectionListener();
 
         this.add(this.toolBar, BorderLayout.NORTH);
         this.add(this.desktopPane, BorderLayout.CENTER);
@@ -142,6 +139,56 @@ public class MainWindow extends JFrame implements InternalFrameListener
         this.testEditor();
     }
 
+    /*
+     * *************************************************************************
+     * Public Getters and Setters
+     * *************************************************************************
+     */
+    public static MainWindow getInstance()
+    {
+        return instance;
+    }
+
+    public JDesktopPane getDesktopPane()
+    {
+        return this.desktopPane;
+    }
+
+    public void setDesktopPane(JDesktopPane desktopPane)
+    {
+        this.desktopPane = desktopPane;
+    }
+
+    public boolean isIsShowGrid()
+    {
+        return isShowGrid;
+    }
+
+    public void setIsShowGrid(boolean isShowGrid)
+    {
+        this.isShowGrid = isShowGrid;
+    }
+
+    public boolean isIsShowCoordinates()
+    {
+        return isShowCoordinates;
+    }
+
+    public void setIsShowCoordinates(boolean isShowCoordinates)
+    {
+        this.isShowCoordinates = isShowCoordinates;
+    }
+
+    public AbstractBrush getCurrentBrush()
+    {
+        return this.currentBrush;
+    }
+    
+    public void setCurrentBrush(AbstractBrush brush)
+    {
+        this.currentBrush = brush;
+    }
+    
     /*
      * *************************************************************************
      * Public Methods
@@ -307,6 +354,9 @@ public class MainWindow extends JFrame implements InternalFrameListener
     {
         this.tileSetPanel.setTilesetCanvas(new TilesetCanvas(
                 new TileSet(fileChooser.getSelectedFile())));
+        this.tileSetPanel.getTilesetCanvas().addTileSelectionListener(
+            this.tileSetSelectionListener);
+        this.upperTabbedPane.setSelectedComponent(this.tileSetPanel);
     }
 
     public void openBoardForView()
@@ -379,6 +429,33 @@ public class MainWindow extends JFrame implements InternalFrameListener
      */
     private void testEditor()
     {
+
+    }
+
+    /*
+     * *************************************************************************
+     * Private Inner Classes
+     * *************************************************************************
+     */
+    private class TileSetSelectionListener implements TileSelectionListener
+    {
+
+        /*
+         * *********************************************************************
+         * Private Inner Classes
+         * *********************************************************************
+         */
+        @Override
+        public void tileSelected(TileSelectionEvent e)
+        {
+            if (currentBrush != null)
+            {
+                if (currentBrush instanceof ShapeBrush)
+                {
+                    ((ShapeBrush)currentBrush).setTile(e.getTile());
+                }
+            }
+        }
 
     }
 

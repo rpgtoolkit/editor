@@ -63,7 +63,7 @@ public class Animation extends BasicType
         try
         {
             // Configure the IO
-            inputStream = new FileInputStream(this.fileName);
+            inputStream = new FileInputStream(this.file);
             binaryIO = new BinaryIO(inputStream);
 
             // Initialize the Array List of frames.
@@ -104,7 +104,7 @@ public class Animation extends BasicType
             }
             else
             {
-                throw new CorruptFileException(this.fileName.getName() + " is not an animation file");
+                throw new CorruptFileException(this.file.getName() + " is not an animation file");
             }
 
             inputStream.close(); // Close IO
@@ -140,7 +140,7 @@ public class Animation extends BasicType
         try
         {
             // Configure IO
-            outputStream = new FileOutputStream(this.fileName);
+            outputStream = new FileOutputStream(this.file);
             binaryIO.setOutputStream(outputStream);
 
             // For TK3.1 compatibility we do not change versions or headers.
@@ -185,7 +185,7 @@ public class Animation extends BasicType
      */
     public boolean saveAs(File fileName)
     {
-        this.fileName = fileName;
+        this.file = fileName;
         return this.save();
     }
 

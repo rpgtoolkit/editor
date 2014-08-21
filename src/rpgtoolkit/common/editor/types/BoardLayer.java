@@ -27,11 +27,11 @@ public class BoardLayer implements Cloneable
     /**
      * A reference to the board this layer belongs to.
      */
-    private Board parent;
+    private Board board;
     /**
      * A list of all the tiles used on this layer.
      */
-    private int[][] tiles;
+    private Tile[][] tiles;
     /**
      * A list of all the lights used on this layer.
      */
@@ -60,8 +60,8 @@ public class BoardLayer implements Cloneable
      */
     public BoardLayer(Board parentBoard)
     {
-        this.parent = parentBoard;
-        this.tiles = new int[this.parent.getWidth()][this.parent.getHeight()];
+        this.board = parentBoard;
+        this.tiles = new Tile[this.board.getWidth()][this.board.getHeight()];
         this.lights = new ArrayList<>();
         this.vectors = new ArrayList<>();
         this.programs = new ArrayList<>();
@@ -98,20 +98,20 @@ public class BoardLayer implements Cloneable
 
     public Board getParent()
     {
-        return parent;
+        return board;
     }
 
     public void setParent(Board parent)
     {
-        this.parent = parent;
+        this.board = parent;
     }
 
-    public int[][] getTiles()
+    public Tile[][] getTiles()
     {
         return tiles;
     }
 
-    public void setTiles(int[][] tiles)
+    public void setTiles(Tile[][] tiles)
     {
         this.tiles = tiles;
     }
@@ -164,6 +164,12 @@ public class BoardLayer implements Cloneable
     public void setImages(ArrayList<BoardImage> images)
     {
         this.images = images;
+    }
+    
+    public void setTileAt(int x, int y, Tile tile)
+    {
+        this.tiles[x][y] = tile;   
+        this.board.fireBoardChanged();
     }
 
     /*
@@ -234,14 +240,14 @@ public class BoardLayer implements Cloneable
     @Override
     public Object clone() throws CloneNotSupportedException
     {
-        BoardLayer layer = new BoardLayer(this.parent);
+        BoardLayer layer = new BoardLayer(this.board);
         layer.images = (ArrayList<BoardImage>)this.images.clone();
         layer.lights = (ArrayList<BoardLight>)this.lights.clone();
         layer.name = this.name + "_clone";
         layer.number = this.number;
         layer.programs = (ArrayList<BoardProgram>)this.programs.clone();
         layer.sprites = (ArrayList<BoardSprite>)this.sprites.clone();
-        layer.tiles = (int[][])this.tiles.clone();
+        layer.tiles = (Tile[][])this.tiles.clone();
         layer.vectors = (ArrayList<BoardVector>)this.vectors.clone();
         layer.moveLayerUp();
         
@@ -255,21 +261,21 @@ public class BoardLayer implements Cloneable
      */
     private void clearTiles()
     {
-        int count = this.parent.getWidth() * this.parent.getHeight();
+        int count = this.board.getWidth() * this.board.getHeight();
         int x = 0;
         int y = 0;
 
         // Clear all the tiles.
         for (int i = 0; i < count; i++)
         {
-            this.tiles[x][y] = 0;
+            this.tiles[x][y] = new Tile();
 
             x++;
-            if (x == this.parent.getWidth())
+            if (x == this.board.getWidth())
             {
                 x = 0;
                 y++;
-                if (y == this.parent.getHeight())
+                if (y == this.board.getHeight())
                 {
                     break;
                 }

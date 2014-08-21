@@ -193,7 +193,7 @@ public class Enemy extends BasicType
 
     public boolean saveAs(File fileName)
     {
-        this.fileName = fileName;
+        this.file = fileName;
         return this.save();
     }
 }

@@ -49,9 +49,9 @@ public final class Board extends BasicType
     private int height;
     private int layerCount;
     private int coordinateType;
-    private ArrayList<String> tileIndex;
+    private ArrayList<String> tileIndex; // Contains string names e.g. default.tst1
     private HashMap<String, TileSet> tileSetMap;
-    private ArrayList<Tile> loadedTilesIndex;
+    private ArrayList<Tile> loadedTilesIndex; // Contains tile objects of e.g. default.tst1
     private int[][][] boardDimensions;
     private byte[] tileType;
     private int ubShading;
@@ -229,7 +229,7 @@ public final class Board extends BasicType
 
     public int getIndexAtLocation(int x, int y, int z)
     {
-        return this.layers.get(z).getTiles()[x][y];
+        return this.layers.get(z).getTiles()[x][y].getIndex();
         //return boardDimensions[x][y][z];
     }
 
@@ -830,8 +830,6 @@ public final class Board extends BasicType
         {
 
         }
-        
-        this.createLayers();
 
         return true;
     }
@@ -849,7 +847,7 @@ public final class Board extends BasicType
         
         try
         {
-            this.outputStream = new FileOutputStream(this.fileName);
+            this.outputStream = new FileOutputStream(this.file);
             this.binaryIO.setOutputStream(this.outputStream);
 
             this.binaryIO.writeBinaryString(this.FILE_HEADER);
@@ -1136,7 +1134,7 @@ public final class Board extends BasicType
     public void initializeTileSetCache(TileSetCache cache)
     {
         // Load the tiles into memory
-        for (String indexString : tileIndex)
+        for (String indexString : this.tileIndex)
         {
             if (!indexString.isEmpty())
             {
@@ -1152,11 +1150,11 @@ public final class Board extends BasicType
                 String tileSetName = indexString.split(".tst")[0] + ".tst";
                 if (!cache.contains(tileSetName))
                 {
-                    tileSet = cache.loadTileSet(tileSetName);
+                    this.tileSet = cache.loadTileSet(tileSetName);
                 }
                 else
                 {
-                    tileSet = cache.getTileSet(tileSetName);
+                    this.tileSet = cache.getTileSet(tileSetName);
                 }
 
                 loadedTilesIndex.add(tileSet.getTile(Integer.parseInt(
@@ -1382,6 +1380,87 @@ public final class Board extends BasicType
         
         this.fireBoardLayerDeleted(removedLayer);
     }
+    
+    /**
+     * An inefficient routine used to create the BoardLayers, currently this is
+     * need for testing. Later this will be integrated into the open and save
+     * methods.
+     */
+    public void createLayers()
+    {
+        for (int i = 0; i < this.layerCount; i++)
+        {
+            BoardLayer layer = new BoardLayer(this);
+            layer.setName(this.layerTitles.get(i));
+            layer.setNumber(i);
+            
+            int count = this.width * this.height;
+            int x = 0;
+            int y = 0;
+            
+            for (int j = 0; j < count; j++)
+            {
+                if (this.boardDimensions[x][y][i] - 1 >= 0)
+                {
+                    layer.getTiles()[x][y] = this.getTileFromIndex(
+                            this.boardDimensions[x][y][i] - 1);
+                }
+                
+                x++;
+                if (x == this.width)
+                {
+                    x = 0;
+                    y++;
+                    if (y == this.height)
+                    {
+                        break;
+                    }
+                }
+            }
+            
+            for (BoardLight light : this.lights)
+            {
+                if (light.getLayer() == i)
+                {
+                    layer.getLights().add(light);
+                }
+            }
+
+            for (BoardVector vector : this.vectors)
+            {
+                if (vector.getLayer() == i)
+                {
+                    layer.getVectors().add(vector);
+                }
+            }
+
+            for (BoardProgram program : this.programs)
+            {
+                if (program.getLayer() == i)
+                {
+                    layer.getPrograms().add(program);
+                }
+            }
+
+            for (BoardSprite sprite : this.sprites)
+            {
+                if (sprite.getLayer() == i)
+                {
+                    layer.getSprites().add(sprite);
+                }
+            }
+
+            for (BoardImage image : this.images)
+            {
+                if (image.getLayer() == i)
+                {
+                    layer.getImages().add(image);
+                }
+            }
+            
+            this.layers.add(layer);
+        }
+    }
 
     /*
      * ************************************************************************* 
@@ -1452,83 +1531,6 @@ public final class Board extends BasicType
     }
     
     /**
-     * An inefficient routine used to create the BoardLayers, currently this is
-     * need for testing. Later this will be integrated into the open and save
-     * methods.
-     */
-    private void createLayers()
-    {
-        for (int i = 0; i < this.layerCount; i++)
-        {
-            BoardLayer layer = new BoardLayer(this);
-            layer.setName(this.layerTitles.get(i));
-            layer.setNumber(i);
-            
-            int count = this.width * this.height;
-            int x = 0;
-            int y = 0;
-            
-            for (int j = 0; j < count; j++)
-            {
-                layer.getTiles()[x][y] = this.boardDimensions[x][y][i];
-                
-                x++;
-                if (x == this.width)
-                {
-                    x = 0;
-                    y++;
-                    if (y == this.height)
-                    {
-                        break;
-                    }
-                }
-            }
-            
-            for (BoardLight light : this.lights)
-            {
-                if (light.getLayer() == i)
-                {
-                    layer.getLights().add(light);
-                }
-            }
-
-            for (BoardVector vector : this.vectors)
-            {
-                if (vector.getLayer() == i)
-                {
-                    layer.getVectors().add(vector);
-                }
-            }
-
-            for (BoardProgram program : this.programs)
-            {
-                if (program.getLayer() == i)
-                {
-                    layer.getPrograms().add(program);
-                }
-            }
-
-            for (BoardSprite sprite : this.sprites)
-            {
-                if (sprite.getLayer() == i)
-                {
-                    layer.getSprites().add(sprite);
-                }
-            }
-
-            for (BoardImage image : this.images)
-            {
-                if (image.getLayer() == i)
-                {
-                    layer.getImages().add(image);
-                }
-            }
-            
-            this.layers.add(layer);
-        }
-    }
-    
-    /**
      * Updates all of the IO attributes used in saving, gets the new information
      * from all of the layers that have been created. Maintains compatability
      * with Geoff's original open and save routines.
@@ -1556,7 +1558,8 @@ public final class Board extends BasicType
             
             for (int i = 0; i < count; i++)
             {
-                this.boardDimensions[x][y][layerIndex] = layer.getTiles()[x][y];
+                this.boardDimensions[x][y][layerIndex] = layer.getTiles()[x][y]
+                        .getIndex();
                 
                 x++;
                 if (x == this.width)

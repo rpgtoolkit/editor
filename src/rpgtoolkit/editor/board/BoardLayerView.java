@@ -5,14 +5,10 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
 import rpgtoolkit.common.editor.types.BoardLayer;
 import rpgtoolkit.common.editor.types.MultiLayerContainer;
 import rpgtoolkit.common.editor.types.Tile;
 import rpgtoolkit.common.io.types.Board;
-import rpgtoolkit.editor.board.event.LayerChangeListener;
-import rpgtoolkit.editor.board.event.LayerChangedEvent;
 import rpgtoolkit.editor.board.types.BoardSprite;
 import rpgtoolkit.editor.board.types.BoardVector;
 import rpgtoolkit.editor.exceptions.TilePixelOutOfRangeException;
@@ -330,12 +326,9 @@ public final class BoardLayerView implements Cloneable
         {
             for (int y = 0; y < parentBoard.getHeight(); y++)
             {
-                int indexToPaint = parentBoard.getIndexAtLocation(x, y,
-                        layer.getNumber()) - 1;
-
-                if (indexToPaint >= 0)
+                if (this.layer.getTiles()[x][y] != null)
                 {
-                    Tile tile = parentBoard.getTileFromIndex(indexToPaint);
+                    Tile tile = this.layer.getTiles()[x][y];
 
                     g.drawImage(tile.getTileAsImage(), (x * 32),
                             (y * 32), null);

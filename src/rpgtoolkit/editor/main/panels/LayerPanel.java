@@ -21,6 +21,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import rpgtoolkit.editor.board.AbstractBoardView;
+import rpgtoolkit.editor.board.BoardLayerView;
 import rpgtoolkit.editor.utilities.LayerTableModel;
 
 /**
@@ -295,9 +296,13 @@ public class LayerPanel extends JPanel implements ChangeListener,
         {
             if (this.layerTable.getSelectedRow() > -1)
             {
-                this.opacitySlider.setValue((int) (this.boardView.getLayer(
+                BoardLayerView selectedLayer = this.boardView.getLayer(
                         (boardView.getBoard().getLayers().size()
-                        - layerTable.getSelectedRow()) - 1).getOpacity() * 100));
+                        - layerTable.getSelectedRow()) - 1);
+                
+                this.boardView.setCurrentSeletedLayer(selectedLayer);
+                
+                this.opacitySlider.setValue((int)selectedLayer.getOpacity() * 100);
             }
         }
     }

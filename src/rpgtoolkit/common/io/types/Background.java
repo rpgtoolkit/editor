@@ -92,7 +92,7 @@ public class Background extends BasicType
 
     public boolean saveAs(File fileName)
     {
-        this.fileName = fileName;
+        this.file = fileName;
         return this.save();
     }
 }

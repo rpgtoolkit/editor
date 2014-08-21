@@ -96,7 +96,7 @@ public class Player extends BasicType
     public Player(File file)
     {
         super(file);
-        System.out.println("Loading Player: " + fileName);
+        System.out.println("Loading Player: " + this.file);
         this.open();
     }
 
@@ -275,7 +275,7 @@ public class Player extends BasicType
         }
         catch (CorruptFileException e)
         {
-            System.out.println("File " + fileName + " is not a supported character file");
+            System.out.println("File " + file + " is not a supported character file");
             return false;
         }
         catch (IOException e)
@@ -289,7 +289,7 @@ public class Player extends BasicType
     {
         try
         {
-            outputStream = new FileOutputStream(this.fileName);
+            outputStream = new FileOutputStream(this.file);
             binaryIO.setOutputStream(outputStream);
 
             binaryIO.writeBinaryString(FILE_HEADER);
@@ -385,7 +385,7 @@ public class Player extends BasicType
 
     public boolean saveAs(File fileName)
     {
-        this.fileName = fileName;
+        this.file = fileName;
         return this.save();
     }
 
