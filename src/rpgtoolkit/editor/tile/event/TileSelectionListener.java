@@ -1,4 +1,4 @@
-package rpgtoolkit.editor.tile;
+package rpgtoolkit.editor.tile.event;
 
 import java.util.EventListener;
 
@@ -11,6 +11,5 @@ public interface TileSelectionListener extends EventListener
 {
     public void tileSelected(TileSelectionEvent e);
     
-    // TODO: Add this at a later date.
-    //public void tileRegionSelected(TileRegionSelectionEvent e);
+    public void tileRegionSelected(TileRegionSelectionEvent e);
 }

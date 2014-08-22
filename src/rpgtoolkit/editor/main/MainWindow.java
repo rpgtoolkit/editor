@@ -16,6 +16,7 @@ import rpgtoolkit.common.io.types.TileSet;
 import rpgtoolkit.editor.animation.AnimationEditor;
 import rpgtoolkit.editor.board.BoardEditor;
 import rpgtoolkit.editor.board.brush.AbstractBrush;
+import rpgtoolkit.editor.board.brush.CustomBrush;
 import rpgtoolkit.editor.board.brush.ShapeBrush;
 import rpgtoolkit.editor.main.panels.LayerPanel;
 import rpgtoolkit.editor.main.menus.MainMenuBar;
@@ -25,9 +26,10 @@ import rpgtoolkit.editor.main.panels.PropertiesPanel;
 import rpgtoolkit.editor.main.panels.TileSetPanel;
 import rpgtoolkit.editor.project.ProjectEditor;
 import rpgtoolkit.editor.tile.TileEditor;
-import rpgtoolkit.editor.tile.TileSelectionEvent;
-import rpgtoolkit.editor.tile.TileSelectionListener;
+import rpgtoolkit.editor.tile.event.TileSelectionEvent;
+import rpgtoolkit.editor.tile.event.TileSelectionListener;
 import rpgtoolkit.editor.tile.TilesetCanvas;
+import rpgtoolkit.editor.tile.event.TileRegionSelectionEvent;
 
 /**
  * Currently opening TileSets, tiles, programs, boards, animations, characters
@@ -58,15 +60,14 @@ public class MainWindow extends JFrame implements InternalFrameListener
     private final JFileChooser fileChooser;
     private final String workingDir = System.getProperty("user.dir");
     private final LinkedList<ToolkitEditorWindow> activeWindows;
-    
+
     // Board Related.
     private boolean showGrid;
     private boolean showVectors;
     private boolean showCoordinates;
-    
+
     private AbstractBrush currentBrush;
-    private Rectangle cursorRectangle;
-    
+
     // Listeners
     private final TileSetSelectionListener tileSetSelectionListener;
 
@@ -123,10 +124,12 @@ public class MainWindow extends JFrame implements InternalFrameListener
                 getProperty("user.dir")));
 
         this.toolBar = new MainToolBar();
-        
+
         this.tileSetSelectionListener = new TileSetSelectionListener();
-        
-        this.cursorRectangle = new Rectangle(1, 1); // 1 : 1 in tiles.
+
+        this.currentBrush = new ShapeBrush();
+        ((ShapeBrush) this.currentBrush).makeRectangleBrush(
+                new Rectangle(0, 0, 1, 1));
 
         this.add(this.toolBar, BorderLayout.NORTH);
         this.add(this.desktopPane, BorderLayout.CENTER);
@@ -171,12 +174,12 @@ public class MainWindow extends JFrame implements InternalFrameListener
     {
         this.showGrid = isShowGrid;
     }
-    
+
     public boolean isShowVectors()
     {
         return showVectors;
     }
-    
+
     public void setShowVectors(boolean showVectors)
     {
         this.showVectors = showVectors;
@@ -196,22 +199,12 @@ public class MainWindow extends JFrame implements InternalFrameListener
     {
         return this.currentBrush;
     }
-    
+
     public void setCurrentBrush(AbstractBrush brush)
     {
         this.currentBrush = brush;
     }
-    
-    public Rectangle getCursorRectangle()
-    {
-        return this.cursorRectangle;
-    }
-    
-    public void setCursorRectangle(Rectangle rectangle)
-    {
-        this.cursorRectangle = rectangle;
-    }
-    
+
     /*
      * *************************************************************************
      * Public Methods
@@ -378,7 +371,7 @@ public class MainWindow extends JFrame implements InternalFrameListener
         this.tileSetPanel.setTilesetCanvas(new TilesetCanvas(
                 new TileSet(fileChooser.getSelectedFile())));
         this.tileSetPanel.getTilesetCanvas().addTileSelectionListener(
-            this.tileSetSelectionListener);
+                this.tileSetSelectionListener);
         this.upperTabbedPane.setSelectedComponent(this.tileSetPanel);
     }
 
@@ -427,7 +420,7 @@ public class MainWindow extends JFrame implements InternalFrameListener
     public void toogleGridOnBoardEditor(boolean isVisible)
     {
         this.showGrid = isVisible;
-        
+
         if (this.desktopPane.getSelectedFrame() instanceof BoardEditor)
         {
             BoardEditor editor = (BoardEditor) this.desktopPane.getSelectedFrame();
@@ -438,18 +431,18 @@ public class MainWindow extends JFrame implements InternalFrameListener
     public void toogleCoordinatesOnBoardEditor(boolean isVisible)
     {
         this.showCoordinates = isVisible;
-        
+
         if (desktopPane.getSelectedFrame() instanceof BoardEditor)
         {
             BoardEditor editor = (BoardEditor) desktopPane.getSelectedFrame();
             editor.getBoardView().repaint();
         }
     }
-    
+
     public void toogleVectorsOnBoardEditor(boolean isVisible)
     {
         this.showVectors = isVisible;
-        
+
         if (desktopPane.getSelectedFrame() instanceof BoardEditor)
         {
             BoardEditor editor = (BoardEditor) desktopPane.getSelectedFrame();
@@ -481,18 +474,32 @@ public class MainWindow extends JFrame implements InternalFrameListener
         /*
          * *********************************************************************
          * Private Inner Classes
-         * *********************************************************************
+         * ***************************************************d******************
          */
         @Override
         public void tileSelected(TileSelectionEvent e)
         {
-            if (currentBrush != null)
+            if (!(currentBrush instanceof ShapeBrush))
             {
-                if (currentBrush instanceof ShapeBrush)
-                {
-                    ((ShapeBrush)currentBrush).setTile(e.getTile());
-                }
+                currentBrush = new ShapeBrush();
+                ((ShapeBrush) currentBrush).makeRectangleBrush(
+                        new Rectangle(0, 0, 1, 1));
             }
+
+            ((ShapeBrush) currentBrush).setTile(e.getTile());
+        }
+
+        @Override
+        public void tileRegionSelected(TileRegionSelectionEvent e)
+        {
+            if (!(currentBrush instanceof CustomBrush))
+            {
+                currentBrush = new CustomBrush(e.getTiles());
+            }
+            else
+            {
+               ((CustomBrush) currentBrush).setTiles(e.getTiles());
+            }        
         }
     }
 

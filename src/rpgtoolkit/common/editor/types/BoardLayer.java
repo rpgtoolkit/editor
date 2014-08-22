@@ -96,14 +96,14 @@ public class BoardLayer implements Cloneable
         this.number = number;
     }
 
-    public Board getParent()
+    public Board getBoard()
     {
         return board;
     }
 
-    public void setParent(Board parent)
+    public void setBoard(Board board)
     {
-        this.board = parent;
+        this.board = board;
     }
 
     public Tile[][] getTiles()

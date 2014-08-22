@@ -353,7 +353,7 @@ public final class BoardView2D extends AbstractBoardView
     @Override
     protected void paintCursor(Graphics2D g)
     {
-        Rectangle cursor = MainWindow.getInstance().getCursorRectangle();
+        Rectangle cursor = MainWindow.getInstance().getCurrentBrush().getBounds();
         Point selection = this.boardEditor.getCursorLocation();
         int tileWidth = board.getTileSet().getTileWidth();
         int tileHeight = board.getTileSet().getTileHeight();

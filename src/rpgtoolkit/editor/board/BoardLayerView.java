@@ -225,7 +225,7 @@ public final class BoardLayerView implements Cloneable
 
             if (this.isVisible() && this.layer != null)
             {
-                this.layer.getParent().fireBoardChanged();
+                this.layer.getBoard().fireBoardChanged();
             }
         }
     }
@@ -255,7 +255,7 @@ public final class BoardLayerView implements Cloneable
 
             if (this.layer != null)
             {
-                this.layer.getParent().fireBoardChanged();
+                this.layer.getBoard().fireBoardChanged();
             }
         }
     }
@@ -317,7 +317,7 @@ public final class BoardLayerView implements Cloneable
      */
     public void drawTiles(Graphics2D g) throws TilePixelOutOfRangeException
     {
-        Board parentBoard = this.layer.getParent();
+        Board parentBoard = this.layer.getBoard();
 
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP,
                 this.opacity));

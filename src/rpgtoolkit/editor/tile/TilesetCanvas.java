@@ -1,5 +1,7 @@
 package rpgtoolkit.editor.tile;
 
+import rpgtoolkit.editor.tile.event.TileSelectionListener;
+import rpgtoolkit.editor.tile.event.TileSelectionEvent;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -17,6 +19,7 @@ import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
+import rpgtoolkit.editor.tile.event.TileRegionSelectionEvent;
 
 /**
  * TODO: Deal with TileRegionSelectionEvents at some later date...
@@ -170,20 +173,30 @@ public final class TilesetCanvas extends JPanel implements Scrollable
         }
     }
     
-    /**
-     * Yet to be implemented...
-     * 
-     * @param selection 
-     */
     private void fireTileRegionSelectionEvent(Rectangle selection)
     {
-        //TileLayer region = createTileLayerFromRegion(selection);
-        //TileRegionSelectionEvent event = new TileRegionSelectionEvent(this, region);
+        Tile[][] region = createTileLayerFromRegion(selection);
+        TileRegionSelectionEvent event = new TileRegionSelectionEvent(this, region);
         
-        //for (TileSelectionListener listener : this.tileSelectionListeners) 
-        //{
-        //    listener.tileRegionSelected(event);
-        //}
+        for (TileSelectionListener listener : this.tileSelectionListeners) 
+        {
+            listener.tileRegionSelected(event);
+        }
+    }
+    
+    private Tile[][] createTileLayerFromRegion(Rectangle rectangle)
+    {
+        Tile[][] tiles = new Tile[rectangle.width + 1][rectangle.height + 1];
+        
+        for (int y = rectangle.y; y <= rectangle.y + rectangle.height; y++)
+        {
+            for (int x = rectangle.x; x <= rectangle.x + rectangle.width; x++)
+            {
+                tiles[x - rectangle.x][y - rectangle.y] = this.getTileAt(x, y);
+            }
+        }
+        
+        return tiles;
     }
     
     private void paintBackground(Graphics g)
@@ -404,7 +417,7 @@ public final class TilesetCanvas extends JPanel implements Scrollable
             
             if (selection.getWidth() > 0 || selection.getHeight() > 0)
             {
-                //fireTileRegionSelectionEvent(selection);
+                fireTileRegionSelectionEvent(selection);
             }
         }
     }

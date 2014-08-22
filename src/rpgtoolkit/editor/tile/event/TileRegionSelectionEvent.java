@@ -1,4 +1,4 @@
-package rpgtoolkit.editor.tile;
+package rpgtoolkit.editor.tile.event;
 
 import java.util.EventObject;
 import rpgtoolkit.common.editor.types.Tile;
@@ -8,20 +8,19 @@ import rpgtoolkit.common.editor.types.Tile;
  * 
  * @author Joshua Michael Daly
  */
-public class TileSelectionEvent extends EventObject
+public class TileRegionSelectionEvent extends EventObject
 {
+    private final Tile[][] tiles;
 
-    private final Tile tile;
-    
     /*
      * *************************************************************************
      * Public Constructors
      * *************************************************************************
      */
-    public TileSelectionEvent(Object source, Tile tile)
+    public TileRegionSelectionEvent(Object source, Tile[][] tiles)
     {
         super(source);
-        this.tile = tile;
+        this.tiles = tiles;
     }
     
     /*
@@ -29,9 +28,8 @@ public class TileSelectionEvent extends EventObject
      * Public Getters
      * *************************************************************************
      */
-    public Tile getTile()
+    public Tile[][] getTiles()
     {
-        return this.tile;
+        return this.tiles;
     }
-    
 }
