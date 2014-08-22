@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.MouseAdapter;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -81,23 +80,9 @@ public abstract class AbstractBoardView extends JPanel implements
     /**
      * A boolean value that indicates whether the grid is visible or not.
      */
-    protected boolean isShowGrid;
     private boolean antialiasGrid;
     private Color gridColor;
     private int gridOpacity;
-
-    // Coordinate properties
-    /**
-     * A boolean value that indicates whether the coordinates are visible or
-     * not.
-     */
-    protected boolean isShowCoordinates;
-
-    // Vector properties
-    /**
-     * A boolean value that indicates whether the vectors are visible or not.
-     */
-    protected boolean isShowVectors;
 
     /*
      * *************************************************************************
@@ -252,72 +237,6 @@ public abstract class AbstractBoardView extends JPanel implements
     public void setAntialiasGrid(boolean isAntialias)
     {
         this.antialiasGrid = isAntialias;
-        this.repaint();
-    }
-
-    /**
-     * Is the grid visible?
-     *
-     * @return Is it visible?
-     */
-    public boolean isShowGrid()
-    {
-        return isShowGrid;
-    }
-
-    /**
-     * Sets the grids visibility.
-     *
-     * @param isVisible Will it be visible?
-     */
-    public void setShowGrid(boolean isVisible)
-    {
-        this.isShowGrid = isVisible;
-        this.revalidate();
-        this.repaint();
-    }
-
-    /**
-     * Are the coordinates visible?
-     *
-     * @return Are they visible?
-     */
-    public boolean isShowCoordinates()
-    {
-        return this.isShowCoordinates;
-    }
-
-    /**
-     * Sets the coordinates visibility.
-     *
-     * @param isVisible Will they be visible?
-     */
-    public void setShowCoordinates(boolean isVisible)
-    {
-        this.isShowCoordinates = isVisible;
-        this.revalidate();
-        this.repaint();
-    }
-
-    /**
-     * Are the vectors visible?
-     *
-     * @return Are they visible?
-     */
-    public boolean isShowVectors()
-    {
-        return this.isShowVectors;
-    }
-
-    /**
-     * Sets the vectors visibility.
-     *
-     * @param isVisible Will they be visible?
-     */
-    public void setShowVectors(boolean isVisible)
-    {
-        this.isShowVectors = isVisible;
-        this.revalidate();
         this.repaint();
     }
 
@@ -531,6 +450,13 @@ public abstract class AbstractBoardView extends JPanel implements
      * @param g The graphics context to draw on.
      */
     protected abstract void paintCoordinates(Graphics2D g);
+    
+    /**
+     * A concrete BoardView will implement its own cursor drawing code here.
+     *
+     * @param g The graphics context to draw on.
+     */
+    protected abstract void paintCursor(Graphics2D g);
 
     /*
      * *************************************************************************
@@ -790,18 +716,15 @@ public abstract class AbstractBoardView extends JPanel implements
         this.affineTransform = new AffineTransform();
 
         this.loadTiles(board);
-        this.setPreferredSize(new Dimension((board.getWidth() * 32), (board.getHeight() * 32)));
+        this.setPreferredSize(new Dimension((board.getWidth() * 32), 
+                (board.getHeight() * 32)));
 
-        bufferedImage = new BufferedImage((board.getWidth() * 32), (board.getHeight() * 32), BufferedImage.TYPE_INT_ARGB);
+        bufferedImage = new BufferedImage((board.getWidth() * 32), 
+                (board.getHeight() * 32), BufferedImage.TYPE_INT_ARGB);
 
-        this.isShowGrid = false;
         this.antialiasGrid = true;
         this.gridColor = DEFAULT_GRID_COLOR;
         this.gridOpacity = 100;
-
-        this.isShowCoordinates = false;
-
-        this.isShowVectors = false;
         
         if (!this.layers.isEmpty())
         {

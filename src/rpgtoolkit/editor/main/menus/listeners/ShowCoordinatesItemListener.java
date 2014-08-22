@@ -28,14 +28,8 @@ public class ShowCoordinatesItemListener implements ItemListener
     {
         JCheckBoxMenuItem showCoordinatesMenuItem = (JCheckBoxMenuItem)e.getItem();
         
-        if (showCoordinatesMenuItem.isSelected())
-        {
-            parent.toogleCoordinatesOnBoardEditor(true);
-        }
-        else
-        {
-            parent.toogleCoordinatesOnBoardEditor(false);
-        }
+        this.parent.toogleCoordinatesOnBoardEditor(
+                showCoordinatesMenuItem.isSelected());
     }
     
 }

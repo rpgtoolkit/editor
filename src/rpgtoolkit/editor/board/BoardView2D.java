@@ -1,10 +1,12 @@
 package rpgtoolkit.editor.board;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
@@ -14,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import rpgtoolkit.common.io.types.Board;
 import rpgtoolkit.editor.exceptions.TilePixelOutOfRangeException;
+import rpgtoolkit.editor.main.MainWindow;
 
 /**
  * A concrete class for drawing 2D RPG-Toolkit Boards, this is the view 
@@ -145,20 +148,26 @@ public final class BoardView2D extends AbstractBoardView
         this.paintLayers(g);
         this.paintSprites(g);
         
-        if (this.isShowGrid)
-        {
-            this.paintGrid(g);
-        }
-        
-        if (this.isShowVectors)
+        if (MainWindow.getInstance().isShowVectors())
         {
             this.paintVectors(g);
         }
         
-        if (this.isShowCoordinates)
+        // Reset an opcaity changes in the layers.
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP,
+                1.0f));
+        
+        if (MainWindow.getInstance().isShowGrid())
+        {
+            this.paintGrid(g);
+        } 
+        
+        if (MainWindow.getInstance().isShowCoordinates())
         {
             this.paintCoordinates(g);
         }
+        
+        this.paintCursor(g);
     }
     
     /**
@@ -334,6 +343,38 @@ public final class BoardView2D extends AbstractBoardView
             
             gy += tileSize.height;
         }
+    }
+    
+    /**
+     * 
+     * 
+     * @param g 
+     */
+    @Override
+    protected void paintCursor(Graphics2D g)
+    {
+        Rectangle cursor = MainWindow.getInstance().getCursorRectangle();
+        Point selection = this.boardEditor.getCursorLocation();
+        int tileWidth = board.getTileSet().getTileWidth();
+        int tileHeight = board.getTileSet().getTileHeight();
+        int centerX = (selection.x * tileWidth) - 
+                (((int)cursor.getWidth() / 2) * tileWidth);
+        int centerY = (selection.y * tileHeight) - 
+                (((int)cursor.getHeight() / 2) * tileHeight);
+        
+        g.setColor(new Color(100, 100, 255));
+        g.draw3DRect(
+                centerX, 
+                centerY, 
+                ((int)cursor.getWidth()) * tileWidth, 
+                ((int)cursor.getHeight()) * tileHeight,
+                false);
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.2f));
+        g.fillRect(
+                centerX, 
+                centerY, 
+                ((int)cursor.getWidth()) * tileWidth, 
+                ((int)cursor.getHeight()) * tileHeight);
     }
 
     /*

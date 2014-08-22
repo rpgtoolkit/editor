@@ -1,189 +1,218 @@
 package rpgtoolkit.editor.main.menus;
 
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JToolBar;
 import rpgtoolkit.common.editor.types.EditorButton;
+import rpgtoolkit.editor.board.brush.ShapeBrush;
 import rpgtoolkit.editor.main.MainWindow;
 
 public class MainToolBar extends JToolBar
 {
-    private final MainWindow parent;
+    private final JPopupMenu popupMenu;
+    private final JMenuItem newAnimationMenu;
+    private final JMenuItem newProjectMenu;
 
-    private JPopupMenu popupMenu;
-    private JMenuItem newAnimationMenu;
-    private JMenuItem newProjectMenu;
+    private final EditorButton newButton;
+    private final EditorButton openButton;
+    private final EditorButton saveButton;
+    private final EditorButton saveAllButton;
+    
+    private final EditorButton cutButton;
+    private final EditorButton copyButton;
+    private final EditorButton pasteButton;
+    private final EditorButton deleteButton;
+    
+    private final EditorButton undoButton;
+    private final EditorButton redoButton;
+    
+    private final EditorButton pencilButton;
+    private final EditorButton rectangleButton;
+    private final EditorButton ellipseButton;
+    private final EditorButton bucketButton;
+    
+    private final EditorButton zoomInButton;
+    private final EditorButton zoomOutButton;
+    
+    private final EditorButton runButton;
+    private final EditorButton stopButton;
+    
+    private final EditorButton helpButton;
 
-    private EditorButton newButton;
-    private EditorButton openButton;
-    private EditorButton saveButton;
-    private EditorButton saveAllButton;
-    
-    private EditorButton cutButton;
-    private EditorButton copyButton;
-    private EditorButton pasteButton;
-    private EditorButton deleteButton;
-    
-    private EditorButton undoButton;
-    private EditorButton redoButton;
-    
-    private EditorButton pencilButton;
-    private EditorButton rectangleButton;
-    private EditorButton ellipseButton;
-    private EditorButton bucketButton;
-    
-    private EditorButton zoomInButton;
-    private EditorButton zoomOutButton;
-    
-    private EditorButton runButton;
-    private EditorButton stopButton;
-    
-    private EditorButton helpButton;
-
-    public MainToolBar(MainWindow mainWindow)
+    public MainToolBar()
     {
         super();
 
-        this.parent = mainWindow;
+        this.setFloatable(false);
 
-        this.setFloatable(true);
+        this.popupMenu = new JPopupMenu();
+        this.newAnimationMenu = new JMenuItem("Animation");
+        this.newProjectMenu = new JMenuItem("Project");
 
-        popupMenu = new JPopupMenu();
-        newAnimationMenu = new JMenuItem("Animation");
-        newProjectMenu = new JMenuItem("Project");
+        this.popupMenu.add(this.newAnimationMenu);
+        this.popupMenu.add(this.newProjectMenu);
 
-        popupMenu.add(newAnimationMenu);
-        popupMenu.add(newProjectMenu);
+        this.newButton = new EditorButton();
+        this.newButton.setIcon(new ImageIcon(getClass().getResource(
+                "/rpgtoolkit/editor/resources/new.png")));
 
-        newButton = new EditorButton();
-        newButton.setIcon(new ImageIcon(getClass().getResource("/rpgtoolkit/editor/resources/new.png")));
-
-        openButton = new EditorButton();
-        openButton.setIcon(new ImageIcon(getClass()
+        this.openButton = new EditorButton();
+        this.openButton.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/open.png")));
 
-        saveButton = new EditorButton();
-        saveButton.setIcon(new ImageIcon(getClass()
+        this.saveButton = new EditorButton();
+        this.saveButton.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/save.png")));
         
-        saveAllButton = new EditorButton();
-        saveAllButton.setIcon(new ImageIcon(getClass()
+        this.saveAllButton = new EditorButton();
+        this.saveAllButton.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/save-all.png")));
         
-        cutButton = new EditorButton();
-        cutButton.setIcon(new ImageIcon(getClass().
+        this.cutButton = new EditorButton();
+        this.cutButton.setIcon(new ImageIcon(getClass().
                 getResource("/rpgtoolkit/editor/resources/cut.png")));
         
-        copyButton = new EditorButton();
-        copyButton.setIcon(new ImageIcon(getClass().
+        this.copyButton = new EditorButton();
+        this.copyButton.setIcon(new ImageIcon(getClass().
                 getResource("/rpgtoolkit/editor/resources/copy.png")));
         
-        pasteButton = new EditorButton();
-        pasteButton.setIcon(new ImageIcon(getClass().
+        this.pasteButton = new EditorButton();
+        this.pasteButton.setIcon(new ImageIcon(getClass().
                 getResource("/rpgtoolkit/editor/resources/paste.png")));
         
-        deleteButton = new EditorButton();
-        deleteButton.setIcon(new ImageIcon(getClass().
+        this.deleteButton = new EditorButton();
+        this.deleteButton.setIcon(new ImageIcon(getClass().
                 getResource("/rpgtoolkit/editor/resources/delete.png")));
         
-        undoButton = new EditorButton();
-        undoButton.setIcon(new ImageIcon(getClass().
+        this.undoButton = new EditorButton();
+        this.undoButton.setIcon(new ImageIcon(getClass().
                 getResource("/rpgtoolkit/editor/resources/undo.png")));
         
-        redoButton = new EditorButton();
-        redoButton.setIcon(new ImageIcon(getClass().
+        this.redoButton = new EditorButton();
+        this.redoButton.setIcon(new ImageIcon(getClass().
                 getResource("/rpgtoolkit/editor/resources/redo.png"))); 
         
-        pencilButton = new EditorButton();
-        pencilButton.setIcon(new ImageIcon(getClass().
+        this.pencilButton = new EditorButton();
+        this.pencilButton.setIcon(new ImageIcon(getClass().
                 getResource("/rpgtoolkit/editor/resources/pencil.png")));
+        this.pencilButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                ShapeBrush brush = new ShapeBrush();
+                brush.makeRectangleBrush(new Rectangle(0, 0, 1, 1));
+                MainWindow.getInstance().setCurrentBrush(brush);
+            }
+        });
         
-        rectangleButton = new EditorButton();
-        rectangleButton.setIcon(new ImageIcon(getClass().
+        this.rectangleButton = new EditorButton();
+        this.rectangleButton.setIcon(new ImageIcon(getClass().
                 getResource("/rpgtoolkit/editor/resources/shape-rectangle.png")));
         
-        ellipseButton = new EditorButton();
-        ellipseButton.setIcon(new ImageIcon(getClass().
+        this.ellipseButton = new EditorButton();
+        this.ellipseButton.setIcon(new ImageIcon(getClass().
                 getResource("/rpgtoolkit/editor/resources/shape-ellipse.png")));
         
-        bucketButton = new EditorButton();
-        bucketButton.setIcon(new ImageIcon(getClass().
+        this.bucketButton = new EditorButton();
+        this.bucketButton.setIcon(new ImageIcon(getClass().
                 getResource("/rpgtoolkit/editor/resources/bucket.png")));
         
-        zoomInButton = new EditorButton();
-        zoomInButton.setIcon(new ImageIcon(getClass().
+        this.zoomInButton = new EditorButton();
+        this.zoomInButton.setIcon(new ImageIcon(getClass().
                 getResource("/rpgtoolkit/editor/resources/zoom-in.png")));
-        
-        zoomOutButton = new EditorButton();
-        zoomOutButton.setIcon(new ImageIcon(getClass().
-                getResource("/rpgtoolkit/editor/resources/zoom-out.png")));
+        this.zoomInButton.addActionListener(new ActionListener()
+        {
 
-        runButton = new EditorButton();
-        runButton.setIcon(new ImageIcon(getClass().
-                getResource("/rpgtoolkit/editor/resources/run.png")));
-        runButton.setEnabled(false);
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                MainWindow.getInstance().zoomInOnBoardEditor();
+            }
+        });
         
-        stopButton = new EditorButton();
-        stopButton.setIcon(new ImageIcon(getClass().
+        this.zoomOutButton = new EditorButton();
+        this.zoomOutButton.setIcon(new ImageIcon(getClass().
+                getResource("/rpgtoolkit/editor/resources/zoom-out.png")));
+        this.zoomOutButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                MainWindow.getInstance().zoomOutOnBoardEditor();
+            }
+        });
+
+        this.runButton = new EditorButton();
+        this.runButton.setIcon(new ImageIcon(getClass().
+                getResource("/rpgtoolkit/editor/resources/run.png")));
+        this.runButton.setEnabled(false);
+        
+        this.stopButton = new EditorButton();
+        this.stopButton.setIcon(new ImageIcon(getClass().
                 getResource("/rpgtoolkit/editor/resources/stop.png")));
         
-        helpButton = new EditorButton();
-        helpButton.setIcon(new ImageIcon(getClass()
+        this.helpButton = new EditorButton();
+        this.helpButton.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/help.png")));
         
         // Disable all the buttons for now
-        newButton.setEnabled(false);
-        openButton.setEnabled(false);
-        saveButton.setEnabled(false);
-        saveAllButton.setEnabled(false);
-        cutButton.setEnabled(false);
-        copyButton.setEnabled(false);
-        pasteButton.setEnabled(false);
-        deleteButton.setEnabled(false);
-        undoButton.setEnabled(false);
-        redoButton.setEnabled(false);
-        pencilButton.setEnabled(false);
-        rectangleButton.setEnabled(false);
-        ellipseButton.setEnabled(false);
-        bucketButton.setEnabled(false);
-        zoomInButton.setEnabled(false);
-        zoomOutButton.setEnabled(false);
-        runButton.setEnabled(false);
-        stopButton.setEnabled(false);
-        helpButton.setEnabled(false);
+        this.newButton.setEnabled(false);
+        this.openButton.setEnabled(false);
+        this.saveButton.setEnabled(false);
+        this.saveAllButton.setEnabled(false);
+        this.cutButton.setEnabled(false);
+        this.copyButton.setEnabled(false);
+        this.pasteButton.setEnabled(false);
+        this.deleteButton.setEnabled(false);
+        this.undoButton.setEnabled(false);
+        this.redoButton.setEnabled(false);
+        this.pencilButton.setEnabled(true);
+        this.rectangleButton.setEnabled(false);
+        this.ellipseButton.setEnabled(false);
+        this.bucketButton.setEnabled(false);
+        this.zoomInButton.setEnabled(true);
+        this.zoomOutButton.setEnabled(true);
+        this.runButton.setEnabled(false);
+        this.stopButton.setEnabled(false);
+        this.helpButton.setEnabled(false);
         
-        this.add(newButton);
-        this.add(openButton);
-        this.add(saveButton);
-        this.add(saveAllButton);
+        this.add(this.newButton);
+        this.add(this.openButton);
+        this.add(this.saveButton);
+        this.add(this.saveAllButton);
         this.addSeparator();
-        this.add(cutButton);
-        this.add(copyButton);
-        this.add(pasteButton);
-        this.add(deleteButton);
+        this.add(this.cutButton);
+        this.add(this.copyButton);
+        this.add(this.pasteButton);
+        this.add(this.deleteButton);
         this.addSeparator();
-        this.add(undoButton);
-        this.add(redoButton);
+        this.add(this.undoButton);
+        this.add(this.redoButton);
         this.addSeparator();
-        this.add(pencilButton);
-        this.add(rectangleButton);
-        this.add(ellipseButton);
-        this.add(bucketButton);
+        this.add(this.pencilButton);
+        this.add(this.rectangleButton);
+        this.add(this.ellipseButton);
+        this.add(this.bucketButton);
         this.addSeparator();
-        this.add(zoomInButton);
-        this.add(zoomOutButton);
+        this.add(this.zoomInButton);
+        this.add(this.zoomOutButton);
         this.addSeparator();
-        this.add(runButton);
-        this.add(stopButton);
+        this.add(this.runButton);
+        this.add(this.stopButton);
         this.addSeparator();
-        this.add(helpButton);
+        this.add(this.helpButton);
     }
 
     public void enableRun()
     {
-        runButton.setEnabled(!runButton.isEnabled());
+        this.runButton.setEnabled(!this.runButton.isEnabled());
     }
 
 }

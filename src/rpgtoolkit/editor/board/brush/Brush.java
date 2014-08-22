@@ -17,8 +17,7 @@ public interface Brush
     
     public Rectangle getBounds();
     
-    public void startPaint(MultiLayerContainer container, int x, int y,
-            int button, int layer);
+    public void startPaint(MultiLayerContainer container, int layer);
     
     public Rectangle doPaint(int x, int y) throws Exception;
     

@@ -2,6 +2,7 @@ package rpgtoolkit.editor.main.menus.listeners;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import javax.swing.JCheckBoxMenuItem;
 import rpgtoolkit.editor.main.MainWindow;
 
 /**
@@ -25,6 +26,8 @@ public class ShowVectorsItemListener implements ItemListener
     @Override
     public void itemStateChanged(ItemEvent e) 
     {
+        JCheckBoxMenuItem showVectorsMenuItem = (JCheckBoxMenuItem)e.getItem();
         
+        this.parent.toogleVectorsOnBoardEditor(showVectorsMenuItem.isSelected());
     }   
 }

@@ -13,7 +13,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import rpgtoolkit.common.io.types.Animation;
 import rpgtoolkit.common.io.types.Project;
 import rpgtoolkit.common.io.types.TileSet;
-import rpgtoolkit.common.utilities.TileSetCache;
 import rpgtoolkit.editor.animation.AnimationEditor;
 import rpgtoolkit.editor.board.BoardEditor;
 import rpgtoolkit.editor.board.brush.AbstractBrush;
@@ -31,7 +30,7 @@ import rpgtoolkit.editor.tile.TileSelectionListener;
 import rpgtoolkit.editor.tile.TilesetCanvas;
 
 /**
- * Currently opening Tilesets, tiles, programs, boards, animations, characters
+ * Currently opening TileSets, tiles, programs, boards, animations, characters
  * etc.
  *
  * @author Geoff Wilson
@@ -61,10 +60,12 @@ public class MainWindow extends JFrame implements InternalFrameListener
     private final LinkedList<ToolkitEditorWindow> activeWindows;
     
     // Board Related.
-    private boolean isShowGrid;
-    private boolean isShowCoordinates;
+    private boolean showGrid;
+    private boolean showVectors;
+    private boolean showCoordinates;
     
     private AbstractBrush currentBrush;
+    private Rectangle cursorRectangle;
     
     // Listeners
     private final TileSetSelectionListener tileSetSelectionListener;
@@ -121,9 +122,11 @@ public class MainWindow extends JFrame implements InternalFrameListener
         this.fileChooser.setCurrentDirectory(new File(System.
                 getProperty("user.dir")));
 
-        this.toolBar = new MainToolBar(this);
+        this.toolBar = new MainToolBar();
         
         this.tileSetSelectionListener = new TileSetSelectionListener();
+        
+        this.cursorRectangle = new Rectangle(1, 1); // 1 : 1 in tiles.
 
         this.add(this.toolBar, BorderLayout.NORTH);
         this.add(this.desktopPane, BorderLayout.CENTER);
@@ -159,24 +162,34 @@ public class MainWindow extends JFrame implements InternalFrameListener
         this.desktopPane = desktopPane;
     }
 
-    public boolean isIsShowGrid()
+    public boolean isShowGrid()
     {
-        return isShowGrid;
+        return showGrid;
     }
 
-    public void setIsShowGrid(boolean isShowGrid)
+    public void setShowGrid(boolean isShowGrid)
     {
-        this.isShowGrid = isShowGrid;
+        this.showGrid = isShowGrid;
+    }
+    
+    public boolean isShowVectors()
+    {
+        return showVectors;
+    }
+    
+    public void setShowVectors(boolean showVectors)
+    {
+        this.showVectors = showVectors;
     }
 
-    public boolean isIsShowCoordinates()
+    public boolean isShowCoordinates()
     {
-        return isShowCoordinates;
+        return showCoordinates;
     }
 
-    public void setIsShowCoordinates(boolean isShowCoordinates)
+    public void setShowCoordinates(boolean isShowCoordinates)
     {
-        this.isShowCoordinates = isShowCoordinates;
+        this.showCoordinates = isShowCoordinates;
     }
 
     public AbstractBrush getCurrentBrush()
@@ -187,6 +200,16 @@ public class MainWindow extends JFrame implements InternalFrameListener
     public void setCurrentBrush(AbstractBrush brush)
     {
         this.currentBrush = brush;
+    }
+    
+    public Rectangle getCursorRectangle()
+    {
+        return this.cursorRectangle;
+    }
+    
+    public void setCursorRectangle(Rectangle rectangle)
+    {
+        this.cursorRectangle = rectangle;
     }
     
     /*
@@ -403,19 +426,34 @@ public class MainWindow extends JFrame implements InternalFrameListener
 
     public void toogleGridOnBoardEditor(boolean isVisible)
     {
-        if (desktopPane.getSelectedFrame() instanceof BoardEditor)
+        this.showGrid = isVisible;
+        
+        if (this.desktopPane.getSelectedFrame() instanceof BoardEditor)
         {
-            BoardEditor editor = (BoardEditor) desktopPane.getSelectedFrame();
-            editor.toggleGrid(isVisible);
+            BoardEditor editor = (BoardEditor) this.desktopPane.getSelectedFrame();
+            editor.getBoardView().repaint();
         }
     }
 
     public void toogleCoordinatesOnBoardEditor(boolean isVisible)
     {
+        this.showCoordinates = isVisible;
+        
         if (desktopPane.getSelectedFrame() instanceof BoardEditor)
         {
             BoardEditor editor = (BoardEditor) desktopPane.getSelectedFrame();
-            editor.toogleCoordinates(isVisible);
+            editor.getBoardView().repaint();
+        }
+    }
+    
+    public void toogleVectorsOnBoardEditor(boolean isVisible)
+    {
+        this.showVectors = isVisible;
+        
+        if (desktopPane.getSelectedFrame() instanceof BoardEditor)
+        {
+            BoardEditor editor = (BoardEditor) desktopPane.getSelectedFrame();
+            editor.getBoardView().repaint();
         }
     }
 
@@ -456,7 +494,6 @@ public class MainWindow extends JFrame implements InternalFrameListener
                 }
             }
         }
-
     }
 
 }

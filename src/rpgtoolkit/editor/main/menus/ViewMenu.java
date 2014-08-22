@@ -6,12 +6,14 @@ import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 import rpgtoolkit.editor.main.MainWindow;
 import rpgtoolkit.editor.main.menus.actions.ZoomInAction;
 import rpgtoolkit.editor.main.menus.actions.ZoomOutAction;
 import rpgtoolkit.editor.main.menus.listeners.ShowCoordinatesItemListener;
 import rpgtoolkit.editor.main.menus.listeners.ShowGridItemListener;
+import rpgtoolkit.editor.main.menus.listeners.ShowVectorsItemListener;
 
 /**
  *
@@ -42,11 +44,14 @@ public final class ViewMenu extends JMenu
         this.configureZoomOutMenuItem();
         this.configureShowGridMenuItem();
         this.configureShowCoordinatesMenuItem();
+        this.configureShowVectorsMenuItem();
         
         this.add(zoomInMenuItem);
         this.add(zoomOutMenuItem);
+        this.add(new JSeparator());
         this.add(showGridMenuItem);
         this.add(showCoordinatesMenuItem);
+        this.add(showVectorsMenuItem);
     }
     
     /**
@@ -116,6 +121,6 @@ public final class ViewMenu extends JMenu
         //showGridMenuItem.setAccelerator(
         //        KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
         //showGridMenuItem.setMnemonic(KeyEvent.VK_G);
-        showVectorsMenuItem.addItemListener(new ShowCoordinatesItemListener(parent));
+        showVectorsMenuItem.addItemListener(new ShowVectorsItemListener(parent));
     }
 }

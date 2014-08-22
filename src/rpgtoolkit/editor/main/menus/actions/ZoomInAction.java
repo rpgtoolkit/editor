@@ -22,7 +22,7 @@ public class ZoomInAction extends AbstractAction
     
     /**
      * 
-     * @param boardView 
+     * @param parent
      */
     public ZoomInAction(MainWindow parent)
     {

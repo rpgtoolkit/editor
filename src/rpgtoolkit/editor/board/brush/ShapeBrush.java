@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.Area;
+import java.awt.geom.Rectangle2D;
 import rpgtoolkit.common.editor.types.BoardLayer;
 import rpgtoolkit.common.editor.types.MultiLayerContainer;
 import rpgtoolkit.common.editor.types.Tile;
@@ -80,6 +81,12 @@ public class ShapeBrush extends AbstractBrush
      * Public Methods
      * *************************************************************************
      */
+    public void makeRectangleBrush(Rectangle rectangle)
+    {
+        this.shape = new Area(new Rectangle2D.Double(rectangle.x, rectangle.y, 
+                rectangle.width, rectangle.height));
+    }
+    
     @Override
     public void drawPreview(Graphics2D g2d, Dimension dimension, 
             AbstractBoardView view)
@@ -101,10 +108,9 @@ public class ShapeBrush extends AbstractBrush
     }
     
     @Override
-    public void startPaint(MultiLayerContainer container, int x, int y, 
-            int button, int layer)
+    public void startPaint(MultiLayerContainer container, int layer)
     {
-        super.startPaint(container, x, y, button, layer);
+        super.startPaint(container, layer);
     }
     
     @Override
@@ -129,7 +135,8 @@ public class ShapeBrush extends AbstractBrush
                     {
                         if (this.shape.contains(i, j))
                         {
-                            //
+                            boardLayer.setTileAt(j + centerX, i + centerY, 
+                                    this.paintTile);
                         }
                     }
                 }

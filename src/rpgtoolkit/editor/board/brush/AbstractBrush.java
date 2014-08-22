@@ -59,8 +59,7 @@ public abstract class AbstractBrush implements Brush
      * *************************************************************************
      */
     @Override
-    public void startPaint(MultiLayerContainer container, int x, int y,
-            int button, int layer)
+    public void startPaint(MultiLayerContainer container, int layer)
     {
         this.affectedContainer = container;
         this.initialLayer = layer;

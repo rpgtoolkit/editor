@@ -39,13 +39,6 @@ public class ShowGridItemListener implements ItemListener
     {
         JCheckBoxMenuItem showGridMenuItem = (JCheckBoxMenuItem)e.getItem();
         
-        if (showGridMenuItem.isSelected())
-        {
-            parent.toogleGridOnBoardEditor(true);
-        }
-        else
-        {
-            parent.toogleGridOnBoardEditor(false);
-        }
+        this.parent.toogleGridOnBoardEditor(showGridMenuItem.isSelected());
     }
 }
