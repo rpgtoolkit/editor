@@ -49,9 +49,6 @@ public class LayerPanel extends JPanel implements ChangeListener,
     private JPanel sliderPanel;
     private JPanel buttonPanel;
 
-    private int lastSelectedIndex; // Used to keep track of the previously
-    // selected layer.
-
     /*
      * *************************************************************************
      * Public Constructors
@@ -65,10 +62,9 @@ public class LayerPanel extends JPanel implements ChangeListener,
     public LayerPanel(AbstractBoardView boardView)
     {
         this.boardView = boardView;
-        this.lastSelectedIndex = -1;
         this.initialize();
     }
-    
+
     /*
      * *************************************************************************
      * Public Getters and Setters
@@ -78,11 +74,16 @@ public class LayerPanel extends JPanel implements ChangeListener,
     {
         return this.boardView;
     }
-    
+
     public void setBoardView(AbstractBoardView boardView)
     {
-        this.boardView = boardView; 
+        this.boardView = boardView;
         this.layerTable.setModel(new LayerTableModel(this.boardView));
+
+        if (this.boardView.getBoard().getLayers().size() > 0)
+        {
+            this.layerTable.changeSelection(0, 0, false, false);
+        }
     }
 
     /*
@@ -109,6 +110,11 @@ public class LayerPanel extends JPanel implements ChangeListener,
         if (this.boardView != null)
         {
             this.layerTable = new JTable(new LayerTableModel(this.boardView));
+
+            if (this.boardView.getBoard().getLayers().size() > 0)
+            {
+                this.layerTable.changeSelection(0, 0, false, false);
+            }
         }
         else
         {
@@ -299,14 +305,14 @@ public class LayerPanel extends JPanel implements ChangeListener,
                 BoardLayerView selectedLayer = this.boardView.getLayer(
                         (boardView.getBoard().getLayers().size()
                         - layerTable.getSelectedRow()) - 1);
-                
+
                 this.boardView.setCurrentSeletedLayer(selectedLayer);
-                
-                this.opacitySlider.setValue((int)selectedLayer.getOpacity() * 100);
+
+                this.opacitySlider.setValue((int) selectedLayer.getOpacity() * 100);
             }
         }
     }
-    
+
     public void clearTable()
     {
         this.layerTable.setModel(new LayerTableModel());

@@ -13,13 +13,13 @@ public class MainMenuBar extends JMenuBar
 {
     private final MainWindow parent;
 
-    private FileMenu fileMenu;
-    private EditMenu editMenu;
-    private ViewMenu viewMenu;
-    private ProjectMenu projectMenu;
-    private RunMenu runMenu;
-    private ToolsMenu toolsMenu;
-    private HelpMenu helpMenu;
+    private final FileMenu fileMenu;
+    private final EditMenu editMenu;
+    private final ViewMenu viewMenu;
+    private final ProjectMenu projectMenu;
+    private final RunMenu runMenu;
+    private final ToolsMenu toolsMenu;
+    private final HelpMenu helpMenu;
     
     public MainMenuBar(MainWindow menuBarParent)
     {

@@ -883,7 +883,7 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
 
     public void gracefulClose()
     {
-        parent.removeActiveWindow(this);
+       
     }
 
     public void setWindowParent(MainWindow parent)

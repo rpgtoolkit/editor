@@ -116,6 +116,11 @@ public class ShapeBrush extends AbstractBrush
     @Override
     public Rectangle doPaint(int x, int y) throws Exception
     {
+        if (this.paintTile == null)
+        {
+            return null;
+        }
+        
         Rectangle shapeBounds = this.shape.getBounds();
         int centerX = x - shapeBounds.width / 2;
         int centerY = y - shapeBounds.height / 2;
