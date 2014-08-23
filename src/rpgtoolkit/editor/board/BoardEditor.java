@@ -1,6 +1,7 @@
 package rpgtoolkit.editor.board;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -8,7 +9,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
 import rpgtoolkit.common.io.types.Board;
-import rpgtoolkit.editor.board.brush.AbstractBrush;
+import rpgtoolkit.editor.board.tool.AbstractBrush;
+import rpgtoolkit.editor.board.tool.SelectionBrush;
+import rpgtoolkit.editor.board.tool.ShapeBrush;
 import rpgtoolkit.editor.main.MainWindow;
 import rpgtoolkit.editor.main.ToolkitEditorWindow;
 
@@ -31,6 +34,7 @@ public class BoardEditor extends ToolkitEditorWindow
     private BoardMouseAdapter boardMouseAdapter;
 
     private Point cursorLocation;
+    private Rectangle selection;
 
     /*
      * *************************************************************************
@@ -124,6 +128,11 @@ public class BoardEditor extends ToolkitEditorWindow
     {
         return this.cursorLocation;
     }
+    
+    public Rectangle getSelection()
+    {
+        return this.selection;
+    }
 
     /*
      * *************************************************************************
@@ -156,15 +165,24 @@ public class BoardEditor extends ToolkitEditorWindow
 
     /*
      * *************************************************************************
+     * Private Getters and Setters
+     * *************************************************************************
+     */
+    private void setSelection(Rectangle rectangle)
+    {
+        this.selection = rectangle;
+        this.boardView.repaint();
+    }
+
+    /*
+     * *************************************************************************
      * Private Methods
      * *************************************************************************
      */
-    private void useBrush(Point point)
+    private void doPaint(AbstractBrush brush, Point point)
     {
         try
         {
-            AbstractBrush brush = MainWindow.getInstance().getCurrentBrush();
-
             if (brush == null)
             {
                 return;
@@ -189,6 +207,8 @@ public class BoardEditor extends ToolkitEditorWindow
      */
     private class BoardMouseAdapter extends MouseAdapter
     {
+        private Point origin;
+        
         /*
          * *********************************************************************
          * Public Constructors
@@ -206,13 +226,28 @@ public class BoardEditor extends ToolkitEditorWindow
          * *********************************************************************
          */
         @Override
-        public void mouseClicked(MouseEvent e)
+        public void mousePressed(MouseEvent e)
         {
             if (boardView.getCurrentSelectedLayer() != null)
             {
                 Point point = boardView.getTileCoordinates(e.getX(), e.getY());
+                AbstractBrush brush = MainWindow.getInstance().getCurrentBrush();
 
-                useBrush(point);
+                if (brush instanceof SelectionBrush)
+                {
+                    this.origin = boardView.getTileCoordinates(e.getX(), e.getY());
+                    setSelection(new Rectangle(this.origin.x, 
+                            this.origin.y, 0, 0));
+                }
+                else
+                {
+                    if (brush instanceof ShapeBrush && selection != null)
+                    {
+                        selection = null;
+                    }
+                    
+                    doPaint(brush, point);
+                }
             }
         }
 
@@ -222,9 +257,29 @@ public class BoardEditor extends ToolkitEditorWindow
             if (boardView.getCurrentSelectedLayer() != null)
             {
                 Point point = boardView.getTileCoordinates(e.getX(), e.getY());
+                AbstractBrush brush = MainWindow.getInstance().getCurrentBrush();
                 cursorLocation = point;
 
-                useBrush(point);
+                if (brush instanceof SelectionBrush)
+                {
+                    Rectangle select = new Rectangle(this.origin.x, 
+                            this.origin.y, 0, 0);
+                    select.add(point);
+
+                    if (!select.equals(selection))
+                    {
+                        setSelection(select);
+                    }
+                }
+                else
+                {
+                    if (brush instanceof ShapeBrush && selection != null)
+                    {
+                        selection = null;
+                    }
+                    
+                    doPaint(brush, point);
+                }
             }
         }
 

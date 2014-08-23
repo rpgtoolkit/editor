@@ -8,7 +8,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 import rpgtoolkit.common.editor.types.EditorButton;
-import rpgtoolkit.editor.board.brush.ShapeBrush;
+import rpgtoolkit.common.editor.types.Tile;
+import rpgtoolkit.editor.board.tool.SelectionBrush;
+import rpgtoolkit.editor.board.tool.ShapeBrush;
 import rpgtoolkit.editor.main.MainWindow;
 
 /**
@@ -36,8 +38,7 @@ public class MainToolBar extends JToolBar
     private final EditorButton redoButton;
     
     private final EditorButton pencilButton;
-    private final EditorButton rectangleButton;
-    private final EditorButton ellipseButton;
+    private final EditorButton selectionButton;
     private final EditorButton bucketButton;
     private final EditorButton eraserButton;
     
@@ -131,13 +132,19 @@ public class MainToolBar extends JToolBar
             }
         });
         
-        this.rectangleButton = new EditorButton();
-        this.rectangleButton.setIcon(new ImageIcon(getClass().
+        this.selectionButton = new EditorButton();
+        this.selectionButton.setIcon(new ImageIcon(getClass().
                 getResource("/rpgtoolkit/editor/resources/shape-rectangle.png")));
-        
-        this.ellipseButton = new EditorButton();
-        this.ellipseButton.setIcon(new ImageIcon(getClass().
-                getResource("/rpgtoolkit/editor/resources/shape-ellipse.png")));
+        this.selectionButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                SelectionBrush brush = new SelectionBrush(new Tile[1][1]);
+                MainWindow.getInstance().setCurrentBrush(brush);
+            }
+        });
         
         this.bucketButton = new EditorButton();
         this.bucketButton.setIcon(new ImageIcon(getClass().
@@ -146,6 +153,18 @@ public class MainToolBar extends JToolBar
         this.eraserButton = new EditorButton();
         this.eraserButton.setIcon(new ImageIcon(getClass().
                 getResource("/rpgtoolkit/editor/resources/eraser.png")));
+        this.eraserButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                ShapeBrush brush = new ShapeBrush();
+                brush.makeRectangleBrush(new Rectangle(0, 0, 1, 1));
+                brush.setTile(new Tile());
+                MainWindow.getInstance().setCurrentBrush(brush);
+            }
+        });
         
         this.zoomInButton = new EditorButton();
         this.zoomInButton.setIcon(new ImageIcon(getClass().
@@ -198,10 +217,9 @@ public class MainToolBar extends JToolBar
         this.undoButton.setEnabled(false);
         this.redoButton.setEnabled(false);
         this.pencilButton.setEnabled(true);
-        this.rectangleButton.setEnabled(false);
-        this.ellipseButton.setEnabled(false);
+        this.selectionButton.setEnabled(true);
         this.bucketButton.setEnabled(false);
-        this.eraserButton.setEnabled(false);
+        this.eraserButton.setEnabled(true);
         this.zoomInButton.setEnabled(true);
         this.zoomOutButton.setEnabled(true);
         this.runButton.setEnabled(false);
@@ -222,8 +240,7 @@ public class MainToolBar extends JToolBar
         this.add(this.redoButton);
         this.addSeparator();
         this.add(this.pencilButton);
-        this.add(this.rectangleButton);
-        this.add(this.ellipseButton);
+        this.add(this.selectionButton);
         this.add(this.bucketButton);
         this.add(this.eraserButton);
         this.addSeparator();

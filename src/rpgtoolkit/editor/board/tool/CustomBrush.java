@@ -1,4 +1,4 @@
-package rpgtoolkit.editor.board.brush;
+package rpgtoolkit.editor.board.tool;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -16,8 +16,8 @@ import rpgtoolkit.editor.board.AbstractBoardView;
 public class CustomBrush extends AbstractBrush
 {
 
-    private Rectangle bounds;
-    private Tile[][] tiles;
+    protected Rectangle bounds;
+    protected Tile[][] tiles;
     
     /*
      * *************************************************************************
@@ -35,6 +35,23 @@ public class CustomBrush extends AbstractBrush
      * Public Getters and Setters
      * *************************************************************************
      */
+    @Override
+    public Shape getShape()
+    {
+        return this.getBounds();
+    }
+    
+    @Override
+    public Rectangle getBounds()
+    {
+        return this.bounds;
+    }
+    
+    public void setBounds(Rectangle rectangle)
+    {
+        this.bounds = rectangle;
+    }
+    
     public Tile[][] getTiles()
     {
         return this.tiles;
@@ -51,17 +68,6 @@ public class CustomBrush extends AbstractBrush
      * Public Methods
      * *************************************************************************
      */
-    @Override
-    public Shape getShape()
-    {
-        return this.getBounds();
-    }
-
-    @Override
-    public Rectangle getBounds()
-    {
-        return this.bounds;
-    }
 
     @Override
     public void drawPreview(Graphics2D g2d, AbstractBoardView view)

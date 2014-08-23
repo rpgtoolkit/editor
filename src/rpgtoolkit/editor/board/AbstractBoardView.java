@@ -457,6 +457,13 @@ public abstract class AbstractBoardView extends JPanel implements
      * @param g The graphics context to draw on.
      */
     protected abstract void paintCursor(Graphics2D g);
+    
+    /**
+     * A concrete BoardView will implement its own selection drawing code here.
+     *
+     * @param g The graphics context to draw on.
+     */
+    protected abstract void paintSelection(Graphics2D g);
 
     /*
      * *************************************************************************

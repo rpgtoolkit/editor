@@ -1,4 +1,4 @@
-package rpgtoolkit.editor.board.brush;
+package rpgtoolkit.editor.board.tool;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
