@@ -166,6 +166,11 @@ public class BoardLayer implements Cloneable
         this.images = images;
     }
     
+    public Tile getTileAt(int x, int y)
+    {
+        return this.tiles[x][y];
+    }
+    
     public void setTileAt(int x, int y, Tile tile)
     {
         this.tiles[x][y] = tile;   
@@ -177,6 +182,16 @@ public class BoardLayer implements Cloneable
      * Public Methods
      * *************************************************************************
      */
+    public boolean contains(int x, int y)
+    {
+        if (x < 0 || y < 0)
+        {
+            return false;
+        }
+        
+        return x < this.tiles.length && y < this.tiles[0].length;
+    }
+    
     public void moveLayerUp()
     {
         this.number++;

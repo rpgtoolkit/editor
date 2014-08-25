@@ -114,13 +114,13 @@ public class ShapeBrush extends AbstractBrush
     }
 
     @Override
-    public Rectangle doPaint(int x, int y) throws Exception
+    public Rectangle doPaint(int x, int y, Rectangle selection) throws Exception
     {
         Rectangle shapeBounds = this.shape.getBounds();
         int centerX = x - shapeBounds.width / 2;
         int centerY = y - shapeBounds.height / 2;
 
-        super.doPaint(x, y);
+        super.doPaint(x, y, selection);
 
         for (int layer = 0; layer < this.affectedLayers; layer++)
         {

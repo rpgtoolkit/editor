@@ -24,7 +24,7 @@ public class TileSetPanel extends JPanel
     public TileSetPanel()
     {
         this.scrollPane = new JScrollPane();
-         this.scrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
+        this.scrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
         
         this.setLayout(new BorderLayout());
         this.add(this.scrollPane, BorderLayout.CENTER);

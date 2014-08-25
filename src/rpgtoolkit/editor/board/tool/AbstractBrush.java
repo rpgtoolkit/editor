@@ -67,7 +67,7 @@ public abstract class AbstractBrush implements Brush
     }
     
     @Override
-    public Rectangle doPaint(int x, int y) throws Exception
+    public Rectangle doPaint(int x, int y, Rectangle selection) throws Exception
     {
         if (!this.isPainting)
         {

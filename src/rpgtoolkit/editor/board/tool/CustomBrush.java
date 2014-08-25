@@ -96,7 +96,7 @@ public class CustomBrush extends AbstractBrush
     }
     
     @Override
-    public Rectangle doPaint(int x, int y) throws Exception
+    public Rectangle doPaint(int x, int y, Rectangle selection) throws Exception
     {
         BoardLayer layer = this.affectedContainer.getLayer(this.initialLayer).
                 getLayer();
@@ -106,7 +106,7 @@ public class CustomBrush extends AbstractBrush
         int centerX = x - this.bounds.width / 2;
         int centerY = y - this.bounds.height / 2;
         
-        super.doPaint(x, y);
+        super.doPaint(x, y, selection);
         
         // TODO: Some small inefficiencies in this with regard to the ifs.
         for (int offsetY = centerY; offsetY < centerY + bounds.height; offsetY++)

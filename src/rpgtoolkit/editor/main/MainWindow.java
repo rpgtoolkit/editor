@@ -15,6 +15,7 @@ import rpgtoolkit.common.io.types.TileSet;
 import rpgtoolkit.editor.animation.AnimationEditor;
 import rpgtoolkit.editor.board.BoardEditor;
 import rpgtoolkit.editor.board.tool.AbstractBrush;
+import rpgtoolkit.editor.board.tool.BucketBrush;
 import rpgtoolkit.editor.board.tool.CustomBrush;
 import rpgtoolkit.editor.board.tool.ShapeBrush;
 import rpgtoolkit.editor.main.panels.LayerPanel;
@@ -468,19 +469,27 @@ public class MainWindow extends JFrame implements InternalFrameListener
         /*
          * *********************************************************************
          * Private Inner Classes
-         * ***************************************************d******************
+         * *********************************************************************
          */
         @Override
         public void tileSelected(TileSelectionEvent e)
         {
-            if (!(currentBrush instanceof ShapeBrush))
+            if (currentBrush instanceof ShapeBrush)
+            {
+                ((ShapeBrush) currentBrush).setTile(e.getTile());
+                toolBar.getPencilButton().setSelected(true);
+            }
+            else if (currentBrush instanceof BucketBrush)
+            {
+                ((BucketBrush) currentBrush).setPourTile(e.getTile());
+            }
+            else
             {
                 currentBrush = new ShapeBrush();
                 ((ShapeBrush) currentBrush).makeRectangleBrush(
                         new Rectangle(0, 0, 1, 1));
-            }
-
-            ((ShapeBrush) currentBrush).setTile(e.getTile());
+                toolBar.getPencilButton().setSelected(true);
+            } 
         }
 
         @Override
@@ -494,6 +503,8 @@ public class MainWindow extends JFrame implements InternalFrameListener
             {
                 ((CustomBrush) currentBrush).setTiles(e.getTiles());
             }
+            
+            toolBar.getPencilButton().setSelected(true);
         }
     }
 

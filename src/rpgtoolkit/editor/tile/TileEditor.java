@@ -33,7 +33,11 @@ public class TileEditor extends JInternalFrame
             {
                 if (canvas.hasChanged())
                 {
-                    switch (JOptionPane.showInternalConfirmDialog(canvas, "This Tile has changed, would you like to save the changes?", "Save Changes?", JOptionPane.YES_NO_CANCEL_OPTION))
+                    switch (JOptionPane.showInternalConfirmDialog(
+                            canvas, 
+                            "This Tile has changed, would you like to save the changes?", 
+                            "Save Changes?", 
+                            JOptionPane.YES_NO_CANCEL_OPTION))
                     {
                         case JOptionPane.NO_OPTION:
                             canvas.changeTile((Tile) tileSelector.getValue());

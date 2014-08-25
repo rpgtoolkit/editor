@@ -8,8 +8,10 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
+import rpgtoolkit.common.editor.types.Tile;
 import rpgtoolkit.common.io.types.Board;
 import rpgtoolkit.editor.board.tool.AbstractBrush;
+import rpgtoolkit.editor.board.tool.BucketBrush;
 import rpgtoolkit.editor.board.tool.SelectionBrush;
 import rpgtoolkit.editor.board.tool.ShapeBrush;
 import rpgtoolkit.editor.main.MainWindow;
@@ -35,6 +37,8 @@ public class BoardEditor extends ToolkitEditorWindow
 
     private Point cursorLocation;
     private Rectangle selection;
+    
+    private Tile[][] selectedTiles;
 
     /*
      * *************************************************************************
@@ -133,6 +137,11 @@ public class BoardEditor extends ToolkitEditorWindow
     {
         return this.selection;
     }
+    
+    public Tile[][] getSelectedTiles()
+    {
+        return this.selectedTiles;
+    }
 
     /*
      * *************************************************************************
@@ -179,7 +188,7 @@ public class BoardEditor extends ToolkitEditorWindow
      * Private Methods
      * *************************************************************************
      */
-    private void doPaint(AbstractBrush brush, Point point)
+    private void doPaint(AbstractBrush brush, Point point, Rectangle selection)
     {
         try
         {
@@ -190,7 +199,7 @@ public class BoardEditor extends ToolkitEditorWindow
 
             brush.startPaint(boardView, boardView.
                     getCurrentSelectedLayer().getLayer().getNumber());
-            brush.doPaint(point.x, point.y);
+            brush.doPaint(point.x, point.y, selection);
             brush.endPaint();
         }
         catch (Exception ex)
@@ -198,6 +207,23 @@ public class BoardEditor extends ToolkitEditorWindow
             Logger.getLogger(BoardEditor.class.getName()).log(
                     Level.SEVERE, null, ex);
         }
+    }
+    
+    private Tile[][] createTileLayerFromRegion(Rectangle rectangle)
+    {
+        Tile[][] tiles = new Tile[rectangle.width + 1][rectangle.height + 1];
+        
+        for (int y = rectangle.y; y <= rectangle.y + rectangle.height; y++)
+        {
+            for (int x = rectangle.x; x <= rectangle.x + rectangle.width; x++)
+            {
+                tiles[x - rectangle.x][y - rectangle.y] = 
+                        this.boardView.getCurrentSelectedLayer().
+                                getLayer().getTileAt(x, y);
+            }
+        }
+        
+        return tiles;
     }
 
     /*
@@ -235,18 +261,40 @@ public class BoardEditor extends ToolkitEditorWindow
 
                 if (brush instanceof SelectionBrush)
                 {
-                    this.origin = boardView.getTileCoordinates(e.getX(), e.getY());
-                    setSelection(new Rectangle(this.origin.x, 
-                            this.origin.y, 0, 0));
+                    this.origin = point;
+                    setSelection(new Rectangle(
+                            this.origin.x, this.origin.y, 
+                            0, 0));
+                    
+                    selectedTiles = createTileLayerFromRegion(selection);
                 }
                 else
                 {
+                    Rectangle bucketSelection = null;
+                    
                     if (brush instanceof ShapeBrush && selection != null)
                     {
                         selection = null;
                     }
+                    else if (brush instanceof BucketBrush && selection != null)
+                    {
+                        // To compensate for the fact that the selection
+                        // is 1 size too small in both width and height.
+                        // Bit of a hack really.
+                        selection.width++;
+                        selection.height++;
+                        
+                        if (selection.contains(point))
+                        {
+                            bucketSelection = (Rectangle)selection.clone();
+                        }
+                        
+                        // Revert back to original dimensions.
+                        selection.width--;
+                        selection.height--;
+                    }
                     
-                    doPaint(brush, point);
+                    doPaint(brush, point, bucketSelection);
                 }
             }
         }
@@ -262,14 +310,17 @@ public class BoardEditor extends ToolkitEditorWindow
 
                 if (brush instanceof SelectionBrush)
                 {
-                    Rectangle select = new Rectangle(this.origin.x, 
-                            this.origin.y, 0, 0);
+                    Rectangle select = new Rectangle(
+                            this.origin.x, this.origin.y, 
+                            0, 0);
                     select.add(point);
 
                     if (!select.equals(selection))
                     {
                         setSelection(select);
                     }
+                    
+                    selectedTiles = createTileLayerFromRegion(selection);
                 }
                 else
                 {
@@ -278,7 +329,7 @@ public class BoardEditor extends ToolkitEditorWindow
                         selection = null;
                     }
                     
-                    doPaint(brush, point);
+                    doPaint(brush, point, null);
                 }
             }
         }

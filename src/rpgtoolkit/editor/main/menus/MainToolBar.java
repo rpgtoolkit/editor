@@ -11,9 +11,11 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import rpgtoolkit.common.editor.types.EditorButton;
 import rpgtoolkit.common.editor.types.Tile;
+import rpgtoolkit.editor.board.tool.BucketBrush;
 import rpgtoolkit.editor.board.tool.SelectionBrush;
 import rpgtoolkit.editor.board.tool.ShapeBrush;
 import rpgtoolkit.editor.main.MainWindow;
+import sun.security.krb5.PrincipalName;
 
 /**
  * 
@@ -44,6 +46,9 @@ public class MainToolBar extends JToolBar
     private final JToggleButton selectionButton;
     private final JToggleButton bucketButton;
     private final JToggleButton eraserButton;
+    private final JToggleButton vectorButton;
+    private final JToggleButton spriteButton;
+    private final JToggleButton lightButton;
     
     private final EditorButton zoomInButton;
     private final EditorButton zoomOutButton;
@@ -139,7 +144,7 @@ public class MainToolBar extends JToolBar
         this.selectionButton = new JToggleButton();
         this.selectionButton.setFocusable(false);
         this.selectionButton.setIcon(new ImageIcon(getClass().
-                getResource("/rpgtoolkit/editor/resources/shape-rectangle.png")));
+                getResource("/rpgtoolkit/editor/resources/selection.png")));
         this.selectionButton.addActionListener(new ActionListener()
         {
 
@@ -155,6 +160,17 @@ public class MainToolBar extends JToolBar
         this.bucketButton.setFocusable(false);
         this.bucketButton.setIcon(new ImageIcon(getClass().
                 getResource("/rpgtoolkit/editor/resources/bucket.png")));
+        this.bucketButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                BucketBrush brush = new BucketBrush();
+                brush.setPourTile(new Tile());
+                MainWindow.getInstance().setCurrentBrush(brush);
+            }
+        });
         
         this.eraserButton = new JToggleButton();
         this.eraserButton.setFocusable(false);
@@ -170,6 +186,48 @@ public class MainToolBar extends JToolBar
                 brush.makeRectangleBrush(new Rectangle(0, 0, 1, 1));
                 brush.setTile(new Tile());
                 MainWindow.getInstance().setCurrentBrush(brush);
+            }
+        });
+        
+        this.vectorButton = new JToggleButton();
+        this.vectorButton.setFocusable(false);
+        this.vectorButton.setIcon(new ImageIcon(getClass().
+                getResource("/rpgtoolkit/editor/resources/layer-shape-polyline.png")));
+        this.vectorButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                
+            }
+        });
+        
+        this.spriteButton = new JToggleButton();
+        this.spriteButton.setFocusable(false);
+        this.spriteButton.setIcon(new ImageIcon(getClass().
+                getResource("/rpgtoolkit/editor/resources/user.png")));
+        this.spriteButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                
+            }
+        });
+        
+        this.lightButton = new JToggleButton();
+        this.lightButton.setFocusable(false);
+        this.lightButton.setIcon(new ImageIcon(getClass().
+                getResource("/rpgtoolkit/editor/resources/flashlight-shine.png")));
+        this.lightButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                
             }
         });
         
@@ -225,8 +283,11 @@ public class MainToolBar extends JToolBar
         this.redoButton.setEnabled(false);
         this.pencilButton.setEnabled(true);
         this.selectionButton.setEnabled(true);
-        this.bucketButton.setEnabled(false);
+        this.bucketButton.setEnabled(true);
         this.eraserButton.setEnabled(true);
+        this.vectorButton.setEnabled(false);
+        this.spriteButton.setEnabled(false);
+        this.lightButton.setEnabled(false);
         this.zoomInButton.setEnabled(true);
         this.zoomOutButton.setEnabled(true);
         this.runButton.setEnabled(false);
@@ -238,6 +299,9 @@ public class MainToolBar extends JToolBar
         this.toolButtonGroup.add(this.selectionButton);
         this.toolButtonGroup.add(this.bucketButton);
         this.toolButtonGroup.add(this.eraserButton);
+        this.toolButtonGroup.add(this.vectorButton);
+        this.toolButtonGroup.add(this.spriteButton);
+        this.toolButtonGroup.add(this.lightButton);
         
         this.add(this.newButton);
         this.add(this.openButton);
@@ -256,6 +320,9 @@ public class MainToolBar extends JToolBar
         this.add(this.selectionButton);
         this.add(this.bucketButton);
         this.add(this.eraserButton);
+        this.add(this.vectorButton);
+        this.add(this.spriteButton);
+        this.add(this.lightButton);
         this.addSeparator();
         this.add(this.zoomInButton);
         this.add(this.zoomOutButton);
@@ -266,6 +333,126 @@ public class MainToolBar extends JToolBar
         this.add(this.helpButton);
     }
 
+    /*
+     * *************************************************************************
+     * Public Getters and Setters
+     * *************************************************************************
+     */
+    public JPopupMenu getPopupMenu()
+    {
+        return popupMenu;
+    }
+
+    public JMenuItem getNewAnimationMenu()
+    {
+        return newAnimationMenu;
+    }
+
+    public JMenuItem getNewProjectMenu()
+    {
+        return newProjectMenu;
+    }
+
+    public EditorButton getNewButton()
+    {
+        return newButton;
+    }
+
+    public EditorButton getOpenButton()
+    {
+        return openButton;
+    }
+
+    public EditorButton getSaveButton()
+    {
+        return saveButton;
+    }
+
+    public EditorButton getSaveAllButton()
+    {
+        return saveAllButton;
+    }
+
+    public EditorButton getCutButton()
+    {
+        return cutButton;
+    }
+
+    public EditorButton getCopyButton()
+    {
+        return copyButton;
+    }
+
+    public EditorButton getPasteButton()
+    {
+        return pasteButton;
+    }
+
+    public EditorButton getDeleteButton()
+    {
+        return deleteButton;
+    }
+
+    public EditorButton getUndoButton()
+    {
+        return undoButton;
+    }
+
+    public EditorButton getRedoButton()
+    {
+        return redoButton;
+    }
+
+    public ButtonGroup getToolButtonGroup()
+    {
+        return toolButtonGroup;
+    }
+
+    public JToggleButton getPencilButton()
+    {
+        return pencilButton;
+    }
+
+    public JToggleButton getSelectionButton()
+    {
+        return selectionButton;
+    }
+
+    public JToggleButton getBucketButton()
+    {
+        return bucketButton;
+    }
+
+    public JToggleButton getEraserButton()
+    {
+        return eraserButton;
+    }
+
+    public EditorButton getZoomInButton()
+    {
+        return zoomInButton;
+    }
+
+    public EditorButton getZoomOutButton()
+    {
+        return zoomOutButton;
+    }
+
+    public EditorButton getRunButton()
+    {
+        return runButton;
+    }
+
+    public EditorButton getStopButton()
+    {
+        return stopButton;
+    }
+
+    public EditorButton getHelpButton()
+    {
+        return helpButton;
+    }
+    
     /*
      * *************************************************************************
      * Public Methods
