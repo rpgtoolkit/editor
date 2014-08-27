@@ -198,6 +198,7 @@ public final class FileMenu extends JMenu
     private void configureOpenFileMenuItem()
     {
         openFileMenuItem = new JMenuItem("Open File");
+        this.openFileMenuItem.setEnabled(false);
         openFileMenuItem.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/open.png")));
         openFileMenuItem.setAccelerator(

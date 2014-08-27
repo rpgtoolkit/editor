@@ -15,7 +15,6 @@ import rpgtoolkit.editor.board.tool.BucketBrush;
 import rpgtoolkit.editor.board.tool.SelectionBrush;
 import rpgtoolkit.editor.board.tool.ShapeBrush;
 import rpgtoolkit.editor.main.MainWindow;
-import sun.security.krb5.PrincipalName;
 
 /**
  * 
@@ -81,6 +80,7 @@ public class MainToolBar extends JToolBar
                 "/rpgtoolkit/editor/resources/new.png")));
 
         this.openButton = new EditorButton();
+        this.openButton.setEnabled(false);
         this.openButton.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/open.png")));
         this.openButton.addActionListener(new ActionListener()
@@ -136,6 +136,7 @@ public class MainToolBar extends JToolBar
             public void actionPerformed(ActionEvent e)
             {
                 ShapeBrush brush = new ShapeBrush();
+                brush.setTile(MainWindow.getInstance().getLastSelectedTile());
                 brush.makeRectangleBrush(new Rectangle(0, 0, 1, 1));
                 MainWindow.getInstance().setCurrentBrush(brush);
             }
@@ -167,7 +168,7 @@ public class MainToolBar extends JToolBar
             public void actionPerformed(ActionEvent e)
             {
                 BucketBrush brush = new BucketBrush();
-                brush.setPourTile(new Tile());
+                brush.setPourTile(MainWindow.getInstance().getLastSelectedTile());
                 MainWindow.getInstance().setCurrentBrush(brush);
             }
         });
@@ -272,7 +273,7 @@ public class MainToolBar extends JToolBar
         
         // Disable all the buttons for now
         this.newButton.setEnabled(false);
-        this.openButton.setEnabled(true);
+        this.openButton.setEnabled(false);
         this.saveButton.setEnabled(false);
         this.saveAllButton.setEnabled(false);
         this.cutButton.setEnabled(false);
@@ -458,9 +459,9 @@ public class MainToolBar extends JToolBar
      * Public Methods
      * *************************************************************************
      */
-    public void enableRun()
+    public void enableButtons(boolean enable)
     {
-        this.runButton.setEnabled(!this.runButton.isEnabled());
+        this.openButton.setEnabled(enable);
     }
 
 }

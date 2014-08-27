@@ -47,7 +47,9 @@ public class TileSet extends BasicType
      */
     public TileSet()
     {
-        tiles = new LinkedList<>();
+        this.tiles = new LinkedList<>();
+        this.tileWidth = 32;
+        this.tileHeight = 32;
     }
 
     /**

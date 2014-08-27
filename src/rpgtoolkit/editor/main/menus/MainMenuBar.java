@@ -4,7 +4,7 @@ import javax.swing.*;
 import rpgtoolkit.editor.main.MainWindow;
 
 /**
- * Consider splitting this class up! Done...
+ * 
  * 
  * @author Geoff Wilson
  * @author Joshua Michael Daly
@@ -21,6 +21,11 @@ public class MainMenuBar extends JMenuBar
     private final ToolsMenu toolsMenu;
     private final HelpMenu helpMenu;
     
+    /*
+     * *************************************************************************
+     * Public Constructors
+     * *************************************************************************
+     */
     public MainMenuBar(MainWindow menuBarParent)
     {
         this.parent = menuBarParent;
@@ -41,6 +46,63 @@ public class MainMenuBar extends JMenuBar
         this.add(toolsMenu);
         this.add(helpMenu);
     }
+    
+    /*
+     * *************************************************************************
+     * Public Getters
+     * *************************************************************************
+     */
+    public MainWindow getParentWindow()
+    {
+        return parent;
+    }
+
+    public FileMenu getFileMenu()
+    {
+        return fileMenu;
+    }
+
+    public EditMenu getEditMenu()
+    {
+        return editMenu;
+    }
+
+    public ViewMenu getViewMenu()
+    {
+        return viewMenu;
+    }
+
+    public ProjectMenu getProjectMenu()
+    {
+        return projectMenu;
+    }
+
+    public RunMenu getRunMenu()
+    {
+        return runMenu;
+    }
+
+    public ToolsMenu getToolsMenu()
+    {
+        return toolsMenu;
+    }
+
+    @Override
+    public HelpMenu getHelpMenu()
+    {
+        return helpMenu;
+    }
+    
+    /*
+     * *************************************************************************
+     * Public Methods
+     * *************************************************************************
+     */
+    public void enableMenus(boolean enable)
+    {
+        this.fileMenu.getOpenFileMenuItem().setEnabled(enable);
+    }
+    
 }
 
 

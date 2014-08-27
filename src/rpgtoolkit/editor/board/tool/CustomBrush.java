@@ -3,10 +3,10 @@ package rpgtoolkit.editor.board.tool;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import rpgtoolkit.common.editor.types.BoardLayer;
 import rpgtoolkit.common.editor.types.MultiLayerContainer;
 import rpgtoolkit.common.editor.types.Tile;
 import rpgtoolkit.editor.board.AbstractBoardView;
+import rpgtoolkit.editor.board.BoardLayerView;
 
 /**
  * 
@@ -98,10 +98,15 @@ public class CustomBrush extends AbstractBrush
     @Override
     public Rectangle doPaint(int x, int y, Rectangle selection) throws Exception
     {
-        BoardLayer layer = this.affectedContainer.getLayer(this.initialLayer).
-                getLayer();
-        int layerWidth = layer.getBoard().getWidth();
-        int layerHeight = layer.getBoard().getHeight();
+        BoardLayerView layer = this.affectedContainer.getLayer(this.initialLayer);
+        
+        if (layer == null)
+        {
+            return null;
+        }
+        
+        int layerWidth = layer.getLayer().getBoard().getWidth();
+        int layerHeight = layer.getLayer().getBoard().getHeight();
         
         int centerX = x - this.bounds.width / 2;
         int centerY = y - this.bounds.height / 2;
@@ -131,7 +136,7 @@ public class CustomBrush extends AbstractBrush
                     break;
                 }
                 
-                layer.setTileAt(offsetX, offsetY , 
+                layer.getLayer().setTileAt(offsetX, offsetY , 
                         tiles[offsetX - centerX][offsetY - centerY]);
             }
         }

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import rpgtoolkit.common.io.types.TileSet;
 
 /**
- * Stores a cache of loaded tile-sets for reuse between boards.
+ * Stores a cache of loaded TileSets for reuse between boards.
  *
  * @author Geoff Wilson
  * @author Joshua Michael Daly
@@ -13,7 +13,7 @@ import rpgtoolkit.common.io.types.TileSet;
  */
 public class TileSetCache
 {
-    private HashMap<String, TileSet> tileSets;
+    private final HashMap<String, TileSet> tileSets;
 
     public TileSetCache()
     {
@@ -35,11 +35,12 @@ public class TileSetCache
 
     /**
      * Loads the specified tile set into the cache, it will only load the file if
-     * it is not already present in the cache, it is important to call contains(String key) before
-     * calling this method.
+     * it is not already present in the cache, it is important to call 
+     * contains(String key) before calling this method.
      *
      * @param fileName Tile set to attempt to load into the cache
-     * @return The loaded tile set is returned, this is to remove the need to call getTileSet(String key) straight after loading a set
+     * @return The loaded tile set is returned, this is to remove the need to 
+     * call getTileSet(String key) straight after loading a set
      */
     public TileSet loadTileSet(String fileName)
     {
@@ -47,7 +48,8 @@ public class TileSetCache
 
         if (!tileSets.containsKey(fileName))
         {
-            TileSet set = new TileSet(new File(System.getProperty("project.path") + "/Tiles/" + fileName));
+            TileSet set = new TileSet(new File(System.getProperty("project.path")
+                    + "/Tiles/" + fileName));
             tileSets.put(fileName, set);
             return set;
         }

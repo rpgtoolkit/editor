@@ -515,6 +515,7 @@ public final class Board extends BasicType
             layerTitles = new ArrayList<>();
             directionalLinks = new ArrayList<>();
             backgroundImages = new ArrayList<>();
+            tileSet = new TileSet();
 
             if (binaryIO.readBinaryString().equals(FILE_HEADER))
             {

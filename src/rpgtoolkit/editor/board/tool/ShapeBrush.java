@@ -6,10 +6,10 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
-import rpgtoolkit.common.editor.types.BoardLayer;
 import rpgtoolkit.common.editor.types.MultiLayerContainer;
 import rpgtoolkit.common.editor.types.Tile;
 import rpgtoolkit.editor.board.AbstractBoardView;
+import rpgtoolkit.editor.board.BoardLayerView;
 
 /**
  *
@@ -124,8 +124,8 @@ public class ShapeBrush extends AbstractBrush
 
         for (int layer = 0; layer < this.affectedLayers; layer++)
         {
-            BoardLayer boardLayer = this.affectedContainer.getLayer(
-                    this.initialLayer + layer).getLayer();
+            BoardLayerView boardLayer = this.affectedContainer.getLayer(
+                    this.initialLayer + layer);
 
             if (boardLayer != null)
             {
@@ -135,7 +135,7 @@ public class ShapeBrush extends AbstractBrush
                     {
                         if (this.shape.contains(i, j))
                         {
-                            boardLayer.setTileAt(j + centerX, i + centerY,
+                            boardLayer.getLayer().setTileAt(j + centerX, i + centerY,
                                     this.paintTile);
                         }
                     }

@@ -275,15 +275,16 @@ public class BoardLayer implements Cloneable
      * *************************************************************************
      */
     private void clearTiles()
-    {
+    { 
         int count = this.board.getWidth() * this.board.getHeight();
+        Tile blankTile = new Tile();
         int x = 0;
         int y = 0;
 
         // Clear all the tiles.
         for (int i = 0; i < count; i++)
         {
-            this.tiles[x][y] = new Tile();
+            this.tiles[x][y] = blankTile;
 
             x++;
             if (x == this.board.getWidth())

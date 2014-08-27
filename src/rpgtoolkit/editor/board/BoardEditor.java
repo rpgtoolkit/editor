@@ -256,7 +256,9 @@ public class BoardEditor extends ToolkitEditorWindow
         {
             if (boardView.getCurrentSelectedLayer() != null)
             {
-                Point point = boardView.getTileCoordinates(e.getX(), e.getY());
+                Point point = boardView.getTileCoordinates(
+                    (int)(e.getX() / boardView.getZoom()), 
+                    (int)(e.getY() / boardView.getZoom()));;
                 AbstractBrush brush = MainWindow.getInstance().getCurrentBrush();
 
                 if (brush instanceof SelectionBrush)
@@ -304,7 +306,9 @@ public class BoardEditor extends ToolkitEditorWindow
         {
             if (boardView.getCurrentSelectedLayer() != null)
             {
-                Point point = boardView.getTileCoordinates(e.getX(), e.getY());
+                Point point = boardView.getTileCoordinates(
+                    (int)(e.getX() / boardView.getZoom()), 
+                    (int)(e.getY() / boardView.getZoom()));
                 AbstractBrush brush = MainWindow.getInstance().getCurrentBrush();
                 cursorLocation = point;
 
@@ -337,7 +341,9 @@ public class BoardEditor extends ToolkitEditorWindow
         @Override
         public void mouseMoved(MouseEvent e)
         {
-            cursorLocation = boardView.getTileCoordinates(e.getX(), e.getY());
+            cursorLocation = boardView.getTileCoordinates(
+                    (int)(e.getX() / boardView.getZoom()), 
+                    (int)(e.getY() / boardView.getZoom()));
             boardView.repaint();
         }
     }

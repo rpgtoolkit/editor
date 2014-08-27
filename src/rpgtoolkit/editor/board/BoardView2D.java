@@ -137,11 +137,6 @@ public final class BoardView2D extends AbstractBoardView
         this.paintLayers(g);
         this.paintSprites(g);
 
-        if (MainWindow.getInstance().isShowVectors())
-        {
-            this.paintVectors(g);
-        }
-
         // Reset an opcaity changes in the layers.
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP,
                 1.0f));
@@ -162,6 +157,11 @@ public final class BoardView2D extends AbstractBoardView
         }
 
         this.paintCursor(g);
+        
+        if (MainWindow.getInstance().isShowVectors())
+        {
+            this.paintVectors(g);
+        }
     }
 
     /**

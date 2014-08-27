@@ -5,9 +5,9 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.Stack;
-import rpgtoolkit.common.editor.types.BoardLayer;
 import rpgtoolkit.common.editor.types.Tile;
 import rpgtoolkit.editor.board.AbstractBoardView;
+import rpgtoolkit.editor.board.BoardLayerView;
 
 /**
  * 
@@ -87,10 +87,14 @@ public class BucketBrush extends AbstractBrush
     @Override
     public Rectangle doPaint(int x, int y, Rectangle selection)
     {
-        BoardLayer layer = this.affectedContainer.getLayer(this.initialLayer).
-                getLayer();
+        BoardLayerView layer = this.affectedContainer.getLayer(this.initialLayer);
         
-        this.oldTile = layer.getTileAt(x, y);
+        if (layer == null)
+        {
+            return null;
+        }
+        
+        this.oldTile = layer.getLayer().getTileAt(x, y);
         
         if (this.oldTile == this.pourTile)
         {
@@ -109,10 +113,10 @@ public class BucketBrush extends AbstractBrush
                 // Remove the next tile from the stack.
                 Point point = stack.pop();
                 
-                if (layer.contains(point.x, point.y) && 
-                        layer.getTileAt(point.x, point.y) == this.oldTile)
+                if (layer.getLayer().contains(point.x, point.y) && 
+                        layer.getLayer().getTileAt(point.x, point.y) == this.oldTile)
                 {
-                    layer.setTileAt(point.x, point.y, this.pourTile);
+                    layer.getLayer().setTileAt(point.x, point.y, this.pourTile);
                     area.add(point);
                     
                     stack.push(new Point(point.x, point.y - 1));
@@ -132,7 +136,7 @@ public class BucketBrush extends AbstractBrush
                 {
                     for (int x2 = selection.x; x2 < selection.width + selection.x; x2++)
                     {
-                        layer.setTileAt(x2, y2, this.pourTile);
+                        layer.getLayer().setTileAt(x2, y2, this.pourTile);
                     }
                 }
             }

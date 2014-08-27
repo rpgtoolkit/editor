@@ -9,6 +9,7 @@ import javax.swing.*;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import rpgtoolkit.common.editor.types.Tile;
 import rpgtoolkit.common.io.types.Animation;
 import rpgtoolkit.common.io.types.Project;
 import rpgtoolkit.common.io.types.TileSet;
@@ -71,6 +72,7 @@ public class MainWindow extends JFrame implements InternalFrameListener
     private boolean showVectors;
     private boolean showCoordinates;
     private AbstractBrush currentBrush;
+    private Tile lastSelectedTile;
 
     // Listeners.
     private final TileSetSelectionListener tileSetSelectionListener;
@@ -129,6 +131,8 @@ public class MainWindow extends JFrame implements InternalFrameListener
         this.currentBrush = new ShapeBrush();
         ((ShapeBrush) this.currentBrush).makeRectangleBrush(
                 new Rectangle(0, 0, 1, 1));
+        
+        this.lastSelectedTile = new Tile();
 
         this.tileSetSelectionListener = new TileSetSelectionListener();
 
@@ -198,6 +202,11 @@ public class MainWindow extends JFrame implements InternalFrameListener
     public void setCurrentBrush(AbstractBrush brush)
     {
         this.currentBrush = brush;
+    }
+    
+    public Tile getLastSelectedTile()
+    {
+        return this.lastSelectedTile;
     }
 
     /*
@@ -286,9 +295,11 @@ public class MainWindow extends JFrame implements InternalFrameListener
             projectEditor.toFront();
 
             this.selectToolkitWindow(projectEditor);
-            this.setTitle(this.getTitle() + " - " + this.activeProject.getGameTitle());
+            this.setTitle(this.getTitle() + " - " + 
+                    this.activeProject.getGameTitle());
 
-            //this.toolBar.enableRun();
+            this.menuBar.enableMenus(true);
+            this.toolBar.enableButtons(true);
         }
     }
 
@@ -489,7 +500,12 @@ public class MainWindow extends JFrame implements InternalFrameListener
                 ((ShapeBrush) currentBrush).makeRectangleBrush(
                         new Rectangle(0, 0, 1, 1));
                 toolBar.getPencilButton().setSelected(true);
-            } 
+            }
+            
+            if (lastSelectedTile != e.getTile())
+            {
+                lastSelectedTile = e.getTile();
+            }
         }
 
         @Override
