@@ -19,6 +19,7 @@ import rpgtoolkit.editor.board.tool.AbstractBrush;
 import rpgtoolkit.editor.board.tool.BucketBrush;
 import rpgtoolkit.editor.board.tool.CustomBrush;
 import rpgtoolkit.editor.board.tool.ShapeBrush;
+import rpgtoolkit.editor.board.tool.VectorBrush;
 import rpgtoolkit.editor.main.panels.LayerPanel;
 import rpgtoolkit.editor.main.menus.MainMenuBar;
 import rpgtoolkit.editor.main.menus.MainToolBar;
@@ -207,6 +208,16 @@ public class MainWindow extends JFrame implements InternalFrameListener
     public Tile getLastSelectedTile()
     {
         return this.lastSelectedTile;
+    }
+    
+    public MainMenuBar getMainMenuBar()
+    {
+        return this.menuBar;
+    }
+    
+    public MainToolBar getMainToolBar()
+    {
+        return this.toolBar;
     }
 
     /*

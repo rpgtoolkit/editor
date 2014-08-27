@@ -29,6 +29,11 @@ public final class ViewMenu extends JMenu
     private JCheckBoxMenuItem showCoordinatesMenuItem;
     private JCheckBoxMenuItem showVectorsMenuItem;
     
+    /*
+     * *************************************************************************
+     * Public Constructors
+     * *************************************************************************
+     */
     /**
      * 
      * @param parent 
@@ -54,6 +59,41 @@ public final class ViewMenu extends JMenu
         this.add(showVectorsMenuItem);
     }
     
+    /*
+     * *************************************************************************
+     * Public Getters
+     * *************************************************************************
+     */
+    public JMenuItem getZoomInMenuItem()
+    {
+        return zoomInMenuItem;
+    }
+
+    public JMenuItem getZoomOutMenuItem()
+    {
+        return zoomOutMenuItem;
+    }
+
+    public JCheckBoxMenuItem getShowGridMenuItem()
+    {
+        return showGridMenuItem;
+    }
+
+    public JCheckBoxMenuItem getShowCoordinatesMenuItem()
+    {
+        return showCoordinatesMenuItem;
+    }
+
+    public JCheckBoxMenuItem getShowVectorsMenuItem()
+    {
+        return showVectorsMenuItem;
+    }
+    
+    /*
+     * *************************************************************************
+     * Public Methods
+     * *************************************************************************
+     */
     /**
      * 
      */

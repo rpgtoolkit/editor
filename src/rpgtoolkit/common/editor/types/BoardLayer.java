@@ -1,6 +1,11 @@
 package rpgtoolkit.common.editor.types;
 
+import java.awt.Point;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
 import rpgtoolkit.common.io.types.Board;
 import rpgtoolkit.editor.board.types.BoardImage;
 import rpgtoolkit.editor.board.types.BoardLight;
@@ -67,7 +72,7 @@ public class BoardLayer implements Cloneable
         this.programs = new ArrayList<>();
         this.sprites = new ArrayList<>();
         this.images = new ArrayList<>();
-        
+
         this.clearTiles();
     }
 
@@ -165,15 +170,15 @@ public class BoardLayer implements Cloneable
     {
         this.images = images;
     }
-    
+
     public Tile getTileAt(int x, int y)
     {
         return this.tiles[x][y];
     }
-    
+
     public void setTileAt(int x, int y, Tile tile)
     {
-        this.tiles[x][y] = tile;   
+        this.tiles[x][y] = tile;
         this.board.fireBoardChanged();
     }
 
@@ -188,14 +193,14 @@ public class BoardLayer implements Cloneable
         {
             return false;
         }
-        
+
         return x < this.tiles.length && y < this.tiles[0].length;
     }
-    
+
     public void moveLayerUp()
     {
         this.number++;
-        
+
         for (BoardLight light : this.lights)
         {
             light.setLayer(this.number);
@@ -221,11 +226,11 @@ public class BoardLayer implements Cloneable
             image.setLayer(this.number);
         }
     }
-    
+
     public void moveLayerDown()
     {
         this.number--;
-        
+
         for (BoardLight light : this.lights)
         {
             light.setLayer(this.number);
@@ -251,22 +256,63 @@ public class BoardLayer implements Cloneable
             image.setLayer(this.number);
         }
     }
-    
+
     @Override
     public Object clone() throws CloneNotSupportedException
     {
         BoardLayer layer = new BoardLayer(this.board);
-        layer.images = (ArrayList<BoardImage>)this.images.clone();
-        layer.lights = (ArrayList<BoardLight>)this.lights.clone();
+        layer.images = (ArrayList<BoardImage>) this.images.clone();
+        layer.lights = (ArrayList<BoardLight>) this.lights.clone();
         layer.name = this.name + "_clone";
         layer.number = this.number;
-        layer.programs = (ArrayList<BoardProgram>)this.programs.clone();
-        layer.sprites = (ArrayList<BoardSprite>)this.sprites.clone();
-        layer.tiles = (Tile[][])this.tiles.clone();
-        layer.vectors = (ArrayList<BoardVector>)this.vectors.clone();
+        layer.programs = (ArrayList<BoardProgram>) this.programs.clone();
+        layer.sprites = (ArrayList<BoardSprite>) this.sprites.clone();
+        layer.tiles = (Tile[][]) this.tiles.clone();
+        layer.vectors = (ArrayList<BoardVector>) this.vectors.clone();
         layer.moveLayerUp();
-        
+
         return layer;
+    }
+
+    public BoardVector findVectorAt(int x, int y)
+    {
+        // Create a small rectangle to represent the bounds of the mouse.
+        Rectangle2D mouse = new Rectangle2D.Double(x - 5, y - 5, 10, 10);
+
+        for (BoardVector vector : this.vectors)
+        {
+            // There are no lines.
+            if (vector.getPoints().size() < 2)
+            {
+                continue;
+            }
+
+            for (int i = 0; i < vector.getPoints().size() - 1; i++)
+            {
+                // Build a line from the points in the polygon.
+                Line2D line2D = new Line2D.Double(vector.getPoints().get(i),
+                        vector.getPoints().get(i + 1));
+
+                // See if the mouse intersects the line of the polygon.
+                if (line2D.intersects(mouse))
+                {
+                    return vector;
+                }
+            }
+        }
+
+        return null;
+    }
+    
+    public void removeVectorAt(int x, int y)
+    {
+        BoardVector vector = findVectorAt(x, y);
+        
+        if (vector != null)
+        {
+            this.vectors.remove(vector);
+            this.board.fireBoardChanged();
+        }
     }
 
     /*
@@ -275,7 +321,7 @@ public class BoardLayer implements Cloneable
      * *************************************************************************
      */
     private void clearTiles()
-    { 
+    {
         int count = this.board.getWidth() * this.board.getHeight();
         Tile blankTile = new Tile();
         int x = 0;

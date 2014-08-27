@@ -7,13 +7,16 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.*;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
 import rpgtoolkit.common.editor.types.Tile;
 import rpgtoolkit.common.io.types.Board;
 import rpgtoolkit.editor.board.tool.AbstractBrush;
 import rpgtoolkit.editor.board.tool.BucketBrush;
 import rpgtoolkit.editor.board.tool.SelectionBrush;
 import rpgtoolkit.editor.board.tool.ShapeBrush;
+import rpgtoolkit.editor.board.tool.VectorBrush;
+import rpgtoolkit.editor.board.types.BoardVector;
 import rpgtoolkit.editor.main.MainWindow;
 import rpgtoolkit.editor.main.ToolkitEditorWindow;
 
@@ -37,7 +40,7 @@ public class BoardEditor extends ToolkitEditorWindow
 
     private Point cursorLocation;
     private Rectangle selection;
-    
+
     private Tile[][] selectedTiles;
 
     /*
@@ -132,12 +135,12 @@ public class BoardEditor extends ToolkitEditorWindow
     {
         return this.cursorLocation;
     }
-    
+
     public Rectangle getSelection()
     {
         return this.selection;
     }
-    
+
     public Tile[][] getSelectedTiles()
     {
         return this.selectedTiles;
@@ -208,21 +211,21 @@ public class BoardEditor extends ToolkitEditorWindow
                     Level.SEVERE, null, ex);
         }
     }
-    
+
     private Tile[][] createTileLayerFromRegion(Rectangle rectangle)
     {
         Tile[][] tiles = new Tile[rectangle.width + 1][rectangle.height + 1];
-        
+
         for (int y = rectangle.y; y <= rectangle.y + rectangle.height; y++)
         {
             for (int x = rectangle.x; x <= rectangle.x + rectangle.width; x++)
             {
-                tiles[x - rectangle.x][y - rectangle.y] = 
-                        this.boardView.getCurrentSelectedLayer().
-                                getLayer().getTileAt(x, y);
+                tiles[x - rectangle.x][y - rectangle.y]
+                        = this.boardView.getCurrentSelectedLayer().
+                        getLayer().getTileAt(x, y);
             }
         }
-        
+
         return tiles;
     }
 
@@ -233,14 +236,15 @@ public class BoardEditor extends ToolkitEditorWindow
      */
     private class BoardMouseAdapter extends MouseAdapter
     {
+
         private Point origin;
-        
+        private BoardVector lastSelectedVector;
+
         /*
          * *********************************************************************
          * Public Constructors
          * *********************************************************************
          */
-
         public BoardMouseAdapter()
         {
 
@@ -256,47 +260,90 @@ public class BoardEditor extends ToolkitEditorWindow
         {
             if (boardView.getCurrentSelectedLayer() != null)
             {
-                Point point = boardView.getTileCoordinates(
-                    (int)(e.getX() / boardView.getZoom()), 
-                    (int)(e.getY() / boardView.getZoom()));;
                 AbstractBrush brush = MainWindow.getInstance().getCurrentBrush();
 
-                if (brush instanceof SelectionBrush)
+                if (e.getButton() == MouseEvent.BUTTON1)
                 {
-                    this.origin = point;
-                    setSelection(new Rectangle(
-                            this.origin.x, this.origin.y, 
-                            0, 0));
-                    
-                    selectedTiles = createTileLayerFromRegion(selection);
-                }
-                else
-                {
-                    Rectangle bucketSelection = null;
-                    
-                    if (brush instanceof ShapeBrush && selection != null)
+                    Point point = boardView.getTileCoordinates(
+                            (int) (e.getX() / boardView.getZoom()),
+                            (int) (e.getY() / boardView.getZoom()));
+
+                    if (brush instanceof SelectionBrush)
                     {
-                        selection = null;
+                        this.origin = point;
+                        setSelection(new Rectangle(
+                                this.origin.x, this.origin.y,
+                                0, 0));
+
+                        selectedTiles = createTileLayerFromRegion(selection);
                     }
-                    else if (brush instanceof BucketBrush && selection != null)
+                    else
                     {
-                        // To compensate for the fact that the selection
-                        // is 1 size too small in both width and height.
-                        // Bit of a hack really.
-                        selection.width++;
-                        selection.height++;
-                        
-                        if (selection.contains(point))
+                        Rectangle bucketSelection = null;
+
+                        if (brush instanceof ShapeBrush && selection != null)
                         {
-                            bucketSelection = (Rectangle)selection.clone();
+                            selection = null;
                         }
-                        
-                        // Revert back to original dimensions.
-                        selection.width--;
-                        selection.height--;
+                        else if (brush instanceof VectorBrush)
+                        {
+                            // Because for vectors we need pixel coordinates
+                            // not tile based.
+                            point = new Point(e.getX(), e.getY());
+                        }
+                        else if (brush instanceof BucketBrush && selection != null)
+                        {
+                            // To compensate for the fact that the selection
+                            // is 1 size too small in both width and height.
+                            // Bit of a hack really.
+                            selection.width++;
+                            selection.height++;
+
+                            if (selection.contains(point))
+                            {
+                                bucketSelection = (Rectangle) selection.clone();
+                            }
+
+                            // Revert back to original dimensions.
+                            selection.width--;
+                            selection.height--;
+                        }
+
+                        doPaint(brush, point, bucketSelection);
                     }
-                    
-                    doPaint(brush, point, bucketSelection);
+                }
+                else if (e.getButton() == MouseEvent.BUTTON2)
+                {
+                    if (brush instanceof VectorBrush)
+                    {
+                        VectorBrush vectorBrush = (VectorBrush)brush;
+                        
+                        if (vectorBrush.isDrawing() && 
+                                vectorBrush.getBoardVector() != null)
+                        {
+                            this.finishVector(vectorBrush);
+                        }
+
+                        boardView.getCurrentSelectedLayer().getLayer().
+                                removeVectorAt(e.getX(), e.getY());
+                    }
+                }
+                else if (e.getButton() == MouseEvent.BUTTON3
+                        && brush instanceof VectorBrush)
+                {
+                    if (brush instanceof VectorBrush)
+                    {
+                        // We are drawing a vector, so lets finish it.
+                        if (((VectorBrush) brush).getBoardVector() != null)
+                        {
+                            this.finishVector((VectorBrush) brush);
+                        }
+                        else // We want to select a vector.
+                        {
+                            this.selectVector(boardView.getCurrentSelectedLayer()
+                                    .getLayer().findVectorAt(e.getX(), e.getY()));
+                        }
+                    }
                 }
             }
         }
@@ -306,16 +353,16 @@ public class BoardEditor extends ToolkitEditorWindow
         {
             if (boardView.getCurrentSelectedLayer() != null)
             {
-                Point point = boardView.getTileCoordinates(
-                    (int)(e.getX() / boardView.getZoom()), 
-                    (int)(e.getY() / boardView.getZoom()));
                 AbstractBrush brush = MainWindow.getInstance().getCurrentBrush();
+                Point point = boardView.getTileCoordinates(
+                        (int) (e.getX() / boardView.getZoom()),
+                        (int) (e.getY() / boardView.getZoom()));
                 cursorLocation = point;
 
                 if (brush instanceof SelectionBrush)
                 {
                     Rectangle select = new Rectangle(
-                            this.origin.x, this.origin.y, 
+                            this.origin.x, this.origin.y,
                             0, 0);
                     select.add(point);
 
@@ -323,7 +370,7 @@ public class BoardEditor extends ToolkitEditorWindow
                     {
                         setSelection(select);
                     }
-                    
+
                     selectedTiles = createTileLayerFromRegion(selection);
                 }
                 else
@@ -332,7 +379,7 @@ public class BoardEditor extends ToolkitEditorWindow
                     {
                         selection = null;
                     }
-                    
+
                     doPaint(brush, point, null);
                 }
             }
@@ -342,9 +389,39 @@ public class BoardEditor extends ToolkitEditorWindow
         public void mouseMoved(MouseEvent e)
         {
             cursorLocation = boardView.getTileCoordinates(
-                    (int)(e.getX() / boardView.getZoom()), 
-                    (int)(e.getY() / boardView.getZoom()));
+                    (int) (e.getX() / boardView.getZoom()),
+                    (int) (e.getY() / boardView.getZoom()));
             boardView.repaint();
+        }
+
+        public void selectVector(BoardVector vector)
+        {
+            if (vector != null)
+            {
+                vector.setSelected(true);
+
+                if (this.lastSelectedVector != null)
+                {
+                    this.lastSelectedVector.setSelected(false);
+                }
+
+                this.lastSelectedVector = vector;
+            }
+        }
+
+        public void finishVector(VectorBrush brush)
+        {
+            if (brush.getBoardVector().getPointCount() < 2)
+            {
+                // Remove the board vector because it does not span at least
+                // 1 line. A potential problem will arise when switching 
+                // between board editors!
+                boardView.getLayer(brush.getInitialLayer()).getLayer()
+                        .getVectors().remove(brush.getBoardVector());
+            }
+
+            brush.setBoardVector(null);
+            brush.setDrawing(false);
         }
     }
 

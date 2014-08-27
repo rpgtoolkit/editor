@@ -374,17 +374,30 @@ public final class BoardLayerView implements Cloneable
                 default:
                     g.setColor(Color.WHITE);
             }
+            
+            if (vector.getSelected())
+            {
+                g.setColor(Color.PINK);
+            }
 
             for (int i = 0; i < count - 1; i++)
             {
-                g.drawLine(vector.getPointX(i), vector.getPointY(i), vector.getPointX(i + 1), vector.getPointY(i + 1));
+                g.drawLine(
+                        vector.getPointX(i), 
+                        vector.getPointY(i), 
+                        vector.getPointX(i + 1), 
+                        vector.getPointY(i + 1));
             }
 
-            // Draw the final lines
-            g.drawLine(vector.getPointX(count - 1),
-                    vector.getPointY(count - 1),
-                    vector.getPointX(0),
-                    vector.getPointY(0));
+            if (vector.getIsClosed())
+            {
+                // Draw the final lines
+                g.drawLine(
+                        vector.getPointX(count - 1),
+                        vector.getPointY(count - 1),
+                        vector.getPointX(0),
+                        vector.getPointY(0));
+            }
         }
     }
 

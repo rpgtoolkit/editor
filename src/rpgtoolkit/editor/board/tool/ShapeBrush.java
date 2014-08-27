@@ -6,7 +6,6 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
-import rpgtoolkit.common.editor.types.MultiLayerContainer;
 import rpgtoolkit.common.editor.types.Tile;
 import rpgtoolkit.editor.board.AbstractBoardView;
 import rpgtoolkit.editor.board.BoardLayerView;
@@ -104,13 +103,7 @@ public class ShapeBrush extends AbstractBrush
     public boolean equals(Brush brush)
     {
         return brush instanceof ShapeBrush
-                && ((ShapeBrush) brush).shape.equals(shape);
-    }
-
-    @Override
-    public void startPaint(MultiLayerContainer container, int layer)
-    {
-        super.startPaint(container, layer);
+                && ((ShapeBrush) brush).shape.equals(this.shape);
     }
 
     @Override

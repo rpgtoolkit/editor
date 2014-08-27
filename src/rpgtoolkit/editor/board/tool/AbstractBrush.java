@@ -51,6 +51,11 @@ public abstract class AbstractBrush implements Brush
         this.affectedLayers = layers;
     }
     
+    public int getInitialLayer()
+    {
+        return this.initialLayer;
+    }
+    
     public abstract Shape getShape();
     
     /*

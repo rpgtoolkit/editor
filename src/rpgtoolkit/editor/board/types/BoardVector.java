@@ -18,6 +18,7 @@ public class BoardVector implements Cloneable
     private String handle;              //vector's handle
     private int tileType;
     private Polygon polygon;
+    private boolean isSelected;
 
     /*
      * ************************************************************************* 
@@ -27,12 +28,13 @@ public class BoardVector implements Cloneable
     
     public BoardVector()
     {
-        layer = 0;
-        attributes = 0;
-        isClosed = true;
-        points = new ArrayList<>();
-        handle = "";
-        polygon = new Polygon();
+        this.layer = 0;
+        this.attributes = 0;
+        this.isClosed = false;
+        this.points = new ArrayList<>();
+        this.handle = "";
+        this.polygon = new Polygon();
+        this.isSelected = false;
     }
 
     /*
@@ -147,11 +149,21 @@ public class BoardVector implements Cloneable
         this.polygon = polygon;
     }
     
+    public boolean getSelected()
+    {
+        return this.isSelected;
+    }
+    
     /*
      * ************************************************************************* 
      * Public Methods
      * *************************************************************************
      */
+    
+    public void setSelected(boolean selected)
+    {
+        this.isSelected = selected;
+    }
 
     /**
      *
