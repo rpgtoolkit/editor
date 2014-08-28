@@ -279,6 +279,18 @@ public class MainWindow extends JFrame implements InternalFrameListener
             {
                 this.layerPanel.clearTable();
             }
+            
+            // So we do not end up drawing the vector on the other board
+            // after it has been deactivated.
+            if (this.currentBrush instanceof VectorBrush)
+            {
+                VectorBrush brush = (VectorBrush)this.currentBrush;
+                
+                if (brush.isDrawing() && brush.getBoardVector() != null)
+                {
+                    brush.finishVector();
+                }
+            }
         }
     }
 

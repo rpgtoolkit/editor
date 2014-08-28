@@ -404,7 +404,12 @@ public abstract class AbstractBoardView extends JPanel implements
         int tileY = Math.max(0, Math.min(y / tileHeight, this.board.getHeight() - 1));
         
         return new Point(tileX, tileY);
-    } 
+    }
+    
+    public BoardEditor getBoardEditor()
+    {
+        return this.boardEditor;
+    }
 
     /*
      * *************************************************************************
@@ -460,6 +465,8 @@ public abstract class AbstractBoardView extends JPanel implements
      * @param g The graphics context to draw on.
      */
     protected abstract void paintSelection(Graphics2D g);
+    
+    protected abstract void paintBrushPreview(Graphics2D g);
 
     /*
      * *************************************************************************

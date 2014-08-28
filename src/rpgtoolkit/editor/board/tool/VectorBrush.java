@@ -1,6 +1,7 @@
 package rpgtoolkit.editor.board.tool;
 
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import rpgtoolkit.editor.board.AbstractBoardView;
@@ -23,6 +24,11 @@ public class VectorBrush extends AbstractBrush
      * Public Constructors
      * *************************************************************************
      */
+    public VectorBrush()
+    {
+        this.boardVector = new BoardVector();
+        this.stillDrawing = false;
+    }
     
     
     /*
@@ -70,7 +76,16 @@ public class VectorBrush extends AbstractBrush
     @Override
     public void drawPreview(Graphics2D g2d, AbstractBoardView view)
     {
+        if (this.boardVector.getPoints().size() < 1)
+        {
+            return;
+        }
         
+        Point cursor = view.getBoardEditor().getCursorLocation();
+        Point lastVectorPoint = this.boardVector.getPoints()
+                .get(this.boardVector.getPoints().size() - 1);
+        
+        g2d.drawLine(lastVectorPoint.x, lastVectorPoint.y, cursor.x, cursor.y);
     }
 
     @Override
@@ -90,8 +105,9 @@ public class VectorBrush extends AbstractBrush
         
         if (boardLayerView != null)
         {
-            if (this.boardVector == null)
+            if (!this.stillDrawing)
             {
+                this.stillDrawing = true;
                 this.boardVector = new BoardVector();
                 this.boardVector.setLayer(this.initialLayer);
 
@@ -103,12 +119,19 @@ public class VectorBrush extends AbstractBrush
             boardLayerView.getLayer().getBoard().fireBoardChanged();
         }
         
-        if (!this.stillDrawing)
-        {
-            this.stillDrawing = true;
-        }
-        
         return null;
+    }
+    
+    public void finishVector()
+    {
+        if (this.boardVector.getPointCount() < 2)
+        {
+            this.affectedContainer.getLayer(initialLayer).getLayer()
+                    .getVectors().remove(this.boardVector);
+        }
+
+        this.boardVector = new BoardVector();
+        this.stillDrawing = false;
     }
     
 }

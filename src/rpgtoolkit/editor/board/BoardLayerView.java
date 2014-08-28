@@ -1,9 +1,11 @@
 package rpgtoolkit.editor.board;
 
 import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.Stroke;
 import java.util.ArrayList;
 import rpgtoolkit.common.editor.types.BoardLayer;
 import rpgtoolkit.common.editor.types.MultiLayerContainer;
@@ -357,6 +359,11 @@ public final class BoardLayerView implements Cloneable
 
         for (BoardVector vector : vectors)
         {
+            if (vector.isSelected())
+            {
+                g.setStroke(new BasicStroke(3.0f)); // Draw it thicker.
+            }
+            
             // Draw lines from points 0 > 1 , 1 > 2, 2 > 3 etc..
             int count = vector.getPointCount();
 
@@ -373,11 +380,6 @@ public final class BoardLayerView implements Cloneable
                     break;
                 default:
                     g.setColor(Color.WHITE);
-            }
-            
-            if (vector.getSelected())
-            {
-                g.setColor(Color.PINK);
             }
 
             for (int i = 0; i < count - 1; i++)
@@ -397,6 +399,11 @@ public final class BoardLayerView implements Cloneable
                         vector.getPointY(count - 1),
                         vector.getPointX(0),
                         vector.getPointY(0));
+            }
+            
+            if (vector.isSelected())
+            {
+                g.setStroke(new BasicStroke(1.0f)); // Return to normal stroke.
             }
         }
     }

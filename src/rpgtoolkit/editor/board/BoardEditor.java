@@ -2,8 +2,6 @@ package rpgtoolkit.editor.board;
 
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,11 +10,6 @@ import javax.swing.JViewport;
 import rpgtoolkit.common.editor.types.Tile;
 import rpgtoolkit.common.io.types.Board;
 import rpgtoolkit.editor.board.tool.AbstractBrush;
-import rpgtoolkit.editor.board.tool.BucketBrush;
-import rpgtoolkit.editor.board.tool.SelectionBrush;
-import rpgtoolkit.editor.board.tool.ShapeBrush;
-import rpgtoolkit.editor.board.tool.VectorBrush;
-import rpgtoolkit.editor.board.types.BoardVector;
 import rpgtoolkit.editor.main.MainWindow;
 import rpgtoolkit.editor.main.ToolkitEditorWindow;
 
@@ -33,15 +26,16 @@ public class BoardEditor extends ToolkitEditorWindow
 
     private JScrollPane scrollPane;
 
-    private BoardView2D boardView;
-    private Board board;
+    protected BoardView2D boardView;
+    protected Board board;
 
     private BoardMouseAdapter boardMouseAdapter;
 
-    private Point cursorLocation;
-    private Rectangle selection;
+    protected Point cursorTileLocation;
+    protected Point cursorLocation;
+    protected Rectangle selection;
 
-    private Tile[][] selectedTiles;
+    protected Tile[][] selectedTiles;
 
     /*
      * *************************************************************************
@@ -67,7 +61,7 @@ public class BoardEditor extends ToolkitEditorWindow
     {
         super("Board Viewer", true, true, true, true);
 
-        this.boardMouseAdapter = new BoardMouseAdapter();
+        this.boardMouseAdapter = new BoardMouseAdapter(this);
 
         this.parentWindow = parent;
         this.board = new Board(fileName);
@@ -79,6 +73,7 @@ public class BoardEditor extends ToolkitEditorWindow
         this.scrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
         this.scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
+        this.cursorTileLocation = new Point(0, 0);
         this.cursorLocation = new Point(0, 0);
 
         this.setTitle("Viewing " + fileName.getAbsolutePath());
@@ -130,6 +125,11 @@ public class BoardEditor extends ToolkitEditorWindow
     {
         this.board = board;
     }
+    
+    public Point getCursorTileLocation()
+    {
+        return this.cursorTileLocation;
+    }
 
     public Point getCursorLocation()
     {
@@ -177,10 +177,10 @@ public class BoardEditor extends ToolkitEditorWindow
 
     /*
      * *************************************************************************
-     * Private Getters and Setters
+     * Protected Getters and Setters
      * *************************************************************************
      */
-    private void setSelection(Rectangle rectangle)
+    protected void setSelection(Rectangle rectangle)
     {
         this.selection = rectangle;
         this.boardView.repaint();
@@ -188,10 +188,10 @@ public class BoardEditor extends ToolkitEditorWindow
 
     /*
      * *************************************************************************
-     * Private Methods
+     * Protected Methods
      * *************************************************************************
      */
-    private void doPaint(AbstractBrush brush, Point point, Rectangle selection)
+    protected void doPaint(AbstractBrush brush, Point point, Rectangle selection)
     {
         try
         {
@@ -200,7 +200,7 @@ public class BoardEditor extends ToolkitEditorWindow
                 return;
             }
 
-            brush.startPaint(boardView, boardView.
+            brush.startPaint(this.boardView, this.boardView.
                     getCurrentSelectedLayer().getLayer().getNumber());
             brush.doPaint(point.x, point.y, selection);
             brush.endPaint();
@@ -212,7 +212,7 @@ public class BoardEditor extends ToolkitEditorWindow
         }
     }
 
-    private Tile[][] createTileLayerFromRegion(Rectangle rectangle)
+    protected Tile[][] createTileLayerFromRegion(Rectangle rectangle)
     {
         Tile[][] tiles = new Tile[rectangle.width + 1][rectangle.height + 1];
 
@@ -227,202 +227,6 @@ public class BoardEditor extends ToolkitEditorWindow
         }
 
         return tiles;
-    }
-
-    /*
-     * *************************************************************************
-     * Private Inner Classes 
-     * *************************************************************************
-     */
-    private class BoardMouseAdapter extends MouseAdapter
-    {
-
-        private Point origin;
-        private BoardVector lastSelectedVector;
-
-        /*
-         * *********************************************************************
-         * Public Constructors
-         * *********************************************************************
-         */
-        public BoardMouseAdapter()
-        {
-
-        }
-
-        /*
-         * *********************************************************************
-         * Public Methods
-         * *********************************************************************
-         */
-        @Override
-        public void mousePressed(MouseEvent e)
-        {
-            if (boardView.getCurrentSelectedLayer() != null)
-            {
-                AbstractBrush brush = MainWindow.getInstance().getCurrentBrush();
-
-                if (e.getButton() == MouseEvent.BUTTON1)
-                {
-                    Point point = boardView.getTileCoordinates(
-                            (int) (e.getX() / boardView.getZoom()),
-                            (int) (e.getY() / boardView.getZoom()));
-
-                    if (brush instanceof SelectionBrush)
-                    {
-                        this.origin = point;
-                        setSelection(new Rectangle(
-                                this.origin.x, this.origin.y,
-                                0, 0));
-
-                        selectedTiles = createTileLayerFromRegion(selection);
-                    }
-                    else
-                    {
-                        Rectangle bucketSelection = null;
-
-                        if (brush instanceof ShapeBrush && selection != null)
-                        {
-                            selection = null;
-                        }
-                        else if (brush instanceof VectorBrush)
-                        {
-                            // Because for vectors we need pixel coordinates
-                            // not tile based.
-                            point = new Point(e.getX(), e.getY());
-                        }
-                        else if (brush instanceof BucketBrush && selection != null)
-                        {
-                            // To compensate for the fact that the selection
-                            // is 1 size too small in both width and height.
-                            // Bit of a hack really.
-                            selection.width++;
-                            selection.height++;
-
-                            if (selection.contains(point))
-                            {
-                                bucketSelection = (Rectangle) selection.clone();
-                            }
-
-                            // Revert back to original dimensions.
-                            selection.width--;
-                            selection.height--;
-                        }
-
-                        doPaint(brush, point, bucketSelection);
-                    }
-                }
-                else if (e.getButton() == MouseEvent.BUTTON2)
-                {
-                    if (brush instanceof VectorBrush)
-                    {
-                        VectorBrush vectorBrush = (VectorBrush)brush;
-                        
-                        if (vectorBrush.isDrawing() && 
-                                vectorBrush.getBoardVector() != null)
-                        {
-                            this.finishVector(vectorBrush);
-                        }
-
-                        boardView.getCurrentSelectedLayer().getLayer().
-                                removeVectorAt(e.getX(), e.getY());
-                    }
-                }
-                else if (e.getButton() == MouseEvent.BUTTON3
-                        && brush instanceof VectorBrush)
-                {
-                    if (brush instanceof VectorBrush)
-                    {
-                        // We are drawing a vector, so lets finish it.
-                        if (((VectorBrush) brush).getBoardVector() != null)
-                        {
-                            this.finishVector((VectorBrush) brush);
-                        }
-                        else // We want to select a vector.
-                        {
-                            this.selectVector(boardView.getCurrentSelectedLayer()
-                                    .getLayer().findVectorAt(e.getX(), e.getY()));
-                        }
-                    }
-                }
-            }
-        }
-
-        @Override
-        public void mouseDragged(MouseEvent e)
-        {
-            if (boardView.getCurrentSelectedLayer() != null)
-            {
-                AbstractBrush brush = MainWindow.getInstance().getCurrentBrush();
-                Point point = boardView.getTileCoordinates(
-                        (int) (e.getX() / boardView.getZoom()),
-                        (int) (e.getY() / boardView.getZoom()));
-                cursorLocation = point;
-
-                if (brush instanceof SelectionBrush)
-                {
-                    Rectangle select = new Rectangle(
-                            this.origin.x, this.origin.y,
-                            0, 0);
-                    select.add(point);
-
-                    if (!select.equals(selection))
-                    {
-                        setSelection(select);
-                    }
-
-                    selectedTiles = createTileLayerFromRegion(selection);
-                }
-                else
-                {
-                    if (brush instanceof ShapeBrush && selection != null)
-                    {
-                        selection = null;
-                    }
-
-                    doPaint(brush, point, null);
-                }
-            }
-        }
-
-        @Override
-        public void mouseMoved(MouseEvent e)
-        {
-            cursorLocation = boardView.getTileCoordinates(
-                    (int) (e.getX() / boardView.getZoom()),
-                    (int) (e.getY() / boardView.getZoom()));
-            boardView.repaint();
-        }
-
-        public void selectVector(BoardVector vector)
-        {
-            if (vector != null)
-            {
-                vector.setSelected(true);
-
-                if (this.lastSelectedVector != null)
-                {
-                    this.lastSelectedVector.setSelected(false);
-                }
-
-                this.lastSelectedVector = vector;
-            }
-        }
-
-        public void finishVector(VectorBrush brush)
-        {
-            if (brush.getBoardVector().getPointCount() < 2)
-            {
-                // Remove the board vector because it does not span at least
-                // 1 line. A potential problem will arise when switching 
-                // between board editors!
-                boardView.getLayer(brush.getInitialLayer()).getLayer()
-                        .getVectors().remove(brush.getBoardVector());
-            }
-
-            brush.setBoardVector(null);
-            brush.setDrawing(false);
-        }
     }
 
 }

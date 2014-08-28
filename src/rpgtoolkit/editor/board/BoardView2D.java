@@ -162,6 +162,8 @@ public final class BoardView2D extends AbstractBoardView
         {
             this.paintVectors(g);
         }
+        
+        this.paintBrushPreview(g);
     }
 
     /**
@@ -374,7 +376,7 @@ public final class BoardView2D extends AbstractBoardView
     protected void paintCursor(Graphics2D g)
     {
         Rectangle cursor = MainWindow.getInstance().getCurrentBrush().getBounds();
-        Point selection = this.boardEditor.getCursorLocation();
+        Point selection = this.boardEditor.getCursorTileLocation();
         int tileWidth = board.getTileSet().getTileWidth();
         int tileHeight = board.getTileSet().getTileHeight();
         int centerX = (selection.x * tileWidth)
@@ -395,6 +397,12 @@ public final class BoardView2D extends AbstractBoardView
                 centerY,
                 ((int) cursor.getWidth()) * tileWidth,
                 ((int) cursor.getHeight()) * tileHeight);
+    }
+    
+    @Override
+    protected void paintBrushPreview(Graphics2D g)
+    {
+        MainWindow.getInstance().getCurrentBrush().drawPreview(g, this);
     }
 
     /*
