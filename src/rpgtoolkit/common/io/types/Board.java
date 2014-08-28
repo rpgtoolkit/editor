@@ -957,7 +957,7 @@ public final class Board extends BasicType
 
                 this.binaryIO.writeBinaryInteger(vector.getAttributes());
 
-                if (vector.getIsClosed())
+                if (vector.isClosed())
                 {
                     this.binaryIO.writeBinaryInteger(1);
                 }
@@ -995,7 +995,7 @@ public final class Board extends BasicType
                     this.binaryIO.writeBinaryLong((long) point.y);
                 }
 
-                if (programVector.getIsClosed())
+                if (programVector.isClosed())
                 {
                     this.binaryIO.writeBinaryInteger(1);
                 }

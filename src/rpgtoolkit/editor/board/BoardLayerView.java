@@ -391,7 +391,7 @@ public final class BoardLayerView implements Cloneable
                         vector.getPointY(i + 1));
             }
 
-            if (vector.getIsClosed())
+            if (vector.isClosed())
             {
                 // Draw the final lines
                 g.drawLine(

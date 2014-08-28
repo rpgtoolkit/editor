@@ -219,6 +219,11 @@ public class MainWindow extends JFrame implements InternalFrameListener
     {
         return this.toolBar;
     }
+    
+    public PropertiesPanel getPropertiesPanel()
+    {
+        return this.propertiesPanel;
+    }
 
     /*
      * *************************************************************************

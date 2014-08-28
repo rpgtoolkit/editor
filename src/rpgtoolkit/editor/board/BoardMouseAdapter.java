@@ -209,6 +209,7 @@ public class BoardMouseAdapter extends MouseAdapter
             }
 
             this.lastSelectedVector = vector;
+            MainWindow.getInstance().getPropertiesPanel().setModel(vector);
             
             this.editor.boardView.repaint();
         }

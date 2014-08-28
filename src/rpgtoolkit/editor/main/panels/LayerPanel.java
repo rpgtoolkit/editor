@@ -22,7 +22,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import rpgtoolkit.editor.board.AbstractBoardView;
 import rpgtoolkit.editor.board.BoardLayerView;
-import rpgtoolkit.editor.utilities.LayerTableModel;
+import rpgtoolkit.editor.table.BoardLayersTableModel;
 
 /**
  *
@@ -78,12 +78,79 @@ public class LayerPanel extends JPanel implements ChangeListener,
     public void setBoardView(AbstractBoardView boardView)
     {
         this.boardView = boardView;
-        this.layerTable.setModel(new LayerTableModel(this.boardView));
+        this.layerTable.setModel(new BoardLayersTableModel(this.boardView));
 
         if (this.boardView.getBoard().getLayers().size() > 0)
         {
             this.layerTable.changeSelection(0, 0, false, false);
         }
+    }
+    
+    /*
+     * *************************************************************************
+     * Public Methods
+     * *************************************************************************
+     */
+    /**
+     * TODO: Possibly consider moving this to a dedicated listener class later.
+     * For now leave it here for simplicity.
+     *
+     * Used to keep track of changes in on the opacity <code>JSlider</code>. If
+     * there is an open board and a layer is selected then the layers opacity
+     * will be updated.
+     *
+     * @param e
+     */
+    @Override
+    public void stateChanged(ChangeEvent e)
+    {
+        if (e.getSource().equals(this.opacitySlider))
+        {
+            if (this.boardView != null)
+            {
+                if (this.layerTable.getSelectedRow() > -1
+                        && this.layerTable.getRowCount() > 0)
+                {
+                    this.boardView.getLayer((boardView.getBoard().getLayers().size()
+                            - layerTable.getSelectedRow()) - 1).
+                            setOpacity(this.opacitySlider.getValue() / 100.0f);
+                }
+            }
+        }
+    }
+
+    /**
+     * TODO: It is possible that in the future other parts of the editor will be
+     * interested in layer selection changes.
+     *
+     * Handles selection changes on the Layer Table, updating the opacity slider
+     * with the selected layers current opacity.
+     *
+     * @param e
+     */
+    @Override
+    public void valueChanged(ListSelectionEvent e)
+    {
+        // If we have changed the selected layer update the position of the 
+        // opacity slider to the new layers opacity.
+        if (this.boardView != null)
+        {
+            if (this.layerTable.getSelectedRow() > -1)
+            {
+                BoardLayerView selectedLayer = this.boardView.getLayer(
+                        (boardView.getBoard().getLayers().size()
+                        - layerTable.getSelectedRow()) - 1);
+
+                this.boardView.setCurrentSeletedLayer(selectedLayer);
+
+                this.opacitySlider.setValue((int) selectedLayer.getOpacity() * 100);
+            }
+        }
+    }
+
+    public void clearTable()
+    {
+        this.layerTable.setModel(new BoardLayersTableModel());
     }
 
     /*
@@ -109,7 +176,7 @@ public class LayerPanel extends JPanel implements ChangeListener,
 
         if (this.boardView != null)
         {
-            this.layerTable = new JTable(new LayerTableModel(this.boardView));
+            this.layerTable = new JTable(new BoardLayersTableModel(this.boardView));
 
             if (this.boardView.getBoard().getLayers().size() > 0)
             {
@@ -118,7 +185,7 @@ public class LayerPanel extends JPanel implements ChangeListener,
         }
         else
         {
-            this.layerTable = new JTable(new LayerTableModel());
+            this.layerTable = new JTable(new BoardLayersTableModel());
         }
 
         this.layerTable.getColumnModel().getColumn(0).setPreferredWidth(32);
@@ -256,65 +323,4 @@ public class LayerPanel extends JPanel implements ChangeListener,
         this.add(this.buttonPanel, constraints);
     }
 
-    /**
-     * TODO: Possibly consider moving this to a dedicated listener class later.
-     * For now leave it here for simplicity.
-     *
-     * Used to keep track of changes in on the opacity <code>JSlider</code>. If
-     * there is an open board and a layer is selected then the layers opacity
-     * will be updated.
-     *
-     * @param e
-     */
-    @Override
-    public void stateChanged(ChangeEvent e)
-    {
-        if (e.getSource().equals(this.opacitySlider))
-        {
-            if (this.boardView != null)
-            {
-                if (this.layerTable.getSelectedRow() > -1
-                        && this.layerTable.getRowCount() > 0)
-                {
-                    this.boardView.getLayer((boardView.getBoard().getLayers().size()
-                            - layerTable.getSelectedRow()) - 1).
-                            setOpacity(this.opacitySlider.getValue() / 100.0f);
-                }
-            }
-        }
-    }
-
-    /**
-     * TODO: It is possible that in the future other parts of the editor will be
-     * interested in layer selection changes.
-     *
-     * Handles selection changes on the Layer Table, updating the opacity slider
-     * with the selected layers current opacity.
-     *
-     * @param e
-     */
-    @Override
-    public void valueChanged(ListSelectionEvent e)
-    {
-        // If we have changed the selected layer update the position of the 
-        // opacity slider to the new layers opacity.
-        if (this.boardView != null)
-        {
-            if (this.layerTable.getSelectedRow() > -1)
-            {
-                BoardLayerView selectedLayer = this.boardView.getLayer(
-                        (boardView.getBoard().getLayers().size()
-                        - layerTable.getSelectedRow()) - 1);
-
-                this.boardView.setCurrentSeletedLayer(selectedLayer);
-
-                this.opacitySlider.setValue((int) selectedLayer.getOpacity() * 100);
-            }
-        }
-    }
-
-    public void clearTable()
-    {
-        this.layerTable.setModel(new LayerTableModel());
-    }
 }

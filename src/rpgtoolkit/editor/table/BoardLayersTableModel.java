@@ -1,7 +1,6 @@
-package rpgtoolkit.editor.utilities;
+package rpgtoolkit.editor.table;
 
 import javax.swing.table.AbstractTableModel;
-import rpgtoolkit.common.io.types.Board;
 import rpgtoolkit.editor.board.AbstractBoardView;
 import rpgtoolkit.editor.board.BoardLayerView;
 import rpgtoolkit.editor.board.event.BoardChangeListener;
@@ -14,7 +13,7 @@ import rpgtoolkit.editor.board.event.BoardChangedEvent;
  * @author Joshua Michael Daly
  * @version 0.1
  */
-public class LayerTableModel extends AbstractTableModel implements BoardChangeListener
+public class BoardLayersTableModel extends AbstractTableModel implements BoardChangeListener
 {
     private AbstractBoardView boardView;
    
@@ -31,7 +30,7 @@ public class LayerTableModel extends AbstractTableModel implements BoardChangeLi
     /**
      *
      */
-    public LayerTableModel()
+    public BoardLayersTableModel()
     {
        
     }
@@ -40,7 +39,7 @@ public class LayerTableModel extends AbstractTableModel implements BoardChangeLi
      *
      * @param board
      */
-    public LayerTableModel(AbstractBoardView board)
+    public BoardLayersTableModel(AbstractBoardView board)
     {
         this.boardView = board;
         this.boardView.getBoard().addBoardChangeListener(this);
@@ -74,7 +73,7 @@ public class LayerTableModel extends AbstractTableModel implements BoardChangeLi
     @Override
     public String getColumnName(int column)
     {
-        return LayerTableModel.columnNames[column];
+        return BoardLayersTableModel.columnNames[column];
     }
     
     @Override
@@ -93,7 +92,7 @@ public class LayerTableModel extends AbstractTableModel implements BoardChangeLi
     @Override
     public int getColumnCount()
     {
-        return LayerTableModel.columnNames.length;
+        return BoardLayersTableModel.columnNames.length;
     }
     
     @Override

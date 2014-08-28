@@ -5,18 +5,29 @@ import java.awt.Polygon;
 import java.util.ArrayList;
 
 /**
- * 
+ *
+ * TT_NULL = -1 'To denote empty slot in editor. 
+ * TT_NORMAL = 0 'See TILE_TYPE enumeration, board conversion.h 
+ * TT_SOLID = 1 
+ * TT_UNDER = 2 
+ * TT_UNIDIRECTIONAL = 4 'Incomplete / unnecessary. 
+ * TT_STAIRS = 8 
+ * TT_WAYPOINT = 16
+ *
  * @author Geoff Wilson
  * @author Joshua Michael Daly
  */
 public class BoardVector implements Cloneable
 {
+
+    // Appears in the TableModel.
     private int layer;                  //layer the vector is on
     private int attributes;             //???
     private boolean isClosed;           //whether the vector is closed
-    private ArrayList<Point> points;    //the points in the vector
     private String handle;              //vector's handle
     private int tileType;
+
+    private ArrayList<Point> points;    //the points in the vector
     private Polygon polygon;
     private boolean selected;
 
@@ -25,7 +36,6 @@ public class BoardVector implements Cloneable
      * Public Constructors
      * *************************************************************************
      */
-    
     public BoardVector()
     {
         this.layer = 0;
@@ -38,21 +48,10 @@ public class BoardVector implements Cloneable
     }
 
     /*
-    TT_NULL = -1                        'To denote empty slot in editor.
-    TT_NORMAL = 0                       'See TILE_TYPE enumeration, board conversion.h
-    TT_SOLID = 1
-    TT_UNDER = 2
-    TT_UNIDIRECTIONAL = 4               'Incomplete  / unnecessary.
-    TT_STAIRS = 8
-    TT_WAYPOINT = 16
-    */
-
-    /*
      * ************************************************************************* 
      * Public Getters and Setters
      * *************************************************************************
      */
-    
     public ArrayList<Point> getPoints()
     {
         return points;
@@ -93,7 +92,7 @@ public class BoardVector implements Cloneable
         return (handle);
     }
 
-    public boolean getIsClosed()
+    public boolean isClosed()
     {
         return (isClosed);
     }
@@ -133,7 +132,7 @@ public class BoardVector implements Cloneable
     {
         return polygon;
     }
-    
+
     public void setIsClosed(boolean isClosed)
     {
         this.isClosed = isClosed;
@@ -148,18 +147,17 @@ public class BoardVector implements Cloneable
     {
         this.polygon = polygon;
     }
-    
+
     public boolean isSelected()
     {
         return this.selected;
     }
-    
+
     /*
      * ************************************************************************* 
      * Public Methods
      * *************************************************************************
      */
-    
     public void setSelected(boolean selected)
     {
         this.selected = selected;
@@ -167,23 +165,22 @@ public class BoardVector implements Cloneable
 
     /**
      *
-     * @return
-     * @throws CloneNotSupportedException
+     * @return @throws CloneNotSupportedException
      */
     @Override
     public Object clone() throws CloneNotSupportedException
     {
         super.clone();
-        
+
         BoardVector clone = new BoardVector();
         clone.layer = this.layer;
         clone.attributes = this.attributes;
         clone.handle = this.handle;
         clone.isClosed = this.isClosed;
-        clone.points = (ArrayList<Point>)this.points.clone();
+        clone.points = (ArrayList<Point>) this.points.clone();
         clone.polygon = this.polygon;
         clone.tileType = this.tileType;
-        
+
         return clone;
     }
 }
