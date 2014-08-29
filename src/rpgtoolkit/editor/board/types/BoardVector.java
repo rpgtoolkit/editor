@@ -17,7 +17,7 @@ import java.util.ArrayList;
  * @author Geoff Wilson
  * @author Joshua Michael Daly
  */
-public class BoardVector implements Cloneable
+public class BoardVector implements Cloneable, Selectable
 {
 
     // Appears in the TableModel.
@@ -148,9 +148,16 @@ public class BoardVector implements Cloneable
         this.polygon = polygon;
     }
 
+    @Override
     public boolean isSelected()
     {
         return this.selected;
+    }
+    
+    @Override
+    public void setSelected(boolean state)
+    {
+        this.selected = state;
     }
 
     /*
@@ -158,11 +165,6 @@ public class BoardVector implements Cloneable
      * Public Methods
      * *************************************************************************
      */
-    public void setSelected(boolean selected)
-    {
-        this.selected = selected;
-    }
-
     /**
      *
      * @return @throws CloneNotSupportedException

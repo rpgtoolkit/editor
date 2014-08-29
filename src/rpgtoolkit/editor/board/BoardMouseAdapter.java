@@ -21,7 +21,6 @@ public class BoardMouseAdapter extends MouseAdapter
 
     private Point origin;
     private final BoardEditor editor;
-    private BoardVector lastSelectedVector;
 
     /*
      * *************************************************************************
@@ -142,8 +141,17 @@ public class BoardMouseAdapter extends MouseAdapter
                 vectorBrush.finishVector();
             }
 
-            this.editor.boardView.getCurrentSelectedLayer().getLayer().
-                    removeVectorAt(e.getX(), e.getY());
+            BoardVector vector = this.editor.boardView.getCurrentSelectedLayer()
+                    .getLayer().removeVectorAt(e.getX(), e.getY());
+
+            if (vector != null)
+            {
+                if (vector == editor.getSelectedObject())
+                {
+                    editor.getSelectedObject().setSelected(false);
+                    editor.setSelectedObject(null);
+                }
+            }
         }
     }
 
@@ -154,7 +162,7 @@ public class BoardMouseAdapter extends MouseAdapter
             // We are drawing a vector, so lets finish it.
             if (((VectorBrush) brush).isDrawing())
             {
-               ((VectorBrush) brush).finishVector();
+                ((VectorBrush) brush).finishVector();
             }
             else // We want to select a vector.
             {
@@ -171,7 +179,7 @@ public class BoardMouseAdapter extends MouseAdapter
                 (int) (e.getY() / this.editor.boardView.getZoom()));
         this.editor.cursorTileLocation = point;
         this.editor.cursorLocation = new Point(e.getX(), e.getY());
-        
+
         if (brush instanceof VectorBrush)
         {
             return;
@@ -203,22 +211,17 @@ public class BoardMouseAdapter extends MouseAdapter
         {
             vector.setSelected(true);
 
-            if (this.lastSelectedVector != null)
+            if (editor.getSelectedObject() != null)
             {
-                this.lastSelectedVector.setSelected(false);
+                editor.getSelectedObject().setSelected(false);
             }
 
-            this.lastSelectedVector = vector;
-            MainWindow.getInstance().getPropertiesPanel().setModel(vector);
-            
-            this.editor.boardView.repaint();
+            editor.setSelectedObject(vector);
         }
-        else if (this.lastSelectedVector != null)
+        else if (editor.getSelectedObject() != null)
         {
-            this.lastSelectedVector.setSelected(false);
-            this.lastSelectedVector = null;
-            
-            this.editor.boardView.repaint();
+            editor.getSelectedObject().setSelected(false);
+            editor.setSelectedObject(null);
         }
     }
 }

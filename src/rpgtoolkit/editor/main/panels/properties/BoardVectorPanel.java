@@ -19,7 +19,7 @@ import rpgtoolkit.editor.board.types.BoardVector;
 public class BoardVectorPanel extends AbstractModelPanel
 {
     
-    private final JSpinner layerSpinner;
+    //private final JSpinner layerSpinner;
     private final JCheckBox isClosedCheckBox;
     private final JTextField handleTextField;
     private final JComboBox<String> tileTypeComboBox;
@@ -35,10 +35,10 @@ public class BoardVectorPanel extends AbstractModelPanel
      */
     public BoardVectorPanel(BoardVector boardVector)
     {
-        super(boardVector, 5, 2);
+        super(boardVector, 4, 2);
         
-        this.layerSpinner = new JSpinner();
-        this.layerSpinner.setValue(((BoardVector)this.model).getLayer());
+        //this.layerSpinner = new JSpinner();
+        //this.layerSpinner.setValue(((BoardVector)this.model).getLayer());
         
         this.isClosedCheckBox = new JCheckBox();
         this.isClosedCheckBox.setSelected(((BoardVector)this.model).isClosed());
@@ -49,6 +49,7 @@ public class BoardVectorPanel extends AbstractModelPanel
             public void actionPerformed(ActionEvent e)
             {
                 ((BoardVector)model).setClosed(isClosedCheckBox.isSelected());
+                updateCurrentBoardView();
             }
         });
         
@@ -111,6 +112,8 @@ public class BoardVectorPanel extends AbstractModelPanel
                     case 3:
                         ((BoardVector)model).setTileType(16);
                 }
+                
+                updateCurrentBoardView();
             }
         });
         
@@ -118,8 +121,8 @@ public class BoardVectorPanel extends AbstractModelPanel
         this.add(this.handleTextField);
         this.add(new JLabel("Is Closed"));
         this.add(this.isClosedCheckBox);
-        this.add(new JLabel("Layer"));
-        this.add(this.layerSpinner);
+        //this.add(new JLabel("Layer"));
+        //this.add(this.layerSpinner);
         this.add(new JLabel("Type"));
         this.add(this.tileTypeComboBox);
     }

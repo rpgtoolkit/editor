@@ -4,6 +4,8 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import rpgtoolkit.editor.board.BoardEditor;
+import rpgtoolkit.editor.main.MainWindow;
 
 /**
  *
@@ -36,6 +38,21 @@ public abstract class AbstractModelPanel extends JPanel
     public Object getModel()
     {
         return this.model;
+    }
+    
+    /*
+     * *************************************************************************
+     * Public Methods
+     * *************************************************************************
+     */
+    public void updateCurrentBoardView()
+    {
+        BoardEditor editor = MainWindow.getInstance().getCurrentBoardEditor();
+        
+        if (editor != null)
+        {
+            editor.getBoardView().repaint();
+        }
     }
     
 }

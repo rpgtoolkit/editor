@@ -224,6 +224,16 @@ public class MainWindow extends JFrame implements InternalFrameListener
     {
         return this.propertiesPanel;
     }
+    
+    public BoardEditor getCurrentBoardEditor()
+    {
+        if (this.desktopPane.getSelectedFrame() instanceof BoardEditor)
+        {
+            return (BoardEditor)this.desktopPane.getSelectedFrame();
+        }
+        
+        return null;
+    }
 
     /*
      * *************************************************************************
@@ -233,7 +243,10 @@ public class MainWindow extends JFrame implements InternalFrameListener
     @Override
     public void internalFrameOpened(InternalFrameEvent e)
     {
-
+        if (e.getInternalFrame() instanceof BoardEditor)
+        {
+            this.upperTabbedPane.setSelectedComponent(this.tileSetPanel);
+        }
     }
 
     @Override
@@ -268,8 +281,10 @@ public class MainWindow extends JFrame implements InternalFrameListener
             BoardEditor editor = (BoardEditor) e.getInternalFrame();
             this.layerPanel.setBoardView(editor.getBoardView());
 
-            this.upperTabbedPane.setSelectedComponent(this.tileSetPanel);
-            this.lowerTabbedPane.setSelectedComponent(this.layerPanel);
+            if (editor.getSelectedObject() != null)
+            {
+                this.propertiesPanel.setModel(editor.getSelectedObject());
+            }
         }
     }
 
@@ -283,6 +298,11 @@ public class MainWindow extends JFrame implements InternalFrameListener
             if (this.layerPanel.getBoardView().equals(editor.getBoardView()))
             {
                 this.layerPanel.clearTable();
+            }
+            
+            if (this.propertiesPanel.getModel() == editor.getSelectedObject())
+            {
+                this.propertiesPanel.setModel(null);
             }
             
             // So we do not end up drawing the vector on the other board

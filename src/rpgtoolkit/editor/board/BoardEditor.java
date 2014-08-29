@@ -10,6 +10,7 @@ import javax.swing.JViewport;
 import rpgtoolkit.common.editor.types.Tile;
 import rpgtoolkit.common.io.types.Board;
 import rpgtoolkit.editor.board.tool.AbstractBrush;
+import rpgtoolkit.editor.board.types.Selectable;
 import rpgtoolkit.editor.main.MainWindow;
 import rpgtoolkit.editor.main.ToolkitEditorWindow;
 
@@ -36,6 +37,8 @@ public class BoardEditor extends ToolkitEditorWindow
     protected Rectangle selection;
 
     protected Tile[][] selectedTiles;
+    
+    private Selectable selectedObject;
 
     /*
      * *************************************************************************
@@ -144,6 +147,19 @@ public class BoardEditor extends ToolkitEditorWindow
     public Tile[][] getSelectedTiles()
     {
         return this.selectedTiles;
+    }
+    
+    public Selectable getSelectedObject()
+    {
+        return this.selectedObject;
+    }
+    
+    public void setSelectedObject(Selectable object)
+    {
+        this.selectedObject = object;
+        MainWindow.getInstance().getPropertiesPanel().setModel(
+                this.selectedObject);
+        boardView.repaint();
     }
 
     /*

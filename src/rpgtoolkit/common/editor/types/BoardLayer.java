@@ -304,7 +304,7 @@ public class BoardLayer implements Cloneable
         return null;
     }
     
-    public void removeVectorAt(int x, int y)
+    public BoardVector removeVectorAt(int x, int y)
     {
         BoardVector vector = findVectorAt(x, y);
         
@@ -312,7 +312,11 @@ public class BoardLayer implements Cloneable
         {
             this.vectors.remove(vector);
             this.board.fireBoardChanged();
+            
+            return vector;
         }
+        
+        return null;
     }
 
     /*
