@@ -14,19 +14,24 @@ public class TileEditor extends JInternalFrame
     private TileCanvas canvas;
     private JSpinner tileSelector;
     private JFileChooser openBox;
-    private SpinnerListModel slm;
+    private final SpinnerListModel slm;
 
+    /*
+     * *************************************************************************
+     * Public Constructors
+     * *************************************************************************
+     */
     public TileEditor(File fileName)
     {
         super("Tile Editor", true, true, true, true);
 
         this.setResizable(true);
 
-        tileSet = new TileSet(fileName);
-        slm = new SpinnerListModel(tileSet.getTiles());
+        this.tileSet = new TileSet(fileName);
+        this.slm = new SpinnerListModel(this.tileSet.getTiles());
 
-        tileSelector = new JSpinner(slm);
-        tileSelector.addChangeListener(new ChangeListener()
+        this.tileSelector = new JSpinner(this.slm);
+        this.tileSelector.addChangeListener(new ChangeListener()
         {
             @Override
             public void stateChanged(ChangeEvent e)
@@ -57,12 +62,12 @@ public class TileEditor extends JInternalFrame
             }
         });
 
-        canvas = new TileCanvas((Tile) tileSelector.getValue());
+        this.canvas = new TileCanvas((Tile) this.tileSelector.getValue());
 
         this.setSize(700, 700);
         this.setLayout(new BorderLayout());
-        this.add(canvas, BorderLayout.CENTER);
-        this.add(tileSelector, BorderLayout.SOUTH);
+        this.add(this.canvas, BorderLayout.CENTER);
+        this.add(this.tileSelector, BorderLayout.SOUTH);
 
         this.setVisible(true);
     }

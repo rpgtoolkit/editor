@@ -13,12 +13,14 @@ import rpgtoolkit.editor.main.ToolkitEditorWindow;
 /**
  * Project File editor
  *
- * @author Geoff Wilson 
+ * @author Geoff Wilson
  * @author Joshua Michael Daly
  */
 public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameListener
 {
+
     // Key Values for project settings
+
     private final int KEY_LEFT_UP = 0;
     private final int KEY_UP = 1;
     private final int KEY_RIGHT_UP = 2;
@@ -43,7 +45,8 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
     private JPanel graphicsPanel;
 
     // Components required for saving/loading data
-    private final Border defaultEtchedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
+    private final Border defaultEtchedBorder = BorderFactory.
+            createEtchedBorder(EtchedBorder.LOWERED);
 
     //PROJECT SETTINGS
     private JTextField projectName;
@@ -93,6 +96,11 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
     private JTextField customResWidth;
     private JTextField customResHeight;
 
+    /*
+     * *************************************************************************
+     * Public Constructors
+     * *************************************************************************
+     */
     /**
      * Create a new blank Project
      * <p/>
@@ -102,7 +110,7 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
     {
         super("New Project", true, true, true, true);
 
-        project = new Project();
+        this.project = new Project();
         this.setVisible(true);
     }
 
@@ -122,32 +130,101 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
         this.setVisible(true);
     }
 
+    /*
+     * *************************************************************************
+     * Public Methods
+     * *************************************************************************
+     */
+    @Override
+    public boolean save()
+    {
+        return project.save();
+    }
+
+    public void gracefulClose()
+    {
+
+    }
+
+    public void setWindowParent(MainWindow parent)
+    {
+        this.parent = parent;
+    }
+
+    @Override
+    public void internalFrameOpened(InternalFrameEvent e)
+    {
+
+    }
+
+    @Override
+    public void internalFrameClosing(InternalFrameEvent e)
+    {
+
+    }
+
+    @Override
+    public void internalFrameClosed(InternalFrameEvent e)
+    {
+        this.gracefulClose();
+    }
+
+    @Override
+    public void internalFrameIconified(InternalFrameEvent e)
+    {
+
+    }
+
+    @Override
+    public void internalFrameDeiconified(InternalFrameEvent e)
+    {
+
+    }
+
+    @Override
+    public void internalFrameActivated(InternalFrameEvent e)
+    {
+
+    }
+
+    @Override
+    public void internalFrameDeactivated(InternalFrameEvent e)
+    {
+
+    }
+
+    /*
+     * *************************************************************************
+     * Private Methods
+     * *************************************************************************
+     */
     /**
      * Builds the Swing interface
      */
     private void constructWindow()
     {
         this.addInternalFrameListener(this);
-        // Builds the components needed to display the Project status
+        
+        // Builds the components needed to display the Project status.
         JTabbedPane tabPane = new JTabbedPane();
 
-        projectSettingsPanel = new JPanel();
-        startupInfoPanel = new JPanel();
-        codePanel = new JPanel();
-        fightingPanel = new JPanel();
-        graphicsPanel = new JPanel();
+        this.projectSettingsPanel = new JPanel();
+        this.startupInfoPanel = new JPanel();
+        this.codePanel = new JPanel();
+        this.fightingPanel = new JPanel();
+        this.graphicsPanel = new JPanel();
 
-        createProjectSettingsPanel();
-        createStartupInfoPanel();
-        createCodePanel();
-        createFightPanel();
-        createGraphicsPanel();
+        this.createProjectSettingsPanel();
+        this.createStartupInfoPanel();
+        this.createCodePanel();
+        this.createFightPanel();
+        this.createGraphicsPanel();
 
-        tabPane.addTab("Project Settings", projectSettingsPanel);
-        tabPane.addTab("Startup Info", startupInfoPanel);
-        tabPane.addTab("RPG Code", codePanel);
-        tabPane.addTab("Battle System", fightingPanel);
-        tabPane.addTab("Graphics", graphicsPanel);
+        tabPane.addTab("Project Settings", this.projectSettingsPanel);
+        tabPane.addTab("Startup Info", this.startupInfoPanel);
+        tabPane.addTab("RPG Code", this.codePanel);
+        tabPane.addTab("Battle System", this.fightingPanel);
+        tabPane.addTab("Graphics", this.graphicsPanel);
 
         this.add(tabPane);
         // this.setJMenuBar(new ProjectEditorMenu(this.parent));
@@ -156,17 +233,18 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
     private void createProjectSettingsPanel()
     {
         // Configure Class scope components
-        projectName = new JTextField(project.getGameTitle());
-        enableJoystick = new JCheckBox();
-        enableJoystick.setEnabled(project.getJoystickStatus());
-        cursorMoveSound = new JTextField(project.getCursorMoveSound());
-        cursorSelectSound = new JTextField(project.getCursorSelectSound());
-        cursorCancelSound = new JTextField(project.getCursorCancelSound());
-        useKeyboard = new JCheckBox();
-        useMouse = new JCheckBox();
-        allowDiagonalMove = new JCheckBox();
-        movementKeys = new JTextField[8];
-        for (int i = 0; i < movementKeys.length; i++)
+        this.projectName = new JTextField(this.project.getGameTitle());
+        this.enableJoystick = new JCheckBox();
+        this.enableJoystick.setEnabled(this.project.getJoystickStatus());
+        this.cursorMoveSound = new JTextField(this.project.getCursorMoveSound());
+        this.cursorSelectSound = new JTextField(this.project.getCursorSelectSound());
+        this.cursorCancelSound = new JTextField(this.project.getCursorCancelSound());
+        this.useKeyboard = new JCheckBox();
+        this.useMouse = new JCheckBox();
+        this.allowDiagonalMove = new JCheckBox();
+        
+        this.movementKeys = new JTextField[8];
+        for (int i = 0; i < this.movementKeys.length; i++)
         {
             movementKeys[i] = new JTextField();
         }
@@ -186,17 +264,21 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
 
         // Configure the necessary Panels
         JPanel projectInfoPanel = new JPanel();
-        projectInfoPanel.setBorder(BorderFactory.createTitledBorder(defaultEtchedBorder, "Project Information"));
+        projectInfoPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Project Information"));
         JPanel cursorSoundsPanel = new JPanel();
-        cursorSoundsPanel.setBorder(BorderFactory.createTitledBorder(defaultEtchedBorder, "Cursor Sounds"));
+        cursorSoundsPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Cursor Sounds"));
         JPanel controlsPanel = new JPanel();
-        controlsPanel.setBorder(BorderFactory.createTitledBorder(defaultEtchedBorder, "Control Options"));
+        controlsPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Control Options"));
         JPanel keysPanel = new JPanel();
-        keysPanel.setBorder(BorderFactory.createTitledBorder(defaultEtchedBorder, "Change Keys"));
+        keysPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Change Keys"));
 
         // Create Layout for top level panel
-        GroupLayout layout = new GroupLayout(projectSettingsPanel);
-        projectSettingsPanel.setLayout(layout);
+        GroupLayout layout = new GroupLayout(this.projectSettingsPanel);
+        this.projectSettingsPanel.setLayout(layout);
         layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
 
@@ -224,111 +306,120 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
         // Configure the PROJECT INFO PANEL layout
         projectInfoLayout.setHorizontalGroup(projectInfoLayout.createSequentialGroup()
                 .addComponent(projectNameLabel)
-                .addComponent(projectName)
+                .addComponent(this.projectName)
         );
 
-        projectInfoLayout.setVerticalGroup(projectInfoLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+        projectInfoLayout.setVerticalGroup(projectInfoLayout.
+                createParallelGroup(GroupLayout.Alignment.CENTER)
                 .addComponent(projectNameLabel)
-                .addComponent(projectName, JTF_HEIGHT, JTF_HEIGHT, JTF_HEIGHT)
+                .addComponent(this.projectName, this.JTF_HEIGHT, 
+                        this.JTF_HEIGHT, this.JTF_HEIGHT)
         );
 
         // Configure the CURSOR SOUNDS PANEL layout
         cursorSoundsLayout.setHorizontalGroup(cursorSoundsLayout.createParallelGroup()
                 .addGroup(cursorSoundsLayout.createSequentialGroup()
                         .addComponent(cursorMoveSoundLabel, 50, 50, 50)
-                        .addComponent(cursorMoveSound)
+                        .addComponent(this.cursorMoveSound)
                         .addComponent(cursorMoveSoundButton))
                 .addGroup(cursorSoundsLayout.createSequentialGroup()
                         .addComponent(cursorSelectSoundLabel)
-                        .addComponent(cursorSelectSound)
+                        .addComponent(this.cursorSelectSound)
                         .addComponent(cursorSelectSoundButton))
                 .addGroup(cursorSoundsLayout.createSequentialGroup()
                         .addComponent(cursorCancelSoundLabel)
-                        .addComponent(cursorCancelSound)
+                        .addComponent(this.cursorCancelSound)
                         .addComponent(cursorCancelSoundButton))
         );
 
-        cursorSoundsLayout.linkSize(SwingConstants.HORIZONTAL, cursorMoveSoundLabel, cursorSelectSoundLabel, cursorCancelSoundLabel);
-        cursorSoundsLayout.linkSize(SwingConstants.VERTICAL, cursorMoveSound, cursorCancelSound, cursorSelectSound);
+        cursorSoundsLayout.linkSize(SwingConstants.HORIZONTAL, 
+                cursorMoveSoundLabel, 
+                cursorSelectSoundLabel, 
+                cursorCancelSoundLabel);
+        cursorSoundsLayout.linkSize(SwingConstants.VERTICAL, 
+                this.cursorMoveSound, 
+                this.cursorCancelSound, 
+                this.cursorSelectSound);
 
         cursorSoundsLayout.setVerticalGroup(cursorSoundsLayout.createSequentialGroup()
                 .addGroup(cursorSoundsLayout.createParallelGroup()
                         .addComponent(cursorMoveSoundLabel)
-                        .addComponent(cursorMoveSound, JTF_HEIGHT, JTF_HEIGHT, JTF_HEIGHT)
+                        .addComponent(this.cursorMoveSound, this.JTF_HEIGHT, 
+                                this.JTF_HEIGHT, this.JTF_HEIGHT)
                         .addComponent(cursorMoveSoundButton))
                 .addGroup(cursorSoundsLayout.createParallelGroup()
                         .addComponent(cursorSelectSoundLabel)
-                        .addComponent(cursorSelectSound)
+                        .addComponent(this.cursorSelectSound)
                         .addComponent(cursorSelectSoundButton))
                 .addGroup(cursorSoundsLayout.createParallelGroup()
                         .addComponent(cursorCancelSoundLabel)
-                        .addComponent(cursorCancelSound)
+                        .addComponent(this.cursorCancelSound)
                         .addComponent(cursorCancelSoundButton))
         );
 
         // Configure CONTROL SETTINGS PANEL layout
         controlsLayout.setHorizontalGroup(controlsLayout.createParallelGroup()
                 .addGroup(controlsLayout.createSequentialGroup()
-                        .addComponent(useKeyboard)
+                        .addComponent(this.useKeyboard)
                         .addComponent(useKeyboardLabel))
                 .addGroup(controlsLayout.createSequentialGroup()
-                        .addComponent(useMouse)
+                        .addComponent(this.useMouse)
                         .addComponent(useMouseLabel))
                 .addGroup(controlsLayout.createSequentialGroup()
-                        .addComponent(allowDiagonalMove)
+                        .addComponent(this.allowDiagonalMove)
                         .addComponent(allowDiagonalMoveLabel))
                 .addGroup(controlsLayout.createSequentialGroup()
-                        .addComponent(enableJoystick)
+                        .addComponent(this.enableJoystick)
                         .addComponent(enableJoystickLabel))
         );
 
         controlsLayout.setVerticalGroup(controlsLayout.createSequentialGroup()
                 .addGroup(controlsLayout.createParallelGroup()
-                        .addComponent(useKeyboard)
+                        .addComponent(this.useKeyboard)
                         .addComponent(useKeyboardLabel))
                 .addGroup(controlsLayout.createParallelGroup()
-                        .addComponent(useMouse)
+                        .addComponent(this.useMouse)
                         .addComponent(useMouseLabel))
                 .addGroup(controlsLayout.createParallelGroup()
-                        .addComponent(allowDiagonalMove)
+                        .addComponent(this.allowDiagonalMove)
                         .addComponent(allowDiagonalMoveLabel))
                 .addGroup(controlsLayout.createParallelGroup()
-                        .addComponent(enableJoystick)
+                        .addComponent(this.enableJoystick)
                         .addComponent(enableJoystickLabel))
         );
 
         // Configure KEY REBINDING PANEL layout
         keysLayout.setHorizontalGroup(keysLayout.createParallelGroup()
                 .addGroup(keysLayout.createSequentialGroup()
-                        .addComponent(movementKeys[0], 40, 40, 40)
-                        .addComponent(movementKeys[1])
-                        .addComponent(movementKeys[2]))
+                        .addComponent(this.movementKeys[0], 40, 40, 40)
+                        .addComponent(this.movementKeys[1])
+                        .addComponent(this.movementKeys[2]))
                 .addGroup(keysLayout.createSequentialGroup()
-                        .addComponent(movementKeys[3])
+                        .addComponent(this.movementKeys[3])
                         .addGap(52)
-                        .addComponent(movementKeys[4]))
+                        .addComponent(this.movementKeys[4]))
                 .addGroup(keysLayout.createSequentialGroup()
-                        .addComponent(movementKeys[5])
-                        .addComponent(movementKeys[6])
-                        .addComponent(movementKeys[7]))
+                        .addComponent(this.movementKeys[5])
+                        .addComponent(this.movementKeys[6])
+                        .addComponent(this.movementKeys[7]))
         );
 
-        keysLayout.linkSize(movementKeys);
+        keysLayout.linkSize(this.movementKeys);
 
         keysLayout.setVerticalGroup(keysLayout.createSequentialGroup()
                 .addGroup(keysLayout.createParallelGroup()
-                        .addComponent(movementKeys[0], JTF_HEIGHT, JTF_HEIGHT, JTF_HEIGHT)
-                        .addComponent(movementKeys[1])
-                        .addComponent(movementKeys[2]))
+                        .addComponent(this.movementKeys[0], this.JTF_HEIGHT, 
+                                this.JTF_HEIGHT, this.JTF_HEIGHT)
+                        .addComponent(this.movementKeys[1])
+                        .addComponent(this.movementKeys[2]))
                 .addGroup(keysLayout.createParallelGroup()
-                        .addComponent(movementKeys[3])
-                        .addComponent(movementKeys[4]))
+                        .addComponent(this.movementKeys[3])
+                        .addComponent(this.movementKeys[4]))
                 .addGroup(keysLayout.createParallelGroup()
-                        .addComponent(movementKeys[5])
-                        .addComponent(movementKeys[6])
-                        .addComponent(movementKeys[7]))
+                        .addComponent(this.movementKeys[5])
+                        .addComponent(this.movementKeys[6])
+                        .addComponent(this.movementKeys[7]))
         );
-
 
         // Configure PROJECT SETTINGS PANEL layout
         layout.setHorizontalGroup(layout.createParallelGroup()
@@ -353,32 +444,34 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
 
     private void createStartupInfoPanel()
     {
-        initialBoard = new JTextField();
-        initialChar = new JTextField();
-        charSpeed = new JSlider();
-        charSpeed.setMaximum(3);
-        charSpeed.setMinimum(-3);
-        charSpeed.setMajorTickSpacing(1);
-        charSpeed.setMinorTickSpacing(1);
-        charSpeed.setPaintLabels(true);
-        charSpeed.setValue(0);
-        pixelMovement = new JRadioButton();
-        tileMovement = new JRadioButton();
-        pushInPixels = new JCheckBox();
-        pathfinding = new JComboBox();
-        pathfinding.addItem("Axial");
-        pathfinding.addItem("Diagonal");
-        pathfinding.addItem("Vector");
-        pathfinding.setEditable(false);
-        pathfinding.setSelectedIndex(2);
+        this.initialBoard = new JTextField();
+        this.initialChar = new JTextField();
+        this.charSpeed = new JSlider();
+        this.charSpeed.setMaximum(3);
+        this.charSpeed.setMinimum(-3);
+        this.charSpeed.setMajorTickSpacing(1);
+        this.charSpeed.setMinorTickSpacing(1);
+        this.charSpeed.setPaintLabels(true);
+        this.charSpeed.setValue(0);
+        this.pixelMovement = new JRadioButton();
+        this.tileMovement = new JRadioButton();
+        this.pushInPixels = new JCheckBox();
+        this.pathfinding = new JComboBox();
+        this.pathfinding.addItem("Axial");
+        this.pathfinding.addItem("Diagonal");
+        this.pathfinding.addItem("Vector");
+        this.pathfinding.setEditable(false);
+        this.pathfinding.setSelectedIndex(2);
 
         JLabel initialBoardLabel = new JLabel("Initial Board");
         JButton initialBoardButton = new JButton("Browse");
         JLabel initialCharLabel = new JLabel("Initial Character");
         JButton initialCharButton = new JButton("Browse");
-        JLabel blankBoardNote = new JLabel("You may leave the initial board blank if you wish");
+        JLabel blankBoardNote = new JLabel("You may leave the initial board "
+                + "blank if you wish");
         JLabel charSpeedLabel = new JLabel("Adjust game speed");
-        JLabel charSpeedNote = new JLabel("This is a secondary option, leave at zero for default character speeds");
+        JLabel charSpeedNote = new JLabel("This is a secondary option, leave at "
+                + "zero for default character speeds");
         JLabel movementLabel = new JLabel("Movement Style");
         JLabel pixelMovementLabel = new JLabel("Per Pixel");
         JLabel tileMovementLabel = new JLabel("Per Tile");
@@ -388,12 +481,14 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
 
         // Configure the necessary Panels
         JPanel conditionsPanel = new JPanel();
-        conditionsPanel.setBorder(BorderFactory.createTitledBorder(defaultEtchedBorder, "Startup Settings"));
+        conditionsPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Startup Settings"));
         JPanel miscPanel = new JPanel();
-        miscPanel.setBorder(BorderFactory.createTitledBorder(defaultEtchedBorder, "Miscellaneous Settings"));
+        miscPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Miscellaneous Settings"));
 
-        GroupLayout layout = new GroupLayout(startupInfoPanel);
-        startupInfoPanel.setLayout(layout);
+        GroupLayout layout = new GroupLayout(this.startupInfoPanel);
+        this.startupInfoPanel.setLayout(layout);
         layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
 
@@ -410,26 +505,29 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
         conditionsLayout.setHorizontalGroup(conditionsLayout.createParallelGroup()
                 .addGroup(conditionsLayout.createSequentialGroup()
                         .addComponent(initialBoardLabel, 75, 75, 75)
-                        .addComponent(initialBoard)
+                        .addComponent(this.initialBoard)
                         .addComponent(initialBoardButton))
                 .addGroup(conditionsLayout.createSequentialGroup()
                         .addComponent(initialCharLabel)
-                        .addComponent(initialChar)
+                        .addComponent(this.initialChar)
                         .addComponent(initialCharButton))
                 .addComponent(blankBoardNote)
         );
 
-        conditionsLayout.linkSize(SwingConstants.HORIZONTAL, initialBoardLabel, initialCharLabel);
-        conditionsLayout.linkSize(SwingConstants.VERTICAL, initialBoard, initialChar);
+        conditionsLayout.linkSize(SwingConstants.HORIZONTAL, initialBoardLabel, 
+                initialCharLabel);
+        conditionsLayout.linkSize(SwingConstants.VERTICAL, this.initialBoard, 
+                this.initialChar);
 
         conditionsLayout.setVerticalGroup(conditionsLayout.createSequentialGroup()
                 .addGroup(conditionsLayout.createParallelGroup()
                         .addComponent(initialBoardLabel)
-                        .addComponent(initialBoard, JTF_HEIGHT, JTF_HEIGHT, JTF_HEIGHT)
+                        .addComponent(this.initialBoard, this.JTF_HEIGHT, 
+                                this.JTF_HEIGHT, this.JTF_HEIGHT)
                         .addComponent(initialBoardButton))
                 .addGroup(conditionsLayout.createParallelGroup()
                         .addComponent(initialCharLabel)
-                        .addComponent(initialChar)
+                        .addComponent(this.initialChar)
                         .addComponent(initialCharButton))
                 .addComponent(blankBoardNote)
         );
@@ -437,41 +535,41 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
         miscLayout.setHorizontalGroup(miscLayout.createParallelGroup()
                 .addGroup(miscLayout.createSequentialGroup()
                         .addComponent(charSpeedLabel)
-                        .addComponent(charSpeed))
+                        .addComponent(this.charSpeed))
                 .addComponent(charSpeedNote)
                 .addGroup(miscLayout.createSequentialGroup()
                         .addComponent(movementLabel)
-                        .addComponent(pixelMovement)
+                        .addComponent(this.pixelMovement)
                         .addComponent(pixelMovementLabel)
-                        .addComponent(tileMovement)
+                        .addComponent(this.tileMovement)
                         .addComponent(tileMovementLabel))
                 .addGroup(miscLayout.createSequentialGroup()
-                        .addComponent(pushInPixels)
+                        .addComponent(this.pushInPixels)
                         .addComponent(pushInPixelsLabel))
                 .addGroup(miscLayout.createSequentialGroup()
                         .addComponent(mouseCursorButton)
                         .addComponent(pathFindingLabel)
-                        .addComponent(pathfinding))
+                        .addComponent(this.pathfinding))
         );
 
         miscLayout.setVerticalGroup(miscLayout.createSequentialGroup()
                 .addGroup(miscLayout.createParallelGroup()
                         .addComponent(charSpeedLabel)
-                        .addComponent(charSpeed))
+                        .addComponent(this.charSpeed))
                 .addComponent(charSpeedNote)
                 .addGroup(miscLayout.createParallelGroup()
                         .addComponent(movementLabel)
-                        .addComponent(pixelMovement)
+                        .addComponent(this.pixelMovement)
                         .addComponent(pixelMovementLabel)
-                        .addComponent(tileMovement)
+                        .addComponent(this.tileMovement)
                         .addComponent(tileMovementLabel))
                 .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(pushInPixels)
+                        .addComponent(this.pushInPixels)
                         .addComponent(pushInPixelsLabel))
                 .addGroup(miscLayout.createParallelGroup()
                         .addComponent(mouseCursorButton)
                         .addComponent(pathFindingLabel)
-                        .addComponent(pathfinding, 22, 22, 22))
+                        .addComponent(this.pathfinding, 22, 22, 22))
         );
 
         layout.setHorizontalGroup(layout.createParallelGroup()
@@ -490,12 +588,12 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
     private void createCodePanel()
     {
         // Configure Class scope components
-        runTimeProgram = new JTextField();
-        startupProgram = new JTextField();
-        gameOverProgram = new JTextField();
-        runTimeKey = new JTextField();
-        menuKey = new JTextField();
-        generalKey = new JTextField();
+        this.runTimeProgram = new JTextField();
+        this.startupProgram = new JTextField();
+        this.gameOverProgram = new JTextField();
+        this.runTimeKey = new JTextField();
+        this.menuKey = new JTextField();
+        this.generalKey = new JTextField();
 
         // Configure Function scope components
         JLabel runTimeProgramLabel = new JLabel("Run Time Program");
@@ -511,13 +609,15 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
 
         // Configure Panels
         JPanel programPanel = new JPanel();
-        programPanel.setBorder(BorderFactory.createTitledBorder(defaultEtchedBorder, "Programs"));
+        programPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Programs"));
         JPanel keysPanel = new JPanel();
-        keysPanel.setBorder(BorderFactory.createTitledBorder(defaultEtchedBorder, "Keys"));
+        keysPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Keys"));
 
         // Configure Layouts
-        GroupLayout layout = new GroupLayout(codePanel);
-        codePanel.setLayout(layout);
+        GroupLayout layout = new GroupLayout(this.codePanel);
+        this.codePanel.setLayout(layout);
         layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
 
@@ -534,63 +634,70 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
         programPanelLayout.setHorizontalGroup(programPanelLayout.createParallelGroup()
                 .addGroup(programPanelLayout.createSequentialGroup()
                         .addComponent(runTimeProgramLabel)
-                        .addComponent(runTimeProgram)
+                        .addComponent(this.runTimeProgram)
                         .addComponent(runTimeProgramButton))
                 .addGroup(programPanelLayout.createSequentialGroup()
                         .addComponent(startupProgramLabel)
-                        .addComponent(startupProgram)
+                        .addComponent(this.startupProgram)
                         .addComponent(startupProgramButton))
                 .addGroup(programPanelLayout.createSequentialGroup()
                         .addComponent(gameOverProgramLabel)
-                        .addComponent(gameOverProgram)
+                        .addComponent(this.gameOverProgram)
                         .addComponent(gameOverProgramButton))
         );
 
-        programPanelLayout.linkSize(SwingConstants.VERTICAL, gameOverProgram, startupProgram, runTimeProgram);
-        programPanelLayout.linkSize(SwingConstants.HORIZONTAL, gameOverProgramLabel, startupProgramLabel, runTimeProgramLabel);
+        programPanelLayout.linkSize(SwingConstants.VERTICAL, this.gameOverProgram,
+                this.startupProgram, this.runTimeProgram);
+        programPanelLayout.linkSize(SwingConstants.HORIZONTAL, 
+                gameOverProgramLabel, startupProgramLabel, runTimeProgramLabel);
 
         programPanelLayout.setVerticalGroup(programPanelLayout.createSequentialGroup()
                 .addGroup(programPanelLayout.createParallelGroup()
                         .addComponent(runTimeProgramLabel)
-                        .addComponent(runTimeProgram, JTF_HEIGHT, JTF_HEIGHT, JTF_HEIGHT)
+                        .addComponent(this.runTimeProgram, this.JTF_HEIGHT, 
+                                this.JTF_HEIGHT, this.JTF_HEIGHT)
                         .addComponent(runTimeProgramButton))
                 .addGroup(programPanelLayout.createParallelGroup()
                         .addComponent(startupProgramLabel)
-                        .addComponent(startupProgram)
+                        .addComponent(this.startupProgram)
                         .addComponent(startupProgramButton))
                 .addGroup(programPanelLayout.createParallelGroup()
                         .addComponent(gameOverProgramLabel)
-                        .addComponent(gameOverProgram)
+                        .addComponent(this.gameOverProgram)
                         .addComponent(gameOverProgramButton))
         );
 
         keysPanelLayout.setHorizontalGroup(keysPanelLayout.createParallelGroup()
                 .addGroup(keysPanelLayout.createSequentialGroup()
                         .addComponent(runTimeKeyLabel)
-                        .addComponent(runTimeKey, 50, 50, 50))
+                        .addComponent(this.runTimeKey, 50, 50, 50))
                 .addGroup(keysPanelLayout.createSequentialGroup()
                         .addComponent(menuKeyLabel)
-                        .addComponent(menuKey))
+                        .addComponent(this.menuKey))
                 .addGroup(keysPanelLayout.createSequentialGroup()
                         .addComponent(generalKeyLabel)
-                        .addComponent(generalKey))
+                        .addComponent(this.generalKey))
                 .addComponent(moreKeysButton)
         );
 
-        keysPanelLayout.linkSize(SwingConstants.VERTICAL, runTimeKey, menuKey, generalKey);
-        keysPanelLayout.linkSize(SwingConstants.HORIZONTAL, runTimeKey, menuKey, generalKey);
-        keysPanelLayout.linkSize(SwingConstants.HORIZONTAL, runTimeKeyLabel, menuKeyLabel, generalKeyLabel);
+        keysPanelLayout.linkSize(SwingConstants.VERTICAL, this.runTimeKey, 
+                this.menuKey, this.generalKey);
+        keysPanelLayout.linkSize(SwingConstants.HORIZONTAL, this.runTimeKey, 
+                this.menuKey, this.generalKey);
+        keysPanelLayout.linkSize(SwingConstants.HORIZONTAL, runTimeKeyLabel, 
+                menuKeyLabel, generalKeyLabel);
 
         keysPanelLayout.setVerticalGroup(keysPanelLayout.createSequentialGroup()
                 .addGroup(keysPanelLayout.createParallelGroup()
                         .addComponent(runTimeKeyLabel)
-                        .addComponent(runTimeKey, JTF_HEIGHT, JTF_HEIGHT, JTF_HEIGHT))
+                        .addComponent(this.runTimeKey, this.JTF_HEIGHT, 
+                                this.JTF_HEIGHT, this.JTF_HEIGHT))
                 .addGroup(keysPanelLayout.createParallelGroup()
                         .addComponent(menuKeyLabel)
-                        .addComponent(menuKey))
+                        .addComponent(this.menuKey))
                 .addGroup(keysPanelLayout.createParallelGroup()
                         .addComponent(generalKeyLabel)
-                        .addComponent(generalKey))
+                        .addComponent(this.generalKey))
                 .addComponent(moreKeysButton)
         );
 
@@ -610,17 +717,18 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
 
     private void createFightPanel()
     {
-        enableFight = new JCheckBox();
+        this.enableFight = new JCheckBox();
 
         JLabel enableFightLabel = new JLabel("Enable Battle System?");
         JButton configureFight = new JButton("Configure");
 
         JPanel fightControlPanel = new JPanel();
-        fightControlPanel.setBorder(BorderFactory.createTitledBorder(defaultEtchedBorder, "Configuration"));
+        fightControlPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Configuration"));
 
         // Configure Layouts
-        GroupLayout layout = new GroupLayout(fightingPanel);
-        fightingPanel.setLayout(layout);
+        GroupLayout layout = new GroupLayout(this.fightingPanel);
+        this.fightingPanel.setLayout(layout);
         layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
 
@@ -631,18 +739,17 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
 
         fightControlPanelLayout.setHorizontalGroup(fightControlPanelLayout.createParallelGroup()
                 .addGroup(fightControlPanelLayout.createSequentialGroup()
-                        .addComponent(enableFight)
+                        .addComponent(this.enableFight)
                         .addComponent(enableFightLabel))
                 .addComponent(configureFight)
         );
 
         fightControlPanelLayout.setVerticalGroup(fightControlPanelLayout.createSequentialGroup()
                 .addGroup(fightControlPanelLayout.createParallelGroup()
-                        .addComponent(enableFight)
+                        .addComponent(this.enableFight)
                         .addComponent(enableFightLabel))
                 .addComponent(configureFight)
         );
-
 
         layout.setHorizontalGroup(layout.createParallelGroup()
                 .addComponent(fightControlPanel, 515, 515, 515)
@@ -656,64 +763,65 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
     private void createGraphicsPanel()
     {
 
-        sixteenBit = new JRadioButton("16 bit");
-        twentyFourBit = new JRadioButton("24 bit");
-        thirtyTwoBit = new JRadioButton("32 bit");
-        fullScreen = new JCheckBox("Full Screen Mode?");
-        fullScreen.setSelected(project.getFullscreenMode());
-        sixByFour = new JRadioButton("640 x 480");
-        eightBySix = new JRadioButton("800 x 600");
-        tenBySeven = new JRadioButton("1024 x 768");
-        customRes = new JRadioButton("Custom");
-        customResWidth = new JTextField(Long.toString(project.getResolutionWidth()));
-        customResHeight = new JTextField(Long.toString(project.getResolutionHeight()));
-        showFPS = new JCheckBox();
-        drawBoardVectors = new JCheckBox();
-        drawSpriteVectors = new JCheckBox();
-        drawActivePlayerPath = new JCheckBox();
-        drawActivePlayerDestination = new JCheckBox();
+        this.sixteenBit = new JRadioButton("16 bit");
+        this.twentyFourBit = new JRadioButton("24 bit");
+        this.thirtyTwoBit = new JRadioButton("32 bit");
+        this.fullScreen = new JCheckBox("Full Screen Mode?");
+        this.fullScreen.setSelected(this.project.getFullscreenMode());
+        this.sixByFour = new JRadioButton("640 x 480");
+        this.eightBySix = new JRadioButton("800 x 600");
+        this.tenBySeven = new JRadioButton("1024 x 768");
+        this.customRes = new JRadioButton("Custom");
+        this.customResWidth = new JTextField(Long.toString(this.project.getResolutionWidth()));
+        this.customResHeight = new JTextField(Long.toString(this.project.getResolutionHeight()));
+        this.showFPS = new JCheckBox();
+        this.drawBoardVectors = new JCheckBox();
+        this.drawSpriteVectors = new JCheckBox();
+        this.drawActivePlayerPath = new JCheckBox();
+        this.drawActivePlayerDestination = new JCheckBox();
 
         ButtonGroup depthGroup = new ButtonGroup();
-        depthGroup.add(sixteenBit);
-        depthGroup.add(twentyFourBit);
-        depthGroup.add(thirtyTwoBit);
+        depthGroup.add(this.sixteenBit);
+        depthGroup.add(this.twentyFourBit);
+        depthGroup.add(this.thirtyTwoBit);
 
-        switch (project.getColourDepth())
+        switch (this.project.getColourDepth())
         {
             case 0:
-                sixteenBit.setSelected(true);
+                this.sixteenBit.setSelected(true);
                 break;
             case 1:
-                twentyFourBit.setSelected(true);
+                this.twentyFourBit.setSelected(true);
                 break;
             case 2:
-                thirtyTwoBit.setSelected(true);
+                this.thirtyTwoBit.setSelected(true);
                 break;
         }
 
         ButtonGroup resolutionGroup = new ButtonGroup();
-        resolutionGroup.add(sixByFour);
-        resolutionGroup.add(eightBySix);
-        resolutionGroup.add(tenBySeven);
-        resolutionGroup.add(customRes);
+        resolutionGroup.add(this.sixByFour);
+        resolutionGroup.add(this.eightBySix);
+        resolutionGroup.add(this.tenBySeven);
+        resolutionGroup.add(this.customRes);
 
-        switch (project.getResolutionMode())
+        switch (this.project.getResolutionMode())
         {
             case 0:
-                sixByFour.setSelected(true);
+                this.sixByFour.setSelected(true);
                 break;
             case 1:
-                eightBySix.setSelected(true);
+                this.eightBySix.setSelected(true);
                 break;
             case 2:
-                tenBySeven.setSelected(true);
+                this.tenBySeven.setSelected(true);
                 break;
             case 3:
-                customRes.setSelected(true);
+                this.customRes.setSelected(true);
                 break;
         }
 
-        JLabel customResWarningLabel = new JLabel("Please note that not all video cards support all resolutions");
+        JLabel customResWarningLabel = new JLabel("Please note that not all "
+                + "video cards support all resolutions");
         JLabel customResX = new JLabel("x");
         JLabel customResY = new JLabel("y");
         JLabel showFPSLabel = new JLabel("Show FPS?");
@@ -723,20 +831,25 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
         JLabel drawActivePlayerDestinationLabel = new JLabel("Draw Active Player Destination");
 
         JPanel screenPanel = new JPanel();
-        screenPanel.setBorder(BorderFactory.createTitledBorder(defaultEtchedBorder, "Screen"));
+        screenPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Screen"));
         JPanel miscPanel = new JPanel();
-        miscPanel.setBorder(BorderFactory.createTitledBorder(defaultEtchedBorder, "Miscellaneous"));
+        miscPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Miscellaneous"));
 
         JPanel colorDepthPanel = new JPanel();
-        colorDepthPanel.setBorder(BorderFactory.createTitledBorder(defaultEtchedBorder, "Color Depth"));
+        colorDepthPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Color Depth"));
         JPanel resolutionPanel = new JPanel();
-        resolutionPanel.setBorder(BorderFactory.createTitledBorder(defaultEtchedBorder, "Resolution"));
+        resolutionPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Resolution"));
         JPanel customResolutionPanel = new JPanel();
-        customResolutionPanel.setBorder(BorderFactory.createTitledBorder(defaultEtchedBorder, "Custom Resolution"));
+        customResolutionPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Custom Resolution"));
 
         // Create Layout for Top Level Panel
-        GroupLayout layout = new GroupLayout(graphicsPanel);
-        graphicsPanel.setLayout(layout);
+        GroupLayout layout = new GroupLayout(this.graphicsPanel);
+        this.graphicsPanel.setLayout(layout);
         layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
 
@@ -767,37 +880,39 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
         customResLayout.setAutoCreateContainerGaps(true);
 
         colorDepthLayout.setHorizontalGroup(colorDepthLayout.createParallelGroup()
-                .addComponent(sixteenBit)
-                .addComponent(twentyFourBit)
-                .addComponent(thirtyTwoBit)
+                .addComponent(this.sixteenBit)
+                .addComponent(this.twentyFourBit)
+                .addComponent(this.thirtyTwoBit)
         );
 
         colorDepthLayout.setVerticalGroup(colorDepthLayout.createSequentialGroup()
-                .addComponent(sixteenBit)
-                .addComponent(twentyFourBit)
-                .addComponent(thirtyTwoBit)
+                .addComponent(this.sixteenBit)
+                .addComponent(this.twentyFourBit)
+                .addComponent(this.thirtyTwoBit)
         );
 
         resolutionLayout.setHorizontalGroup(resolutionLayout.createParallelGroup()
-                .addComponent(sixByFour)
-                .addComponent(eightBySix)
-                .addComponent(tenBySeven)
-                .addComponent(customRes)
-                .addComponent(fullScreen)
+                .addComponent(this.sixByFour)
+                .addComponent(this.eightBySix)
+                .addComponent(this.tenBySeven)
+                .addComponent(this.customRes)
+                .addComponent(this.fullScreen)
         );
 
         resolutionLayout.setVerticalGroup(resolutionLayout.createSequentialGroup()
-                .addComponent(sixByFour)
-                .addComponent(eightBySix)
-                .addComponent(tenBySeven)
-                .addComponent(customRes)
-                .addComponent(fullScreen)
+                .addComponent(this.sixByFour)
+                .addComponent(this.eightBySix)
+                .addComponent(this.tenBySeven)
+                .addComponent(this.customRes)
+                .addComponent(this.fullScreen)
         );
 
         screenLayout.setHorizontalGroup(screenLayout.createParallelGroup()
                 .addGroup(screenLayout.createSequentialGroup()
-                        .addComponent(colorDepthPanel, 150, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(resolutionPanel, 150, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(colorDepthPanel, 150, 
+                                GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(resolutionPanel, 150, 
+                                GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addComponent(customResolutionPanel)
         );
 
@@ -815,51 +930,53 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
                 .addComponent(customResWarningLabel)
                 .addGroup(customResLayout.createSequentialGroup()
                         .addComponent(customResX)
-                        .addComponent(customResWidth)
+                        .addComponent(this.customResWidth)
                         .addComponent(customResY)
-                        .addComponent(customResHeight))
+                        .addComponent(this.customResHeight))
         );
 
-        customResLayout.linkSize(SwingConstants.VERTICAL, customResWidth, customResHeight);
+        customResLayout.linkSize(SwingConstants.VERTICAL, this.customResWidth, 
+                this.customResHeight);
 
         customResLayout.setVerticalGroup(customResLayout.createSequentialGroup()
                 .addComponent(customResWarningLabel)
                 .addGroup(customResLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
                         .addComponent(customResX)
-                        .addComponent(customResWidth, JTF_HEIGHT, JTF_HEIGHT, JTF_HEIGHT)
+                        .addComponent(this.customResWidth, this.JTF_HEIGHT, 
+                                this.JTF_HEIGHT, this.JTF_HEIGHT)
                         .addComponent(customResY)
-                        .addComponent(customResHeight))
+                        .addComponent(this.customResHeight))
         );
 
         miscLayout.setHorizontalGroup(miscLayout.createParallelGroup()
                 .addGroup(miscLayout.createSequentialGroup()
-                        .addComponent(showFPS)
+                        .addComponent(this.showFPS)
                         .addComponent(showFPSLabel))
                 .addGroup(miscLayout.createSequentialGroup()
-                        .addComponent(drawBoardVectors)
+                        .addComponent(this.drawBoardVectors)
                         .addComponent(drawBoardVectorsLabel)
-                        .addComponent(drawActivePlayerPath)
+                        .addComponent(this.drawActivePlayerPath)
                         .addComponent(drawActivePlayerPathLabel))
                 .addGroup(miscLayout.createSequentialGroup()
-                        .addComponent(drawSpriteVectors)
+                        .addComponent(this.drawSpriteVectors)
                         .addComponent(drawSpriteVectorsLabel)
-                        .addComponent(drawActivePlayerDestination)
+                        .addComponent(this.drawActivePlayerDestination)
                         .addComponent(drawActivePlayerDestinationLabel))
         );
 
         miscLayout.setVerticalGroup(miscLayout.createSequentialGroup()
                 .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(showFPS)
+                        .addComponent(this.showFPS)
                         .addComponent(showFPSLabel))
                 .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(drawBoardVectors)
+                        .addComponent(this.drawBoardVectors)
                         .addComponent(drawBoardVectorsLabel)
-                        .addComponent(drawActivePlayerPath)
+                        .addComponent(this.drawActivePlayerPath)
                         .addComponent(drawActivePlayerPathLabel))
                 .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(drawSpriteVectors)
+                        .addComponent(this.drawSpriteVectors)
                         .addComponent(drawSpriteVectorsLabel)
-                        .addComponent(drawActivePlayerDestination)
+                        .addComponent(this.drawActivePlayerDestination)
                         .addComponent(drawActivePlayerDestinationLabel))
         );
 
@@ -874,55 +991,5 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
                 .addComponent(screenPanel)
                 .addComponent(miscPanel)
         );
-    }
-
-    public boolean save()
-    {
-        return project.save();
-    }
-
-    public void gracefulClose()
-    {
-       
-    }
-
-    public void setWindowParent(MainWindow parent)
-    {
-        this.parent = parent;
-    }
-
-    public void internalFrameOpened(InternalFrameEvent e)
-    {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void internalFrameClosing(InternalFrameEvent e)
-    {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void internalFrameClosed(InternalFrameEvent e)
-    {
-        this.gracefulClose();
-    }
-
-    public void internalFrameIconified(InternalFrameEvent e)
-    {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void internalFrameDeiconified(InternalFrameEvent e)
-    {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void internalFrameActivated(InternalFrameEvent e)
-    {
-
-    }
-
-    public void internalFrameDeactivated(InternalFrameEvent e)
-    {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

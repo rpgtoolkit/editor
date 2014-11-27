@@ -12,20 +12,22 @@ import rpgtoolkit.editor.main.MainWindow;
 import rpgtoolkit.editor.main.ToolkitEditorWindow;
 
 /**
- * 
+ *
  * @author Geoff Wilson
  * @author Joshua Michael Daly
  */
 public class AnimationEditor extends ToolkitEditorWindow
 {
+
     private final int JTF_HEIGHT = 24;
 
-    private Animation animation;
+    private final Animation animation;
     private JPanel timeLinePanel;
     private JPanel framePanel;
     private JPanel controlPanel;
 
-    private final Border defaultEtchedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
+    private final Border defaultEtchedBorder = BorderFactory.
+            createEtchedBorder(EtchedBorder.LOWERED);
 
     // CONTROL PANEL
     private JTextField frameWidth;
@@ -34,6 +36,11 @@ public class AnimationEditor extends ToolkitEditorWindow
     private JTextField frameFile;
     private JTextField frameSound;
 
+    /*
+     * *************************************************************************
+     * Public Constructors
+     * *************************************************************************
+     */
     public AnimationEditor(Animation theAnimation)
     {
         super("Editing Animation", true, true, true, true);
@@ -42,6 +49,32 @@ public class AnimationEditor extends ToolkitEditorWindow
         this.configureInterface();
     }
 
+    /*
+     * *************************************************************************
+     * Public Methods
+     * *************************************************************************
+     */
+    @Override
+    public boolean save()
+    {
+        return this.animation.save();
+    }
+
+    public void gracefulClose()
+    {
+
+    }
+
+    public void setWindowParent(MainWindow parent)
+    {
+
+    }
+
+    /*
+     * *************************************************************************
+     * Private Methods
+     * *************************************************************************
+     */
     private void configureInterface()
     {
         this.setSize(800, 600);
@@ -52,39 +85,40 @@ public class AnimationEditor extends ToolkitEditorWindow
         layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
 
-        framePanel = new JPanel();
-        //framePanel.setBackground(new Color(255,0,255));
+        this.framePanel = new JPanel();
+        //this.framePanel.setBackground(new Color(255,0,255));
 
-        timeLinePanel = new JPanel();
-        timeLinePanel.setBorder(BorderFactory.createTitledBorder(defaultEtchedBorder, "Timeline"));
-        configureTimeLine();
+        this.timeLinePanel = new JPanel();
+        this.timeLinePanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Timeline"));
+        this.configureTimeLine();
 
-        controlPanel = new JPanel();
-        configureControlPanel();
+        this.controlPanel = new JPanel();
+        this.configureControlPanel();
 
         layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
                 .addGroup(layout.createSequentialGroup()
-                        .addComponent(framePanel)
-                        .addComponent(controlPanel, 150, 150, 150))
-                .addComponent(timeLinePanel)
+                        .addComponent(this.framePanel)
+                        .addComponent(this.controlPanel, 150, 150, 150))
+                .addComponent(this.timeLinePanel)
         );
 
         layout.setVerticalGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup()
-                        .addComponent(framePanel)
-                        .addComponent(controlPanel))
-                .addComponent(timeLinePanel, 75, 75, 75)
+                        .addComponent(this.framePanel)
+                        .addComponent(this.controlPanel))
+                .addComponent(this.timeLinePanel, 75, 75, 75)
         );
 
     }
 
     private void configureControlPanel()
     {
-        frameWidth = new JTextField(Long.toString(animation.getAnimationWidth()));
-        frameHeight = new JTextField(Long.toString(animation.getAnimationHeight()));
-        frameTime = new JTextField(Double.toString(animation.getFrameDelay()));
-        frameFile = new JTextField(animation.getFrame(0).getFrameName());
-        frameSound = new JTextField(animation.getFrame(0).getFrameSound());
+        this.frameWidth = new JTextField(Long.toString(this.animation.getAnimationWidth()));
+        this.frameHeight = new JTextField(Long.toString(this.animation.getAnimationHeight()));
+        this.frameTime = new JTextField(Double.toString(this.animation.getFrameDelay()));
+        this.frameFile = new JTextField(this.animation.getFrame(0).getFrameName());
+        this.frameSound = new JTextField(this.animation.getFrame(0).getFrameSound());
 
         JLabel widthLabel = new JLabel("x");
         JLabel heightLabel = new JLabel("y");
@@ -95,16 +129,16 @@ public class AnimationEditor extends ToolkitEditorWindow
         JButton soundBrowseButton = new JButton("...");
 
         JPanel sizePanel = new JPanel();
-        sizePanel.setBorder(BorderFactory.createTitledBorder(defaultEtchedBorder, "Size"));
+        sizePanel.setBorder(BorderFactory.createTitledBorder(this.defaultEtchedBorder, "Size"));
         JPanel delayPanel = new JPanel();
-        delayPanel.setBorder(BorderFactory.createTitledBorder(defaultEtchedBorder, "Time"));
+        delayPanel.setBorder(BorderFactory.createTitledBorder(this.defaultEtchedBorder, "Time"));
         JPanel colorPanel = new JPanel();
-        colorPanel.setBorder(BorderFactory.createTitledBorder(defaultEtchedBorder, "Color"));
+        colorPanel.setBorder(BorderFactory.createTitledBorder(this.defaultEtchedBorder, "Color"));
         JPanel miscPanel = new JPanel();
-        miscPanel.setBorder(BorderFactory.createTitledBorder(defaultEtchedBorder, "Details"));
+        miscPanel.setBorder(BorderFactory.createTitledBorder(this.defaultEtchedBorder, "Details"));
 
-        GroupLayout layout = new GroupLayout(controlPanel);
-        controlPanel.setLayout(layout);
+        GroupLayout layout = new GroupLayout(this.controlPanel);
+        this.controlPanel.setLayout(layout);
         layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
 
@@ -126,56 +160,59 @@ public class AnimationEditor extends ToolkitEditorWindow
         miscLayout.setHorizontalGroup(miscLayout.createParallelGroup()
                 .addComponent(nameLabel)
                 .addGroup(miscLayout.createSequentialGroup()
-                        .addComponent(frameFile)
+                        .addComponent(this.frameFile)
                         .addComponent(nameBrowseButton))
                 .addComponent(soundLabel)
                 .addGroup(miscLayout.createSequentialGroup()
-                        .addComponent(frameSound)
+                        .addComponent(this.frameSound)
                         .addComponent(soundBrowseButton))
         );
 
-        miscLayout.linkSize(frameFile, frameSound);
+        miscLayout.linkSize(this.frameFile, this.frameSound);
 
         miscLayout.setVerticalGroup(miscLayout.createSequentialGroup()
                 .addComponent(nameLabel)
                 .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(frameFile, JTF_HEIGHT, JTF_HEIGHT, JTF_HEIGHT)
+                        .addComponent(this.frameFile, this.JTF_HEIGHT, 
+                                this.JTF_HEIGHT, this.JTF_HEIGHT)
                         .addComponent(nameBrowseButton))
                 .addComponent(soundLabel)
                 .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(frameSound)
+                        .addComponent(this.frameSound)
                         .addComponent(soundBrowseButton))
         );
 
-
         delayLayout.setHorizontalGroup(delayLayout.createParallelGroup()
                 .addComponent(timeLabel)
-                .addComponent(frameTime)
+                .addComponent(this.frameTime)
         );
 
         delayLayout.setVerticalGroup(delayLayout.createSequentialGroup()
                 .addComponent(timeLabel)
-                .addComponent(frameTime, JTF_HEIGHT, JTF_HEIGHT, JTF_HEIGHT)
+                .addComponent(this.frameTime, this.JTF_HEIGHT, 
+                        this.JTF_HEIGHT, this.JTF_HEIGHT)
         );
 
         sizeLayout.setHorizontalGroup(sizeLayout.createParallelGroup()
                 .addGroup(sizeLayout.createSequentialGroup()
                         .addComponent(widthLabel)
-                        .addComponent(frameWidth))
+                        .addComponent(this.frameWidth))
                 .addGroup(sizeLayout.createSequentialGroup()
                         .addComponent(heightLabel)
-                        .addComponent(frameHeight))
+                        .addComponent(this.frameHeight))
         );
 
-        sizeLayout.linkSize(SwingConstants.VERTICAL, frameWidth, frameHeight);
+        sizeLayout.linkSize(SwingConstants.VERTICAL, this.frameWidth, 
+                this.frameHeight);
 
         sizeLayout.setVerticalGroup(sizeLayout.createSequentialGroup()
                 .addGroup(sizeLayout.createParallelGroup()
                         .addComponent(widthLabel)
-                        .addComponent(frameWidth, JTF_HEIGHT, JTF_HEIGHT, JTF_HEIGHT))
+                        .addComponent(this.frameWidth, this.JTF_HEIGHT, 
+                                this.JTF_HEIGHT, this.JTF_HEIGHT))
                 .addGroup(sizeLayout.createParallelGroup()
                         .addComponent(heightLabel)
-                        .addComponent(frameHeight))
+                        .addComponent(this.frameHeight))
         );
 
         layout.setHorizontalGroup(layout.createParallelGroup()
@@ -195,52 +232,46 @@ public class AnimationEditor extends ToolkitEditorWindow
 
     private void configureTimeLine()
     {
-        long frameCount = animation.getFrameCount();
-        ArrayList<JLabel> frames = new ArrayList<JLabel>();
+        long frameCount = this.animation.getFrameCount();
+        ArrayList<JLabel> frames = new ArrayList<>();
 
         for (int i = 0; i < frameCount; i++)
         {
             JLabel tempButton = new JLabel();
 
-            if (!animation.getFrame(i).getFrameName().equals(""))
+            if (!this.animation.getFrame(i).getFrameName().equals(""))
             {
 
-                BufferedImage bi = new BufferedImage((int) animation.getAnimationWidth(), (int) animation.getAnimationHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+                BufferedImage bi = new BufferedImage(
+                        (int) this.animation.getAnimationWidth(),
+                        (int) this.animation.getAnimationHeight(),
+                        BufferedImage.TYPE_4BYTE_ABGR);
                 Graphics2D g = bi.createGraphics();
 
-                Tile aTile = animation.getFrame(i).getFrameTile();
+                Tile aTile = this.animation.getFrame(i).getFrameTile();
                 // Draw the tile
-                   
+
                 BufferedImage test = aTile.getTileAsImage();
-                
+
                 tempButton.setIcon(new ImageIcon(aTile.getTileAsImage()));
                 tempButton.paint(g);
-                if (i == 0) tempButton.setBorder(BorderFactory.createLineBorder(Color.RED));
-                else tempButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-                timeLinePanel.add(tempButton);
+                if (i == 0)
+                {
+                    tempButton.setBorder(BorderFactory.createLineBorder(Color.RED));
+                }
+                else
+                {
+                    tempButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                }
+
+                this.timeLinePanel.add(tempButton);
             }
-
         }
 
         for (JLabel button : frames)
         {
-            timeLinePanel.add(button);
+            this.timeLinePanel.add(button);
         }
-    }
-
-    public boolean save()
-    {
-        return this.animation.save();
-    }
-
-    public void gracefulClose()
-    {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void setWindowParent(MainWindow parent)
-    {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 }
