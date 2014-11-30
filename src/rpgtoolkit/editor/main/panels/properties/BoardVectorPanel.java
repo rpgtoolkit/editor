@@ -7,7 +7,6 @@ import java.awt.event.FocusListener;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import rpgtoolkit.editor.board.types.BoardVector;
 

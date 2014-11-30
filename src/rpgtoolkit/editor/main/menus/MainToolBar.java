@@ -14,6 +14,7 @@ import rpgtoolkit.common.editor.types.Tile;
 import rpgtoolkit.editor.board.tool.BucketBrush;
 import rpgtoolkit.editor.board.tool.SelectionBrush;
 import rpgtoolkit.editor.board.tool.ShapeBrush;
+import rpgtoolkit.editor.board.tool.SpriteBrush;
 import rpgtoolkit.editor.board.tool.VectorBrush;
 import rpgtoolkit.editor.main.MainWindow;
 
@@ -223,7 +224,8 @@ public class MainToolBar extends JToolBar
             @Override
             public void actionPerformed(ActionEvent e)
             {
-
+                SpriteBrush brush = new SpriteBrush();
+                MainWindow.getInstance().setCurrentBrush(brush);
             }
         });
 
@@ -296,7 +298,7 @@ public class MainToolBar extends JToolBar
         this.bucketButton.setEnabled(true);
         this.eraserButton.setEnabled(true);
         this.vectorButton.setEnabled(true);
-        this.spriteButton.setEnabled(false);
+        this.spriteButton.setEnabled(true);
         this.lightButton.setEnabled(false);
         this.zoomInButton.setEnabled(true);
         this.zoomOutButton.setEnabled(true);

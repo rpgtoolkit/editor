@@ -8,7 +8,9 @@ import rpgtoolkit.editor.board.tool.AbstractBrush;
 import rpgtoolkit.editor.board.tool.BucketBrush;
 import rpgtoolkit.editor.board.tool.SelectionBrush;
 import rpgtoolkit.editor.board.tool.ShapeBrush;
+import rpgtoolkit.editor.board.tool.SpriteBrush;
 import rpgtoolkit.editor.board.tool.VectorBrush;
+import rpgtoolkit.editor.board.types.BoardSprite;
 import rpgtoolkit.editor.board.types.BoardVector;
 import rpgtoolkit.editor.main.MainWindow;
 
@@ -84,6 +86,12 @@ public class BoardMouseAdapter extends MouseAdapter
      * Private Methods
      * *************************************************************************
      */
+    /**
+     * Deals with the creation of an object on a board layer.
+     * 
+     * @param e
+     * @param brush 
+     */
     private void doMouseButton1Pressed(MouseEvent e, AbstractBrush brush)
     {
         Rectangle bucketSelection = null;
@@ -123,13 +131,19 @@ public class BoardMouseAdapter extends MouseAdapter
         }
         else if (brush instanceof VectorBrush)
         {
-            // Because vectors are coordinates are pixel based.
+            // Because vectors coordinates are pixel based.
             point = new Point(e.getX(), e.getY());
         }
 
         this.editor.doPaint(brush, point, bucketSelection);
     }
 
+    /**
+     * Deals with the deletion of an object on a board layer.
+     * 
+     * @param e
+     * @param brush 
+     */
     private void doMouseButton2Pressed(MouseEvent e, AbstractBrush brush)
     {
         if (brush instanceof VectorBrush)
@@ -153,8 +167,21 @@ public class BoardMouseAdapter extends MouseAdapter
                 }
             }
         }
+        else if (brush instanceof SpriteBrush)
+        {
+            this.editor.boardView.getCurrentSelectedLayer().getLayer()
+                    .removeSpriteAt(
+                            e.getX() / this.editor.board.getTileSet().getTileWidth(), 
+                            e.getY() / this.editor.board.getTileSet().getTileHeight());
+        }
     }
 
+    /**
+     * Deals with the selection of an object on a board layer
+     * 
+     * @param e
+     * @param brush 
+     */
     private void doMouseButton3Pressed(MouseEvent e, AbstractBrush brush)
     {
         if (brush instanceof VectorBrush)
@@ -169,6 +196,13 @@ public class BoardMouseAdapter extends MouseAdapter
                 this.selectVector(this.editor.boardView.getCurrentSelectedLayer()
                         .getLayer().findVectorAt(e.getX(), e.getY()));
             }
+        }
+        else if (brush instanceof SpriteBrush)
+        {
+            this.selectSprite(this.editor.boardView.getCurrentSelectedLayer().getLayer()
+                    .findSpriteAt(
+                            e.getX() / this.editor.board.getTileSet().getTileWidth(), 
+                            e.getY() / this.editor.board.getTileSet().getTileHeight()));
         }
     }
 
@@ -217,6 +251,26 @@ public class BoardMouseAdapter extends MouseAdapter
             }
 
             editor.setSelectedObject(vector);
+        }
+        else if (editor.getSelectedObject() != null)
+        {
+            editor.getSelectedObject().setSelected(false);
+            editor.setSelectedObject(null);
+        }
+    }
+    
+    private void selectSprite(BoardSprite sprite)
+    {
+        if (sprite != null)
+        {
+            sprite.setSelected(true);
+            
+            if (editor.getSelectedObject() != null)
+            {
+                editor.getSelectedObject().setSelected(false);
+            }
+            
+            editor.setSelectedObject(sprite);
         }
         else if (editor.getSelectedObject() != null)
         {

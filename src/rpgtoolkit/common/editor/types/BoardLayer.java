@@ -312,11 +312,35 @@ public class BoardLayer implements Cloneable
         {
             this.vectors.remove(vector);
             this.board.fireBoardChanged();
-            
-            return vector;
+        }
+        
+        return vector;
+    }
+    
+    public BoardSprite findSpriteAt(int x, int y)
+    {
+        for (BoardSprite sprite : this.sprites)
+        {
+            if (sprite.getX() == x && sprite.getY() == y)
+            {
+                return sprite;
+            }
         }
         
         return null;
+    }
+    
+    public BoardSprite removeSpriteAt(int x, int y)
+    {
+        BoardSprite sprite = findSpriteAt(x, y);
+        
+        if (sprite != null)
+        {
+            this.sprites.remove(sprite);
+            this.board.fireBoardChanged();
+        }
+        
+        return sprite;
     }
 
     /*

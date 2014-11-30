@@ -1,14 +1,13 @@
 package rpgtoolkit.editor.main.panels;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import rpgtoolkit.editor.board.types.BoardVector;
 import rpgtoolkit.editor.main.panels.properties.AbstractModelPanel;
-import rpgtoolkit.editor.main.panels.properties.BoardVectorPanel;
 import rpgtoolkit.editor.main.panels.properties.ModelPanelFactory;
 
 /**
@@ -52,7 +51,12 @@ public class PropertiesPanel extends JPanel implements ListSelectionListener
         this.model = model;
         
         AbstractModelPanel panel = ModelPanelFactory.getModelPanel(model);
-        this.propertiesScrollPane.setViewportView(panel);
+        
+        // To ensure that the internal controls are not streched.
+        JPanel intermediate = new JPanel(new FlowLayout());
+        intermediate.add(panel);
+        
+        this.propertiesScrollPane.setViewportView(intermediate);
         this.propertiesScrollPane.getViewport().revalidate();
     }
     

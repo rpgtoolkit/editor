@@ -108,7 +108,7 @@ public class Item extends BasicType
         isBoardDriven = 0;
         isBattleDriven = 0;
         usersSpecified = 0;
-        userChar = new ArrayList<String>(USER_CHAR_COUNT);
+        userChar = new ArrayList<>(USER_CHAR_COUNT);
         for (int i = 0; i != USER_CHAR_COUNT; i++)
         {
             userChar.add("");
@@ -116,7 +116,7 @@ public class Item extends BasicType
         buyPrice = 0;
         sellPrice = 0;
         isKeyItem = 0;
-        equipLocation = new ArrayList<Byte>(EQUIP_COUNT);
+        equipLocation = new ArrayList<>(EQUIP_COUNT);
         for (int i = 0; i != EQUIP_COUNT; i++)
         {
             Byte tempByte = 0;
@@ -139,18 +139,18 @@ public class Item extends BasicType
         boardMultitaskProgram = "";
         boardPickUpProgram = "";
         isWide = 1;
-        standardAnimationFiles = new ArrayList<String>(ANIMATION_STANDARD_COUNT);
+        standardAnimationFiles = new ArrayList<>(ANIMATION_STANDARD_COUNT);
         for (int i = 0; i != ANIMATION_STANDARD_COUNT; i++)
         {
             standardAnimationFiles.add("");
         }
-        animationStanding = new ArrayList<String>(ANIMATION_STANDING_COUNT);
+        animationStanding = new ArrayList<>(ANIMATION_STANDING_COUNT);
         for (int i = 0; i != ANIMATION_STANDING_COUNT; i++)
         {
             animationStanding.add("");
         }
-        animationCustom = new ArrayList<String>(5);
-        animationCustomHandle = new ArrayList<String>(5);
+        animationCustom = new ArrayList<>(5);
+        animationCustomHandle = new ArrayList<>(5);
         for (int i = 0; i != 5; i++)
         {
             animationCustom.add("");
@@ -231,8 +231,8 @@ public class Item extends BasicType
             //setup
             inputStream = new FileInputStream(this.file);
             binaryIO = new BinaryIO(inputStream);
-            animationCustom = new ArrayList<String>();
-            animationCustomHandle = new ArrayList<String>();
+            animationCustom = new ArrayList<>();
+            animationCustomHandle = new ArrayList<>();
             //checking for the correct filetype
             String fileHeader = binaryIO.readBinaryString();
             if (fileHeader.equals(FILE_HEADER))
@@ -373,18 +373,15 @@ public class Item extends BasicType
                     //WARNING: this part needs to be filled out
                 }
             }
+            
             inputStream.close();
-            return (true);
+            
+            return true;
         }
-        catch (CorruptFileException e)
+        catch (CorruptFileException | IOException e)
         {
-            e.printStackTrace();
-            return (false);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-            return (false);
+            System.err.println(e.toString());
+            return false;
         }
     }
 
@@ -476,8 +473,8 @@ public class Item extends BasicType
         }
         catch (IOException e)
         {
-            e.printStackTrace();
-            return (false);
+            System.err.println(e.toString());
+            return false;
         }
     }
 

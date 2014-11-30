@@ -2,14 +2,13 @@ package rpgtoolkit.common.io.types;
 
 import rpgtoolkit.common.editor.types.EnemySkillPair;
 import rpgtoolkit.editor.exceptions.CorruptFileException;
-import rpgtoolkit.common.utilities.BinaryIO;
 
 import java.io.*;
 import java.util.ArrayList;
 import rpgtoolkit.common.editor.types.RunTimeKey;
 
 /**
- * This class manages the GAM filetype for the RPG Toolkit
+ * This class manages the GAM file type for the RPG Toolkit
  *
  * @author Geoff Wilson
  * @version 0.1
@@ -101,9 +100,9 @@ public class Project extends BasicType
         try
         {
             // Prepare objects be we begin
-            runTimeArray = new ArrayList<RunTimeKey>();
-            enemyArray = new ArrayList<EnemySkillPair>();
-            pluginArray = new ArrayList<String>();
+            runTimeArray = new ArrayList<>();
+            enemyArray = new ArrayList<>();
+            pluginArray = new ArrayList<>();
 
             // First thing we must do is check the header
             if (binaryIO.readBinaryString().equals(FILE_HEADER)) // Valid file we can proceede
@@ -117,8 +116,11 @@ public class Project extends BasicType
                 binaryIO.readBinaryString(); // "NOCODE" skipped
 
                 projectPath = binaryIO.readBinaryString();
-                projectPath = "/" + projectPath.toLowerCase().replace("\\", "/"); // appends a leading slash to the games project folder
-                System.setProperty("project.path", System.getProperty("user.dir") + projectPath);
+                
+                // appends a leading slash to the games project folder
+                projectPath = "/" + projectPath.toLowerCase().replace("\\", "/");
+                System.setProperty("project.path", 
+                        System.getProperty("user.dir") + projectPath);
 
                 gameTitle = binaryIO.readBinaryString();
                 mainScreenType = binaryIO.readBinaryInteger();

@@ -5,7 +5,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.Stroke;
 import java.util.ArrayList;
 import rpgtoolkit.common.editor.types.BoardLayer;
 import rpgtoolkit.common.editor.types.MultiLayerContainer;
@@ -127,12 +126,12 @@ public final class BoardLayerView implements Cloneable
     {
         return this.layer;
     }
-    
+
     public void setLayer(BoardLayer layer)
     {
         this.layer = layer;
     }
-    
+
     /**
      * Gets the layer width in tiles.
      *
@@ -363,7 +362,7 @@ public final class BoardLayerView implements Cloneable
             {
                 g.setStroke(new BasicStroke(3.0f)); // Draw it thicker.
             }
-            
+
             // Draw lines from points 0 > 1 , 1 > 2, 2 > 3 etc..
             int count = vector.getPointCount();
 
@@ -385,9 +384,9 @@ public final class BoardLayerView implements Cloneable
             for (int i = 0; i < count - 1; i++)
             {
                 g.drawLine(
-                        vector.getPointX(i), 
-                        vector.getPointY(i), 
-                        vector.getPointX(i + 1), 
+                        vector.getPointX(i),
+                        vector.getPointY(i),
+                        vector.getPointX(i + 1),
                         vector.getPointY(i + 1));
             }
 
@@ -400,7 +399,7 @@ public final class BoardLayerView implements Cloneable
                         vector.getPointX(0),
                         vector.getPointY(0));
             }
-            
+
             if (vector.isSelected())
             {
                 g.setStroke(new BasicStroke(1.0f)); // Return to normal stroke.
@@ -419,13 +418,24 @@ public final class BoardLayerView implements Cloneable
 
         for (BoardSprite sprite : this.layer.getSprites())
         {
-            int x = (int) sprite.getX();
-            int y = (int) sprite.getY();
+            int x = (int) sprite.getX() * this.getLayer().getBoard().
+                    getTileSet().getTileWidth();
+            int y = (int) sprite.getY() * this.getLayer().getBoard().
+                    getTileSet().getTileHeight();
 
-            // Get the south facing frame.
-            g.drawImage(sprite.getSpriteFile().getAnimationFrame(2), x - 16,
-                    y - 32, null);
+            //TODO: Deal with sprite selection.
+            
+            try
+            {
+                // Attempt to get the south facing frame.
+                g.drawImage(sprite.getSpriteFile().getAnimationFrame(2), x, y, null);
+            }
+            catch (NullPointerException | IndexOutOfBoundsException e)
+            {
+                g.setColor(Color.WHITE);
+                g.fillRect(x, y, 32, 32);
+            }
         }
     }
-    
+
 }
