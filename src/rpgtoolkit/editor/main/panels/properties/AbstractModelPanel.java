@@ -39,6 +39,11 @@ public abstract class AbstractModelPanel extends JPanel
         return this.model;
     }
     
+    public BoardEditor getBoardEditor()
+    {
+        return MainWindow.getInstance().getCurrentBoardEditor();
+    }
+    
     /*
      * *************************************************************************
      * Public Methods

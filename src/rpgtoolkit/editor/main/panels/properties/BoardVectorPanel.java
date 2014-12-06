@@ -7,7 +7,11 @@ import java.awt.event.FocusListener;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import rpgtoolkit.editor.board.BoardLayerView;
 import rpgtoolkit.editor.board.types.BoardVector;
 
 /**
@@ -18,7 +22,7 @@ import rpgtoolkit.editor.board.types.BoardVector;
 public class BoardVectorPanel extends AbstractModelPanel
 {
     
-    //private final JSpinner layerSpinner;
+    private final JSpinner layerSpinner;
     private final JCheckBox isClosedCheckBox;
     private final JTextField handleTextField;
     private final JComboBox<String> tileTypeComboBox;
@@ -27,6 +31,8 @@ public class BoardVectorPanel extends AbstractModelPanel
         "SOLID", "UNDER", "STAIRS", "WAYPOINT"
     };
     
+    private int lastSpinnerLayer; // Used to ensure that the selection is valid.
+    
     /*
      * *************************************************************************
      * Public Constructors
@@ -34,10 +40,44 @@ public class BoardVectorPanel extends AbstractModelPanel
      */
     public BoardVectorPanel(BoardVector boardVector)
     {
-        super(boardVector, 4, 2);
+        super(boardVector, 5, 2);
         
-        //this.layerSpinner = new JSpinner();
-        //this.layerSpinner.setValue(((BoardVector)this.model).getLayer());
+        this.layerSpinner = new JSpinner();
+        this.layerSpinner.setValue(((BoardVector)this.model).getLayer());
+        this.layerSpinner.addChangeListener(new ChangeListener()
+        {
+
+            @Override
+            public void stateChanged(ChangeEvent e)
+            {
+                BoardLayerView lastLayerView = getBoardEditor().getBoardView().
+                        getLayer(((BoardVector)model).getLayer());
+                
+                BoardLayerView newLayerView = getBoardEditor().getBoardView().
+                        getLayer((int)layerSpinner.getValue());
+                
+                // Make sure this is a valid move.
+                if (lastLayerView != null && newLayerView != null)
+                {
+                    // Do the swap.
+                    ((BoardVector)model).setLayer((int)layerSpinner.getValue());
+                    newLayerView.getLayer().getVectors().add((BoardVector)model);
+                    lastLayerView.getLayer().getVectors().remove((BoardVector)model);
+                    updateCurrentBoardView();
+                    
+                    // Store new layer selection index.
+                    lastSpinnerLayer = (int)layerSpinner.getValue();
+                }
+                else
+                {
+                    // Not a valid layer revert selection.
+                    layerSpinner.setValue(lastSpinnerLayer);
+                }
+            }
+        });
+        
+        // Store currently selected layer.
+        this.lastSpinnerLayer = (int)this.layerSpinner.getValue();
         
         this.isClosedCheckBox = new JCheckBox();
         this.isClosedCheckBox.setSelected(((BoardVector)this.model).isClosed());
@@ -120,8 +160,8 @@ public class BoardVectorPanel extends AbstractModelPanel
         this.add(this.handleTextField);
         this.add(new JLabel("Is Closed"));
         this.add(this.isClosedCheckBox);
-        //this.add(new JLabel("Layer"));
-        //this.add(this.layerSpinner);
+        this.add(new JLabel("Layer"));
+        this.add(this.layerSpinner);
         this.add(new JLabel("Type"));
         this.add(this.tileTypeComboBox);
     }

@@ -322,7 +322,7 @@ public abstract class AbstractBoardView extends JPanel implements
     @Override
     public BoardLayerView getLayer(int index)
     {
-        if (index >= this.layers.size())
+        if (index >= this.layers.size() || index < 0)
         {
             return null;
         }

@@ -429,11 +429,25 @@ public final class BoardLayerView implements Cloneable
             {
                 // Attempt to get the south facing frame.
                 g.drawImage(sprite.getSpriteFile().getAnimationFrame(2), x, y, null);
+                
+                // If the sprite has an animation frame.
+                if (sprite.isSelected())
+                {
+                    g.setColor(Color.BLUE);
+                    g.drawRect(x, y, sprite.getWidth(), getHeight());
+                }
             }
             catch (NullPointerException | IndexOutOfBoundsException e)
             {
                 g.setColor(Color.WHITE);
                 g.fillRect(x, y, 32, 32);
+                
+                // Used when the sprite does not have an animation frame.
+                if (sprite.isSelected())
+                {
+                    g.setColor(Color.BLUE);
+                    g.drawRect(x, y, 32, 32);
+                }
             }
         }
     }

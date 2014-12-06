@@ -235,6 +235,11 @@ public class MainWindow extends JFrame implements InternalFrameListener
         return null;
     }
 
+    public JFileChooser getFileChooser()
+    {
+        return this.fileChooser;
+    }
+
     /*
      * *************************************************************************
      * Public Methods
@@ -350,8 +355,8 @@ public class MainWindow extends JFrame implements InternalFrameListener
             this.toolBar.enableButtons(true);
         }
     }
-
-    public void openFile()
+    
+    public void primeFileChooser()
     {
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
                 "Toolkit Files", "brd", "tem", "itm", "anm", "prg", "tst");
@@ -366,6 +371,11 @@ public class MainWindow extends JFrame implements InternalFrameListener
                 this.fileChooser.setCurrentDirectory(projectPath);
             }
         }
+    }
+
+    public void openFile()
+    {
+        this.primeFileChooser();
 
         if (this.fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
         {
