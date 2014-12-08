@@ -13,3 +13,8 @@
 #main/
 #game/
 #/dist/
+/nbproject/private/
+/nbproject/
+/manifest.mf
+/build.xml
+/build/

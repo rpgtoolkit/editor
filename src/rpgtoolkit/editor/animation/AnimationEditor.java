@@ -10,6 +10,7 @@ import rpgtoolkit.common.editor.types.Tile;
 import rpgtoolkit.common.io.types.Animation;
 import rpgtoolkit.editor.main.MainWindow;
 import rpgtoolkit.editor.main.ToolkitEditorWindow;
+import rpgtoolkit.editor.utilities.Gui;
 
 /**
  *
@@ -18,8 +19,6 @@ import rpgtoolkit.editor.main.ToolkitEditorWindow;
  */
 public class AnimationEditor extends ToolkitEditorWindow
 {
-
-    private final int JTF_HEIGHT = 24;
 
     private final Animation animation;
     private JPanel timeLinePanel;
@@ -137,25 +136,13 @@ public class AnimationEditor extends ToolkitEditorWindow
         JPanel miscPanel = new JPanel();
         miscPanel.setBorder(BorderFactory.createTitledBorder(this.defaultEtchedBorder, "Details"));
 
-        GroupLayout layout = new GroupLayout(this.controlPanel);
-        this.controlPanel.setLayout(layout);
-        layout.setAutoCreateGaps(true);
-        layout.setAutoCreateContainerGaps(true);
+        GroupLayout layout = Gui.createGroupLayout(this.controlPanel);
 
-        GroupLayout sizeLayout = new GroupLayout(sizePanel);
-        sizePanel.setLayout(sizeLayout);
-        sizeLayout.setAutoCreateGaps(true);
-        sizeLayout.setAutoCreateContainerGaps(true);
+        GroupLayout sizeLayout = Gui.createGroupLayout(sizePanel);
 
-        GroupLayout delayLayout = new GroupLayout(delayPanel);
-        delayPanel.setLayout(delayLayout);
-        delayLayout.setAutoCreateGaps(true);
-        delayLayout.setAutoCreateContainerGaps(true);
+        GroupLayout delayLayout = Gui.createGroupLayout(delayPanel);
 
-        GroupLayout miscLayout = new GroupLayout(miscPanel);
-        miscPanel.setLayout(miscLayout);
-        miscLayout.setAutoCreateGaps(true);
-        miscLayout.setAutoCreateContainerGaps(true);
+        GroupLayout miscLayout = Gui.createGroupLayout(miscPanel);
 
         miscLayout.setHorizontalGroup(miscLayout.createParallelGroup()
                 .addComponent(nameLabel)
@@ -173,8 +160,8 @@ public class AnimationEditor extends ToolkitEditorWindow
         miscLayout.setVerticalGroup(miscLayout.createSequentialGroup()
                 .addComponent(nameLabel)
                 .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(this.frameFile, this.JTF_HEIGHT, 
-                                this.JTF_HEIGHT, this.JTF_HEIGHT)
+                        .addComponent(this.frameFile, Gui.JTF_HEIGHT, 
+                                Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
                         .addComponent(nameBrowseButton))
                 .addComponent(soundLabel)
                 .addGroup(miscLayout.createParallelGroup()
@@ -189,8 +176,8 @@ public class AnimationEditor extends ToolkitEditorWindow
 
         delayLayout.setVerticalGroup(delayLayout.createSequentialGroup()
                 .addComponent(timeLabel)
-                .addComponent(this.frameTime, this.JTF_HEIGHT, 
-                        this.JTF_HEIGHT, this.JTF_HEIGHT)
+                .addComponent(this.frameTime, Gui.JTF_HEIGHT, 
+                        Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
         );
 
         sizeLayout.setHorizontalGroup(sizeLayout.createParallelGroup()
@@ -208,8 +195,8 @@ public class AnimationEditor extends ToolkitEditorWindow
         sizeLayout.setVerticalGroup(sizeLayout.createSequentialGroup()
                 .addGroup(sizeLayout.createParallelGroup()
                         .addComponent(widthLabel)
-                        .addComponent(this.frameWidth, this.JTF_HEIGHT, 
-                                this.JTF_HEIGHT, this.JTF_HEIGHT))
+                        .addComponent(this.frameWidth, Gui.JTF_HEIGHT, 
+                                Gui.JTF_HEIGHT, Gui.JTF_HEIGHT))
                 .addGroup(sizeLayout.createParallelGroup()
                         .addComponent(heightLabel)
                         .addComponent(this.frameHeight))

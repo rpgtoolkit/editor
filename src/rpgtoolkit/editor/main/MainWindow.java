@@ -11,6 +11,7 @@ import javax.swing.event.InternalFrameListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import rpgtoolkit.common.editor.types.Tile;
 import rpgtoolkit.common.io.types.Animation;
+import rpgtoolkit.common.io.types.Enemy;
 import rpgtoolkit.common.io.types.Project;
 import rpgtoolkit.common.io.types.TileSet;
 import rpgtoolkit.editor.animation.AnimationEditor;
@@ -20,6 +21,7 @@ import rpgtoolkit.editor.board.tool.BucketBrush;
 import rpgtoolkit.editor.board.tool.CustomBrush;
 import rpgtoolkit.editor.board.tool.ShapeBrush;
 import rpgtoolkit.editor.board.tool.VectorBrush;
+import rpgtoolkit.editor.enemy.EnemyEditor;
 import rpgtoolkit.editor.main.panels.LayerPanel;
 import rpgtoolkit.editor.main.menus.MainMenuBar;
 import rpgtoolkit.editor.main.menus.MainToolBar;
@@ -359,7 +361,7 @@ public class MainWindow extends JFrame implements InternalFrameListener
     public void primeFileChooser()
     {
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                "Toolkit Files", "brd", "tem", "itm", "anm", "prg", "tst");
+                "Toolkit Files", "brd", "ene", "tem", "itm", "anm", "prg", "tst");
         this.fileChooser.setFileFilter(filter);
 
         if (this.activeProject != null)
@@ -394,6 +396,10 @@ public class MainWindow extends JFrame implements InternalFrameListener
         else if (fileName.endsWith(".brd"))
         {
             this.openBoard();
+        }
+        else if (fileName.endsWith(".ene"))
+        {
+            this.openEnemy();
         }
         else if (fileName.endsWith(".prg"))
         {
@@ -437,6 +443,19 @@ public class MainWindow extends JFrame implements InternalFrameListener
         this.desktopPane.add(boardEditor);
 
         this.selectToolkitWindow(boardEditor);
+    }
+
+    /**
+     * Creates an animation editor window for modifying the specified animation
+     * file.
+     */
+    public void openEnemy()
+    {
+        Enemy enemy = new Enemy(fileChooser.getSelectedFile());
+        EnemyEditor enemyEditor = new EnemyEditor(enemy);
+        desktopPane.add(enemyEditor);
+
+        this.selectToolkitWindow(enemyEditor);
     }
 
     /**
