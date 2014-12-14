@@ -1,10 +1,13 @@
 package rpgtoolkit.editor.enemy;
 
+import static java.lang.System.out;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import rpgtoolkit.common.io.types.Enemy;
 import rpgtoolkit.editor.main.MainWindow;
 import rpgtoolkit.editor.main.ToolkitEditorWindow;
@@ -12,10 +15,8 @@ import rpgtoolkit.editor.utilities.Gui;
 import rpgtoolkit.editor.utilities.WholeNumberField;
 
 /**
- * Project File editor
+ * Enemy editor
  *
- * @author Geoff Wilson
- * @author Joshua Michael Daly
  * @author Joel Moore
  */
 public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameListener
@@ -46,21 +47,8 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
     private WholeNumberField critOnPlayer;
 
     // GRAPHICS SETTINGS
-    private JCheckBox showFPS;
-    private JCheckBox drawBoardVectors;
-    private JCheckBox drawSpriteVectors;
-    private JCheckBox drawActivePlayerPath;
-    private JCheckBox drawActivePlayerDestination;
-    private JRadioButton sixteenBit;
-    private JRadioButton twentyFourBit;
-    private JRadioButton thirtyTwoBit;
-    private JCheckBox fullScreen;
-    private JRadioButton sixByFour;
-    private JRadioButton eightBySix;
-    private JRadioButton tenBySeven;
-    private JRadioButton customRes;
-    private JTextField customResWidth;
-    private JTextField customResHeight;
+    private JList animList;
+    private JTextField animLoc;
 
     // SPECIAL MOVES SETTINGS
     private JTextField initialBoard;
@@ -237,6 +225,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         JLabel fightPowerLabel = new JLabel("Fighting Power");
         JLabel defencePowerLabel = new JLabel("DefencePower");
         JLabel canRunAwayLabel = new JLabel("Player can run from this enemy");
+        JLabel dummy = new JLabel();
         JLabel runAwayProgramLabel = new JLabel("Program to run when player runs away");
         JButton runAwayProgramButton = new JButton("Browse");
         JLabel critOnEnemyLabel = new JLabel("Chances of a critical hit on the enemy: (1 in)");
@@ -315,7 +304,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
                         .addComponent(this.canRunAway)
                         .addComponent(canRunAwayLabel))
                 .addGroup(fightingConditionsLayout.createSequentialGroup()
-                        .addGap(16) //TODO: surely there's a good way to get the width + padding of a checkbox?
+                        .addComponent(dummy) //TODO: surely there's a good way to get the width + padding of a checkbox?
                         .addComponent(runAwayProgramLabel)
                         .addComponent(this.runAwayProgram)
                         .addComponent(runAwayProgramButton))
@@ -328,11 +317,18 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         );
 
         fightingConditionsLayout.linkSize(SwingConstants.HORIZONTAL, 
-                critOnEnemyLabel, 
+                runAwayProgramLabel,
+                critOnEnemyLabel,
                 critOnPlayerLabel);
+        fightingConditionsLayout.linkSize(SwingConstants.HORIZONTAL, 
+                this.canRunAway,
+                dummy);
         fightingConditionsLayout.linkSize(SwingConstants.VERTICAL, 
-                this.runAwayProgram, 
-                this.critOnEnemy, 
+                this.canRunAway,
+                canRunAwayLabel);
+        fightingConditionsLayout.linkSize(SwingConstants.VERTICAL, 
+                this.runAwayProgram,
+                this.critOnEnemy,
                 this.critOnPlayer);
 
         fightingConditionsLayout.setVerticalGroup(fightingConditionsLayout.createSequentialGroup()
@@ -340,6 +336,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
                         .addComponent(this.canRunAway)
                         .addComponent(canRunAwayLabel))
                 .addGroup(fightingConditionsLayout.createParallelGroup()
+                        .addComponent(dummy)
                         .addComponent(runAwayProgramLabel)
                         .addComponent(this.runAwayProgram, Gui.JTF_HEIGHT, 
                                 Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
@@ -686,205 +683,93 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
 
     private void createGraphicsPanel()
     {
+        // Configure Class scope components
+        this.animList = new JList(this.enemy.getStandardGraphicsNames().toArray());
+        this.animList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        this.animList.setLayoutOrientation(JList.VERTICAL);
+        this.animList.setVisibleRowCount(-1);
+        
+        this.animLoc = new JTextField();
+        
+        // Configure function Scope Components
+        JScrollPane animListScroller = new JScrollPane(this.animList);
+        
+        JLabel animLabel = new JLabel("Animation");
+        JButton play = new JButton(new ImageIcon(getClass().
+                getResource("/rpgtoolkit/editor/resources/run.png")));
+        JLabel animDisplay = new JLabel("PLACEHOLDER for animation");
+        
+        JLabel dummy = new JLabel();
+        JButton animFindButton = new JButton("Browse");
+        JButton animAddButton = new JButton("Add");
+        JButton animRemoveButton = new JButton("Remove");
+        
+        this.animList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if(e.getValueIsAdjusting() == false) {
+                    if(animList.getSelectedIndex() == -1) {
+                        out.println("nothing selected");
+                    } else {
+                        out.println(animList.getSelectedIndex()
+                        + ": " + animList.getSelectedValue());
+                    }
+                }
+            }
+        });
 
-        this.sixteenBit = new JRadioButton("16 bit");
-        this.twentyFourBit = new JRadioButton("24 bit");
-        this.thirtyTwoBit = new JRadioButton("32 bit");
-        this.fullScreen = new JCheckBox("Full Screen Mode?");
-        this.fullScreen.setSelected(true);
-        this.sixByFour = new JRadioButton("640 x 480");
-        this.eightBySix = new JRadioButton("800 x 600");
-        this.tenBySeven = new JRadioButton("1024 x 768");
-        this.customRes = new JRadioButton("Custom");
-        this.customResWidth = new JTextField(Long.toString(100));
-        this.customResHeight = new JTextField(Long.toString(50));
-        this.showFPS = new JCheckBox();
-        this.drawBoardVectors = new JCheckBox();
-        this.drawSpriteVectors = new JCheckBox();
-        this.drawActivePlayerPath = new JCheckBox();
-        this.drawActivePlayerDestination = new JCheckBox();
-
-        ButtonGroup depthGroup = new ButtonGroup();
-        depthGroup.add(this.sixteenBit);
-        depthGroup.add(this.twentyFourBit);
-        depthGroup.add(this.thirtyTwoBit);
-
-        ButtonGroup resolutionGroup = new ButtonGroup();
-        resolutionGroup.add(this.sixByFour);
-        resolutionGroup.add(this.eightBySix);
-        resolutionGroup.add(this.tenBySeven);
-        resolutionGroup.add(this.customRes);
-
-        JLabel customResWarningLabel = new JLabel("Please note that not all "
-                + "video cards support all resolutions");
-        JLabel customResX = new JLabel("x");
-        JLabel customResY = new JLabel("y");
-        JLabel showFPSLabel = new JLabel("Show FPS?");
-        JLabel drawBoardVectorsLabel = new JLabel("Draw Board Vectors?");
-        JLabel drawSpriteVectorsLabel = new JLabel("Draw Sprite Vectors?");
-        JLabel drawActivePlayerPathLabel = new JLabel("Draw Active Player Path?");
-        JLabel drawActivePlayerDestinationLabel = new JLabel("Draw Active Player Destination");
-
-        JPanel screenPanel = new JPanel();
-        screenPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Screen"));
-        JPanel miscPanel = new JPanel();
-        miscPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Miscellaneous"));
-
-        JPanel colorDepthPanel = new JPanel();
-        colorDepthPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Color Depth"));
-        JPanel resolutionPanel = new JPanel();
-        resolutionPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Resolution"));
-        JPanel customResolutionPanel = new JPanel();
-        customResolutionPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Custom Resolution"));
+        // Configure the necessary Panels
+        JPanel spritePanel = new JPanel();
+        spritePanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Sprite List"));
 
         // Create Layout for Top Level Panel
-        GroupLayout layout = new GroupLayout(this.graphicsPanel);
-        this.graphicsPanel.setLayout(layout);
-        layout.setAutoCreateGaps(true);
-        layout.setAutoCreateContainerGaps(true);
+        GroupLayout layout = Gui.createGroupLayout(this.graphicsPanel);
 
         // Configure Layouts for Second Level Panels
-        GroupLayout colorDepthLayout = new GroupLayout(colorDepthPanel);
-        colorDepthPanel.setLayout(colorDepthLayout);
-        colorDepthLayout.setAutoCreateGaps(true);
-        colorDepthLayout.setAutoCreateContainerGaps(true);
+        GroupLayout spriteLayout = Gui.createGroupLayout(spritePanel);
 
-        GroupLayout resolutionLayout = new GroupLayout(resolutionPanel);
-        resolutionPanel.setLayout(resolutionLayout);
-        resolutionLayout.setAutoCreateGaps(true);
-        resolutionLayout.setAutoCreateContainerGaps(true);
-
-        GroupLayout screenLayout = new GroupLayout(screenPanel);
-        screenPanel.setLayout(screenLayout);
-        screenLayout.setAutoCreateGaps(true);
-        screenLayout.setAutoCreateContainerGaps(true);
-
-        GroupLayout miscLayout = new GroupLayout(miscPanel);
-        miscPanel.setLayout(miscLayout);
-        miscLayout.setAutoCreateGaps(true);
-        miscLayout.setAutoCreateContainerGaps(true);
-
-        GroupLayout customResLayout = new GroupLayout(customResolutionPanel);
-        customResolutionPanel.setLayout(customResLayout);
-        customResLayout.setAutoCreateGaps(true);
-        customResLayout.setAutoCreateContainerGaps(true);
-
-        colorDepthLayout.setHorizontalGroup(colorDepthLayout.createParallelGroup()
-                .addComponent(this.sixteenBit)
-                .addComponent(this.twentyFourBit)
-                .addComponent(this.thirtyTwoBit)
+        // Configure the SPRITE PANEL layout
+        spriteLayout.setHorizontalGroup(spriteLayout.createSequentialGroup()
+                .addComponent(animListScroller)
+                .addGroup(spriteLayout.createParallelGroup()
+                        .addComponent(animLabel)
+                        .addComponent(this.animLoc)
+                        .addGroup(spriteLayout.createSequentialGroup()
+                                .addComponent(play)
+                                .addComponent(animDisplay)))
+                .addGroup(spriteLayout.createParallelGroup()
+                        .addComponent(dummy)
+                        .addComponent(animFindButton)
+                        .addComponent(animAddButton)
+                        .addComponent(animRemoveButton))
         );
 
-        colorDepthLayout.setVerticalGroup(colorDepthLayout.createSequentialGroup()
-                .addComponent(this.sixteenBit)
-                .addComponent(this.twentyFourBit)
-                .addComponent(this.thirtyTwoBit)
+        spriteLayout.setVerticalGroup(spriteLayout.createParallelGroup()
+                .addComponent(animListScroller)
+                .addGroup(spriteLayout.createSequentialGroup()
+                        .addComponent(animLabel)
+                        .addComponent(this.animLoc)
+                        .addGroup(spriteLayout.createParallelGroup()
+                                .addComponent(play)
+                                .addComponent(animDisplay)))
+                .addGroup(spriteLayout.createSequentialGroup()
+                        .addComponent(dummy)
+                        .addComponent(animFindButton)
+                        .addComponent(animAddButton)
+                        .addComponent(animRemoveButton))
         );
 
-        resolutionLayout.setHorizontalGroup(resolutionLayout.createParallelGroup()
-                .addComponent(this.sixByFour)
-                .addComponent(this.eightBySix)
-                .addComponent(this.tenBySeven)
-                .addComponent(this.customRes)
-                .addComponent(this.fullScreen)
-        );
+        spriteLayout.linkSize(SwingConstants.VERTICAL, this.animLoc, animLabel,
+                dummy, animFindButton, animAddButton, animRemoveButton);
 
-        resolutionLayout.setVerticalGroup(resolutionLayout.createSequentialGroup()
-                .addComponent(this.sixByFour)
-                .addComponent(this.eightBySix)
-                .addComponent(this.tenBySeven)
-                .addComponent(this.customRes)
-                .addComponent(this.fullScreen)
-        );
-
-        screenLayout.setHorizontalGroup(screenLayout.createParallelGroup()
-                .addGroup(screenLayout.createSequentialGroup()
-                        .addComponent(colorDepthPanel, 150, 
-                                GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(resolutionPanel, 150, 
-                                GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addComponent(customResolutionPanel)
-        );
-
-        screenLayout.linkSize(SwingConstants.VERTICAL, colorDepthPanel, resolutionPanel);
-
-        screenLayout.setVerticalGroup(screenLayout.createSequentialGroup()
-                .addGroup(screenLayout.createParallelGroup()
-                        .addComponent(colorDepthPanel)
-                        .addComponent(resolutionPanel))
-                .addComponent(customResolutionPanel)
-                .addGap(15)
-        );
-
-        customResLayout.setHorizontalGroup(customResLayout.createParallelGroup()
-                .addComponent(customResWarningLabel)
-                .addGroup(customResLayout.createSequentialGroup()
-                        .addComponent(customResX)
-                        .addComponent(this.customResWidth)
-                        .addComponent(customResY)
-                        .addComponent(this.customResHeight))
-        );
-
-        customResLayout.linkSize(SwingConstants.VERTICAL, this.customResWidth, 
-                this.customResHeight);
-
-        customResLayout.setVerticalGroup(customResLayout.createSequentialGroup()
-                .addComponent(customResWarningLabel)
-                .addGroup(customResLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                        .addComponent(customResX)
-                        .addComponent(this.customResWidth, Gui.JTF_HEIGHT, 
-                                Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
-                        .addComponent(customResY)
-                        .addComponent(this.customResHeight))
-        );
-
-        miscLayout.setHorizontalGroup(miscLayout.createParallelGroup()
-                .addGroup(miscLayout.createSequentialGroup()
-                        .addComponent(this.showFPS)
-                        .addComponent(showFPSLabel))
-                .addGroup(miscLayout.createSequentialGroup()
-                        .addComponent(this.drawBoardVectors)
-                        .addComponent(drawBoardVectorsLabel)
-                        .addComponent(this.drawActivePlayerPath)
-                        .addComponent(drawActivePlayerPathLabel))
-                .addGroup(miscLayout.createSequentialGroup()
-                        .addComponent(this.drawSpriteVectors)
-                        .addComponent(drawSpriteVectorsLabel)
-                        .addComponent(this.drawActivePlayerDestination)
-                        .addComponent(drawActivePlayerDestinationLabel))
-        );
-
-        miscLayout.setVerticalGroup(miscLayout.createSequentialGroup()
-                .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(this.showFPS)
-                        .addComponent(showFPSLabel))
-                .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(this.drawBoardVectors)
-                        .addComponent(drawBoardVectorsLabel)
-                        .addComponent(this.drawActivePlayerPath)
-                        .addComponent(drawActivePlayerPathLabel))
-                .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(this.drawSpriteVectors)
-                        .addComponent(drawSpriteVectorsLabel)
-                        .addComponent(this.drawActivePlayerDestination)
-                        .addComponent(drawActivePlayerDestinationLabel))
-        );
-
+        // Configure the GRAPHICS PANEL layout
         layout.setHorizontalGroup(layout.createParallelGroup()
-                .addComponent(screenPanel, 515, 515, 515)
-                .addComponent(miscPanel)
+                .addComponent(spritePanel)
         );
-
-        layout.linkSize(SwingConstants.HORIZONTAL, screenPanel, miscPanel);
 
         layout.setVerticalGroup(layout.createSequentialGroup()
-                .addComponent(screenPanel)
-                .addComponent(miscPanel)
+                .addComponent(spritePanel)
         );
     }
 }

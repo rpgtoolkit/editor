@@ -5,6 +5,7 @@ import rpgtoolkit.editor.exceptions.CorruptFileException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Enemy extends BasicType
 {
@@ -32,7 +33,10 @@ public class Enemy extends BasicType
     private long goldAwarded;
     private String beatEnemyProgram;
     private String runAwayProgram;
+    //TODO: change path-name pairs to dictionary
     private ArrayList<String> standardGraphics;
+    private final ArrayList<String> standardGraphicsNames = new ArrayList<String>(
+            Arrays.asList("Rest", "Attack", "Defend", "Special Move", "Die"));
     private ArrayList<String> customizedGraphics;
     private ArrayList<String> customizedGraphicsNames;
     private long maxHitPoints;
@@ -435,6 +439,13 @@ public class Enemy extends BasicType
      */
     public ArrayList<String> getStandardGraphics() {
         return standardGraphics;
+    }
+
+    /**
+     * @return the standardGraphicsNames
+     */
+    public ArrayList<String> getStandardGraphicsNames() {
+        return standardGraphicsNames;
     }
 
     /**

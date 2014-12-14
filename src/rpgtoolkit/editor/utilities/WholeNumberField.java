@@ -11,7 +11,7 @@ import javax.swing.text.NumberFormatter;
  * and above. May or may not enforce a maximum value, but enforces a minimum
  * value of 0.
  *
- * @author Joel
+ * @author Joel Moore
  */
 public class WholeNumberField extends JFormattedTextField {
 
