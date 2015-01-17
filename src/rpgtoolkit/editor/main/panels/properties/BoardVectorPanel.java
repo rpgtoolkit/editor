@@ -21,6 +21,8 @@ import rpgtoolkit.editor.board.types.BoardVector;
  */
 public class BoardVectorPanel extends AbstractModelPanel
 {
+    private static final int GRID_ROWS = 5;
+    private static final int GRID_COLS = 2;
     
     private final JSpinner layerSpinner;
     private final JCheckBox isClosedCheckBox;
@@ -40,7 +42,7 @@ public class BoardVectorPanel extends AbstractModelPanel
      */
     public BoardVectorPanel(BoardVector boardVector)
     {
-        super(boardVector, 5, 2);
+        super(boardVector, GRID_ROWS, GRID_COLS);
         
         this.layerSpinner = new JSpinner();
         this.layerSpinner.setValue(((BoardVector)this.model).getLayer());

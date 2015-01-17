@@ -8,18 +8,21 @@ import rpgtoolkit.common.io.types.Item;
 public class BoardSprite extends BasicType implements Cloneable, Selectable
 {
 
+    private Item spriteFile; // Item filename
     private String fileName;
+    
     private long x;
     private long y;
     private long layer;
     private long activate;
+    
     private String initialVariable;
-    private Item spriteFile; // Item filename
     private String finalVariable;
     private String initialValue;
     private String finalValue;
     private String loadingVariable;
     private String loadingValue;
+    
     private long activationType; // Defines how the sprite is activated (step-on or key-press)
 
     private String activationProgram; // Override activation program
@@ -37,6 +40,7 @@ public class BoardSprite extends BasicType implements Cloneable, Selectable
     public BoardSprite()
     {
         super();
+        
     }
 
     /*

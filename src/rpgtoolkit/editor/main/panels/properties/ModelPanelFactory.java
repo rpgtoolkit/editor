@@ -39,7 +39,7 @@ public final class ModelPanelFactory
         }
         else if (model instanceof BoardSprite)
         {
-            
+            return new BoardSpritePanel((BoardSprite)model);
         }
         else if (model instanceof BoardLight)
         {
