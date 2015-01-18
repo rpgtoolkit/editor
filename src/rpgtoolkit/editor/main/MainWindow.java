@@ -242,6 +242,11 @@ public class MainWindow extends JFrame implements InternalFrameListener
         return this.fileChooser;
     }
 
+    public Project getActiveProject()
+    {
+        return activeProject;
+    }
+
     /*
      * *************************************************************************
      * Public Methods
