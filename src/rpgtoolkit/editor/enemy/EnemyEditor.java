@@ -1,5 +1,6 @@
 package rpgtoolkit.editor.enemy;
 
+import java.io.File;
 import static java.lang.System.out;
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -8,6 +9,7 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import rpgtoolkit.common.io.types.Animation;
 import rpgtoolkit.common.io.types.Enemy;
 import rpgtoolkit.editor.main.MainWindow;
 import rpgtoolkit.editor.main.ToolkitEditorWindow;
@@ -23,7 +25,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
 {
 
     private JFileChooser openEnemy;
-    private final Enemy enemy; // Project file we are altering
+    private final Enemy enemy; // Enemy file we are altering
 
     // Tabs required by the menu
     private JPanel basicSettingsPanel;
@@ -49,6 +51,8 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
     // GRAPHICS SETTINGS
     private JList animList;
     private JTextField animLoc;
+    private Animation selectedAnim;
+    private JLabel animDisplay = new JLabel();
 
     // SPECIAL MOVES SETTINGS
     private JTextField initialBoard;
@@ -89,7 +93,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
     }
 
     /**
-     * Opens an existing project
+     * Opens an existing enemy
      *
      * @param theEnemy Enemy to edit
      */
@@ -112,7 +116,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
     @Override
     public boolean save()
     {
-        return enemy.save();
+        return this.enemy.save();
     }
 
     public void gracefulClose()
@@ -697,26 +701,46 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         JLabel animLabel = new JLabel("Animation");
         JButton play = new JButton(new ImageIcon(getClass().
                 getResource("/rpgtoolkit/editor/resources/run.png")));
-        JLabel animDisplay = new JLabel("PLACEHOLDER for animation");
         
         JLabel dummy = new JLabel();
         JButton animFindButton = new JButton("Browse");
         JButton animAddButton = new JButton("Add");
         JButton animRemoveButton = new JButton("Remove");
         
+        // Configure listeners
         this.animList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if(e.getValueIsAdjusting() == false) {
                     if(animList.getSelectedIndex() == -1) {
                         out.println("nothing selected");
+                        animDisplay.setIcon(null);
                     } else {
                         out.println(animList.getSelectedIndex()
                         + ": " + animList.getSelectedValue());
+                        String location = enemy.getStandardGraphics().get(
+                                animList.getSelectedIndex());
+                        animLoc.setText(location);
+                        if(location.isEmpty() == false) {
+                            selectedAnim = new Animation(new File(
+                                    System.getProperty("project.path") + "/Misc/" + location));
+                        } else {
+                            selectedAnim = null;
+                        }
+                        if(selectedAnim != null && selectedAnim.getFrameCount() > 0) {
+                            animDisplay.setIcon(new ImageIcon(
+                            selectedAnim.getFrame(0).getFrameImage()));
+                            //TODO: figure out timers and animation with swing
+//                            Timer timer = new Timer((int)(selectedAnim.getFrameDelay() * 1000), null);
+                        } else {
+                            animDisplay.setIcon(null);
+                        }
                     }
                 }
             }
         });
+        
+        //TODO: hook up play button to animation start here
 
         // Configure the necessary Panels
         JPanel spritePanel = new JPanel();
