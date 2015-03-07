@@ -95,7 +95,7 @@ public class Animation extends BasicType
                         }
                     }
 
-                    delayBetweenFrames = binaryIO.readBinaryDouble(); // Effective FPS
+                    delayBetweenFrames = binaryIO.readBinaryDouble(); // Seconds per Frame
                 }
                 else
                 {
@@ -242,7 +242,7 @@ public class Animation extends BasicType
     }
 
     /**
-     * Gets the Frame Delay (effect frames per second) of the animation, this is required for the graphics
+     * Gets the Frame Delay (seconds between each frame) of the animation, this is required for the graphics
      * uk.co.tkce.engine to correctly configure animation timers.
      *
      * @return Frame delay value for the animation

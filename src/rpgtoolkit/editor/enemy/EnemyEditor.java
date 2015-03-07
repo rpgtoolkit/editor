@@ -1,5 +1,7 @@
 package rpgtoolkit.editor.enemy;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import static java.lang.System.out;
 import javax.swing.*;
@@ -53,6 +55,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
     private JTextField animLoc;
     private Animation selectedAnim;
     private JLabel animDisplay = new JLabel();
+    private Timer animTimer;
 
     // SPECIAL MOVES SETTINGS
     private JTextField initialBoard;
@@ -699,8 +702,11 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         JScrollPane animListScroller = new JScrollPane(this.animList);
         
         JLabel animLabel = new JLabel("Animation");
-        JButton play = new JButton(new ImageIcon(getClass().
-                getResource("/rpgtoolkit/editor/resources/run.png")));
+        final ImageIcon playIcon = new ImageIcon(getClass().
+                getResource("/rpgtoolkit/editor/resources/run.png"));
+        final ImageIcon stopIcon = new ImageIcon(getClass().
+                getResource("/rpgtoolkit/editor/resources/stop.png"));
+        final JToggleButton play = new JToggleButton(playIcon);
         
         JLabel dummy = new JLabel();
         JButton animFindButton = new JButton("Browse");
@@ -708,16 +714,31 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         JButton animRemoveButton = new JButton("Remove");
         
         // Configure listeners
+        final ActionListener animate = new ActionListener() {
+            private int frame = 0;
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //switch to the next frame, looping after the last frame
+                if(frame < selectedAnim.getFrameCount()-1) {
+                    frame++;
+                } else {
+                    frame = 0;
+                }
+                animDisplay.setIcon(new ImageIcon(
+                        selectedAnim.getFrame(frame).getFrameImage()
+                ));
+            }
+        };
+        
         this.animList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if(e.getValueIsAdjusting() == false) {
                     if(animList.getSelectedIndex() == -1) {
-                        out.println("nothing selected");
                         animDisplay.setIcon(null);
                     } else {
-                        out.println(animList.getSelectedIndex()
-                        + ": " + animList.getSelectedValue());
+                        //switch animation info
+                        if(play.isSelected()) { play.doClick(); } //press stop
                         String location = enemy.getStandardGraphics().get(
                                 animList.getSelectedIndex());
                         animLoc.setText(location);
@@ -727,20 +748,40 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
                         } else {
                             selectedAnim = null;
                         }
+                        //switch animation images
                         if(selectedAnim != null && selectedAnim.getFrameCount() > 0) {
                             animDisplay.setIcon(new ImageIcon(
-                            selectedAnim.getFrame(0).getFrameImage()));
-                            //TODO: figure out timers and animation with swing
-//                            Timer timer = new Timer((int)(selectedAnim.getFrameDelay() * 1000), null);
+                                    selectedAnim.getFrame(0).getFrameImage()));
+                            animTimer = new Timer((int)(selectedAnim.getFrameDelay() * 1000), animate);
                         } else {
                             animDisplay.setIcon(null);
+                            animTimer = null;
                         }
                     }
                 }
             }
         });
         
-        //TODO: hook up play button to animation start here
+        ActionListener playStop = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(play.isSelected()) {
+                    if(animTimer != null) {
+                        animTimer.start();
+                        play.setIcon(stopIcon);
+                    }
+                } else {
+                    if(animTimer != null) {
+                        animTimer.stop();
+                        play.setIcon(playIcon);}
+                    if(selectedAnim != null && selectedAnim.getFrameCount() > 0) {
+                        animDisplay.setIcon(new ImageIcon(
+                                selectedAnim.getFrame(0).getFrameImage()));
+                    }
+                }
+            }
+        };
+        play.addActionListener(playStop);
 
         // Configure the necessary Panels
         JPanel spritePanel = new JPanel();
