@@ -4,6 +4,7 @@ import rpgtoolkit.editor.exceptions.CorruptFileException;
 
 import java.io.File;
 import java.io.IOException;
+import static java.lang.System.out;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -33,7 +34,6 @@ public class Enemy extends BasicType
     private long goldAwarded;
     private String beatEnemyProgram;
     private String runAwayProgram;
-    //TODO: change path-name pairs to dictionary
     private ArrayList<String> standardGraphics;
     private final ArrayList<String> standardGraphicsNames = new ArrayList<String>(
             Arrays.asList("Rest", "Attack", "Defend", "Special Move", "Die"));
@@ -108,6 +108,7 @@ public class Enemy extends BasicType
 
                 binaryIO.readBinaryString(); // skip one extra string in the file
                 long customGraphicsCount = binaryIO.readBinaryLong(); // TK saves as a long, not a int, so need to read the correct value.
+                out.println(customGraphicsCount);
 
                 for (int i = 0; i < customGraphicsCount; i++)
                 {

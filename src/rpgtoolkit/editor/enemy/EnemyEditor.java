@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import static java.lang.System.out;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
@@ -53,6 +54,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
     // GRAPHICS SETTINGS
     private JList animList;
     private JTextField animLoc;
+    private JButton animRemoveButton = new JButton("Remove");
     private Animation selectedAnim;
     private JLabel animDisplay = new JLabel();
     private Timer animTimer;
@@ -691,7 +693,19 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
     private void createGraphicsPanel()
     {
         // Configure Class scope components
-        this.animList = new JList(this.enemy.getStandardGraphicsNames().toArray());
+        final DefaultListModel enemyGraphics = new DefaultListModel();
+        final ArrayList<String> standardNames = this.enemy.getStandardGraphicsNames();
+        for(String standardName : standardNames) {
+            enemyGraphics.addElement(standardName);
+        }
+        final ArrayList<String> customNames = this.enemy.getCustomizedGraphicsNames();
+        for(String customName : customNames) {
+            enemyGraphics.addElement(customName);
+        }
+        out.println("standardNames="+standardNames.toString());
+        out.println("customNames="+customNames.toString());
+        out.println("enemyGraphics="+enemyGraphics.toString());
+        this.animList = new JList(enemyGraphics);
         this.animList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         this.animList.setLayoutOrientation(JList.VERTICAL);
         this.animList.setVisibleRowCount(-1);
@@ -711,9 +725,11 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         JLabel dummy = new JLabel();
         JButton animFindButton = new JButton("Browse");
         JButton animAddButton = new JButton("Add");
-        JButton animRemoveButton = new JButton("Remove");
+        this.animRemoveButton.setEnabled(false);
         
         // Configure listeners
+        
+        //run animation
         final ActionListener animate = new ActionListener() {
             private int frame = 0;
             @Override
@@ -730,17 +746,25 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
             }
         };
         
+        //change selection
         this.animList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if(e.getValueIsAdjusting() == false) {
                     if(animList.getSelectedIndex() == -1) {
                         animDisplay.setIcon(null);
+                        animRemoveButton.setEnabled(false);
                     } else {
                         //switch animation info
                         if(play.isSelected()) { play.doClick(); } //press stop
-                        String location = enemy.getStandardGraphics().get(
-                                animList.getSelectedIndex());
+                        String location;
+                        if(animList.getSelectedIndex() < standardNames.size()) {
+                            location = enemy.getStandardGraphics().get(
+                                    animList.getSelectedIndex());
+                        } else {
+                            location = enemy.getCustomizedGraphics().get(
+                                    animList.getSelectedIndex() - standardNames.size());
+                        }
                         animLoc.setText(location);
                         if(location.isEmpty() == false) {
                             selectedAnim = new Animation(new File(
@@ -757,11 +781,13 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
                             animDisplay.setIcon(null);
                             animTimer = null;
                         }
+                        animRemoveButton.setEnabled(true);
                     }
                 }
             }
         });
         
+        //play button
         ActionListener playStop = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -782,6 +808,39 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
             }
         };
         play.addActionListener(playStop);
+        
+        //remove button
+        this.animRemoveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = animList.getSelectedIndex();
+                if(index >= 0) {
+                    if(index < standardNames.size() && selectedAnim != null) {
+                        //clear standard graphic file location, but don't delete
+                        animLoc.setText("");
+                        enemy.getStandardGraphics().set(index, "");
+                        //clear animation
+                        if(play.isSelected()) { play.doClick(); } //press stop
+                        selectedAnim = null;
+                        animDisplay.setIcon(null);
+                        animTimer = null;
+                    } else if(index < standardNames.size() + customNames.size()) {
+                        //delete custom graphic
+                        int customIndex = index - standardNames.size();
+                        customNames.remove(customIndex);
+                        enemy.getCustomizedGraphics().remove(customIndex);
+                        enemyGraphics.remove(index);
+                        //move back on the list by 1
+                        if(index > 0) {
+                            if(index == enemyGraphics.size()) { index--; }
+                            animList.setSelectedIndex(index);
+                            animList.ensureIndexIsVisible(index);
+                            //changing animation will be handled by animList
+                        }
+                    }
+                }
+            }
+        });
 
         // Configure the necessary Panels
         JPanel spritePanel = new JPanel();
