@@ -108,6 +108,7 @@ public class Enemy extends BasicType
 
                 binaryIO.readBinaryString(); // skip one extra string in the file
                 long customGraphicsCount = binaryIO.readBinaryLong(); // TK saves as a long, not a int, so need to read the correct value.
+                //TODO: This appears to read 5 custom graphics even when there are fewer than 5, and occasionally read extra blank ones when there are more than 5
                 out.println(customGraphicsCount);
 
                 for (int i = 0; i < customGraphicsCount; i++)

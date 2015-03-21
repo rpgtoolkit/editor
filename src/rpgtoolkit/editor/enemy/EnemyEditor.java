@@ -704,6 +704,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         }
         out.println("standardNames="+standardNames.toString());
         out.println("customNames="+customNames.toString());
+        out.println("customGraphics="+this.enemy.getCustomizedGraphics()); //TODO: This often adds extra blank ones
         out.println("enemyGraphics="+enemyGraphics.toString());
         this.animList = new JList(enemyGraphics);
         this.animList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
