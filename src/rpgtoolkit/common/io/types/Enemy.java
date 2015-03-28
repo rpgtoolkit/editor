@@ -24,9 +24,9 @@ public class Enemy extends BasicType
     private byte canRunAway;
     private int sneakChance;
     private int surpriseChance;
-    private ArrayList<String> specialMove;
-    private ArrayList<String> weakness;
-    private ArrayList<String> strength;
+    private ArrayList<String> specialMoves;
+    private ArrayList<String> weaknesses;
+    private ArrayList<String> strengths;
     private byte aiLevel;
     private byte useRPGCodeTatics;
     private String taticsFile;
@@ -58,9 +58,9 @@ public class Enemy extends BasicType
     {
         try
         {
-            specialMove = new ArrayList<String>();
-            weakness = new ArrayList<String>();
-            strength = new ArrayList<String>();
+            specialMoves = new ArrayList<String>();
+            weaknesses = new ArrayList<String>();
+            strengths = new ArrayList<String>();
             standardGraphics = new ArrayList<String>();
             customizedGraphics = new ArrayList<String>();
             customizedGraphicsNames = new ArrayList<String>();
@@ -81,17 +81,17 @@ public class Enemy extends BasicType
                 int specialMoveCount = binaryIO.readBinaryInteger();
                 for (int i = 0; i < specialMoveCount + 1; i++)
                 {
-                    specialMove.add(binaryIO.readBinaryString());
+                    specialMoves.add(binaryIO.readBinaryString());
                 }
                 int weaknessCount = binaryIO.readBinaryInteger();
                 for (int i = 0; i < weaknessCount + 1; i++)
                 {
-                    weakness.add(binaryIO.readBinaryString());
+                    weaknesses.add(binaryIO.readBinaryString());
                 }
                 int strengthCount = binaryIO.readBinaryInteger();
                 for (int i = 0; i < strengthCount + 1; i++)
                 {
-                    strength.add(binaryIO.readBinaryString());
+                    strengths.add(binaryIO.readBinaryString());
                 }
                 aiLevel = (byte) inputStream.read();
                 useRPGCodeTatics = (byte) inputStream.read();
@@ -152,18 +152,18 @@ public class Enemy extends BasicType
             outputStream.write(canRunAway);
             binaryIO.writeBinaryInteger(sneakChance);
             binaryIO.writeBinaryInteger(surpriseChance);
-            binaryIO.writeBinaryInteger(specialMove.size());
-            for (String aSpecialMove : specialMove)
+            binaryIO.writeBinaryInteger(specialMoves.size());
+            for (String aSpecialMove : specialMoves)
             {
                 binaryIO.writeBinaryString(aSpecialMove);
             }
-            binaryIO.writeBinaryInteger(weakness.size());
-            for (String weaknes : weakness)
+            binaryIO.writeBinaryInteger(weaknesses.size());
+            for (String weaknes : weaknesses)
             {
                 binaryIO.writeBinaryString(weaknes);
             }
-            binaryIO.writeBinaryInteger(strength.size());
-            for (String aStrength : strength)
+            binaryIO.writeBinaryInteger(strengths.size());
+            for (String aStrength : strengths)
             {
                 binaryIO.writeBinaryString(aStrength);
             }
@@ -317,24 +317,24 @@ public class Enemy extends BasicType
     }
 
     /**
-     * @return the specialMove
+     * @return the specialMoves
      */
-    public ArrayList<String> getSpecialMove() {
-        return specialMove;
+    public ArrayList<String> getSpecialMoves() {
+        return specialMoves;
     }
 
     /**
-     * @return the weakness
+     * @return the weaknesses
      */
-    public ArrayList<String> getWeakness() {
-        return weakness;
+    public ArrayList<String> getWeaknesses() {
+        return weaknesses;
     }
 
     /**
-     * @return the strength
+     * @return the strengths
      */
-    public ArrayList<String> getStrength() {
-        return strength;
+    public ArrayList<String> getStrengths() {
+        return strengths;
     }
 
     /**

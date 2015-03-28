@@ -14,8 +14,10 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import rpgtoolkit.common.io.types.Animation;
 import rpgtoolkit.common.io.types.Enemy;
+import rpgtoolkit.common.io.types.SpecialMove;
 import rpgtoolkit.editor.main.MainWindow;
 import rpgtoolkit.editor.main.ToolkitEditorWindow;
 import rpgtoolkit.editor.utilities.Gui;
@@ -31,6 +33,9 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
 
     private JFileChooser openEnemy;
     private final Enemy enemy; // Enemy file we are altering
+    
+    private static final String sep = File.separator;
+    private final JFileChooser fileChooser = MainWindow.getInstance().getFileChooser();
 
     // Tabs required by the menu
     private JPanel basicSettingsPanel;
@@ -56,20 +61,14 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
     // GRAPHICS SETTINGS
     private JList animList;
     private JTextField animLoc;
-    private JButton animAddButton = new JButton("Add");
-    private JButton animRemoveButton = new JButton("Remove");
     private Animation selectedAnim;
     private JLabel animDisplay = new JLabel();
     private Timer animTimer;
 
     // SPECIAL MOVES SETTINGS
-    private JTextField initialBoard;
-    private JTextField initialChar;
-    private JSlider charSpeed;
-    private JRadioButton pixelMovement;
-    private JRadioButton tileMovement;
-    private JCheckBox pushInPixels;
-    private JComboBox pathfinding;
+    private JList sMoveList;
+    private JList strengthList;
+    private JList weaknessList;
 
     // TACTICS SETTINGS
     private JTextField runTimeProgram;
@@ -377,147 +376,276 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
 
     private void createSpecialMovesPanel()
     {
-        this.initialBoard = new JTextField();
-        this.initialChar = new JTextField();
-        this.charSpeed = new JSlider();
-        this.charSpeed.setMaximum(3);
-        this.charSpeed.setMinimum(-3);
-        this.charSpeed.setMajorTickSpacing(1);
-        this.charSpeed.setMinorTickSpacing(1);
-        this.charSpeed.setPaintLabels(true);
-        this.charSpeed.setValue(0);
-        this.pixelMovement = new JRadioButton();
-        this.tileMovement = new JRadioButton();
-        this.pushInPixels = new JCheckBox();
-        this.pathfinding = new JComboBox();
-        this.pathfinding.addItem("Axial");
-        this.pathfinding.addItem("Diagonal");
-        this.pathfinding.addItem("Vector");
-        this.pathfinding.setEditable(false);
-        this.pathfinding.setSelectedIndex(2);
-
-        JLabel initialBoardLabel = new JLabel("Initial Board");
-        JButton initialBoardButton = new JButton("Browse");
-        JLabel initialCharLabel = new JLabel("Initial Character");
-        JButton initialCharButton = new JButton("Browse");
-        JLabel blankBoardNote = new JLabel("You may leave the initial board "
-                + "blank if you wish");
-        JLabel charSpeedLabel = new JLabel("Adjust game speed");
-        JLabel charSpeedNote = new JLabel("This is a secondary option, leave at "
-                + "zero for default character speeds");
-        JLabel movementLabel = new JLabel("Movement Style");
-        JLabel pixelMovementLabel = new JLabel("Per Pixel");
-        JLabel tileMovementLabel = new JLabel("Per Tile");
-        JLabel pushInPixelsLabel = new JLabel("Push[] in pixel increments");
-        JButton mouseCursorButton = new JButton("Mouse Cursor");
-        JLabel pathFindingLabel = new JLabel("Default Path Finding Mode");
+        // Configure Class scope components
+        final DefaultListModel specialMoves = new DefaultListModel();
+        final ArrayList<String> sMoveLocs = this.enemy.getSpecialMoves();
+        for(String loc : sMoveLocs) {
+            String text = getSpecialMoveText(loc);
+            specialMoves.addElement(text);
+        }
+        final DefaultListModel strengths = new DefaultListModel();
+        final ArrayList<String> strengthLocs = this.enemy.getStrengths();
+        for(String loc : strengthLocs) {
+            String text = getSpecialMoveText(loc);
+            strengths.addElement(text);
+        }
+        final DefaultListModel weaknesses = new DefaultListModel();
+        final ArrayList<String> weaknessLocs = this.enemy.getWeaknesses();
+        for(String loc : weaknessLocs) {
+            String text = getSpecialMoveText(loc);
+            weaknesses.addElement(text);
+        }
+        out.println("specialMoves="+sMoveLocs.toString());
+        out.println("strengths="+strengthLocs.toString());
+        out.println("weaknesses="+weaknessLocs.toString());
+        this.sMoveList = Gui.createVerticalJList(specialMoves);
+        this.strengthList = Gui.createVerticalJList(strengths);
+        this.weaknessList = Gui.createVerticalJList(weaknesses);
+        
+        // Configure function Scope Components
+        JScrollPane sMoveListScroller = new JScrollPane(this.sMoveList);
+        JScrollPane strengthListScroller = new JScrollPane(this.strengthList);
+        JScrollPane weaknessListScroller = new JScrollPane(this.weaknessList);
+        
+        JButton sMoveFindButton = new JButton("Browse");
+        JButton sMoveAddButton = new JButton("Add");
+        final JButton sMoveRemoveButton = new JButton("Remove");
+        sMoveRemoveButton.setEnabled(false);
+        
+        JButton strengthFindButton = new JButton("Browse");
+        JButton strengthAddButton = new JButton("Add");
+        final JButton strengthRemoveButton = new JButton("Remove");
+        strengthRemoveButton.setEnabled(false);
+        
+        JButton weaknessFindButton = new JButton("Browse");
+        JButton weaknessAddButton = new JButton("Add");
+        final JButton weaknessRemoveButton = new JButton("Remove");
+        weaknessRemoveButton.setEnabled(false);
+        
+        // Configure listeners
+        
+        //change selection
+        this.sMoveList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if(e.getValueIsAdjusting() == false) {
+                    if(sMoveList.getSelectedIndex() == -1) {
+                        sMoveRemoveButton.setEnabled(false);
+                    } else {
+                        sMoveRemoveButton.setEnabled(true);
+                    }
+                }
+            }
+        });
+        this.strengthList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if(e.getValueIsAdjusting() == false) {
+                    if(strengthList.getSelectedIndex() == -1) {
+                        strengthRemoveButton.setEnabled(false);
+                    } else {
+                        strengthRemoveButton.setEnabled(true);
+                    }
+                }
+            }
+        });
+        this.weaknessList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if(e.getValueIsAdjusting() == false) {
+                    if(weaknessList.getSelectedIndex() == -1) {
+                        weaknessRemoveButton.setEnabled(false);
+                    } else {
+                        weaknessRemoveButton.setEnabled(true);
+                    }
+                }
+            }
+        });
+        
+        //browse buttons
+        sMoveFindButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = sMoveList.getSelectedIndex();
+                if(index >= 0) {
+                    String loc = browseSpecialMove();
+                    if(loc != null) {
+                        specialMoves.set(index, getSpecialMoveText(loc));
+                    }
+                }
+            }
+        });
+        strengthFindButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = strengthList.getSelectedIndex();
+                if(index >= 0) {
+                    String loc = browseSpecialMove();
+                    if(loc != null) {
+                        strengths.set(index, getSpecialMoveText(loc));
+                    }
+                }
+            }
+        });
+        weaknessFindButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = weaknessList.getSelectedIndex();
+                if(index >= 0) {
+                    String loc = browseSpecialMove();
+                    if(loc != null) {
+                        weaknesses.set(index, getSpecialMoveText(loc));
+                    }
+                }
+            }
+        });
+        
+        //add buttons
+//        this.animAddButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                int index = animList.getSelectedIndex();
+//                if(index < sMoveLocs.size()) {
+//                    index = sMoveLocs.size(); //insert at start of custom graphics
+//                } else if(index > sMoveLocs.size() + strengthLocs.size()) {
+//                    index = sMoveLocs.size() + strengthLocs.size(); //insert at end
+//                } else {
+//                    index++; //insert after current slot
+//                }
+//                //add custom graphic
+//                String name = (String)JOptionPane.showInputDialog(
+//                        graphicsPanel,
+//                        "Enter the handle for the new sprite:",
+//                        "Add Enemy Graphic",
+//                        JOptionPane.PLAIN_MESSAGE); 
+//                int customIndex = index - sMoveLocs.size();
+//                strengthLocs.add(customIndex, name);
+//                enemy.getCustomizedGraphics().add(customIndex, "");
+//                specialMoves.add(index, name);
+//                //select the new graphic
+//                animList.setSelectedIndex(index);
+//                animList.ensureIndexIsVisible(index);
+//                //changing animation will be handled by animList and animLoc
+//            }
+//        });
+        
+        //remove buttons
+//        this.animRemoveButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                int index = animList.getSelectedIndex();
+//                if(index >= 0) {
+//                    if(index < sMoveLocs.size() && selectedAnim != null) {
+//                        //clear standard graphic file location, but don't delete
+//                        animLoc.setText("");
+//                        enemy.getStandardGraphics().set(index, "");
+//                        //clear animation
+//                        if(play.isSelected()) { play.doClick(); } //press stop
+//                        selectedAnim = null;
+//                        animDisplay.setIcon(null);
+//                        animTimer = null;
+//                    } else if(index < sMoveLocs.size() + strengthLocs.size()) {
+//                        //delete custom graphic
+//                        int customIndex = index - sMoveLocs.size();
+//                        strengthLocs.remove(customIndex);
+//                        enemy.getCustomizedGraphics().remove(customIndex);
+//                        specialMoves.remove(index);
+//                        //move back on the list by 1
+//                        if(index > 0) {
+//                            if(index == specialMoves.size()) { index--; }
+//                            animList.setSelectedIndex(index);
+//                            animList.ensureIndexIsVisible(index);
+//                            //changing animation will be handled by animList
+//                        }
+//                    }
+//                }
+//            }
+//        });
 
         // Configure the necessary Panels
-        JPanel conditionsPanel = new JPanel();
-        conditionsPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Startup Settings"));
-        JPanel miscPanel = new JPanel();
-        miscPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Miscellaneous Settings"));
+        JPanel sMovePanel = new JPanel();
+        sMovePanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Special Move List"));
+        JPanel strengthPanel = new JPanel();
+        strengthPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Strength List"));
+        JPanel weaknessPanel = new JPanel();
+        weaknessPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Weakness List"));
 
-        GroupLayout layout = new GroupLayout(this.specialMovesPanel);
-        this.specialMovesPanel.setLayout(layout);
-        layout.setAutoCreateGaps(true);
-        layout.setAutoCreateContainerGaps(true);
+        // Create Layout for Top Level Panel
+        GroupLayout layout = Gui.createGroupLayout(this.specialMovesPanel);
 
-        GroupLayout conditionsLayout = new GroupLayout(conditionsPanel);
-        conditionsPanel.setLayout(conditionsLayout);
-        conditionsLayout.setAutoCreateGaps(true);
-        conditionsLayout.setAutoCreateContainerGaps(true);
+        // Configure Layouts for Second Level Panels
+        GroupLayout sMoveLayout = Gui.createGroupLayout(sMovePanel);
+        GroupLayout strengthLayout = Gui.createGroupLayout(strengthPanel);
+        GroupLayout weaknessLayout = Gui.createGroupLayout(weaknessPanel);
 
-        GroupLayout miscLayout = new GroupLayout(miscPanel);
-        miscPanel.setLayout(miscLayout);
-        miscLayout.setAutoCreateGaps(true);
-        miscLayout.setAutoCreateContainerGaps(true);
-
-        conditionsLayout.setHorizontalGroup(conditionsLayout.createParallelGroup()
-                .addGroup(conditionsLayout.createSequentialGroup()
-                        .addComponent(initialBoardLabel, 75, 75, 75)
-                        .addComponent(this.initialBoard)
-                        .addComponent(initialBoardButton))
-                .addGroup(conditionsLayout.createSequentialGroup()
-                        .addComponent(initialCharLabel)
-                        .addComponent(this.initialChar)
-                        .addComponent(initialCharButton))
-                .addComponent(blankBoardNote)
+        // Configure the SMOVE PANEL layout
+        sMoveLayout.setHorizontalGroup(sMoveLayout.createSequentialGroup()
+                .addComponent(sMoveListScroller)
+                .addGroup(sMoveLayout.createParallelGroup()
+                        .addComponent(sMoveFindButton)
+                        .addComponent(sMoveAddButton)
+                        .addComponent(sMoveRemoveButton))
         );
 
-        conditionsLayout.linkSize(SwingConstants.HORIZONTAL, initialBoardLabel, 
-                initialCharLabel);
-        conditionsLayout.linkSize(SwingConstants.VERTICAL, this.initialBoard, 
-                this.initialChar);
-
-        conditionsLayout.setVerticalGroup(conditionsLayout.createSequentialGroup()
-                .addGroup(conditionsLayout.createParallelGroup()
-                        .addComponent(initialBoardLabel)
-                        .addComponent(this.initialBoard, Gui.JTF_HEIGHT, 
-                                Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
-                        .addComponent(initialBoardButton))
-                .addGroup(conditionsLayout.createParallelGroup()
-                        .addComponent(initialCharLabel)
-                        .addComponent(this.initialChar)
-                        .addComponent(initialCharButton))
-                .addComponent(blankBoardNote)
+        sMoveLayout.setVerticalGroup(sMoveLayout.createParallelGroup()
+                .addComponent(sMoveListScroller)
+                .addGroup(sMoveLayout.createSequentialGroup()
+                        .addComponent(sMoveFindButton)
+                        .addComponent(sMoveAddButton)
+                        .addComponent(sMoveRemoveButton))
         );
 
-        miscLayout.setHorizontalGroup(miscLayout.createParallelGroup()
-                .addGroup(miscLayout.createSequentialGroup()
-                        .addComponent(charSpeedLabel)
-                        .addComponent(this.charSpeed))
-                .addComponent(charSpeedNote)
-                .addGroup(miscLayout.createSequentialGroup()
-                        .addComponent(movementLabel)
-                        .addComponent(this.pixelMovement)
-                        .addComponent(pixelMovementLabel)
-                        .addComponent(this.tileMovement)
-                        .addComponent(tileMovementLabel))
-                .addGroup(miscLayout.createSequentialGroup()
-                        .addComponent(this.pushInPixels)
-                        .addComponent(pushInPixelsLabel))
-                .addGroup(miscLayout.createSequentialGroup()
-                        .addComponent(mouseCursorButton)
-                        .addComponent(pathFindingLabel)
-                        .addComponent(this.pathfinding))
+        // Configure the STRENGTH PANEL layout
+        strengthLayout.setHorizontalGroup(strengthLayout.createSequentialGroup()
+                .addComponent(strengthListScroller)
+                .addGroup(strengthLayout.createParallelGroup()
+                        .addComponent(strengthFindButton)
+                        .addComponent(strengthAddButton)
+                        .addComponent(strengthRemoveButton))
         );
 
-        miscLayout.setVerticalGroup(miscLayout.createSequentialGroup()
-                .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(charSpeedLabel)
-                        .addComponent(this.charSpeed))
-                .addComponent(charSpeedNote)
-                .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(movementLabel)
-                        .addComponent(this.pixelMovement)
-                        .addComponent(pixelMovementLabel)
-                        .addComponent(this.tileMovement)
-                        .addComponent(tileMovementLabel))
-                .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(this.pushInPixels)
-                        .addComponent(pushInPixelsLabel))
-                .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(mouseCursorButton)
-                        .addComponent(pathFindingLabel)
-                        .addComponent(this.pathfinding, 22, 22, 22))
+        strengthLayout.setVerticalGroup(strengthLayout.createParallelGroup()
+                .addComponent(strengthListScroller)
+                .addGroup(strengthLayout.createSequentialGroup()
+                        .addComponent(strengthFindButton)
+                        .addComponent(strengthAddButton)
+                        .addComponent(strengthRemoveButton))
         );
 
+        // Configure the WEAKNESS PANEL layout
+        weaknessLayout.setHorizontalGroup(weaknessLayout.createSequentialGroup()
+                .addComponent(weaknessListScroller)
+                .addGroup(weaknessLayout.createParallelGroup()
+                        .addComponent(weaknessFindButton)
+                        .addComponent(weaknessAddButton)
+                        .addComponent(weaknessRemoveButton))
+        );
+
+        weaknessLayout.setVerticalGroup(weaknessLayout.createParallelGroup()
+                .addComponent(weaknessListScroller)
+                .addGroup(weaknessLayout.createSequentialGroup()
+                        .addComponent(weaknessFindButton)
+                        .addComponent(weaknessAddButton)
+                        .addComponent(weaknessRemoveButton))
+        );
+
+        // Configure the SPECIAL MOVE PANEL layout
         layout.setHorizontalGroup(layout.createParallelGroup()
-                .addComponent(conditionsPanel, 515, 515, 515)
-                .addComponent(miscPanel)
+                .addComponent(sMovePanel)
+                .addComponent(strengthPanel)
+                .addComponent(weaknessPanel)
         );
-
-        layout.linkSize(SwingConstants.HORIZONTAL, conditionsPanel, miscPanel);
 
         layout.setVerticalGroup(layout.createSequentialGroup()
-                .addComponent(conditionsPanel)
-                .addComponent(miscPanel)
+                .addComponent(sMovePanel)
+                .addComponent(strengthPanel)
+                .addComponent(weaknessPanel)
         );
     }
-
+    
     private void createTacticsPanel()
     {
         // Configure Class scope components
@@ -709,10 +837,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         out.println("customNames="+customNames.toString());
         out.println("customGraphics="+this.enemy.getCustomizedGraphics()); //TODO: This often adds extra blank ones
         out.println("enemyGraphics="+enemyGraphics.toString());
-        this.animList = new JList(enemyGraphics);
-        this.animList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        this.animList.setLayoutOrientation(JList.VERTICAL);
-        this.animList.setVisibleRowCount(-1);
+        this.animList = Gui.createVerticalJList(enemyGraphics);
         
         this.animLoc = new JTextField();
         
@@ -728,7 +853,9 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         
         JLabel dummy = new JLabel();
         JButton animFindButton = new JButton("Browse");
-        this.animRemoveButton.setEnabled(false);
+        JButton animAddButton = new JButton("Add");
+        final JButton animRemoveButton = new JButton("Remove");
+        animRemoveButton.setEnabled(false);
         
         // Configure listeners
         
@@ -824,8 +951,8 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
                     }
                     if(text.endsWith(".anm")) {
                         //update image if the location is valid
-                        File f = new File(
-                                System.getProperty("project.path") + "/Misc/" + text);
+                        File f = new File(System.getProperty("project.path")
+                                + sep + "Misc" + sep + text);
                         if(f.canRead()) {
                             selectedAnim = new Animation(f);
                             //out.println("new animation!");
@@ -868,7 +995,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         play.addActionListener(playStop);
         
         //add button
-        this.animAddButton.addActionListener(new ActionListener() {
+        animAddButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int index = animList.getSelectedIndex();
@@ -897,7 +1024,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         });
         
         //remove button
-        this.animRemoveButton.addActionListener(new ActionListener() {
+        animRemoveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int index = animList.getSelectedIndex();
@@ -948,7 +1075,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
                         .addComponent(this.animLoc)
                         .addGroup(spriteLayout.createSequentialGroup()
                                 .addComponent(play)
-                                .addComponent(animDisplay)))
+                                .addComponent(this.animDisplay)))
                 .addGroup(spriteLayout.createParallelGroup()
                         .addComponent(dummy)
                         .addComponent(animFindButton)
@@ -963,7 +1090,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
                         .addComponent(this.animLoc)
                         .addGroup(spriteLayout.createParallelGroup()
                                 .addComponent(play)
-                                .addComponent(animDisplay)))
+                                .addComponent(this.animDisplay)))
                 .addGroup(spriteLayout.createSequentialGroup()
                         .addComponent(dummy)
                         .addComponent(animFindButton)
@@ -982,5 +1109,62 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         layout.setVerticalGroup(layout.createSequentialGroup()
                 .addComponent(spritePanel)
         );
+    }
+
+    private String getSpecialMoveText(String loc) {
+        SpecialMove move = loadSpecialMove(loc);
+        String text;
+        if(move != null) {
+            text = move.getName() + " (" + loc + ")";
+        } else {
+            text = "Error reading file named: " + loc;
+        }
+        return text;
+    }
+    
+    private SpecialMove loadSpecialMove(String loc) {
+        if(loc.endsWith(".spc")) {
+            File f = new File(System.getProperty("project.path")
+                    + sep + "SpcMove" + sep + loc);
+            if(f.canRead()) {
+                out.println("loaded special move from location " + loc + "!");
+                return new SpecialMove(f);
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Browse for a SpecialMove file and return its location relative to the
+     * project's special move folder.
+     * 
+     * @return the relative location of the SpecialMove file the user selects;
+     * or null if no file or an invalid file is selected
+     */
+    public String browseSpecialMove()
+    {
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                "Special Move Files", "spc");
+        this.fileChooser.setFileFilter(filter);
+
+        File path = new File(System.getProperty("project.path")
+                + sep + "SpcMove");
+
+        if (path.exists())
+        {
+            this.fileChooser.setCurrentDirectory(path);
+        }
+
+        if (this.fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+        {
+            String fileName = this.fileChooser.getSelectedFile().getName().toLowerCase();
+
+            if (fileName.endsWith(".spc"))
+            {
+                String loc = fileChooser.getSelectedFile().getPath();
+                return loc.replace(path.getPath() + sep, "");
+            }
+        }
+        return null;
     }
 }
