@@ -1,5 +1,8 @@
 package rpgtoolkit.editor.utilities;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -46,6 +49,33 @@ public abstract class Gui {
         list.setLayoutOrientation(JList.VERTICAL);
         list.setVisibleRowCount(-1);
         return list;
+    }
+
+    /**
+     * Creates and returns a new ActionListener that removes the currently
+     * selected item from a JList and from its DefaultListModel.
+     *
+     * @param backingList
+     * @param listComponent
+     * @return a new ActionListener that removes the currently selected item
+     * when triggered
+     */
+    public static ActionListener simpleRemoveListener(
+            final DefaultListModel backingList, final JList listComponent) {
+        return new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = listComponent.getSelectedIndex();
+                if(index >= 0) {
+                    backingList.remove(index);
+                    if(index == backingList.size()) {
+                        index--;
+                    }
+                    listComponent.setSelectedIndex(index);
+                    listComponent.ensureIndexIsVisible(index);
+                }
+            }
+        };
     }
     
 }

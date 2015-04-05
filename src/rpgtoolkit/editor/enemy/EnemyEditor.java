@@ -501,66 +501,59 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         });
         
         //add buttons
-//        this.animAddButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                int index = animList.getSelectedIndex();
-//                if(index < sMoveLocs.size()) {
-//                    index = sMoveLocs.size(); //insert at start of custom graphics
-//                } else if(index > sMoveLocs.size() + strengthLocs.size()) {
-//                    index = sMoveLocs.size() + strengthLocs.size(); //insert at end
-//                } else {
-//                    index++; //insert after current slot
-//                }
-//                //add custom graphic
-//                String name = (String)JOptionPane.showInputDialog(
-//                        graphicsPanel,
-//                        "Enter the handle for the new sprite:",
-//                        "Add Enemy Graphic",
-//                        JOptionPane.PLAIN_MESSAGE); 
-//                int customIndex = index - sMoveLocs.size();
-//                strengthLocs.add(customIndex, name);
-//                enemy.getCustomizedGraphics().add(customIndex, "");
-//                specialMoves.add(index, name);
-//                //select the new graphic
-//                animList.setSelectedIndex(index);
-//                animList.ensureIndexIsVisible(index);
-//                //changing animation will be handled by animList and animLoc
-//            }
-//        });
+        sMoveAddButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //insert after current slot
+                int index = sMoveList.getSelectedIndex() + 1;
+                String loc = browseSpecialMove();
+                if(loc != null) {
+                    specialMoves.add(index, getSpecialMoveText(loc));
+                }
+                //select the added move
+                sMoveList.setSelectedIndex(index);
+                sMoveList.ensureIndexIsVisible(index);
+            }
+        });
+        strengthAddButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //insert after current slot
+                int index = strengthList.getSelectedIndex() + 1;
+                String loc = browseSpecialMove();
+                if(loc != null) {
+                    strengths.add(index, getSpecialMoveText(loc));
+                }
+                //select the added move
+                strengthList.setSelectedIndex(index);
+                strengthList.ensureIndexIsVisible(index);
+            }
+        });
+        weaknessAddButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //insert after current slot
+                int index = weaknessList.getSelectedIndex() + 1;
+                String loc = browseSpecialMove();
+                if(loc != null) {
+                    weaknesses.add(index, getSpecialMoveText(loc));
+                }
+                //select the added move
+                weaknessList.setSelectedIndex(index);
+                weaknessList.ensureIndexIsVisible(index);
+            }
+        });
         
         //remove buttons
-//        this.animRemoveButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                int index = animList.getSelectedIndex();
-//                if(index >= 0) {
-//                    if(index < sMoveLocs.size() && selectedAnim != null) {
-//                        //clear standard graphic file location, but don't delete
-//                        animLoc.setText("");
-//                        enemy.getStandardGraphics().set(index, "");
-//                        //clear animation
-//                        if(play.isSelected()) { play.doClick(); } //press stop
-//                        selectedAnim = null;
-//                        animDisplay.setIcon(null);
-//                        animTimer = null;
-//                    } else if(index < sMoveLocs.size() + strengthLocs.size()) {
-//                        //delete custom graphic
-//                        int customIndex = index - sMoveLocs.size();
-//                        strengthLocs.remove(customIndex);
-//                        enemy.getCustomizedGraphics().remove(customIndex);
-//                        specialMoves.remove(index);
-//                        //move back on the list by 1
-//                        if(index > 0) {
-//                            if(index == specialMoves.size()) { index--; }
-//                            animList.setSelectedIndex(index);
-//                            animList.ensureIndexIsVisible(index);
-//                            //changing animation will be handled by animList
-//                        }
-//                    }
-//                }
-//            }
-//        });
+        sMoveRemoveButton.addActionListener(
+                Gui.simpleRemoveListener(specialMoves, sMoveList)
+        );
+        strengthRemoveButton.addActionListener(
+                Gui.simpleRemoveListener(strengths, strengthList)
+        );
+        weaknessRemoveButton.addActionListener(
+                Gui.simpleRemoveListener(weaknesses, weaknessList)
+        );
 
         // Configure the necessary Panels
         JPanel sMovePanel = new JPanel();
@@ -645,7 +638,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
                 .addComponent(weaknessPanel)
         );
     }
-    
+
     private void createTacticsPanel()
     {
         // Configure Class scope components
