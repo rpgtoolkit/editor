@@ -21,6 +21,7 @@ import rpgtoolkit.common.io.types.SpecialMove;
 import rpgtoolkit.editor.main.MainWindow;
 import rpgtoolkit.editor.main.ToolkitEditorWindow;
 import rpgtoolkit.editor.utilities.Gui;
+import rpgtoolkit.editor.utilities.IntegerField;
 import rpgtoolkit.editor.utilities.WholeNumberField;
 
 /**
@@ -79,8 +80,8 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
     private JTextField generalKey;
 
     // REWARDS SETTINGS
-    private WholeNumberField experienceAwarded;
-    private WholeNumberField goldAwarded;
+    private IntegerField experienceAwarded;
+    private IntegerField goldAwarded;
     private JTextField victoryProgram;
 
     /*
@@ -371,6 +372,322 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         layout.setVerticalGroup(layout.createSequentialGroup()
                 .addComponent(basicInfoPanel)
                 .addComponent(fightingConditionsPanel)
+        );
+    }
+
+    private void createGraphicsPanel()
+    {
+        // Configure Class scope components
+        final DefaultListModel enemyGraphics = new DefaultListModel();
+        final ArrayList<String> standardNames = this.enemy.getStandardGraphicsNames();
+        for(String standardName : standardNames) {
+            enemyGraphics.addElement(standardName);
+        }
+        final ArrayList<String> customNames = this.enemy.getCustomizedGraphicsNames();
+        for(String customName : customNames) {
+            enemyGraphics.addElement(customName);
+        }
+        out.println("standardNames="+standardNames.toString());
+        out.println("customNames="+customNames.toString());
+        out.println("customGraphics="+this.enemy.getCustomizedGraphics()); //TODO: This often adds extra blank ones
+        out.println("enemyGraphics="+enemyGraphics.toString());
+        this.animList = Gui.createVerticalJList(enemyGraphics);
+        
+        this.animLoc = new JTextField();
+        
+        // Configure function Scope Components
+        JScrollPane animListScroller = new JScrollPane(this.animList);
+        
+        JLabel animLabel = new JLabel("Animation");
+        final ImageIcon playIcon = new ImageIcon(getClass().
+                getResource("/rpgtoolkit/editor/resources/run.png"));
+        final ImageIcon stopIcon = new ImageIcon(getClass().
+                getResource("/rpgtoolkit/editor/resources/stop.png"));
+        final JToggleButton play = new JToggleButton(playIcon);
+        
+        JLabel dummy = new JLabel();
+        final JButton animFindButton = new JButton("Browse");
+        animFindButton.setEnabled(false);
+        JButton animAddButton = new JButton("Add");
+        final JButton animRemoveButton = new JButton("Remove");
+        animRemoveButton.setEnabled(false);
+        
+        // Configure listeners
+        
+        //run animation
+        final ActionListener animate = new ActionListener() {
+            private int frame = 0;
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //switch to the next frame, looping after the last frame
+                if(frame < selectedAnim.getFrameCount()-1) {
+                    frame++;
+                } else {
+                    frame = 0;
+                }
+                animDisplay.setIcon(new ImageIcon(
+                        selectedAnim.getFrame(frame).getFrameImage()
+                ));
+            }
+        };
+        
+        //change selection
+        this.animList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if(e.getValueIsAdjusting() == false) {
+                    if(animList.getSelectedIndex() == -1) {
+                        animDisplay.setIcon(null);
+                        animFindButton.setEnabled(false);
+                        animRemoveButton.setEnabled(false);
+                    } else {
+                        //switch animation info
+                        if(play.isSelected()) { play.doClick(); } //press stop
+                        String location;
+                        if(animList.getSelectedIndex() < standardNames.size()) {
+                            location = enemy.getStandardGraphics().get(
+                                    animList.getSelectedIndex());
+                            //out.println("new selection: standard " + animList.getSelectedIndex());
+                        } else {
+                            location = enemy.getCustomizedGraphics().get(
+                                    animList.getSelectedIndex() - standardNames.size());
+                            //out.println("new selection: custom " + (animList.getSelectedIndex() - standardNames.size()));
+                        }
+                        //clear animation and images
+                        selectedAnim = null;
+                        animDisplay.setIcon(null);
+                        animTimer = null;
+                        //out.println("anim cleared");
+                        //out.println("setting location to " + location);
+                        animLoc.setText(location); //handles switching to new valid animations
+                        
+                        animFindButton.setEnabled(true);
+                        animRemoveButton.setEnabled(true);
+                    }
+                }
+            }
+        });
+        
+        this.animLoc.getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+//                out.println("insert!");
+                String text = animLoc.getText();
+//                out.println(text);
+                updateAnimation(text);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                //out.println("remove!");
+                String text = animLoc.getText();
+                //out.println(text);
+                updateAnimation(text);
+                if(text.isEmpty()) {
+                    //out.println("clearing anim");
+                    selectedAnim = null;
+                    animDisplay.setIcon(null);
+                    animTimer = null;
+                }
+            }
+                
+            private void updateAnimation(String text) {
+                int index = animList.getSelectedIndex();
+//                out.println("update animation index: " + index);
+//                out.println(text);
+                if(index >= 0 && index < standardNames.size() + customNames.size()) {
+                    boolean custom = false;
+                    if(index >= standardNames.size()) {
+                        custom = true;
+                    }
+                    if(custom == true) {
+                        enemy.getCustomizedGraphics().set(
+                                index - standardNames.size(), text);
+                    } else {
+                        enemy.getStandardGraphics().set(index, text);
+                    }
+                    if(text.endsWith(".anm")) {
+                        //update image if the location is valid
+                        File f = new File(System.getProperty("project.path")
+                                + sep + "Misc" + sep + text);
+                        if(f.canRead()) {
+                            selectedAnim = new Animation(f);
+//                            out.println("new animation!");
+                            //switch animation images
+                            if(selectedAnim != null && selectedAnim.getFrameCount() > 0) {
+                                animDisplay.setIcon(new ImageIcon(
+                                        selectedAnim.getFrame(0).getFrameImage()));
+                                animTimer = new Timer((int)(selectedAnim.getFrameDelay() * 1000), animate);
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+            }
+        });
+        
+        //play button
+        ActionListener playStop = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(play.isSelected()) {
+                    if(animTimer != null) {
+                        animTimer.start();
+                        play.setIcon(stopIcon);
+                    }
+                } else {
+                    if(animTimer != null) {
+                        animTimer.stop();
+                        play.setIcon(playIcon);}
+                    if(selectedAnim != null && selectedAnim.getFrameCount() > 0) {
+                        animDisplay.setIcon(new ImageIcon(
+                                selectedAnim.getFrame(0).getFrameImage()));
+                    }
+                }
+            }
+        };
+        play.addActionListener(playStop);
+        
+        //browse button
+        animFindButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = animList.getSelectedIndex();
+                if(index < 0) { return; }
+                String loc = browseByType("Animation Files", "anm", "Misc");
+                if(loc != null) {
+                    if(play.isSelected()) { play.doClick(); } //press stop before we change it
+                    animLoc.setText(loc);
+                    if(index < standardNames.size()) {
+                        enemy.getStandardGraphics().set(index, loc);
+                    } else if(index < standardNames.size() + customNames.size()) {
+                        int customIndex = index - standardNames.size();
+                        enemy.getCustomizedGraphics().set(customIndex, loc);
+                    }
+                    //changing animation will be handled by animLoc
+                }
+            }
+        });
+        
+        //add button
+        animAddButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = animList.getSelectedIndex();
+                if(index < standardNames.size()) {
+                    index = standardNames.size(); //insert at start of custom graphics
+                } else if(index > standardNames.size() + customNames.size()) {
+                    index = standardNames.size() + customNames.size(); //insert at end
+                } else {
+                    index++; //insert after current slot
+                }
+                //add custom graphic
+                String name = (String)JOptionPane.showInputDialog(
+                        graphicsPanel,
+                        "Enter the handle for the new sprite:",
+                        "Add Enemy Graphic",
+                        JOptionPane.PLAIN_MESSAGE); 
+                if(name == null || name.isEmpty()) { return; }
+                int customIndex = index - standardNames.size();
+                customNames.add(customIndex, name);
+                enemy.getCustomizedGraphics().add(customIndex, "");
+                enemyGraphics.add(index, name);
+                //select the new graphic
+                animList.setSelectedIndex(index);
+                animList.ensureIndexIsVisible(index);
+                //changing animation will be handled by animList and animLoc
+            }
+        });
+        
+        //remove button
+        animRemoveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = animList.getSelectedIndex();
+                if(index >= 0) {
+                    if(index < standardNames.size() && selectedAnim != null) {
+                        //clear standard graphic file location, but don't delete
+                        animLoc.setText("");
+                        enemy.getStandardGraphics().set(index, "");
+                        //clear animation
+                        if(play.isSelected()) { play.doClick(); } //press stop
+                        selectedAnim = null;
+                        animDisplay.setIcon(null);
+                        animTimer = null;
+                    } else if(index < standardNames.size() + customNames.size()) {
+                        //delete custom graphic
+                        int customIndex = index - standardNames.size();
+                        customNames.remove(customIndex);
+                        enemy.getCustomizedGraphics().remove(customIndex);
+                        enemyGraphics.remove(index);
+                        //move back on the list by 1
+                        if(index > 0) {
+                            if(index == enemyGraphics.size()) { index--; }
+                            animList.setSelectedIndex(index);
+                            animList.ensureIndexIsVisible(index);
+                            //changing animation will be handled by animList
+                        }
+                    }
+                }
+            }
+        });
+
+        // Configure the necessary Panels
+        JPanel spritePanel = new JPanel();
+        spritePanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Sprite List"));
+
+        // Create Layout for Top Level Panel
+        GroupLayout layout = Gui.createGroupLayout(this.graphicsPanel);
+
+        // Configure Layouts for Second Level Panels
+        GroupLayout spriteLayout = Gui.createGroupLayout(spritePanel);
+
+        // Configure the SPRITE PANEL layout
+        spriteLayout.setHorizontalGroup(spriteLayout.createSequentialGroup()
+                .addComponent(animListScroller)
+                .addGroup(spriteLayout.createParallelGroup()
+                        .addComponent(animLabel)
+                        .addComponent(this.animLoc)
+                        .addGroup(spriteLayout.createSequentialGroup()
+                                .addComponent(play)
+                                .addComponent(this.animDisplay)))
+                .addGroup(spriteLayout.createParallelGroup()
+                        .addComponent(dummy)
+                        .addComponent(animFindButton)
+                        .addComponent(animAddButton)
+                        .addComponent(animRemoveButton))
+        );
+
+        spriteLayout.setVerticalGroup(spriteLayout.createParallelGroup()
+                .addComponent(animListScroller)
+                .addGroup(spriteLayout.createSequentialGroup()
+                        .addComponent(animLabel)
+                        .addComponent(this.animLoc)
+                        .addGroup(spriteLayout.createParallelGroup()
+                                .addComponent(play)
+                                .addComponent(this.animDisplay)))
+                .addGroup(spriteLayout.createSequentialGroup()
+                        .addComponent(dummy)
+                        .addComponent(animFindButton)
+                        .addComponent(animAddButton)
+                        .addComponent(animRemoveButton))
+        );
+
+        spriteLayout.linkSize(SwingConstants.VERTICAL, this.animLoc, animLabel,
+                dummy, animFindButton, animAddButton, animRemoveButton);
+
+        // Configure the GRAPHICS PANEL layout
+        layout.setHorizontalGroup(layout.createParallelGroup()
+                .addComponent(spritePanel)
+        );
+
+        layout.setVerticalGroup(layout.createSequentialGroup()
+                .addComponent(spritePanel)
         );
     }
 
@@ -771,337 +1088,118 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
 
     private void createRewardsPanel()
     {
-        this.experienceAwarded = new WholeNumberField(this.enemy.getExperienceAwarded());
+        JLabel experienceAwardedLabel = new JLabel("Experience Gained");
+        this.experienceAwarded = new IntegerField(this.enemy.getExperienceAwarded());
 
-        JLabel enableFightLabel = new JLabel("Enable Battle System?");
-        JButton configureFight = new JButton("Configure");
-
-        JPanel fightControlPanel = new JPanel();
-        fightControlPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Configuration"));
-
-        // Configure Layouts
-        GroupLayout layout = new GroupLayout(this.rewardsPanel);
-        this.rewardsPanel.setLayout(layout);
-        layout.setAutoCreateGaps(true);
-        layout.setAutoCreateContainerGaps(true);
-
-        GroupLayout fightControlPanelLayout = new GroupLayout(fightControlPanel);
-        fightControlPanel.setLayout(fightControlPanelLayout);
-        fightControlPanelLayout.setAutoCreateGaps(true);
-        fightControlPanelLayout.setAutoCreateContainerGaps(true);
-
-        fightControlPanelLayout.setHorizontalGroup(fightControlPanelLayout.createParallelGroup()
-                .addGroup(fightControlPanelLayout.createSequentialGroup()
-                        .addComponent(this.experienceAwarded)
-                        .addComponent(enableFightLabel))
-                .addComponent(configureFight)
-        );
-
-        fightControlPanelLayout.setVerticalGroup(fightControlPanelLayout.createSequentialGroup()
-                .addGroup(fightControlPanelLayout.createParallelGroup()
-                        .addComponent(this.experienceAwarded)
-                        .addComponent(enableFightLabel))
-                .addComponent(configureFight)
-        );
-
-        layout.setHorizontalGroup(layout.createParallelGroup()
-                .addComponent(fightControlPanel, 515, 515, 515)
-        );
-
-        layout.setVerticalGroup(layout.createSequentialGroup()
-                .addComponent(fightControlPanel)
-        );
-    }
-
-    private void createGraphicsPanel()
-    {
-        // Configure Class scope components
-        final DefaultListModel enemyGraphics = new DefaultListModel();
-        final ArrayList<String> standardNames = this.enemy.getStandardGraphicsNames();
-        for(String standardName : standardNames) {
-            enemyGraphics.addElement(standardName);
-        }
-        final ArrayList<String> customNames = this.enemy.getCustomizedGraphicsNames();
-        for(String customName : customNames) {
-            enemyGraphics.addElement(customName);
-        }
-        out.println("standardNames="+standardNames.toString());
-        out.println("customNames="+customNames.toString());
-        out.println("customGraphics="+this.enemy.getCustomizedGraphics()); //TODO: This often adds extra blank ones
-        out.println("enemyGraphics="+enemyGraphics.toString());
-        this.animList = Gui.createVerticalJList(enemyGraphics);
+        JLabel goldAwardedLabel = new JLabel("GP Earned");
+        this.goldAwarded = new IntegerField(this.enemy.getGoldAwarded());
         
-        this.animLoc = new JTextField();
-        
-        // Configure function Scope Components
-        JScrollPane animListScroller = new JScrollPane(this.animList);
-        
-        JLabel animLabel = new JLabel("Animation");
-        final ImageIcon playIcon = new ImageIcon(getClass().
-                getResource("/rpgtoolkit/editor/resources/run.png"));
-        final ImageIcon stopIcon = new ImageIcon(getClass().
-                getResource("/rpgtoolkit/editor/resources/stop.png"));
-        final JToggleButton play = new JToggleButton(playIcon);
-        
-        JLabel dummy = new JLabel();
-        JButton animFindButton = new JButton("Browse");
-        JButton animAddButton = new JButton("Add");
-        final JButton animRemoveButton = new JButton("Remove");
-        animRemoveButton.setEnabled(false);
+        JLabel victoryProgramLabel = new JLabel("Program to run upon defeating enemy");
+        this.victoryProgram = new JTextField(this.enemy.getBeatEnemyProgram());
+        JButton victoryProgramFindButton = new JButton("Browse");
+
+        JPanel rewardsPanel = new JPanel();
+        rewardsPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Rewards for Defeating Enemy"));
         
         // Configure listeners
-        
-        //run animation
-        final ActionListener animate = new ActionListener() {
-            private int frame = 0;
+        victoryProgramFindButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //switch to the next frame, looping after the last frame
-                if(frame < selectedAnim.getFrameCount()-1) {
-                    frame++;
-                } else {
-                    frame = 0;
-                }
-                animDisplay.setIcon(new ImageIcon(
-                        selectedAnim.getFrame(frame).getFrameImage()
-                ));
-            }
-        };
-        
-        //change selection
-        this.animList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if(e.getValueIsAdjusting() == false) {
-                    if(animList.getSelectedIndex() == -1) {
-                        animDisplay.setIcon(null);
-                        animRemoveButton.setEnabled(false);
-                    } else {
-                        //switch animation info
-                        if(play.isSelected()) { play.doClick(); } //press stop
-                        String location;
-                        if(animList.getSelectedIndex() < standardNames.size()) {
-                            location = enemy.getStandardGraphics().get(
-                                    animList.getSelectedIndex());
-                            //out.println("new selection: standard " + animList.getSelectedIndex());
-                        } else {
-                            location = enemy.getCustomizedGraphics().get(
-                                    animList.getSelectedIndex() - standardNames.size());
-                            //out.println("new selection: custom " + (animList.getSelectedIndex() - standardNames.size()));
-                        }
-                        //clear animation and images
-                        selectedAnim = null;
-                        animDisplay.setIcon(null);
-                        animTimer = null;
-                        //out.println("anim cleared");
-                        //out.println("setting location to " + location);
-                        animLoc.setText(location); //handles switching to new valid animations
-                        
-                        animRemoveButton.setEnabled(true);
-                    }
-                }
-            }
-        });
-        
-        this.animLoc.getDocument().addDocumentListener(new DocumentListener() {
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                //out.println("insert!");
-                String text = animLoc.getText();
-                //out.println(text);
-                updateAnimation(text);
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                //out.println("remove!");
-                String text = animLoc.getText();
-                //out.println(text);
-                updateAnimation(text);
-                if(text.isEmpty()) {
-                    //out.println("clearing anim");
-                    selectedAnim = null;
-                    animDisplay.setIcon(null);
-                    animTimer = null;
-                }
-            }
-                
-            private void updateAnimation(String text) {
-                int index = animList.getSelectedIndex();
-                //out.println("update animation index: " + index);
-                if(index >= 0 && index < standardNames.size() + customNames.size()) {
-                    boolean custom = false;
-                    if(index >= standardNames.size()) {
-                        custom = true;
-                    }
-                    if(custom == true) {
-                        enemy.getCustomizedGraphics().set(
-                                index - standardNames.size(), text);
-                    } else {
-                        enemy.getStandardGraphics().set(index, text);
-                    }
-                    if(text.endsWith(".anm")) {
-                        //update image if the location is valid
-                        File f = new File(System.getProperty("project.path")
-                                + sep + "Misc" + sep + text);
-                        if(f.canRead()) {
-                            selectedAnim = new Animation(f);
-                            //out.println("new animation!");
-                            //switch animation images
-                            if(selectedAnim != null && selectedAnim.getFrameCount() > 0) {
-                                animDisplay.setIcon(new ImageIcon(
-                                        selectedAnim.getFrame(0).getFrameImage()));
-                                animTimer = new Timer((int)(selectedAnim.getFrameDelay() * 1000), animate);
-                            }
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-            }
-        });
-        
-        //play button
-        ActionListener playStop = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(play.isSelected()) {
-                    if(animTimer != null) {
-                        animTimer.start();
-                        play.setIcon(stopIcon);
-                    }
-                } else {
-                    if(animTimer != null) {
-                        animTimer.stop();
-                        play.setIcon(playIcon);}
-                    if(selectedAnim != null && selectedAnim.getFrameCount() > 0) {
-                        animDisplay.setIcon(new ImageIcon(
-                                selectedAnim.getFrame(0).getFrameImage()));
-                    }
-                }
-            }
-        };
-        play.addActionListener(playStop);
-        
-        //add button
-        animAddButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int index = animList.getSelectedIndex();
-                if(index < standardNames.size()) {
-                    index = standardNames.size(); //insert at start of custom graphics
-                } else if(index > standardNames.size() + customNames.size()) {
-                    index = standardNames.size() + customNames.size(); //insert at end
-                } else {
-                    index++; //insert after current slot
-                }
-                //add custom graphic
-                String name = (String)JOptionPane.showInputDialog(
-                        graphicsPanel,
-                        "Enter the handle for the new sprite:",
-                        "Add Enemy Graphic",
-                        JOptionPane.PLAIN_MESSAGE); 
-                int customIndex = index - standardNames.size();
-                customNames.add(customIndex, name);
-                enemy.getCustomizedGraphics().add(customIndex, "");
-                enemyGraphics.add(index, name);
-                //select the new graphic
-                animList.setSelectedIndex(index);
-                animList.ensureIndexIsVisible(index);
-                //changing animation will be handled by animList and animLoc
-            }
-        });
-        
-        //remove button
-        animRemoveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int index = animList.getSelectedIndex();
-                if(index >= 0) {
-                    if(index < standardNames.size() && selectedAnim != null) {
-                        //clear standard graphic file location, but don't delete
-                        animLoc.setText("");
-                        enemy.getStandardGraphics().set(index, "");
-                        //clear animation
-                        if(play.isSelected()) { play.doClick(); } //press stop
-                        selectedAnim = null;
-                        animDisplay.setIcon(null);
-                        animTimer = null;
-                    } else if(index < standardNames.size() + customNames.size()) {
-                        //delete custom graphic
-                        int customIndex = index - standardNames.size();
-                        customNames.remove(customIndex);
-                        enemy.getCustomizedGraphics().remove(customIndex);
-                        enemyGraphics.remove(index);
-                        //move back on the list by 1
-                        if(index > 0) {
-                            if(index == enemyGraphics.size()) { index--; }
-                            animList.setSelectedIndex(index);
-                            animList.ensureIndexIsVisible(index);
-                            //changing animation will be handled by animList
-                        }
-                    }
+                String loc = browseByType("Program Files", "prg", "Prg");
+                if(loc != null) {
+                    victoryProgram.setText(loc);
                 }
             }
         });
 
-        // Configure the necessary Panels
-        JPanel spritePanel = new JPanel();
-        spritePanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Sprite List"));
+        // Configure Layouts
+        GroupLayout layout = Gui.createGroupLayout(this.rewardsPanel);
 
-        // Create Layout for Top Level Panel
-        GroupLayout layout = Gui.createGroupLayout(this.graphicsPanel);
+        GroupLayout rewardsPanelLayout = Gui.createGroupLayout(rewardsPanel);
 
-        // Configure Layouts for Second Level Panels
-        GroupLayout spriteLayout = Gui.createGroupLayout(spritePanel);
-
-        // Configure the SPRITE PANEL layout
-        spriteLayout.setHorizontalGroup(spriteLayout.createSequentialGroup()
-                .addComponent(animListScroller)
-                .addGroup(spriteLayout.createParallelGroup()
-                        .addComponent(animLabel)
-                        .addComponent(this.animLoc)
-                        .addGroup(spriteLayout.createSequentialGroup()
-                                .addComponent(play)
-                                .addComponent(this.animDisplay)))
-                .addGroup(spriteLayout.createParallelGroup()
-                        .addComponent(dummy)
-                        .addComponent(animFindButton)
-                        .addComponent(animAddButton)
-                        .addComponent(animRemoveButton))
+        rewardsPanelLayout.setHorizontalGroup(rewardsPanelLayout.createParallelGroup()
+                .addGroup(rewardsPanelLayout.createSequentialGroup()
+                        .addComponent(experienceAwardedLabel)
+                        .addComponent(this.experienceAwarded))
+                .addGroup(rewardsPanelLayout.createSequentialGroup()
+                        .addComponent(goldAwardedLabel)
+                        .addComponent(this.goldAwarded))
+                .addComponent(victoryProgramLabel)
+                .addGroup(rewardsPanelLayout.createSequentialGroup()
+                        .addComponent(this.victoryProgram)
+                        .addComponent(victoryProgramFindButton))
         );
 
-        spriteLayout.setVerticalGroup(spriteLayout.createParallelGroup()
-                .addComponent(animListScroller)
-                .addGroup(spriteLayout.createSequentialGroup()
-                        .addComponent(animLabel)
-                        .addComponent(this.animLoc)
-                        .addGroup(spriteLayout.createParallelGroup()
-                                .addComponent(play)
-                                .addComponent(this.animDisplay)))
-                .addGroup(spriteLayout.createSequentialGroup()
-                        .addComponent(dummy)
-                        .addComponent(animFindButton)
-                        .addComponent(animAddButton)
-                        .addComponent(animRemoveButton))
+        rewardsPanelLayout.setVerticalGroup(rewardsPanelLayout.createSequentialGroup()
+                .addGroup(rewardsPanelLayout.createParallelGroup()
+                        .addComponent(experienceAwardedLabel)
+                        .addComponent(this.experienceAwarded))
+                .addGroup(rewardsPanelLayout.createParallelGroup()
+                        .addComponent(goldAwardedLabel)
+                        .addComponent(this.goldAwarded))
+                .addComponent(victoryProgramLabel)
+                .addGroup(rewardsPanelLayout.createParallelGroup()
+                        .addComponent(this.victoryProgram)
+                        .addComponent(victoryProgramFindButton))
+        );
+        
+        rewardsPanelLayout.linkSize(SwingConstants.HORIZONTAL,
+                experienceAwardedLabel,
+                goldAwardedLabel
+        );
+        rewardsPanelLayout.linkSize(SwingConstants.VERTICAL,
+                experienceAwardedLabel, this.experienceAwarded,
+                goldAwardedLabel, this.goldAwarded, victoryProgramLabel,
+                this.victoryProgram, victoryProgramFindButton
         );
 
-        spriteLayout.linkSize(SwingConstants.VERTICAL, this.animLoc, animLabel,
-                dummy, animFindButton, animAddButton, animRemoveButton);
-
-        // Configure the GRAPHICS PANEL layout
         layout.setHorizontalGroup(layout.createParallelGroup()
-                .addComponent(spritePanel)
+                .addComponent(rewardsPanel)
         );
 
         layout.setVerticalGroup(layout.createSequentialGroup()
-                .addComponent(spritePanel)
+                .addComponent(rewardsPanel)
         );
+    }
+    
+    /**
+     * Browse for a file of a given type, starting in the given subdirectory of
+     * the project, and return its location relative to that subdirectory.
+     *
+     * @return the location of the file the user selects, relative to the
+     * subdirectory; or null if no file or an invalid file is selected
+     */
+    public String browseByType(String description, String extension, String subdirectory)
+    {
+        this.fileChooser.resetChoosableFileFilters();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                description, extension);
+        this.fileChooser.setFileFilter(filter);
+
+        File path = new File(System.getProperty("project.path")
+                + sep + subdirectory);
+
+        if (path.exists())
+        {
+            this.fileChooser.setCurrentDirectory(path);
+        }
+
+        if (this.fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+        {
+            String fileName = this.fileChooser.getSelectedFile().getName().toLowerCase();
+
+            if (fileName.endsWith("." + extension))
+            {
+                String loc = fileChooser.getSelectedFile().getPath();
+                return loc.replace(path.getPath() + sep, "");
+            }
+        }
+        return null;
+    }
+
+    private String browseSpecialMove() {
+        return browseByType("Special Move Files", "spc", "SpcMove");
     }
 
     private String getSpecialMoveText(String loc) {
@@ -1122,40 +1220,6 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
             if(f.canRead()) {
                 out.println("loaded special move from location " + loc + "!");
                 return new SpecialMove(f);
-            }
-        }
-        return null;
-    }
-    
-    /**
-     * Browse for a SpecialMove file and return its location relative to the
-     * project's special move folder.
-     * 
-     * @return the relative location of the SpecialMove file the user selects;
-     * or null if no file or an invalid file is selected
-     */
-    public String browseSpecialMove()
-    {
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                "Special Move Files", "spc");
-        this.fileChooser.setFileFilter(filter);
-
-        File path = new File(System.getProperty("project.path")
-                + sep + "SpcMove");
-
-        if (path.exists())
-        {
-            this.fileChooser.setCurrentDirectory(path);
-        }
-
-        if (this.fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
-        {
-            String fileName = this.fileChooser.getSelectedFile().getName().toLowerCase();
-
-            if (fileName.endsWith(".spc"))
-            {
-                String loc = fileChooser.getSelectedFile().getPath();
-                return loc.replace(path.getPath() + sep, "");
             }
         }
         return null;

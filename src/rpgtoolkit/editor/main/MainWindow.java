@@ -328,6 +328,7 @@ public class MainWindow extends JFrame implements InternalFrameListener
 
     public void openProject()
     {
+        this.fileChooser.resetChoosableFileFilters();
         FileNameExtensionFilter filter
                 = new FileNameExtensionFilter("Toolkit Project", "gam");
         this.fileChooser.setFileFilter(filter);
@@ -360,6 +361,7 @@ public class MainWindow extends JFrame implements InternalFrameListener
     
     public void primeFileChooser()
     {
+        this.fileChooser.resetChoosableFileFilters();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
                 "Toolkit Files", "brd", "ene", "tem", "itm", "anm", "prg", "tst");
         this.fileChooser.setFileFilter(filter);
