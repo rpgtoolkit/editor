@@ -18,3 +18,9 @@
 /manifest.mf
 /build.xml
 /build/
+
+# Gradle        #
+#################
+
+build/
+out/
