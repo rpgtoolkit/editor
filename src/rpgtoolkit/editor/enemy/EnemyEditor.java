@@ -63,7 +63,6 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
     private JList animList;
     private JTextField animLoc;
     private Animation selectedAnim;
-    private JLabel animDisplay = new JLabel();
     private Timer animTimer;
 
     // SPECIAL MOVES SETTINGS
@@ -242,6 +241,17 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         JButton runAwayProgramButton = new JButton("Browse");
         JLabel critOnEnemyLabel = new JLabel("Chances of a critical hit on the enemy: (1 in)");
         JLabel critOnPlayerLabel = new JLabel("Chances of a critical hit on the player: (1 in)");
+        
+        // Configure listeners
+        runAwayProgramButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String loc = browseByType("Program Files", "prg", "Prg");
+                if(loc != null) {
+                    runAwayProgram.setText(loc);
+                }
+            }
+        });
 
         // Configure the necessary Panels
         JPanel basicInfoPanel = new JPanel();
@@ -404,6 +414,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         final ImageIcon stopIcon = new ImageIcon(getClass().
                 getResource("/rpgtoolkit/editor/resources/stop.png"));
         final JToggleButton play = new JToggleButton(playIcon);
+        final JLabel animDisplay = new JLabel();
         
         JLabel dummy = new JLabel();
         final JButton animFindButton = new JButton("Browse");
@@ -611,13 +622,10 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
                 if(index >= 0) {
                     if(index < standardNames.size() && selectedAnim != null) {
                         //clear standard graphic file location, but don't delete
+                        if(play.isSelected()) { play.doClick(); } //press stop before we change it
                         animLoc.setText("");
                         enemy.getStandardGraphics().set(index, "");
-                        //clear animation
-                        if(play.isSelected()) { play.doClick(); } //press stop
-                        selectedAnim = null;
-                        animDisplay.setIcon(null);
-                        animTimer = null;
+                        //clear animation will be handled by animLoc
                     } else if(index < standardNames.size() + customNames.size()) {
                         //delete custom graphic
                         int customIndex = index - standardNames.size();
@@ -655,7 +663,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
                         .addComponent(this.animLoc)
                         .addGroup(spriteLayout.createSequentialGroup()
                                 .addComponent(play)
-                                .addComponent(this.animDisplay)))
+                                .addComponent(animDisplay)))
                 .addGroup(spriteLayout.createParallelGroup()
                         .addComponent(dummy)
                         .addComponent(animFindButton)
@@ -670,7 +678,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
                         .addComponent(this.animLoc)
                         .addGroup(spriteLayout.createParallelGroup()
                                 .addComponent(play)
-                                .addComponent(this.animDisplay)))
+                                .addComponent(animDisplay)))
                 .addGroup(spriteLayout.createSequentialGroup()
                         .addComponent(dummy)
                         .addComponent(animFindButton)
@@ -1098,8 +1106,8 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         this.victoryProgram = new JTextField(this.enemy.getBeatEnemyProgram());
         JButton victoryProgramFindButton = new JButton("Browse");
 
-        JPanel rewardsPanel = new JPanel();
-        rewardsPanel.setBorder(BorderFactory.createTitledBorder(
+        JPanel rewardsSubPanel = new JPanel();
+        rewardsSubPanel.setBorder(BorderFactory.createTitledBorder(
                 this.defaultEtchedBorder, "Rewards for Defeating Enemy"));
         
         // Configure listeners
@@ -1116,7 +1124,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         // Configure Layouts
         GroupLayout layout = Gui.createGroupLayout(this.rewardsPanel);
 
-        GroupLayout rewardsPanelLayout = Gui.createGroupLayout(rewardsPanel);
+        GroupLayout rewardsPanelLayout = Gui.createGroupLayout(rewardsSubPanel);
 
         rewardsPanelLayout.setHorizontalGroup(rewardsPanelLayout.createParallelGroup()
                 .addGroup(rewardsPanelLayout.createSequentialGroup()
@@ -1155,18 +1163,22 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         );
 
         layout.setHorizontalGroup(layout.createParallelGroup()
-                .addComponent(rewardsPanel)
+                .addComponent(rewardsSubPanel)
         );
 
         layout.setVerticalGroup(layout.createSequentialGroup()
-                .addComponent(rewardsPanel)
+                .addComponent(rewardsSubPanel)
         );
     }
-    
+
     /**
      * Browse for a file of a given type, starting in the given subdirectory of
      * the project, and return its location relative to that subdirectory.
      *
+     * @param description what to name the filter (for example, "Program Files")
+     * @param extension the file extension to filter by (the portion of the file
+     * name after the last ".")
+     * @param subdirectory where within the project to start the file chooser
      * @return the location of the file the user selects, relative to the
      * subdirectory; or null if no file or an invalid file is selected
      */
