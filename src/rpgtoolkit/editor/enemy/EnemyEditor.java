@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import static java.lang.System.out;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
@@ -71,12 +72,9 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
     private JList weaknessList;
 
     // TACTICS SETTINGS
-    private JTextField runTimeProgram;
-    private JTextField startupProgram;
-    private JTextField gameOverProgram;
-    private JTextField runTimeKey;
-    private JTextField menuKey;
-    private JTextField generalKey;
+    private JSlider aiLevel;
+    private JCheckBox useRPGCodeTactics;
+    private JTextField tacticsProgram;
 
     // REWARDS SETTINGS
     private IntegerField experienceAwarded;
@@ -223,8 +221,8 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         this.maxSpecialPoints = new WholeNumberField(this.enemy.getMaxMagicPoints());
         this.fightPower = new WholeNumberField(this.enemy.getFightPower());
         this.defencePower = new WholeNumberField(this.enemy.getDefencePower());
-        this.canRunAway = new JCheckBox();
-        this.canRunAway.setEnabled(this.enemy.canRunAway());
+        this.canRunAway = new JCheckBox("Player can run from this enemy");
+        this.canRunAway.setSelected(this.enemy.canRunAway());
         this.runAwayProgram = new JTextField(this.enemy.getRunAwayProgram());
         this.critOnEnemy = new WholeNumberField(this.enemy.getSneakChance());
         this.critOnPlayer = new WholeNumberField(this.enemy.getSurpriseChance());
@@ -235,8 +233,6 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         JLabel maxSpecialPointsLabel = new JLabel("Special Move Power");
         JLabel fightPowerLabel = new JLabel("Fighting Power");
         JLabel defencePowerLabel = new JLabel("Defence Power");
-        JLabel canRunAwayLabel = new JLabel("Player can run from this enemy");
-        JLabel dummy = new JLabel();
         JLabel runAwayProgramLabel = new JLabel("Program to run when player runs away");
         JButton runAwayProgramButton = new JButton("Browse");
         JLabel critOnEnemyLabel = new JLabel("Chances of a critical hit on the enemy: (1 in)");
@@ -322,11 +318,8 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
 
         // Configure the FIGHTING CONDITIONS PANEL layout
         fightingConditionsLayout.setHorizontalGroup(fightingConditionsLayout.createParallelGroup()
+                .addComponent(this.canRunAway)
                 .addGroup(fightingConditionsLayout.createSequentialGroup()
-                        .addComponent(this.canRunAway)
-                        .addComponent(canRunAwayLabel))
-                .addGroup(fightingConditionsLayout.createSequentialGroup()
-                        .addComponent(dummy) //TODO: surely there's a good way to get the width + padding of a checkbox?
                         .addComponent(runAwayProgramLabel)
                         .addComponent(this.runAwayProgram)
                         .addComponent(runAwayProgramButton))
@@ -342,23 +335,14 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
                 runAwayProgramLabel,
                 critOnEnemyLabel,
                 critOnPlayerLabel);
-        fightingConditionsLayout.linkSize(SwingConstants.HORIZONTAL, 
-                this.canRunAway,
-                dummy);
-        fightingConditionsLayout.linkSize(SwingConstants.VERTICAL, 
-                this.canRunAway,
-                canRunAwayLabel);
         fightingConditionsLayout.linkSize(SwingConstants.VERTICAL, 
                 this.runAwayProgram,
                 this.critOnEnemy,
                 this.critOnPlayer);
 
         fightingConditionsLayout.setVerticalGroup(fightingConditionsLayout.createSequentialGroup()
+                .addComponent(this.canRunAway)
                 .addGroup(fightingConditionsLayout.createParallelGroup()
-                        .addComponent(this.canRunAway)
-                        .addComponent(canRunAwayLabel))
-                .addGroup(fightingConditionsLayout.createParallelGroup()
-                        .addComponent(dummy)
                         .addComponent(runAwayProgramLabel)
                         .addComponent(this.runAwayProgram, Gui.JTF_HEIGHT, 
                                 Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
@@ -966,132 +950,95 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
 
     private void createTacticsPanel()
     {
-        // Configure Class scope components
-        this.runTimeProgram = new JTextField();
-        this.startupProgram = new JTextField();
-        this.gameOverProgram = new JTextField();
-        this.runTimeKey = new JTextField();
-        this.menuKey = new JTextField();
-        this.generalKey = new JTextField();
+        this.aiLevel = new JSlider(0, 4, this.enemy.getAiLevel());
+        this.aiLevel.setMajorTickSpacing(1);
+        this.aiLevel.setPaintTicks(true);
+        Hashtable<Integer, JLabel> aiLabels = new Hashtable<>();
+        aiLabels.put(0, new JLabel("0"));
+        aiLabels.put(1, new JLabel("1"));
+        aiLabels.put(2, new JLabel("2"));
+        aiLabels.put(3, new JLabel("3"));
+        aiLabels.put(4, new JLabel("4"));
+        this.aiLevel.setLabelTable(aiLabels);
+        this.aiLevel.setPaintLabels(true);
+        JLabel aiLevelLabel = new JLabel(
+                aiLabels.get((int)this.enemy.getAiLevel()).getText());
 
-        // Configure Function scope components
-        JLabel runTimeProgramLabel = new JLabel("Run Time Program");
-        JLabel startupProgramLabel = new JLabel("Startup Program");
-        JLabel gameOverProgramLabel = new JLabel("Game Over Program");
-        JButton runTimeProgramButton = new JButton("Browse");
-        JButton startupProgramButton = new JButton("Browse");
-        JButton gameOverProgramButton = new JButton("Browse");
-        JLabel runTimeKeyLabel = new JLabel("Run Time");
-        JLabel menuKeyLabel = new JLabel("Display Menu");
-        JLabel generalKeyLabel = new JLabel("General Key");
-        JButton moreKeysButton = new JButton("More");
+        this.useRPGCodeTactics = new JCheckBox("Use RPGCode-guided tactics");
+        this.useRPGCodeTactics.setSelected(this.enemy.useRPGCodeTatics());
+        
+        JLabel tacticsProgramLabel = new JLabel("Program to run");
+        this.tacticsProgram = new JTextField(this.enemy.getTaticsFile());
+        JButton tacticsProgramFindButton = new JButton("Browse");
 
-        // Configure Panels
-        JPanel programPanel = new JPanel();
-        programPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Programs"));
-        JPanel keysPanel = new JPanel();
-        keysPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Keys"));
+        JPanel battleTacticsPanel = new JPanel();
+        battleTacticsPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Battle Tactics"));
+        
+        JPanel aiLevelPanel = new JPanel();
+        aiLevelPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Artificial Intelligence Level (Internal Algorithm)"));
+        
+        // Configure listeners
+        tacticsProgramFindButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String loc = browseByType("Program Files", "prg", "Prg");
+                if(loc != null) {
+                    tacticsProgram.setText(loc);
+                }
+            }
+        });
 
         // Configure Layouts
-        GroupLayout layout = new GroupLayout(this.tacticsPanel);
-        this.tacticsPanel.setLayout(layout);
-        layout.setAutoCreateGaps(true);
-        layout.setAutoCreateContainerGaps(true);
+        GroupLayout layout = Gui.createGroupLayout(this.tacticsPanel);
 
-        GroupLayout programPanelLayout = new GroupLayout(programPanel);
-        programPanel.setLayout(programPanelLayout);
-        programPanelLayout.setAutoCreateGaps(true);
-        programPanelLayout.setAutoCreateContainerGaps(true);
-
-        GroupLayout keysPanelLayout = new GroupLayout(keysPanel);
-        keysPanel.setLayout(keysPanelLayout);
-        keysPanelLayout.setAutoCreateGaps(true);
-        keysPanelLayout.setAutoCreateContainerGaps(true);
-
-        programPanelLayout.setHorizontalGroup(programPanelLayout.createParallelGroup()
-                .addGroup(programPanelLayout.createSequentialGroup()
-                        .addComponent(runTimeProgramLabel)
-                        .addComponent(this.runTimeProgram)
-                        .addComponent(runTimeProgramButton))
-                .addGroup(programPanelLayout.createSequentialGroup()
-                        .addComponent(startupProgramLabel)
-                        .addComponent(this.startupProgram)
-                        .addComponent(startupProgramButton))
-                .addGroup(programPanelLayout.createSequentialGroup()
-                        .addComponent(gameOverProgramLabel)
-                        .addComponent(this.gameOverProgram)
-                        .addComponent(gameOverProgramButton))
+        GroupLayout battleTacticsLayout = Gui.createGroupLayout(battleTacticsPanel);
+        GroupLayout aiLevelLayout = Gui.createGroupLayout(aiLevelPanel);
+        
+        aiLevelLayout.setHorizontalGroup(aiLevelLayout.createSequentialGroup()
+                .addComponent(aiLevelLabel)
+                .addComponent(this.aiLevel)
         );
 
-        programPanelLayout.linkSize(SwingConstants.VERTICAL, this.gameOverProgram,
-                this.startupProgram, this.runTimeProgram);
-        programPanelLayout.linkSize(SwingConstants.HORIZONTAL, 
-                gameOverProgramLabel, startupProgramLabel, runTimeProgramLabel);
-
-        programPanelLayout.setVerticalGroup(programPanelLayout.createSequentialGroup()
-                .addGroup(programPanelLayout.createParallelGroup()
-                        .addComponent(runTimeProgramLabel)
-                        .addComponent(this.runTimeProgram, Gui.JTF_HEIGHT, 
-                                Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
-                        .addComponent(runTimeProgramButton))
-                .addGroup(programPanelLayout.createParallelGroup()
-                        .addComponent(startupProgramLabel)
-                        .addComponent(this.startupProgram)
-                        .addComponent(startupProgramButton))
-                .addGroup(programPanelLayout.createParallelGroup()
-                        .addComponent(gameOverProgramLabel)
-                        .addComponent(this.gameOverProgram)
-                        .addComponent(gameOverProgramButton))
+        aiLevelLayout.setVerticalGroup(aiLevelLayout.createParallelGroup()
+                .addComponent(aiLevelLabel)
+                .addComponent(this.aiLevel)
         );
 
-        keysPanelLayout.setHorizontalGroup(keysPanelLayout.createParallelGroup()
-                .addGroup(keysPanelLayout.createSequentialGroup()
-                        .addComponent(runTimeKeyLabel)
-                        .addComponent(this.runTimeKey, 50, 50, 50))
-                .addGroup(keysPanelLayout.createSequentialGroup()
-                        .addComponent(menuKeyLabel)
-                        .addComponent(this.menuKey))
-                .addGroup(keysPanelLayout.createSequentialGroup()
-                        .addComponent(generalKeyLabel)
-                        .addComponent(this.generalKey))
-                .addComponent(moreKeysButton)
+        battleTacticsLayout.setHorizontalGroup(battleTacticsLayout.createParallelGroup()
+                .addComponent(aiLevelPanel)
+                .addComponent(this.useRPGCodeTactics)
+                .addGroup(battleTacticsLayout.createSequentialGroup()
+                        .addComponent(tacticsProgramLabel)
+                        .addComponent(this.tacticsProgram)
+                        .addComponent(tacticsProgramFindButton))
         );
 
-        keysPanelLayout.linkSize(SwingConstants.VERTICAL, this.runTimeKey, 
-                this.menuKey, this.generalKey);
-        keysPanelLayout.linkSize(SwingConstants.HORIZONTAL, this.runTimeKey, 
-                this.menuKey, this.generalKey);
-        keysPanelLayout.linkSize(SwingConstants.HORIZONTAL, runTimeKeyLabel, 
-                menuKeyLabel, generalKeyLabel);
-
-        keysPanelLayout.setVerticalGroup(keysPanelLayout.createSequentialGroup()
-                .addGroup(keysPanelLayout.createParallelGroup()
-                        .addComponent(runTimeKeyLabel)
-                        .addComponent(this.runTimeKey, Gui.JTF_HEIGHT, 
-                                Gui.JTF_HEIGHT, Gui.JTF_HEIGHT))
-                .addGroup(keysPanelLayout.createParallelGroup()
-                        .addComponent(menuKeyLabel)
-                        .addComponent(this.menuKey))
-                .addGroup(keysPanelLayout.createParallelGroup()
-                        .addComponent(generalKeyLabel)
-                        .addComponent(this.generalKey))
-                .addComponent(moreKeysButton)
+        battleTacticsLayout.setVerticalGroup(battleTacticsLayout.createSequentialGroup()
+                .addComponent(aiLevelPanel)
+                .addComponent(this.useRPGCodeTactics)
+                .addGroup(battleTacticsLayout.createParallelGroup()
+                        .addComponent(tacticsProgramLabel)
+                        .addComponent(this.tacticsProgram)
+                        .addComponent(tacticsProgramFindButton))
+        );
+        
+        aiLevelLayout.linkSize(SwingConstants.VERTICAL,
+                aiLevelLabel, this.aiLevel
+        );
+        
+        battleTacticsLayout.linkSize(SwingConstants.VERTICAL,
+                tacticsProgramLabel, this.tacticsProgram, tacticsProgramFindButton
         );
 
         layout.setHorizontalGroup(layout.createParallelGroup()
-                .addComponent(programPanel, 515, 515, 515)
-                .addComponent(keysPanel)
+                .addComponent(battleTacticsPanel)
         );
-
-        layout.linkSize(SwingConstants.HORIZONTAL, programPanel, keysPanel);
 
         layout.setVerticalGroup(layout.createSequentialGroup()
-                .addComponent(programPanel)
-                .addComponent(keysPanel)
+                .addComponent(battleTacticsPanel)
         );
-
     }
 
     private void createRewardsPanel()
