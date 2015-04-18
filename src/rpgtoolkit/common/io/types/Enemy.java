@@ -29,7 +29,7 @@ public class Enemy extends BasicType
     private ArrayList<String> strengths;
     private byte aiLevel;
     private byte useRPGCodeTatics;
-    private String taticsFile;
+    private String tacticsFile;
     private long experienceAwarded;
     private long goldAwarded;
     private String beatEnemyProgram;
@@ -95,7 +95,7 @@ public class Enemy extends BasicType
                 }
                 aiLevel = (byte) inputStream.read();
                 useRPGCodeTatics = (byte) inputStream.read();
-                taticsFile = binaryIO.readBinaryString();
+                tacticsFile = binaryIO.readBinaryString();
                 experienceAwarded = binaryIO.readBinaryLong();
                 goldAwarded = binaryIO.readBinaryLong();
                 beatEnemyProgram = binaryIO.readBinaryString();
@@ -169,7 +169,7 @@ public class Enemy extends BasicType
             }
             outputStream.write(aiLevel);
             outputStream.write(useRPGCodeTatics);
-            binaryIO.writeBinaryString(taticsFile);
+            binaryIO.writeBinaryString(tacticsFile);
             binaryIO.writeBinaryLong(experienceAwarded);
             binaryIO.writeBinaryLong(goldAwarded);
             binaryIO.writeBinaryString(beatEnemyProgram);
@@ -367,17 +367,17 @@ public class Enemy extends BasicType
     }
 
     /**
-     * @return the taticsFile
+     * @return the tacticsFile
      */
-    public String getTaticsFile() {
-        return taticsFile;
+    public String getTacticsFile() {
+        return tacticsFile;
     }
 
     /**
-     * @param taticsFile the taticsFile to set
+     * @param tacticsFile the tacticsFile to set
      */
-    public void setTaticsFile(String taticsFile) {
-        this.taticsFile = taticsFile;
+    public void setTacticsFile(String tacticsFile) {
+        this.tacticsFile = tacticsFile;
     }
 
     /**

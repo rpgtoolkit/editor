@@ -224,6 +224,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         this.canRunAway = new JCheckBox("Player can run from this enemy");
         this.canRunAway.setSelected(this.enemy.canRunAway());
         this.runAwayProgram = new JTextField(this.enemy.getRunAwayProgram());
+        this.runAwayProgram.setEnabled(this.canRunAway.isSelected());
         this.critOnEnemy = new WholeNumberField(this.enemy.getSneakChance());
         this.critOnPlayer = new WholeNumberField(this.enemy.getSurpriseChance());
 
@@ -233,12 +234,26 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         JLabel maxSpecialPointsLabel = new JLabel("Special Move Power");
         JLabel fightPowerLabel = new JLabel("Fighting Power");
         JLabel defencePowerLabel = new JLabel("Defence Power");
-        JLabel runAwayProgramLabel = new JLabel("Program to run when player runs away");
-        JButton runAwayProgramButton = new JButton("Browse");
+        final JLabel runAwayProgramLabel = new JLabel("Program to run when player runs away");
+        final JButton runAwayProgramButton = new JButton("Browse");
+        runAwayProgramLabel.setEnabled(this.canRunAway.isSelected());
+        runAwayProgramButton.setEnabled(this.canRunAway.isSelected());
         JLabel critOnEnemyLabel = new JLabel("Chances of a critical hit on the enemy: (1 in)");
         JLabel critOnPlayerLabel = new JLabel("Chances of a critical hit on the player: (1 in)");
         
         // Configure listeners
+        
+        //can run away checkbox disable run away program
+        this.canRunAway.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                runAwayProgramLabel.setEnabled(canRunAway.isSelected());
+                runAwayProgram.setEnabled(canRunAway.isSelected());
+                runAwayProgramButton.setEnabled(canRunAway.isSelected());
+            }
+        });
+        
+        //browse run away button
         runAwayProgramButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -950,26 +965,27 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
 
     private void createTacticsPanel()
     {
-        this.aiLevel = new JSlider(0, 4, this.enemy.getAiLevel());
+        this.aiLevel = new JSlider(0, 3, this.enemy.getAiLevel());
         this.aiLevel.setMajorTickSpacing(1);
         this.aiLevel.setPaintTicks(true);
         Hashtable<Integer, JLabel> aiLabels = new Hashtable<>();
-        aiLabels.put(0, new JLabel("0"));
-        aiLabels.put(1, new JLabel("1"));
-        aiLabels.put(2, new JLabel("2"));
-        aiLabels.put(3, new JLabel("3"));
-        aiLabels.put(4, new JLabel("4"));
+        aiLabels.put(0, new JLabel("Low"));
+        aiLabels.put(1, new JLabel("Medium"));
+        aiLabels.put(2, new JLabel("High"));
+        aiLabels.put(3, new JLabel("Very High"));
         this.aiLevel.setLabelTable(aiLabels);
         this.aiLevel.setPaintLabels(true);
-        JLabel aiLevelLabel = new JLabel(
-                aiLabels.get((int)this.enemy.getAiLevel()).getText());
 
         this.useRPGCodeTactics = new JCheckBox("Use RPGCode-guided tactics");
         this.useRPGCodeTactics.setSelected(this.enemy.useRPGCodeTatics());
+        this.aiLevel.setEnabled(!(this.useRPGCodeTactics.isSelected()));
         
-        JLabel tacticsProgramLabel = new JLabel("Program to run");
-        this.tacticsProgram = new JTextField(this.enemy.getTaticsFile());
-        JButton tacticsProgramFindButton = new JButton("Browse");
+        final JLabel tacticsProgramLabel = new JLabel("Program to run");
+        this.tacticsProgram = new JTextField(this.enemy.getTacticsFile());
+        final JButton tacticsProgramFindButton = new JButton("Browse");
+        tacticsProgramLabel.setEnabled(this.useRPGCodeTactics.isSelected());
+        this.tacticsProgram.setEnabled(this.useRPGCodeTactics.isSelected());
+        tacticsProgramFindButton.setEnabled(this.useRPGCodeTactics.isSelected());
 
         JPanel battleTacticsPanel = new JPanel();
         battleTacticsPanel.setBorder(BorderFactory.createTitledBorder(
@@ -980,6 +996,19 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
                 this.defaultEtchedBorder, "Artificial Intelligence Level (Internal Algorithm)"));
         
         // Configure listeners
+        
+        //tactics program checkbox disable built-in ai level
+        this.useRPGCodeTactics.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                aiLevel.setEnabled(!(useRPGCodeTactics.isSelected()));
+                tacticsProgramLabel.setEnabled(useRPGCodeTactics.isSelected());
+                tacticsProgram.setEnabled(useRPGCodeTactics.isSelected());
+                tacticsProgramFindButton.setEnabled(useRPGCodeTactics.isSelected());
+            }
+        });
+        
+        //browse for tactics program
         tacticsProgramFindButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -997,12 +1026,10 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         GroupLayout aiLevelLayout = Gui.createGroupLayout(aiLevelPanel);
         
         aiLevelLayout.setHorizontalGroup(aiLevelLayout.createSequentialGroup()
-                .addComponent(aiLevelLabel)
                 .addComponent(this.aiLevel)
         );
 
         aiLevelLayout.setVerticalGroup(aiLevelLayout.createParallelGroup()
-                .addComponent(aiLevelLabel)
                 .addComponent(this.aiLevel)
         );
 
@@ -1022,10 +1049,6 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
                         .addComponent(tacticsProgramLabel)
                         .addComponent(this.tacticsProgram)
                         .addComponent(tacticsProgramFindButton))
-        );
-        
-        aiLevelLayout.linkSize(SwingConstants.VERTICAL,
-                aiLevelLabel, this.aiLevel
         );
         
         battleTacticsLayout.linkSize(SwingConstants.VERTICAL,
