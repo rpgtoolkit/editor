@@ -85,24 +85,26 @@ public class SpecialMove extends BasicType
         this.mpDrainedFromTarget = mpDrainedFromTarget;
     }
 
-    public byte getCanUseInBattle()
+    public boolean getCanUseInBattle()
     {
-        return canUseInBattle;
+        return canUseInBattle == 1;
     }
 
-    public void setCanUseInBattle(byte canUseInBattle)
+    public void setCanUseInBattle(boolean canUseInBattle)
     {
-        this.canUseInBattle = canUseInBattle;
+        if(canUseInBattle == true) { this.canUseInBattle = 1; }
+        else { this.canUseInBattle = 0; }
     }
 
-    public byte getCanUseInMenu()
+    public boolean getCanUseInMenu()
     {
-        return canUseInMenu;
+        return canUseInMenu == 1;
     }
 
-    public void setCanUseInMenu(byte canUseInMenu)
+    public void setCanUseInMenu(boolean canUseInMenu)
     {
-        this.canUseInMenu = canUseInMenu;
+        if(canUseInMenu == true) { this.canUseInMenu = 1; }
+        else { this.canUseInMenu = 0; }
     }
 
     public String getAssociatedStatusEffect()
@@ -211,5 +213,10 @@ public class SpecialMove extends BasicType
     {
         this.file = fileName;
         return this.save();
+    }
+    
+    @Override
+    public String toString() {
+        return getName();
     }
 }

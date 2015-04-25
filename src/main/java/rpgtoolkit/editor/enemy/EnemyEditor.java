@@ -15,7 +15,6 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import rpgtoolkit.common.io.types.Animation;
 import rpgtoolkit.common.io.types.Enemy;
 import rpgtoolkit.common.io.types.SpecialMove;
@@ -33,11 +32,10 @@ import rpgtoolkit.editor.utilities.WholeNumberField;
 public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameListener
 {
 
-    private JFileChooser openEnemy;
     private final Enemy enemy; // Enemy file we are altering
     
     private static final String sep = File.separator;
-    private final JFileChooser fileChooser = MainWindow.getInstance().getFileChooser();
+    private final MainWindow mainWindow = MainWindow.getInstance();
 
     // Tabs required by the menu
     private JPanel basicSettingsPanel;
@@ -210,7 +208,6 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         tabPane.addTab("Rewards", this.rewardsPanel);
 
         this.add(tabPane);
-        // this.setJMenuBar(new ProjectEditorMenu(this.parent));
     }
 
     private void createBasicSettingsPanel()
@@ -257,7 +254,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         runAwayProgramButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String loc = browseByType("Program Files", "prg", "Prg");
+                String loc = mainWindow.browseByType("Program Files", "prg", "Prg");
                 if(loc != null) {
                     runAwayProgram.setText(loc);
                 }
@@ -568,7 +565,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
             public void actionPerformed(ActionEvent e) {
                 int index = animList.getSelectedIndex();
                 if(index < 0) { return; }
-                String loc = browseByType("Animation Files", "anm", "Misc");
+                String loc = mainWindow.browseByType("Animation Files", "anm", "Misc");
                 if(loc != null) {
                     if(play.isSelected()) { play.doClick(); } //press stop before we change it
                     animLoc.setText(loc);
@@ -1017,7 +1014,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         tacticsProgramFindButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String loc = browseByType("Program Files", "prg", "Prg");
+                String loc = mainWindow.browseByType("Program Files", "prg", "Prg");
                 if(loc != null) {
                     tacticsProgram.setText(loc);
                 }
@@ -1089,7 +1086,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         victoryProgramFindButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String loc = browseByType("Program Files", "prg", "Prg");
+                String loc = mainWindow.browseByType("Program Files", "prg", "Prg");
                 if(loc != null) {
                     victoryProgram.setText(loc);
                 }
@@ -1146,47 +1143,9 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         );
     }
 
-    /**
-     * Browse for a file of a given type, starting in the given subdirectory of
-     * the project, and return its location relative to that subdirectory.
-     *
-     * @param description what to name the filter (for example, "Program Files")
-     * @param extension the file extension to filter by (the portion of the file
-     * name after the last ".")
-     * @param subdirectory where within the project to start the file chooser
-     * @return the location of the file the user selects, relative to the
-     * subdirectory; or null if no file or an invalid file is selected
-     */
-    public String browseByType(String description, String extension, String subdirectory)
-    {
-        this.fileChooser.resetChoosableFileFilters();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                description, extension);
-        this.fileChooser.setFileFilter(filter);
-
-        File path = new File(System.getProperty("project.path")
-                + sep + subdirectory);
-
-        if (path.exists())
-        {
-            this.fileChooser.setCurrentDirectory(path);
-        }
-
-        if (this.fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
-        {
-            String fileName = this.fileChooser.getSelectedFile().getName().toLowerCase();
-
-            if (fileName.endsWith("." + extension))
-            {
-                String loc = fileChooser.getSelectedFile().getPath();
-                return loc.replace(path.getPath() + sep, "");
-            }
-        }
-        return null;
-    }
 
     private String browseSpecialMove() {
-        return browseByType("Special Move Files", "spc", "SpcMove");
+        return mainWindow.browseByType("Special Move Files", "spc", "SpcMove");
     }
 
     private String getSpecialMoveText(String loc) {
