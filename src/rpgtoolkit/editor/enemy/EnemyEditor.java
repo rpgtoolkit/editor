@@ -1,28 +1,43 @@
 package rpgtoolkit.editor.enemy;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import static java.lang.System.out;
+import java.util.ArrayList;
+import java.util.Hashtable;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import rpgtoolkit.common.io.types.Animation;
 import rpgtoolkit.common.io.types.Enemy;
+import rpgtoolkit.common.io.types.SpecialMove;
 import rpgtoolkit.editor.main.MainWindow;
 import rpgtoolkit.editor.main.ToolkitEditorWindow;
 import rpgtoolkit.editor.utilities.Gui;
+import rpgtoolkit.editor.utilities.IntegerField;
 import rpgtoolkit.editor.utilities.WholeNumberField;
 
 /**
- * Project File editor
+ * Enemy editor
  *
- * @author Geoff Wilson
- * @author Joshua Michael Daly
  * @author Joel Moore
  */
 public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameListener
 {
 
     private JFileChooser openEnemy;
-    private final Enemy enemy; // Project file we are altering
+    private final Enemy enemy; // Enemy file we are altering
+    
+    private static final String sep = File.separator;
+    private final JFileChooser fileChooser = MainWindow.getInstance().getFileChooser();
 
     // Tabs required by the menu
     private JPanel basicSettingsPanel;
@@ -46,42 +61,24 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
     private WholeNumberField critOnPlayer;
 
     // GRAPHICS SETTINGS
-    private JCheckBox showFPS;
-    private JCheckBox drawBoardVectors;
-    private JCheckBox drawSpriteVectors;
-    private JCheckBox drawActivePlayerPath;
-    private JCheckBox drawActivePlayerDestination;
-    private JRadioButton sixteenBit;
-    private JRadioButton twentyFourBit;
-    private JRadioButton thirtyTwoBit;
-    private JCheckBox fullScreen;
-    private JRadioButton sixByFour;
-    private JRadioButton eightBySix;
-    private JRadioButton tenBySeven;
-    private JRadioButton customRes;
-    private JTextField customResWidth;
-    private JTextField customResHeight;
+    private JList animList;
+    private JTextField animLoc;
+    private Animation selectedAnim;
+    private Timer animTimer;
 
     // SPECIAL MOVES SETTINGS
-    private JTextField initialBoard;
-    private JTextField initialChar;
-    private JSlider charSpeed;
-    private JRadioButton pixelMovement;
-    private JRadioButton tileMovement;
-    private JCheckBox pushInPixels;
-    private JComboBox pathfinding;
+    private JList sMoveList;
+    private JList strengthList;
+    private JList weaknessList;
 
     // TACTICS SETTINGS
-    private JTextField runTimeProgram;
-    private JTextField startupProgram;
-    private JTextField gameOverProgram;
-    private JTextField runTimeKey;
-    private JTextField menuKey;
-    private JTextField generalKey;
+    private JSlider aiLevel;
+    private JCheckBox useRPGCodeTactics;
+    private JTextField tacticsProgram;
 
     // REWARDS SETTINGS
-    private WholeNumberField experienceAwarded;
-    private WholeNumberField goldAwarded;
+    private IntegerField experienceAwarded;
+    private IntegerField goldAwarded;
     private JTextField victoryProgram;
 
     /*
@@ -101,7 +98,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
     }
 
     /**
-     * Opens an existing project
+     * Opens an existing enemy
      *
      * @param theEnemy Enemy to edit
      */
@@ -124,7 +121,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
     @Override
     public boolean save()
     {
-        return enemy.save();
+        return this.enemy.save();
     }
 
     public void gracefulClose()
@@ -224,9 +221,10 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         this.maxSpecialPoints = new WholeNumberField(this.enemy.getMaxMagicPoints());
         this.fightPower = new WholeNumberField(this.enemy.getFightPower());
         this.defencePower = new WholeNumberField(this.enemy.getDefencePower());
-        this.canRunAway = new JCheckBox();
-        this.canRunAway.setEnabled(this.enemy.canRunAway());
+        this.canRunAway = new JCheckBox("Player can run from this enemy");
+        this.canRunAway.setSelected(this.enemy.canRunAway());
         this.runAwayProgram = new JTextField(this.enemy.getRunAwayProgram());
+        this.runAwayProgram.setEnabled(this.canRunAway.isSelected());
         this.critOnEnemy = new WholeNumberField(this.enemy.getSneakChance());
         this.critOnPlayer = new WholeNumberField(this.enemy.getSurpriseChance());
 
@@ -235,12 +233,36 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         JLabel maxHitPointsLabel = new JLabel("Max Health Points");
         JLabel maxSpecialPointsLabel = new JLabel("Special Move Power");
         JLabel fightPowerLabel = new JLabel("Fighting Power");
-        JLabel defencePowerLabel = new JLabel("DefencePower");
-        JLabel canRunAwayLabel = new JLabel("Player can run from this enemy");
-        JLabel runAwayProgramLabel = new JLabel("Program to run when player runs away");
-        JButton runAwayProgramButton = new JButton("Browse");
+        JLabel defencePowerLabel = new JLabel("Defence Power");
+        final JLabel runAwayProgramLabel = new JLabel("Program to run when player runs away");
+        final JButton runAwayProgramButton = new JButton("Browse");
+        runAwayProgramLabel.setEnabled(this.canRunAway.isSelected());
+        runAwayProgramButton.setEnabled(this.canRunAway.isSelected());
         JLabel critOnEnemyLabel = new JLabel("Chances of a critical hit on the enemy: (1 in)");
         JLabel critOnPlayerLabel = new JLabel("Chances of a critical hit on the player: (1 in)");
+        
+        // Configure listeners
+        
+        //can run away checkbox disable run away program
+        this.canRunAway.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                runAwayProgramLabel.setEnabled(canRunAway.isSelected());
+                runAwayProgram.setEnabled(canRunAway.isSelected());
+                runAwayProgramButton.setEnabled(canRunAway.isSelected());
+            }
+        });
+        
+        //browse run away button
+        runAwayProgramButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String loc = browseByType("Program Files", "prg", "Prg");
+                if(loc != null) {
+                    runAwayProgram.setText(loc);
+                }
+            }
+        });
 
         // Configure the necessary Panels
         JPanel basicInfoPanel = new JPanel();
@@ -311,11 +333,8 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
 
         // Configure the FIGHTING CONDITIONS PANEL layout
         fightingConditionsLayout.setHorizontalGroup(fightingConditionsLayout.createParallelGroup()
+                .addComponent(this.canRunAway)
                 .addGroup(fightingConditionsLayout.createSequentialGroup()
-                        .addComponent(this.canRunAway)
-                        .addComponent(canRunAwayLabel))
-                .addGroup(fightingConditionsLayout.createSequentialGroup()
-                        .addGap(16) //TODO: surely there's a good way to get the width + padding of a checkbox?
                         .addComponent(runAwayProgramLabel)
                         .addComponent(this.runAwayProgram)
                         .addComponent(runAwayProgramButton))
@@ -328,17 +347,16 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         );
 
         fightingConditionsLayout.linkSize(SwingConstants.HORIZONTAL, 
-                critOnEnemyLabel, 
+                runAwayProgramLabel,
+                critOnEnemyLabel,
                 critOnPlayerLabel);
         fightingConditionsLayout.linkSize(SwingConstants.VERTICAL, 
-                this.runAwayProgram, 
-                this.critOnEnemy, 
+                this.runAwayProgram,
+                this.critOnEnemy,
                 this.critOnPlayer);
 
         fightingConditionsLayout.setVerticalGroup(fightingConditionsLayout.createSequentialGroup()
-                .addGroup(fightingConditionsLayout.createParallelGroup()
-                        .addComponent(this.canRunAway)
-                        .addComponent(canRunAwayLabel))
+                .addComponent(this.canRunAway)
                 .addGroup(fightingConditionsLayout.createParallelGroup()
                         .addComponent(runAwayProgramLabel)
                         .addComponent(this.runAwayProgram, Gui.JTF_HEIGHT, 
@@ -366,525 +384,826 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         );
     }
 
-    private void createSpecialMovesPanel()
+    private void createGraphicsPanel()
     {
-        this.initialBoard = new JTextField();
-        this.initialChar = new JTextField();
-        this.charSpeed = new JSlider();
-        this.charSpeed.setMaximum(3);
-        this.charSpeed.setMinimum(-3);
-        this.charSpeed.setMajorTickSpacing(1);
-        this.charSpeed.setMinorTickSpacing(1);
-        this.charSpeed.setPaintLabels(true);
-        this.charSpeed.setValue(0);
-        this.pixelMovement = new JRadioButton();
-        this.tileMovement = new JRadioButton();
-        this.pushInPixels = new JCheckBox();
-        this.pathfinding = new JComboBox();
-        this.pathfinding.addItem("Axial");
-        this.pathfinding.addItem("Diagonal");
-        this.pathfinding.addItem("Vector");
-        this.pathfinding.setEditable(false);
-        this.pathfinding.setSelectedIndex(2);
+        // Configure Class scope components
+        final DefaultListModel enemyGraphics = new DefaultListModel();
+        final ArrayList<String> standardNames = this.enemy.getStandardGraphicsNames();
+        for(String standardName : standardNames) {
+            enemyGraphics.addElement(standardName);
+        }
+        final ArrayList<String> customNames = this.enemy.getCustomizedGraphicsNames();
+        for(String customName : customNames) {
+            enemyGraphics.addElement(customName);
+        }
+//        out.println("standardNames="+standardNames.toString());
+//        out.println("customNames="+customNames.toString());
+//        out.println("customGraphics="+this.enemy.getCustomizedGraphics()); //TODO: This often adds extra blank ones
+//        out.println("enemyGraphics="+enemyGraphics.toString());
+        this.animList = Gui.createVerticalJList(enemyGraphics);
+        
+        this.animLoc = new JTextField();
+        
+        // Configure function Scope Components
+        JScrollPane animListScroller = new JScrollPane(this.animList);
+        
+        JLabel animLabel = new JLabel("Animation");
+        final ImageIcon playIcon = new ImageIcon(getClass().
+                getResource("/rpgtoolkit/editor/resources/run.png"));
+        final ImageIcon stopIcon = new ImageIcon(getClass().
+                getResource("/rpgtoolkit/editor/resources/stop.png"));
+        final JToggleButton play = new JToggleButton(playIcon);
+        final JLabel animDisplay = new JLabel();
+        
+        JLabel dummy = new JLabel();
+        final JButton animFindButton = new JButton("Browse");
+        animFindButton.setEnabled(false);
+        JButton animAddButton = new JButton("Add");
+        final JButton animRemoveButton = new JButton("Remove");
+        animRemoveButton.setEnabled(false);
+        
+        // Configure listeners
+        
+        //run animation
+        final ActionListener animate = new ActionListener() {
+            private int frame = 0;
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //switch to the next frame, looping after the last frame
+                if(frame < selectedAnim.getFrameCount()-1) {
+                    frame++;
+                } else {
+                    frame = 0;
+                }
+                animDisplay.setIcon(new ImageIcon(
+                        selectedAnim.getFrame(frame).getFrameImage()
+                ));
+            }
+        };
+        
+        //change selection
+        this.animList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if(e.getValueIsAdjusting() == false) {
+                    if(animList.getSelectedIndex() == -1) {
+                        animDisplay.setIcon(null);
+                        animFindButton.setEnabled(false);
+                        animRemoveButton.setEnabled(false);
+                    } else {
+                        //switch animation info
+                        if(play.isSelected()) { play.doClick(); } //press stop
+                        String location;
+                        if(animList.getSelectedIndex() < standardNames.size()) {
+                            location = enemy.getStandardGraphics().get(
+                                    animList.getSelectedIndex());
+                            //out.println("new selection: standard " + animList.getSelectedIndex());
+                        } else {
+                            location = enemy.getCustomizedGraphics().get(
+                                    animList.getSelectedIndex() - standardNames.size());
+                            //out.println("new selection: custom " + (animList.getSelectedIndex() - standardNames.size()));
+                        }
+                        //clear animation and images
+                        selectedAnim = null;
+                        animDisplay.setIcon(null);
+                        animTimer = null;
+                        //out.println("anim cleared");
+                        //out.println("setting location to " + location);
+                        animLoc.setText(location); //handles switching to new valid animations
+                        
+                        animFindButton.setEnabled(true);
+                        animRemoveButton.setEnabled(true);
+                    }
+                }
+            }
+        });
+        
+        this.animLoc.getDocument().addDocumentListener(new DocumentListener() {
 
-        JLabel initialBoardLabel = new JLabel("Initial Board");
-        JButton initialBoardButton = new JButton("Browse");
-        JLabel initialCharLabel = new JLabel("Initial Character");
-        JButton initialCharButton = new JButton("Browse");
-        JLabel blankBoardNote = new JLabel("You may leave the initial board "
-                + "blank if you wish");
-        JLabel charSpeedLabel = new JLabel("Adjust game speed");
-        JLabel charSpeedNote = new JLabel("This is a secondary option, leave at "
-                + "zero for default character speeds");
-        JLabel movementLabel = new JLabel("Movement Style");
-        JLabel pixelMovementLabel = new JLabel("Per Pixel");
-        JLabel tileMovementLabel = new JLabel("Per Tile");
-        JLabel pushInPixelsLabel = new JLabel("Push[] in pixel increments");
-        JButton mouseCursorButton = new JButton("Mouse Cursor");
-        JLabel pathFindingLabel = new JLabel("Default Path Finding Mode");
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+//                out.println("insert!");
+                String text = animLoc.getText();
+//                out.println(text);
+                updateAnimation(text);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                //out.println("remove!");
+                String text = animLoc.getText();
+                //out.println(text);
+                updateAnimation(text);
+                if(text.isEmpty()) {
+                    //out.println("clearing anim");
+                    selectedAnim = null;
+                    animDisplay.setIcon(null);
+                    animTimer = null;
+                }
+            }
+                
+            private void updateAnimation(String text) {
+                int index = animList.getSelectedIndex();
+//                out.println("update animation index: " + index);
+//                out.println(text);
+                if(index >= 0 && index < standardNames.size() + customNames.size()) {
+                    boolean custom = false;
+                    if(index >= standardNames.size()) {
+                        custom = true;
+                    }
+                    if(custom == true) {
+                        enemy.getCustomizedGraphics().set(
+                                index - standardNames.size(), text);
+                    } else {
+                        enemy.getStandardGraphics().set(index, text);
+                    }
+                    if(text.endsWith(".anm")) {
+                        //update image if the location is valid
+                        File f = new File(System.getProperty("project.path")
+                                + sep + "Misc" + sep + text);
+                        if(f.canRead()) {
+                            selectedAnim = new Animation(f);
+//                            out.println("new animation!");
+                            //switch animation images
+                            if(selectedAnim != null && selectedAnim.getFrameCount() > 0) {
+                                animDisplay.setIcon(new ImageIcon(
+                                        selectedAnim.getFrame(0).getFrameImage()));
+                                animTimer = new Timer((int)(selectedAnim.getFrameDelay() * 1000), animate);
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+            }
+        });
+        
+        //play button
+        ActionListener playStop = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(play.isSelected()) {
+                    if(animTimer != null) {
+                        animTimer.start();
+                        play.setIcon(stopIcon);
+                    }
+                } else {
+                    if(animTimer != null) {
+                        animTimer.stop();
+                        play.setIcon(playIcon);}
+                    if(selectedAnim != null && selectedAnim.getFrameCount() > 0) {
+                        animDisplay.setIcon(new ImageIcon(
+                                selectedAnim.getFrame(0).getFrameImage()));
+                    }
+                }
+            }
+        };
+        play.addActionListener(playStop);
+        
+        //browse button
+        animFindButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = animList.getSelectedIndex();
+                if(index < 0) { return; }
+                String loc = browseByType("Animation Files", "anm", "Misc");
+                if(loc != null) {
+                    if(play.isSelected()) { play.doClick(); } //press stop before we change it
+                    animLoc.setText(loc);
+                    if(index < standardNames.size()) {
+                        enemy.getStandardGraphics().set(index, loc);
+                    } else if(index < standardNames.size() + customNames.size()) {
+                        int customIndex = index - standardNames.size();
+                        enemy.getCustomizedGraphics().set(customIndex, loc);
+                    }
+                    //changing animation will be handled by animLoc
+                }
+            }
+        });
+        
+        //add button
+        animAddButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = animList.getSelectedIndex();
+                if(index < standardNames.size()) {
+                    index = standardNames.size(); //insert at start of custom graphics
+                } else if(index > standardNames.size() + customNames.size()) {
+                    index = standardNames.size() + customNames.size(); //insert at end
+                } else {
+                    index++; //insert after current slot
+                }
+                //add custom graphic
+                String name = (String)JOptionPane.showInputDialog(
+                        graphicsPanel,
+                        "Enter the handle for the new sprite:",
+                        "Add Enemy Graphic",
+                        JOptionPane.PLAIN_MESSAGE); 
+                if(name == null || name.isEmpty()) { return; }
+                int customIndex = index - standardNames.size();
+                customNames.add(customIndex, name);
+                enemy.getCustomizedGraphics().add(customIndex, "");
+                enemyGraphics.add(index, name);
+                //select the new graphic
+                animList.setSelectedIndex(index);
+                animList.ensureIndexIsVisible(index);
+                //changing animation will be handled by animList and animLoc
+            }
+        });
+        
+        //remove button
+        animRemoveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = animList.getSelectedIndex();
+                if(index >= 0) {
+                    if(index < standardNames.size() && selectedAnim != null) {
+                        //clear standard graphic file location, but don't delete
+                        if(play.isSelected()) { play.doClick(); } //press stop before we change it
+                        animLoc.setText("");
+                        enemy.getStandardGraphics().set(index, "");
+                        //clear animation will be handled by animLoc
+                    } else if(index < standardNames.size() + customNames.size()) {
+                        //delete custom graphic
+                        int customIndex = index - standardNames.size();
+                        customNames.remove(customIndex);
+                        enemy.getCustomizedGraphics().remove(customIndex);
+                        enemyGraphics.remove(index);
+                        //move back on the list by 1
+                        if(index > 0) {
+                            if(index == enemyGraphics.size()) { index--; }
+                            animList.setSelectedIndex(index);
+                            animList.ensureIndexIsVisible(index);
+                            //changing animation will be handled by animList
+                        }
+                    }
+                }
+            }
+        });
 
         // Configure the necessary Panels
-        JPanel conditionsPanel = new JPanel();
-        conditionsPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Startup Settings"));
-        JPanel miscPanel = new JPanel();
-        miscPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Miscellaneous Settings"));
+        JPanel spritePanel = new JPanel();
+        spritePanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Sprite List"));
 
-        GroupLayout layout = new GroupLayout(this.specialMovesPanel);
-        this.specialMovesPanel.setLayout(layout);
-        layout.setAutoCreateGaps(true);
-        layout.setAutoCreateContainerGaps(true);
+        // Create Layout for Top Level Panel
+        GroupLayout layout = Gui.createGroupLayout(this.graphicsPanel);
 
-        GroupLayout conditionsLayout = new GroupLayout(conditionsPanel);
-        conditionsPanel.setLayout(conditionsLayout);
-        conditionsLayout.setAutoCreateGaps(true);
-        conditionsLayout.setAutoCreateContainerGaps(true);
+        // Configure Layouts for Second Level Panels
+        GroupLayout spriteLayout = Gui.createGroupLayout(spritePanel);
 
-        GroupLayout miscLayout = new GroupLayout(miscPanel);
-        miscPanel.setLayout(miscLayout);
-        miscLayout.setAutoCreateGaps(true);
-        miscLayout.setAutoCreateContainerGaps(true);
-
-        conditionsLayout.setHorizontalGroup(conditionsLayout.createParallelGroup()
-                .addGroup(conditionsLayout.createSequentialGroup()
-                        .addComponent(initialBoardLabel, 75, 75, 75)
-                        .addComponent(this.initialBoard)
-                        .addComponent(initialBoardButton))
-                .addGroup(conditionsLayout.createSequentialGroup()
-                        .addComponent(initialCharLabel)
-                        .addComponent(this.initialChar)
-                        .addComponent(initialCharButton))
-                .addComponent(blankBoardNote)
+        // Configure the SPRITE PANEL layout
+        spriteLayout.setHorizontalGroup(spriteLayout.createSequentialGroup()
+                .addComponent(animListScroller)
+                .addGroup(spriteLayout.createParallelGroup()
+                        .addComponent(animLabel)
+                        .addComponent(this.animLoc)
+                        .addGroup(spriteLayout.createSequentialGroup()
+                                .addComponent(play)
+                                .addComponent(animDisplay)))
+                .addGroup(spriteLayout.createParallelGroup()
+                        .addComponent(dummy)
+                        .addComponent(animFindButton)
+                        .addComponent(animAddButton)
+                        .addComponent(animRemoveButton))
         );
 
-        conditionsLayout.linkSize(SwingConstants.HORIZONTAL, initialBoardLabel, 
-                initialCharLabel);
-        conditionsLayout.linkSize(SwingConstants.VERTICAL, this.initialBoard, 
-                this.initialChar);
-
-        conditionsLayout.setVerticalGroup(conditionsLayout.createSequentialGroup()
-                .addGroup(conditionsLayout.createParallelGroup()
-                        .addComponent(initialBoardLabel)
-                        .addComponent(this.initialBoard, Gui.JTF_HEIGHT, 
-                                Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
-                        .addComponent(initialBoardButton))
-                .addGroup(conditionsLayout.createParallelGroup()
-                        .addComponent(initialCharLabel)
-                        .addComponent(this.initialChar)
-                        .addComponent(initialCharButton))
-                .addComponent(blankBoardNote)
+        spriteLayout.setVerticalGroup(spriteLayout.createParallelGroup()
+                .addComponent(animListScroller)
+                .addGroup(spriteLayout.createSequentialGroup()
+                        .addComponent(animLabel)
+                        .addComponent(this.animLoc)
+                        .addGroup(spriteLayout.createParallelGroup()
+                                .addComponent(play)
+                                .addComponent(animDisplay)))
+                .addGroup(spriteLayout.createSequentialGroup()
+                        .addComponent(dummy)
+                        .addComponent(animFindButton)
+                        .addComponent(animAddButton)
+                        .addComponent(animRemoveButton))
         );
 
-        miscLayout.setHorizontalGroup(miscLayout.createParallelGroup()
-                .addGroup(miscLayout.createSequentialGroup()
-                        .addComponent(charSpeedLabel)
-                        .addComponent(this.charSpeed))
-                .addComponent(charSpeedNote)
-                .addGroup(miscLayout.createSequentialGroup()
-                        .addComponent(movementLabel)
-                        .addComponent(this.pixelMovement)
-                        .addComponent(pixelMovementLabel)
-                        .addComponent(this.tileMovement)
-                        .addComponent(tileMovementLabel))
-                .addGroup(miscLayout.createSequentialGroup()
-                        .addComponent(this.pushInPixels)
-                        .addComponent(pushInPixelsLabel))
-                .addGroup(miscLayout.createSequentialGroup()
-                        .addComponent(mouseCursorButton)
-                        .addComponent(pathFindingLabel)
-                        .addComponent(this.pathfinding))
-        );
+        spriteLayout.linkSize(SwingConstants.VERTICAL, this.animLoc, animLabel,
+                dummy, animFindButton, animAddButton, animRemoveButton);
 
-        miscLayout.setVerticalGroup(miscLayout.createSequentialGroup()
-                .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(charSpeedLabel)
-                        .addComponent(this.charSpeed))
-                .addComponent(charSpeedNote)
-                .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(movementLabel)
-                        .addComponent(this.pixelMovement)
-                        .addComponent(pixelMovementLabel)
-                        .addComponent(this.tileMovement)
-                        .addComponent(tileMovementLabel))
-                .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(this.pushInPixels)
-                        .addComponent(pushInPixelsLabel))
-                .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(mouseCursorButton)
-                        .addComponent(pathFindingLabel)
-                        .addComponent(this.pathfinding, 22, 22, 22))
-        );
-
+        // Configure the GRAPHICS PANEL layout
         layout.setHorizontalGroup(layout.createParallelGroup()
-                .addComponent(conditionsPanel, 515, 515, 515)
-                .addComponent(miscPanel)
+                .addComponent(spritePanel)
         );
-
-        layout.linkSize(SwingConstants.HORIZONTAL, conditionsPanel, miscPanel);
 
         layout.setVerticalGroup(layout.createSequentialGroup()
-                .addComponent(conditionsPanel)
-                .addComponent(miscPanel)
+                .addComponent(spritePanel)
+        );
+    }
+
+    private void createSpecialMovesPanel()
+    {
+        // Configure Class scope components
+        final DefaultListModel specialMoves = new DefaultListModel();
+        final ArrayList<String> sMoveLocs = this.enemy.getSpecialMoves();
+        for(String loc : sMoveLocs) {
+            String text = getSpecialMoveText(loc);
+            specialMoves.addElement(text);
+        }
+        final DefaultListModel strengths = new DefaultListModel();
+        final ArrayList<String> strengthLocs = this.enemy.getStrengths();
+        for(String loc : strengthLocs) {
+            String text = getSpecialMoveText(loc);
+            strengths.addElement(text);
+        }
+        final DefaultListModel weaknesses = new DefaultListModel();
+        final ArrayList<String> weaknessLocs = this.enemy.getWeaknesses();
+        for(String loc : weaknessLocs) {
+            String text = getSpecialMoveText(loc);
+            weaknesses.addElement(text);
+        }
+//        out.println("specialMoves="+sMoveLocs.toString());
+//        out.println("strengths="+strengthLocs.toString());
+//        out.println("weaknesses="+weaknessLocs.toString());
+        this.sMoveList = Gui.createVerticalJList(specialMoves);
+        this.strengthList = Gui.createVerticalJList(strengths);
+        this.weaknessList = Gui.createVerticalJList(weaknesses);
+        
+        // Configure function Scope Components
+        JScrollPane sMoveListScroller = new JScrollPane(this.sMoveList);
+        JScrollPane strengthListScroller = new JScrollPane(this.strengthList);
+        JScrollPane weaknessListScroller = new JScrollPane(this.weaknessList);
+        
+        JButton sMoveFindButton = new JButton("Browse");
+        JButton sMoveAddButton = new JButton("Add");
+        final JButton sMoveRemoveButton = new JButton("Remove");
+        sMoveRemoveButton.setEnabled(false);
+        
+        JButton strengthFindButton = new JButton("Browse");
+        JButton strengthAddButton = new JButton("Add");
+        final JButton strengthRemoveButton = new JButton("Remove");
+        strengthRemoveButton.setEnabled(false);
+        
+        JButton weaknessFindButton = new JButton("Browse");
+        JButton weaknessAddButton = new JButton("Add");
+        final JButton weaknessRemoveButton = new JButton("Remove");
+        weaknessRemoveButton.setEnabled(false);
+        
+        // Configure listeners
+        
+        //change selection
+        this.sMoveList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if(e.getValueIsAdjusting() == false) {
+                    if(sMoveList.getSelectedIndex() == -1) {
+                        sMoveRemoveButton.setEnabled(false);
+                    } else {
+                        sMoveRemoveButton.setEnabled(true);
+                    }
+                }
+            }
+        });
+        this.strengthList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if(e.getValueIsAdjusting() == false) {
+                    if(strengthList.getSelectedIndex() == -1) {
+                        strengthRemoveButton.setEnabled(false);
+                    } else {
+                        strengthRemoveButton.setEnabled(true);
+                    }
+                }
+            }
+        });
+        this.weaknessList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if(e.getValueIsAdjusting() == false) {
+                    if(weaknessList.getSelectedIndex() == -1) {
+                        weaknessRemoveButton.setEnabled(false);
+                    } else {
+                        weaknessRemoveButton.setEnabled(true);
+                    }
+                }
+            }
+        });
+        
+        //browse buttons
+        sMoveFindButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = sMoveList.getSelectedIndex();
+                if(index >= 0) {
+                    String loc = browseSpecialMove();
+                    if(loc != null) {
+                        specialMoves.set(index, getSpecialMoveText(loc));
+                    }
+                }
+            }
+        });
+        strengthFindButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = strengthList.getSelectedIndex();
+                if(index >= 0) {
+                    String loc = browseSpecialMove();
+                    if(loc != null) {
+                        strengths.set(index, getSpecialMoveText(loc));
+                    }
+                }
+            }
+        });
+        weaknessFindButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = weaknessList.getSelectedIndex();
+                if(index >= 0) {
+                    String loc = browseSpecialMove();
+                    if(loc != null) {
+                        weaknesses.set(index, getSpecialMoveText(loc));
+                    }
+                }
+            }
+        });
+        
+        //add buttons
+        sMoveAddButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //insert after current slot
+                int index = sMoveList.getSelectedIndex() + 1;
+                String loc = browseSpecialMove();
+                if(loc != null) {
+                    specialMoves.add(index, getSpecialMoveText(loc));
+                }
+                //select the added move
+                sMoveList.setSelectedIndex(index);
+                sMoveList.ensureIndexIsVisible(index);
+            }
+        });
+        strengthAddButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //insert after current slot
+                int index = strengthList.getSelectedIndex() + 1;
+                String loc = browseSpecialMove();
+                if(loc != null) {
+                    strengths.add(index, getSpecialMoveText(loc));
+                }
+                //select the added move
+                strengthList.setSelectedIndex(index);
+                strengthList.ensureIndexIsVisible(index);
+            }
+        });
+        weaknessAddButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //insert after current slot
+                int index = weaknessList.getSelectedIndex() + 1;
+                String loc = browseSpecialMove();
+                if(loc != null) {
+                    weaknesses.add(index, getSpecialMoveText(loc));
+                }
+                //select the added move
+                weaknessList.setSelectedIndex(index);
+                weaknessList.ensureIndexIsVisible(index);
+            }
+        });
+        
+        //remove buttons
+        sMoveRemoveButton.addActionListener(
+                Gui.simpleRemoveListener(specialMoves, sMoveList)
+        );
+        strengthRemoveButton.addActionListener(
+                Gui.simpleRemoveListener(strengths, strengthList)
+        );
+        weaknessRemoveButton.addActionListener(
+                Gui.simpleRemoveListener(weaknesses, weaknessList)
+        );
+
+        // Configure the necessary Panels
+        JPanel sMovePanel = new JPanel();
+        sMovePanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Special Move List"));
+        JPanel strengthPanel = new JPanel();
+        strengthPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Strength List"));
+        JPanel weaknessPanel = new JPanel();
+        weaknessPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Weakness List"));
+
+        // Create Layout for Top Level Panel
+        GroupLayout layout = Gui.createGroupLayout(this.specialMovesPanel);
+
+        // Configure Layouts for Second Level Panels
+        GroupLayout sMoveLayout = Gui.createGroupLayout(sMovePanel);
+        GroupLayout strengthLayout = Gui.createGroupLayout(strengthPanel);
+        GroupLayout weaknessLayout = Gui.createGroupLayout(weaknessPanel);
+
+        // Configure the SMOVE PANEL layout
+        sMoveLayout.setHorizontalGroup(sMoveLayout.createSequentialGroup()
+                .addComponent(sMoveListScroller)
+                .addGroup(sMoveLayout.createParallelGroup()
+                        .addComponent(sMoveFindButton)
+                        .addComponent(sMoveAddButton)
+                        .addComponent(sMoveRemoveButton))
+        );
+
+        sMoveLayout.setVerticalGroup(sMoveLayout.createParallelGroup()
+                .addComponent(sMoveListScroller)
+                .addGroup(sMoveLayout.createSequentialGroup()
+                        .addComponent(sMoveFindButton)
+                        .addComponent(sMoveAddButton)
+                        .addComponent(sMoveRemoveButton))
+        );
+
+        // Configure the STRENGTH PANEL layout
+        strengthLayout.setHorizontalGroup(strengthLayout.createSequentialGroup()
+                .addComponent(strengthListScroller)
+                .addGroup(strengthLayout.createParallelGroup()
+                        .addComponent(strengthFindButton)
+                        .addComponent(strengthAddButton)
+                        .addComponent(strengthRemoveButton))
+        );
+
+        strengthLayout.setVerticalGroup(strengthLayout.createParallelGroup()
+                .addComponent(strengthListScroller)
+                .addGroup(strengthLayout.createSequentialGroup()
+                        .addComponent(strengthFindButton)
+                        .addComponent(strengthAddButton)
+                        .addComponent(strengthRemoveButton))
+        );
+
+        // Configure the WEAKNESS PANEL layout
+        weaknessLayout.setHorizontalGroup(weaknessLayout.createSequentialGroup()
+                .addComponent(weaknessListScroller)
+                .addGroup(weaknessLayout.createParallelGroup()
+                        .addComponent(weaknessFindButton)
+                        .addComponent(weaknessAddButton)
+                        .addComponent(weaknessRemoveButton))
+        );
+
+        weaknessLayout.setVerticalGroup(weaknessLayout.createParallelGroup()
+                .addComponent(weaknessListScroller)
+                .addGroup(weaknessLayout.createSequentialGroup()
+                        .addComponent(weaknessFindButton)
+                        .addComponent(weaknessAddButton)
+                        .addComponent(weaknessRemoveButton))
+        );
+
+        // Configure the SPECIAL MOVE PANEL layout
+        layout.setHorizontalGroup(layout.createParallelGroup()
+                .addComponent(sMovePanel)
+                .addComponent(strengthPanel)
+                .addComponent(weaknessPanel)
+        );
+
+        layout.setVerticalGroup(layout.createSequentialGroup()
+                .addComponent(sMovePanel)
+                .addComponent(strengthPanel)
+                .addComponent(weaknessPanel)
         );
     }
 
     private void createTacticsPanel()
     {
-        // Configure Class scope components
-        this.runTimeProgram = new JTextField();
-        this.startupProgram = new JTextField();
-        this.gameOverProgram = new JTextField();
-        this.runTimeKey = new JTextField();
-        this.menuKey = new JTextField();
-        this.generalKey = new JTextField();
+        this.aiLevel = new JSlider(0, 3, this.enemy.getAiLevel());
+        this.aiLevel.setMajorTickSpacing(1);
+        this.aiLevel.setPaintTicks(true);
+        Hashtable<Integer, JLabel> aiLabels = new Hashtable<>();
+        aiLabels.put(0, new JLabel("Low"));
+        aiLabels.put(1, new JLabel("Medium"));
+        aiLabels.put(2, new JLabel("High"));
+        aiLabels.put(3, new JLabel("Very High"));
+        this.aiLevel.setLabelTable(aiLabels);
+        this.aiLevel.setPaintLabels(true);
 
-        // Configure Function scope components
-        JLabel runTimeProgramLabel = new JLabel("Run Time Program");
-        JLabel startupProgramLabel = new JLabel("Startup Program");
-        JLabel gameOverProgramLabel = new JLabel("Game Over Program");
-        JButton runTimeProgramButton = new JButton("Browse");
-        JButton startupProgramButton = new JButton("Browse");
-        JButton gameOverProgramButton = new JButton("Browse");
-        JLabel runTimeKeyLabel = new JLabel("Run Time");
-        JLabel menuKeyLabel = new JLabel("Display Menu");
-        JLabel generalKeyLabel = new JLabel("General Key");
-        JButton moreKeysButton = new JButton("More");
+        this.useRPGCodeTactics = new JCheckBox("Use RPGCode-guided tactics");
+        this.useRPGCodeTactics.setSelected(this.enemy.useRPGCodeTatics());
+        this.aiLevel.setEnabled(!(this.useRPGCodeTactics.isSelected()));
+        
+        final JLabel tacticsProgramLabel = new JLabel("Program to run");
+        this.tacticsProgram = new JTextField(this.enemy.getTacticsFile());
+        final JButton tacticsProgramFindButton = new JButton("Browse");
+        tacticsProgramLabel.setEnabled(this.useRPGCodeTactics.isSelected());
+        this.tacticsProgram.setEnabled(this.useRPGCodeTactics.isSelected());
+        tacticsProgramFindButton.setEnabled(this.useRPGCodeTactics.isSelected());
 
-        // Configure Panels
-        JPanel programPanel = new JPanel();
-        programPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Programs"));
-        JPanel keysPanel = new JPanel();
-        keysPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Keys"));
+        JPanel battleTacticsPanel = new JPanel();
+        battleTacticsPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Battle Tactics"));
+        
+        JPanel aiLevelPanel = new JPanel();
+        aiLevelPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Artificial Intelligence Level (Internal Algorithm)"));
+        
+        // Configure listeners
+        
+        //tactics program checkbox disable built-in ai level
+        this.useRPGCodeTactics.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                aiLevel.setEnabled(!(useRPGCodeTactics.isSelected()));
+                tacticsProgramLabel.setEnabled(useRPGCodeTactics.isSelected());
+                tacticsProgram.setEnabled(useRPGCodeTactics.isSelected());
+                tacticsProgramFindButton.setEnabled(useRPGCodeTactics.isSelected());
+            }
+        });
+        
+        //browse for tactics program
+        tacticsProgramFindButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String loc = browseByType("Program Files", "prg", "Prg");
+                if(loc != null) {
+                    tacticsProgram.setText(loc);
+                }
+            }
+        });
 
         // Configure Layouts
-        GroupLayout layout = new GroupLayout(this.tacticsPanel);
-        this.tacticsPanel.setLayout(layout);
-        layout.setAutoCreateGaps(true);
-        layout.setAutoCreateContainerGaps(true);
+        GroupLayout layout = Gui.createGroupLayout(this.tacticsPanel);
 
-        GroupLayout programPanelLayout = new GroupLayout(programPanel);
-        programPanel.setLayout(programPanelLayout);
-        programPanelLayout.setAutoCreateGaps(true);
-        programPanelLayout.setAutoCreateContainerGaps(true);
-
-        GroupLayout keysPanelLayout = new GroupLayout(keysPanel);
-        keysPanel.setLayout(keysPanelLayout);
-        keysPanelLayout.setAutoCreateGaps(true);
-        keysPanelLayout.setAutoCreateContainerGaps(true);
-
-        programPanelLayout.setHorizontalGroup(programPanelLayout.createParallelGroup()
-                .addGroup(programPanelLayout.createSequentialGroup()
-                        .addComponent(runTimeProgramLabel)
-                        .addComponent(this.runTimeProgram)
-                        .addComponent(runTimeProgramButton))
-                .addGroup(programPanelLayout.createSequentialGroup()
-                        .addComponent(startupProgramLabel)
-                        .addComponent(this.startupProgram)
-                        .addComponent(startupProgramButton))
-                .addGroup(programPanelLayout.createSequentialGroup()
-                        .addComponent(gameOverProgramLabel)
-                        .addComponent(this.gameOverProgram)
-                        .addComponent(gameOverProgramButton))
+        GroupLayout battleTacticsLayout = Gui.createGroupLayout(battleTacticsPanel);
+        GroupLayout aiLevelLayout = Gui.createGroupLayout(aiLevelPanel);
+        
+        aiLevelLayout.setHorizontalGroup(aiLevelLayout.createSequentialGroup()
+                .addComponent(this.aiLevel)
         );
 
-        programPanelLayout.linkSize(SwingConstants.VERTICAL, this.gameOverProgram,
-                this.startupProgram, this.runTimeProgram);
-        programPanelLayout.linkSize(SwingConstants.HORIZONTAL, 
-                gameOverProgramLabel, startupProgramLabel, runTimeProgramLabel);
-
-        programPanelLayout.setVerticalGroup(programPanelLayout.createSequentialGroup()
-                .addGroup(programPanelLayout.createParallelGroup()
-                        .addComponent(runTimeProgramLabel)
-                        .addComponent(this.runTimeProgram, Gui.JTF_HEIGHT, 
-                                Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
-                        .addComponent(runTimeProgramButton))
-                .addGroup(programPanelLayout.createParallelGroup()
-                        .addComponent(startupProgramLabel)
-                        .addComponent(this.startupProgram)
-                        .addComponent(startupProgramButton))
-                .addGroup(programPanelLayout.createParallelGroup()
-                        .addComponent(gameOverProgramLabel)
-                        .addComponent(this.gameOverProgram)
-                        .addComponent(gameOverProgramButton))
+        aiLevelLayout.setVerticalGroup(aiLevelLayout.createParallelGroup()
+                .addComponent(this.aiLevel)
         );
 
-        keysPanelLayout.setHorizontalGroup(keysPanelLayout.createParallelGroup()
-                .addGroup(keysPanelLayout.createSequentialGroup()
-                        .addComponent(runTimeKeyLabel)
-                        .addComponent(this.runTimeKey, 50, 50, 50))
-                .addGroup(keysPanelLayout.createSequentialGroup()
-                        .addComponent(menuKeyLabel)
-                        .addComponent(this.menuKey))
-                .addGroup(keysPanelLayout.createSequentialGroup()
-                        .addComponent(generalKeyLabel)
-                        .addComponent(this.generalKey))
-                .addComponent(moreKeysButton)
+        battleTacticsLayout.setHorizontalGroup(battleTacticsLayout.createParallelGroup()
+                .addComponent(aiLevelPanel)
+                .addComponent(this.useRPGCodeTactics)
+                .addGroup(battleTacticsLayout.createSequentialGroup()
+                        .addComponent(tacticsProgramLabel)
+                        .addComponent(this.tacticsProgram)
+                        .addComponent(tacticsProgramFindButton))
         );
 
-        keysPanelLayout.linkSize(SwingConstants.VERTICAL, this.runTimeKey, 
-                this.menuKey, this.generalKey);
-        keysPanelLayout.linkSize(SwingConstants.HORIZONTAL, this.runTimeKey, 
-                this.menuKey, this.generalKey);
-        keysPanelLayout.linkSize(SwingConstants.HORIZONTAL, runTimeKeyLabel, 
-                menuKeyLabel, generalKeyLabel);
-
-        keysPanelLayout.setVerticalGroup(keysPanelLayout.createSequentialGroup()
-                .addGroup(keysPanelLayout.createParallelGroup()
-                        .addComponent(runTimeKeyLabel)
-                        .addComponent(this.runTimeKey, Gui.JTF_HEIGHT, 
-                                Gui.JTF_HEIGHT, Gui.JTF_HEIGHT))
-                .addGroup(keysPanelLayout.createParallelGroup()
-                        .addComponent(menuKeyLabel)
-                        .addComponent(this.menuKey))
-                .addGroup(keysPanelLayout.createParallelGroup()
-                        .addComponent(generalKeyLabel)
-                        .addComponent(this.generalKey))
-                .addComponent(moreKeysButton)
+        battleTacticsLayout.setVerticalGroup(battleTacticsLayout.createSequentialGroup()
+                .addComponent(aiLevelPanel)
+                .addComponent(this.useRPGCodeTactics)
+                .addGroup(battleTacticsLayout.createParallelGroup()
+                        .addComponent(tacticsProgramLabel)
+                        .addComponent(this.tacticsProgram)
+                        .addComponent(tacticsProgramFindButton))
+        );
+        
+        battleTacticsLayout.linkSize(SwingConstants.VERTICAL,
+                tacticsProgramLabel, this.tacticsProgram, tacticsProgramFindButton
         );
 
         layout.setHorizontalGroup(layout.createParallelGroup()
-                .addComponent(programPanel, 515, 515, 515)
-                .addComponent(keysPanel)
+                .addComponent(battleTacticsPanel)
         );
-
-        layout.linkSize(SwingConstants.HORIZONTAL, programPanel, keysPanel);
 
         layout.setVerticalGroup(layout.createSequentialGroup()
-                .addComponent(programPanel)
-                .addComponent(keysPanel)
+                .addComponent(battleTacticsPanel)
         );
-
     }
 
     private void createRewardsPanel()
     {
-        this.experienceAwarded = new WholeNumberField(this.enemy.getExperienceAwarded());
+        JLabel experienceAwardedLabel = new JLabel("Experience Gained");
+        this.experienceAwarded = new IntegerField(this.enemy.getExperienceAwarded());
 
-        JLabel enableFightLabel = new JLabel("Enable Battle System?");
-        JButton configureFight = new JButton("Configure");
+        JLabel goldAwardedLabel = new JLabel("GP Earned");
+        this.goldAwarded = new IntegerField(this.enemy.getGoldAwarded());
+        
+        JLabel victoryProgramLabel = new JLabel("Program to run upon defeating enemy");
+        this.victoryProgram = new JTextField(this.enemy.getBeatEnemyProgram());
+        JButton victoryProgramFindButton = new JButton("Browse");
 
-        JPanel fightControlPanel = new JPanel();
-        fightControlPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Configuration"));
+        JPanel rewardsSubPanel = new JPanel();
+        rewardsSubPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Rewards for Defeating Enemy"));
+        
+        // Configure listeners
+        victoryProgramFindButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String loc = browseByType("Program Files", "prg", "Prg");
+                if(loc != null) {
+                    victoryProgram.setText(loc);
+                }
+            }
+        });
 
         // Configure Layouts
-        GroupLayout layout = new GroupLayout(this.rewardsPanel);
-        this.rewardsPanel.setLayout(layout);
-        layout.setAutoCreateGaps(true);
-        layout.setAutoCreateContainerGaps(true);
+        GroupLayout layout = Gui.createGroupLayout(this.rewardsPanel);
 
-        GroupLayout fightControlPanelLayout = new GroupLayout(fightControlPanel);
-        fightControlPanel.setLayout(fightControlPanelLayout);
-        fightControlPanelLayout.setAutoCreateGaps(true);
-        fightControlPanelLayout.setAutoCreateContainerGaps(true);
+        GroupLayout rewardsPanelLayout = Gui.createGroupLayout(rewardsSubPanel);
 
-        fightControlPanelLayout.setHorizontalGroup(fightControlPanelLayout.createParallelGroup()
-                .addGroup(fightControlPanelLayout.createSequentialGroup()
-                        .addComponent(this.experienceAwarded)
-                        .addComponent(enableFightLabel))
-                .addComponent(configureFight)
+        rewardsPanelLayout.setHorizontalGroup(rewardsPanelLayout.createParallelGroup()
+                .addGroup(rewardsPanelLayout.createSequentialGroup()
+                        .addComponent(experienceAwardedLabel)
+                        .addComponent(this.experienceAwarded))
+                .addGroup(rewardsPanelLayout.createSequentialGroup()
+                        .addComponent(goldAwardedLabel)
+                        .addComponent(this.goldAwarded))
+                .addComponent(victoryProgramLabel)
+                .addGroup(rewardsPanelLayout.createSequentialGroup()
+                        .addComponent(this.victoryProgram)
+                        .addComponent(victoryProgramFindButton))
         );
 
-        fightControlPanelLayout.setVerticalGroup(fightControlPanelLayout.createSequentialGroup()
-                .addGroup(fightControlPanelLayout.createParallelGroup()
-                        .addComponent(this.experienceAwarded)
-                        .addComponent(enableFightLabel))
-                .addComponent(configureFight)
+        rewardsPanelLayout.setVerticalGroup(rewardsPanelLayout.createSequentialGroup()
+                .addGroup(rewardsPanelLayout.createParallelGroup()
+                        .addComponent(experienceAwardedLabel)
+                        .addComponent(this.experienceAwarded))
+                .addGroup(rewardsPanelLayout.createParallelGroup()
+                        .addComponent(goldAwardedLabel)
+                        .addComponent(this.goldAwarded))
+                .addComponent(victoryProgramLabel)
+                .addGroup(rewardsPanelLayout.createParallelGroup()
+                        .addComponent(this.victoryProgram)
+                        .addComponent(victoryProgramFindButton))
+        );
+        
+        rewardsPanelLayout.linkSize(SwingConstants.HORIZONTAL,
+                experienceAwardedLabel,
+                goldAwardedLabel
+        );
+        rewardsPanelLayout.linkSize(SwingConstants.VERTICAL,
+                experienceAwardedLabel, this.experienceAwarded,
+                goldAwardedLabel, this.goldAwarded, victoryProgramLabel,
+                this.victoryProgram, victoryProgramFindButton
         );
 
         layout.setHorizontalGroup(layout.createParallelGroup()
-                .addComponent(fightControlPanel, 515, 515, 515)
+                .addComponent(rewardsSubPanel)
         );
 
         layout.setVerticalGroup(layout.createSequentialGroup()
-                .addComponent(fightControlPanel)
+                .addComponent(rewardsSubPanel)
         );
     }
 
-    private void createGraphicsPanel()
+    /**
+     * Browse for a file of a given type, starting in the given subdirectory of
+     * the project, and return its location relative to that subdirectory.
+     *
+     * @param description what to name the filter (for example, "Program Files")
+     * @param extension the file extension to filter by (the portion of the file
+     * name after the last ".")
+     * @param subdirectory where within the project to start the file chooser
+     * @return the location of the file the user selects, relative to the
+     * subdirectory; or null if no file or an invalid file is selected
+     */
+    public String browseByType(String description, String extension, String subdirectory)
     {
+        this.fileChooser.resetChoosableFileFilters();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                description, extension);
+        this.fileChooser.setFileFilter(filter);
 
-        this.sixteenBit = new JRadioButton("16 bit");
-        this.twentyFourBit = new JRadioButton("24 bit");
-        this.thirtyTwoBit = new JRadioButton("32 bit");
-        this.fullScreen = new JCheckBox("Full Screen Mode?");
-        this.fullScreen.setSelected(true);
-        this.sixByFour = new JRadioButton("640 x 480");
-        this.eightBySix = new JRadioButton("800 x 600");
-        this.tenBySeven = new JRadioButton("1024 x 768");
-        this.customRes = new JRadioButton("Custom");
-        this.customResWidth = new JTextField(Long.toString(100));
-        this.customResHeight = new JTextField(Long.toString(50));
-        this.showFPS = new JCheckBox();
-        this.drawBoardVectors = new JCheckBox();
-        this.drawSpriteVectors = new JCheckBox();
-        this.drawActivePlayerPath = new JCheckBox();
-        this.drawActivePlayerDestination = new JCheckBox();
+        File path = new File(System.getProperty("project.path")
+                + sep + subdirectory);
 
-        ButtonGroup depthGroup = new ButtonGroup();
-        depthGroup.add(this.sixteenBit);
-        depthGroup.add(this.twentyFourBit);
-        depthGroup.add(this.thirtyTwoBit);
+        if (path.exists())
+        {
+            this.fileChooser.setCurrentDirectory(path);
+        }
 
-        ButtonGroup resolutionGroup = new ButtonGroup();
-        resolutionGroup.add(this.sixByFour);
-        resolutionGroup.add(this.eightBySix);
-        resolutionGroup.add(this.tenBySeven);
-        resolutionGroup.add(this.customRes);
+        if (this.fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+        {
+            String fileName = this.fileChooser.getSelectedFile().getName().toLowerCase();
 
-        JLabel customResWarningLabel = new JLabel("Please note that not all "
-                + "video cards support all resolutions");
-        JLabel customResX = new JLabel("x");
-        JLabel customResY = new JLabel("y");
-        JLabel showFPSLabel = new JLabel("Show FPS?");
-        JLabel drawBoardVectorsLabel = new JLabel("Draw Board Vectors?");
-        JLabel drawSpriteVectorsLabel = new JLabel("Draw Sprite Vectors?");
-        JLabel drawActivePlayerPathLabel = new JLabel("Draw Active Player Path?");
-        JLabel drawActivePlayerDestinationLabel = new JLabel("Draw Active Player Destination");
+            if (fileName.endsWith("." + extension))
+            {
+                String loc = fileChooser.getSelectedFile().getPath();
+                return loc.replace(path.getPath() + sep, "");
+            }
+        }
+        return null;
+    }
 
-        JPanel screenPanel = new JPanel();
-        screenPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Screen"));
-        JPanel miscPanel = new JPanel();
-        miscPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Miscellaneous"));
+    private String browseSpecialMove() {
+        return browseByType("Special Move Files", "spc", "SpcMove");
+    }
 
-        JPanel colorDepthPanel = new JPanel();
-        colorDepthPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Color Depth"));
-        JPanel resolutionPanel = new JPanel();
-        resolutionPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Resolution"));
-        JPanel customResolutionPanel = new JPanel();
-        customResolutionPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Custom Resolution"));
-
-        // Create Layout for Top Level Panel
-        GroupLayout layout = new GroupLayout(this.graphicsPanel);
-        this.graphicsPanel.setLayout(layout);
-        layout.setAutoCreateGaps(true);
-        layout.setAutoCreateContainerGaps(true);
-
-        // Configure Layouts for Second Level Panels
-        GroupLayout colorDepthLayout = new GroupLayout(colorDepthPanel);
-        colorDepthPanel.setLayout(colorDepthLayout);
-        colorDepthLayout.setAutoCreateGaps(true);
-        colorDepthLayout.setAutoCreateContainerGaps(true);
-
-        GroupLayout resolutionLayout = new GroupLayout(resolutionPanel);
-        resolutionPanel.setLayout(resolutionLayout);
-        resolutionLayout.setAutoCreateGaps(true);
-        resolutionLayout.setAutoCreateContainerGaps(true);
-
-        GroupLayout screenLayout = new GroupLayout(screenPanel);
-        screenPanel.setLayout(screenLayout);
-        screenLayout.setAutoCreateGaps(true);
-        screenLayout.setAutoCreateContainerGaps(true);
-
-        GroupLayout miscLayout = new GroupLayout(miscPanel);
-        miscPanel.setLayout(miscLayout);
-        miscLayout.setAutoCreateGaps(true);
-        miscLayout.setAutoCreateContainerGaps(true);
-
-        GroupLayout customResLayout = new GroupLayout(customResolutionPanel);
-        customResolutionPanel.setLayout(customResLayout);
-        customResLayout.setAutoCreateGaps(true);
-        customResLayout.setAutoCreateContainerGaps(true);
-
-        colorDepthLayout.setHorizontalGroup(colorDepthLayout.createParallelGroup()
-                .addComponent(this.sixteenBit)
-                .addComponent(this.twentyFourBit)
-                .addComponent(this.thirtyTwoBit)
-        );
-
-        colorDepthLayout.setVerticalGroup(colorDepthLayout.createSequentialGroup()
-                .addComponent(this.sixteenBit)
-                .addComponent(this.twentyFourBit)
-                .addComponent(this.thirtyTwoBit)
-        );
-
-        resolutionLayout.setHorizontalGroup(resolutionLayout.createParallelGroup()
-                .addComponent(this.sixByFour)
-                .addComponent(this.eightBySix)
-                .addComponent(this.tenBySeven)
-                .addComponent(this.customRes)
-                .addComponent(this.fullScreen)
-        );
-
-        resolutionLayout.setVerticalGroup(resolutionLayout.createSequentialGroup()
-                .addComponent(this.sixByFour)
-                .addComponent(this.eightBySix)
-                .addComponent(this.tenBySeven)
-                .addComponent(this.customRes)
-                .addComponent(this.fullScreen)
-        );
-
-        screenLayout.setHorizontalGroup(screenLayout.createParallelGroup()
-                .addGroup(screenLayout.createSequentialGroup()
-                        .addComponent(colorDepthPanel, 150, 
-                                GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(resolutionPanel, 150, 
-                                GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addComponent(customResolutionPanel)
-        );
-
-        screenLayout.linkSize(SwingConstants.VERTICAL, colorDepthPanel, resolutionPanel);
-
-        screenLayout.setVerticalGroup(screenLayout.createSequentialGroup()
-                .addGroup(screenLayout.createParallelGroup()
-                        .addComponent(colorDepthPanel)
-                        .addComponent(resolutionPanel))
-                .addComponent(customResolutionPanel)
-                .addGap(15)
-        );
-
-        customResLayout.setHorizontalGroup(customResLayout.createParallelGroup()
-                .addComponent(customResWarningLabel)
-                .addGroup(customResLayout.createSequentialGroup()
-                        .addComponent(customResX)
-                        .addComponent(this.customResWidth)
-                        .addComponent(customResY)
-                        .addComponent(this.customResHeight))
-        );
-
-        customResLayout.linkSize(SwingConstants.VERTICAL, this.customResWidth, 
-                this.customResHeight);
-
-        customResLayout.setVerticalGroup(customResLayout.createSequentialGroup()
-                .addComponent(customResWarningLabel)
-                .addGroup(customResLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                        .addComponent(customResX)
-                        .addComponent(this.customResWidth, Gui.JTF_HEIGHT, 
-                                Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
-                        .addComponent(customResY)
-                        .addComponent(this.customResHeight))
-        );
-
-        miscLayout.setHorizontalGroup(miscLayout.createParallelGroup()
-                .addGroup(miscLayout.createSequentialGroup()
-                        .addComponent(this.showFPS)
-                        .addComponent(showFPSLabel))
-                .addGroup(miscLayout.createSequentialGroup()
-                        .addComponent(this.drawBoardVectors)
-                        .addComponent(drawBoardVectorsLabel)
-                        .addComponent(this.drawActivePlayerPath)
-                        .addComponent(drawActivePlayerPathLabel))
-                .addGroup(miscLayout.createSequentialGroup()
-                        .addComponent(this.drawSpriteVectors)
-                        .addComponent(drawSpriteVectorsLabel)
-                        .addComponent(this.drawActivePlayerDestination)
-                        .addComponent(drawActivePlayerDestinationLabel))
-        );
-
-        miscLayout.setVerticalGroup(miscLayout.createSequentialGroup()
-                .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(this.showFPS)
-                        .addComponent(showFPSLabel))
-                .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(this.drawBoardVectors)
-                        .addComponent(drawBoardVectorsLabel)
-                        .addComponent(this.drawActivePlayerPath)
-                        .addComponent(drawActivePlayerPathLabel))
-                .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(this.drawSpriteVectors)
-                        .addComponent(drawSpriteVectorsLabel)
-                        .addComponent(this.drawActivePlayerDestination)
-                        .addComponent(drawActivePlayerDestinationLabel))
-        );
-
-        layout.setHorizontalGroup(layout.createParallelGroup()
-                .addComponent(screenPanel, 515, 515, 515)
-                .addComponent(miscPanel)
-        );
-
-        layout.linkSize(SwingConstants.HORIZONTAL, screenPanel, miscPanel);
-
-        layout.setVerticalGroup(layout.createSequentialGroup()
-                .addComponent(screenPanel)
-                .addComponent(miscPanel)
-        );
+    private String getSpecialMoveText(String loc) {
+        SpecialMove move = loadSpecialMove(loc);
+        String text;
+        if(move != null) {
+            text = move.getName() + " (" + loc + ")";
+        } else {
+            text = "Error reading file named: " + loc;
+        }
+        return text;
+    }
+    
+    private SpecialMove loadSpecialMove(String loc) {
+        if(loc.endsWith(".spc")) {
+            File f = new File(System.getProperty("project.path")
+                    + sep + "SpcMove" + sep + loc);
+            if(f.canRead()) {
+//                out.println("loaded special move from location " + loc + "!");
+                return new SpecialMove(f);
+            }
+        }
+        return null;
     }
 }

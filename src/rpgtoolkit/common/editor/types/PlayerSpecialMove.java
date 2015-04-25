@@ -8,15 +8,15 @@ package rpgtoolkit.common.editor.types;
 public class PlayerSpecialMove
 {
     private String name;
-    private long minExperiance;
+    private long minExperience;
     private long minLevel;
     private String conditionVariable;
     private String conditionVariableTest;
 
-    public PlayerSpecialMove(String name, long minExperiacne, long minLevel, String cVar, String cVarTest)
+    public PlayerSpecialMove(String name, long minExperience, long minLevel, String cVar, String cVarTest)
     {
         this.name = name;
-        this.minExperiance = minExperiacne;
+        this.minExperience = minExperience;
         this.minLevel = minLevel;
         this.conditionVariable = cVar;
         this.conditionVariableTest = cVarTest;
@@ -27,9 +27,9 @@ public class PlayerSpecialMove
         return this.name;
     }
 
-    public long getMinExperiance()
+    public long getMinExperience()
     {
-        return this.minExperiance;
+        return this.minExperience;
     }
 
     public long getMinLevel()

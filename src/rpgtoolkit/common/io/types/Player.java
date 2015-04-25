@@ -318,7 +318,7 @@ public class Player extends BasicType
             {
                 PlayerSpecialMove specialMove = specialMoveList.get(i);
                 binaryIO.writeBinaryString(specialMove.getName());
-                binaryIO.writeBinaryLong(specialMove.getMinExperiance());
+                binaryIO.writeBinaryLong(specialMove.getMinExperience());
                 binaryIO.writeBinaryLong(specialMove.getMinLevel());
                 binaryIO.writeBinaryString(specialMove.getConditionVariable());
                 binaryIO.writeBinaryString(specialMove.getConditionVariableTest());
