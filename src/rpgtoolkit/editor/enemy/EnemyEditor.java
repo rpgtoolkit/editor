@@ -396,10 +396,10 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         for(String customName : customNames) {
             enemyGraphics.addElement(customName);
         }
-        out.println("standardNames="+standardNames.toString());
-        out.println("customNames="+customNames.toString());
-        out.println("customGraphics="+this.enemy.getCustomizedGraphics()); //TODO: This often adds extra blank ones
-        out.println("enemyGraphics="+enemyGraphics.toString());
+//        out.println("standardNames="+standardNames.toString());
+//        out.println("customNames="+customNames.toString());
+//        out.println("customGraphics="+this.enemy.getCustomizedGraphics()); //TODO: This often adds extra blank ones
+//        out.println("enemyGraphics="+enemyGraphics.toString());
         this.animList = Gui.createVerticalJList(enemyGraphics);
         
         this.animLoc = new JTextField();
@@ -719,9 +719,9 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
             String text = getSpecialMoveText(loc);
             weaknesses.addElement(text);
         }
-        out.println("specialMoves="+sMoveLocs.toString());
-        out.println("strengths="+strengthLocs.toString());
-        out.println("weaknesses="+weaknessLocs.toString());
+//        out.println("specialMoves="+sMoveLocs.toString());
+//        out.println("strengths="+strengthLocs.toString());
+//        out.println("weaknesses="+weaknessLocs.toString());
         this.sMoveList = Gui.createVerticalJList(specialMoves);
         this.strengthList = Gui.createVerticalJList(strengths);
         this.weaknessList = Gui.createVerticalJList(weaknesses);
@@ -1200,7 +1200,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
             File f = new File(System.getProperty("project.path")
                     + sep + "SpcMove" + sep + loc);
             if(f.canRead()) {
-                out.println("loaded special move from location " + loc + "!");
+//                out.println("loaded special move from location " + loc + "!");
                 return new SpecialMove(f);
             }
         }
