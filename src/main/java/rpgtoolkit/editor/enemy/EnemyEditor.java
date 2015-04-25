@@ -409,9 +409,9 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         
         JLabel animLabel = new JLabel("Animation");
         final ImageIcon playIcon = new ImageIcon(getClass().
-                getResource("/rpgtoolkit/editor/resources/run.png"));
+                getResource("/editor/run.png"));
         final ImageIcon stopIcon = new ImageIcon(getClass().
-                getResource("/rpgtoolkit/editor/resources/stop.png"));
+                getResource("/editor/stop.png"));
         final JToggleButton play = new JToggleButton(playIcon);
         final JLabel animDisplay = new JLabel();
         
@@ -618,13 +618,18 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
             @Override
             public void actionPerformed(ActionEvent e) {
                 int index = animList.getSelectedIndex();
+                out.println(index);
+                out.println(standardNames.size());
+                out.println(customNames.size());
                 if(index >= 0) {
-                    if(index < standardNames.size() && selectedAnim != null) {
-                        //clear standard graphic file location, but don't delete
-                        if(play.isSelected()) { play.doClick(); } //press stop before we change it
-                        animLoc.setText("");
-                        enemy.getStandardGraphics().set(index, "");
-                        //clear animation will be handled by animLoc
+                    if(index < standardNames.size()) {
+                        if(selectedAnim != null) {
+                            //clear standard graphic file location, but don't delete
+                            if(play.isSelected()) { play.doClick(); } //press stop before we change it
+                            animLoc.setText("");
+                            enemy.getStandardGraphics().set(index, "");
+                            //clear animation will be handled by animLoc
+                        }
                     } else if(index < standardNames.size() + customNames.size()) {
                         //delete custom graphic
                         int customIndex = index - standardNames.size();
