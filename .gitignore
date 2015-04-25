@@ -19,3 +19,10 @@
 /build.xml
 /build/
 /nbdist/
+
+# Gradle        #
+#################
+
+.gradle/
+build/
+out/
