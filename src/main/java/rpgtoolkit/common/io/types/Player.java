@@ -49,7 +49,7 @@ public class Player extends BasicType
     private ArrayList<PlayerSpecialMove> specialMoveList;
     private String specialMovesName;
     private byte hasSpecialMoves;
-    private ArrayList<String> accessoryName;
+    private ArrayList<String> accessoryNames;
     private boolean armourTypes[] = new boolean[7];
     private long levelType;
     private int expIncreaseFactor;
@@ -411,7 +411,7 @@ public class Player extends BasicType
      * @return the accessoryName
      */
     public ArrayList<String> getAccessoryNames() {
-        return accessoryName;
+        return accessoryNames;
     }
 
     /**
@@ -654,7 +654,7 @@ public class Player extends BasicType
         {
             // Prepare the ArrayLists
             specialMoveList = new ArrayList<>();
-            accessoryName = new ArrayList<>();
+            accessoryNames = new ArrayList<>();
             standardGraphics = new ArrayList<>();
             customGraphics = new ArrayList<>();
             customGraphicNames = new ArrayList<>();
@@ -703,7 +703,7 @@ public class Player extends BasicType
                     hasSpecialMoves = binaryIO.readBinaryByte();
                     for (int i = 0; i < 11; i++)
                     {
-                        accessoryName.add(binaryIO.readBinaryString());
+                        accessoryNames.add(binaryIO.readBinaryString());
                     }
                     for (int i = 0; i < 7; i++)
                     {
@@ -852,7 +852,7 @@ public class Player extends BasicType
             binaryIO.writeBinaryByte(hasSpecialMoves);
             for (int i = 0; i < 11; i++)
             {
-                binaryIO.writeBinaryString(accessoryName.get(i));
+                binaryIO.writeBinaryString(accessoryNames.get(i));
             }
             for (int i = 0; i < 7; i++)
             {

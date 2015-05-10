@@ -1,11 +1,11 @@
 package rpgtoolkit.editor.character;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import static java.lang.System.out;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
@@ -17,7 +17,6 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
@@ -31,6 +30,7 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import rpgtoolkit.common.editor.types.PlayerSpecialMove;
 import rpgtoolkit.common.io.types.Animation;
 import rpgtoolkit.common.io.types.Player;
 import rpgtoolkit.common.io.types.SpecialMove;
@@ -64,7 +64,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
             createEtchedBorder(EtchedBorder.LOWERED);
     
     //STATS SETTINGS
-    private JLabel profileDisplay;
+    private JLabel portraitDisplay;
     private JTextField playerName;
     private IntegerField experience;
     private IntegerField hitPoints;
@@ -74,7 +74,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     private IntegerField fightPower;
     private IntegerField defencePower;
     private IntegerField level;
-    private JTextField nameVar;
+    private JTextField playerNameVar;
     private JTextField experienceVar;
     private JTextField hitPointsVar;
     private JTextField maxHitPointsVar;
@@ -129,9 +129,13 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
         super("Editing Player Character - " + character.getName(),
                 true, true, true, true);
         
+        out.println("CharacterEditor begin");
         this.player = character;
+        
+        this.setSize(800, 530);
         this.constructWindow();
         this.setVisible(true);
+        out.println("CharacterEditor end");
     }
 
     /*
@@ -207,6 +211,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
      */
     private void constructWindow()
     {
+        out.println("constructWindow() begin");
         this.addInternalFrameListener(this);
         
         // Builds the components needed to display the Enemy status.
@@ -218,187 +223,332 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
         this.equipmentPanel = new JPanel();
         this.levelsPanel = new JPanel();
 
-        this.createBasicSettingsPanel();
+        this.createStatsPanel();
         this.createGraphicsPanel();
         this.createSpecialMovesPanel();
         this.createEquipmentPanel();
         this.createLevelsPanel();
 
-        tabPane.addTab("Basic Settings", this.statsPanel);
+        tabPane.addTab("Stats and Portrait", this.statsPanel);
         tabPane.addTab("Graphics", this.graphicsPanel);
         tabPane.addTab("Special Moves", this.specialMovesPanel);
-        tabPane.addTab("Tactics", this.equipmentPanel);
-        tabPane.addTab("Rewards", this.levelsPanel);
+        tabPane.addTab("Equipment", this.equipmentPanel);
+        tabPane.addTab("Levels", this.levelsPanel);
 
         this.add(tabPane);
+        out.println("constructWindow() end");
     }
 
-    private void createBasicSettingsPanel()
+    private void createStatsPanel()
     {
         // Configure Class scope components
+        this.portraitDisplay = new JLabel();
+        this.portraitDisplay.setMaximumSize(new Dimension(64, 64));
         this.playerName = new JTextField(this.player.getName());
+        this.experience = new IntegerField(this.player.getInitialExperience());
+        this.hitPoints = new IntegerField(this.player.getInitialHP());
         this.maxHitPoints = new IntegerField(this.player.getInitialMaxHP());
+        this.specialPoints = new IntegerField(this.player.getInitialMP());
         this.maxSpecialPoints = new IntegerField(this.player.getInitialMaxMP());
         this.fightPower = new IntegerField(this.player.getInitialFP());
         this.defencePower = new IntegerField(this.player.getInitialDP());
-        this.equipHead = new JCheckBox("Head");
-        this.equipNeck = new JCheckBox("Neck Accessory");
-        this.equipHandL = new JCheckBox("Left Hand");
-        this.equipHandR = new JCheckBox("Right Hand");
-        this.equipBody = new JCheckBox("Body Armour");
-        this.equipLegs = new JCheckBox("Legs");
+        this.level = new IntegerField(this.player.getInitialLevel());
+        this.playerNameVar = new JTextField(this.player.getNameVariableName());
+        this.experienceVar = new JTextField(this.player.getExpVariableName());
+        this.hitPointsVar = new JTextField(this.player.getHpVariableName());
+        this.maxHitPointsVar = new JTextField(this.player.getMaxHPVariableName());
+        this.specialPointsVar = new JTextField(this.player.getMpVariableName());
+        this.maxSpecialPointsVar = new JTextField(this.player.getMaxMPVariableName());
+        this.fightPowerVar = new JTextField(this.player.getFpVariableName());
+        this.defencePowerVar = new JTextField(this.player.getDpVariableName());
+        this.levelVar = new JTextField(this.player.getLvlVariableName());
 
         // Configure function Scope Components
-        JLabel enemyNameLabel = new JLabel("Name");
-        JLabel maxHitPointsLabel = new JLabel("Max Health Points");
-        JLabel maxSpecialPointsLabel = new JLabel("Special Move Power");
-        JLabel fightPowerLabel = new JLabel("Fighting Power");
-        JLabel defencePowerLabel = new JLabel("Defence Power");
-        boolean[] armorSlots = this.player.getArmourTypes();
-        this.equipHead.setSelected(armorSlots[0]);
-        JLabel critOnEnemyLabel = new JLabel("Chances of a critical hit on the enemy: (1 in)");
-        JLabel critOnPlayerLabel = new JLabel("Chances of a critical hit on the player: (1 in)");
+        String portrait = this.player.getProfilePicture();
+        if(portrait.isEmpty() == false) {
+            this.portraitDisplay.setIcon(Gui.ImageToIcon(
+                    Gui.loadImage(portrait), 64, 64));
+        }
+        JLabel playerNameLabel = new JLabel("Character Name");
+        JLabel experienceLabel = new JLabel("Starting Experience");
+        JLabel hitPointsLabel = new JLabel("Starting Health");
+        JLabel maxHitPointsLabel = new JLabel("Starting Max Health");
+        JLabel specialPointsLabel = new JLabel("Starting Special Move Power");
+        JLabel maxSpecialPointsLabel = new JLabel("Starting Max Special Move Power");
+        JLabel fightPowerLabel = new JLabel("Starting Fighting Power");
+        JLabel defencePowerLabel = new JLabel("Starting Defence Power");
+        JLabel levelLabel = new JLabel("Starting Level");
+        JLabel playerNameVarLabel = new JLabel("Character Name Variable");
+        JLabel experienceVarLabel = new JLabel("Experience Variable");
+        JLabel hitPointsVarLabel = new JLabel("Health Variable");
+        JLabel maxHitPointsVarLabel = new JLabel("Max Health Variable");
+        JLabel specialPointsVarLabel = new JLabel("Special Move Power Variable");
+        JLabel maxSpecialPointsVarLabel = new JLabel("Max Special Move Power Variable");
+        JLabel fightPowerVarLabel = new JLabel("Fighting Power Variable");
+        JLabel defencePowerVarLabel = new JLabel("Defence Power Variable");
+        JLabel levelVarLabel = new JLabel("Level Variable");
+        JButton portraitFindButton = new JButton("Select Portrait");
+        JButton defaultNameBtn = new JButton("Default");
+        JButton defaultExperienceBtn = new JButton("Default");
+        JButton defaultHitPointsBtn = new JButton("Default");
+        JButton defaultMaxHitPointsBtn = new JButton("Default");
+        JButton defaultSpecialPointsBtn = new JButton("Default");
+        JButton defaultMaxSpecialPointsBtn = new JButton("Default");
+        JButton defaultFightPowerBtn = new JButton("Default");
+        JButton defaultDefencePowerBtn = new JButton("Default");
+        JButton defaultLevelBtn = new JButton("Default");
         
         // Configure listeners
-        
-        //can run away checkbox disable run away program
-        this.equipHead.addActionListener(new ActionListener() {
+        portraitFindButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                runAwayProgramLabel.setEnabled(equipHead.isSelected());
-                levelUpProgram.setEnabled(equipHead.isSelected());
-                runAwayProgramButton.setEnabled(equipHead.isSelected());
-            }
-        });
-        
-        //browse run away button
-        runAwayProgramButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String loc = mainWindow.browseByType("Program Files", "prg", "Prg");
+                String loc = mainWindow.browseByType(
+                        "Bitmap", "Supported Files", "png", "gif", "jpg", "jpeg", "bmp");
                 if(loc != null) {
-                    levelUpProgram.setText(loc);
+                    player.setProfilePicture(loc);
+                    portraitDisplay.setIcon(Gui.ImageToIcon(
+                            Gui.loadImage(loc), 64, 64));
                 }
             }
         });
+        defaultNameBtn.addActionListener(
+                varDefaultListener(this.playerNameVar, "name", '$'));
+        defaultExperienceBtn.addActionListener(
+                varDefaultListener(this.experienceVar, "experience", '!'));
+        defaultHitPointsBtn.addActionListener(
+                varDefaultListener(this.hitPointsVar, "health", '!'));
+        defaultMaxHitPointsBtn.addActionListener(
+                varDefaultListener(this.maxHitPointsVar, "maxhealth", '!'));
+        defaultSpecialPointsBtn.addActionListener(
+                varDefaultListener(this.specialPointsVar, "smpower", '!'));
+        defaultMaxSpecialPointsBtn.addActionListener(
+                varDefaultListener(this.maxSpecialPointsVar, "maxsm", '!'));
+        defaultFightPowerBtn.addActionListener(
+                varDefaultListener(this.fightPowerVar, "fight", '!'));
+        defaultDefencePowerBtn.addActionListener(
+                varDefaultListener(this.defencePowerVar, "defence", '!'));
+        defaultLevelBtn.addActionListener(
+                varDefaultListener(this.levelVar, "level", '!'));
 
         // Configure the necessary Panels
-        JPanel basicInfoPanel = new JPanel();
-        basicInfoPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Basic Information"));
-        JPanel fightingConditionsPanel = new JPanel();
-        fightingConditionsPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Fighting Conditions"));
+        JPanel statsEditPanel = new JPanel();
+        statsEditPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Stats"));
+        JPanel variablesPanel = new JPanel();
+        variablesPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Variables"));
 
         // Create Layout for top level panel
         GroupLayout layout = Gui.createGroupLayout(this.statsPanel);
 
         // Create Layouts for second level panels
-        GroupLayout basicInfoLayout = Gui.createGroupLayout(basicInfoPanel);
+        GroupLayout statsLayout = Gui.createGroupLayout(statsEditPanel);
 
-        GroupLayout fightingConditionsLayout = Gui.createGroupLayout(fightingConditionsPanel);
+        GroupLayout variablesLayout = Gui.createGroupLayout(variablesPanel);
 
-        // Configure the BASIC INFO PANEL layout
-        basicInfoLayout.setHorizontalGroup(basicInfoLayout.createParallelGroup()
-                .addGroup(basicInfoLayout.createSequentialGroup()
-                        .addComponent(enemyNameLabel)
+        // Configure the STATS EDIT PANEL layout
+        statsLayout.setHorizontalGroup(statsLayout.createParallelGroup()
+                .addGroup(statsLayout.createSequentialGroup()
+                        .addComponent(playerNameLabel)
                         .addComponent(this.playerName))
-                .addGroup(basicInfoLayout.createSequentialGroup()
+                .addGroup(statsLayout.createSequentialGroup()
+                        .addComponent(experienceLabel)
+                        .addComponent(this.experience))
+                .addGroup(statsLayout.createSequentialGroup()
+                        .addComponent(hitPointsLabel)
+                        .addComponent(this.hitPoints))
+                .addGroup(statsLayout.createSequentialGroup()
                         .addComponent(maxHitPointsLabel)
                         .addComponent(this.maxHitPoints))
-                .addGroup(basicInfoLayout.createSequentialGroup()
+                .addGroup(statsLayout.createSequentialGroup()
+                        .addComponent(specialPointsLabel)
+                        .addComponent(this.specialPoints))
+                .addGroup(statsLayout.createSequentialGroup()
                         .addComponent(maxSpecialPointsLabel)
                         .addComponent(this.maxSpecialPoints))
-                .addGroup(basicInfoLayout.createSequentialGroup()
+                .addGroup(statsLayout.createSequentialGroup()
                         .addComponent(fightPowerLabel)
                         .addComponent(this.fightPower))
-                .addGroup(basicInfoLayout.createSequentialGroup()
+                .addGroup(statsLayout.createSequentialGroup()
                         .addComponent(defencePowerLabel)
                         .addComponent(this.defencePower))
+                .addGroup(statsLayout.createSequentialGroup()
+                        .addComponent(levelLabel)
+                        .addComponent(this.level))
         );
 
-        basicInfoLayout.linkSize(SwingConstants.HORIZONTAL,
-                enemyNameLabel,
+        statsLayout.linkSize(SwingConstants.HORIZONTAL,
+                playerNameLabel,
+                experienceLabel,
+                hitPointsLabel,
                 maxHitPointsLabel,
+                specialPointsLabel,
                 maxSpecialPointsLabel,
                 fightPowerLabel,
-                defencePowerLabel);
-        basicInfoLayout.linkSize(SwingConstants.VERTICAL,
+                defencePowerLabel,
+                levelLabel);
+        statsLayout.linkSize(SwingConstants.VERTICAL,
                 this.playerName,
+                this.experience,
+                this.hitPoints,
                 this.maxHitPoints,
+                this.specialPoints,
                 this.maxSpecialPoints,
                 this.fightPower,
-                this.defencePower);
-
-        basicInfoLayout.setVerticalGroup(basicInfoLayout.createSequentialGroup()
-                .addGroup(basicInfoLayout.createParallelGroup()
-                        .addComponent(enemyNameLabel)
-                        .addComponent(this.playerName, Gui.JTF_HEIGHT,
-                                Gui.JTF_HEIGHT, Gui.JTF_HEIGHT))
-                .addGroup(basicInfoLayout.createParallelGroup()
-                        .addComponent(maxHitPointsLabel)
-                        .addComponent(this.maxHitPoints))
-                .addGroup(basicInfoLayout.createParallelGroup()
-                        .addComponent(maxSpecialPointsLabel)
-                        .addComponent(this.maxSpecialPoints))
-                .addGroup(basicInfoLayout.createParallelGroup()
-                        .addComponent(fightPowerLabel)
-                        .addComponent(this.fightPower))
-                .addGroup(basicInfoLayout.createParallelGroup()
-                        .addComponent(defencePowerLabel)
-                        .addComponent(this.defencePower))
-        );
-
-        // Configure the FIGHTING CONDITIONS PANEL layout
-        fightingConditionsLayout.setHorizontalGroup(fightingConditionsLayout.createParallelGroup()
-                .addComponent(this.equipHead)
-                .addGroup(fightingConditionsLayout.createSequentialGroup()
-                        .addComponent(runAwayProgramLabel)
-                        .addComponent(this.levelUpProgram)
-                        .addComponent(runAwayProgramButton))
-                .addGroup(fightingConditionsLayout.createSequentialGroup()
-                        .addComponent(critOnEnemyLabel)
-                        .addComponent(this.specialPoints))
-                .addGroup(fightingConditionsLayout.createSequentialGroup()
-                        .addComponent(critOnPlayerLabel)
-                        .addComponent(this.level))
-        );
-
-        fightingConditionsLayout.linkSize(SwingConstants.HORIZONTAL, 
-                runAwayProgramLabel,
-                critOnEnemyLabel,
-                critOnPlayerLabel);
-        fightingConditionsLayout.linkSize(SwingConstants.VERTICAL, 
-                this.levelUpProgram,
-                this.specialPoints,
+                this.defencePower,
                 this.level);
 
-        fightingConditionsLayout.setVerticalGroup(fightingConditionsLayout.createSequentialGroup()
-                .addComponent(this.equipHead)
-                .addGroup(fightingConditionsLayout.createParallelGroup()
-                        .addComponent(runAwayProgramLabel)
-                        .addComponent(this.levelUpProgram, Gui.JTF_HEIGHT, 
-                                Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
-                        .addComponent(runAwayProgramButton))
-                .addGroup(fightingConditionsLayout.createParallelGroup()
-                        .addComponent(critOnEnemyLabel)
+        statsLayout.setVerticalGroup(statsLayout.createSequentialGroup()
+                .addGroup(statsLayout.createParallelGroup()
+                        .addComponent(playerNameLabel)
+                        .addComponent(this.playerName, Gui.JTF_HEIGHT,
+                                Gui.JTF_HEIGHT, Gui.JTF_HEIGHT))
+                .addGroup(statsLayout.createParallelGroup()
+                        .addComponent(experienceLabel)
+                        .addComponent(this.experience))
+                .addGroup(statsLayout.createParallelGroup()
+                        .addComponent(hitPointsLabel)
+                        .addComponent(this.hitPoints))
+                .addGroup(statsLayout.createParallelGroup()
+                        .addComponent(maxHitPointsLabel)
+                        .addComponent(this.maxHitPoints))
+                .addGroup(statsLayout.createParallelGroup()
+                        .addComponent(specialPointsLabel)
                         .addComponent(this.specialPoints))
-                .addGroup(fightingConditionsLayout.createParallelGroup()
-                        .addComponent(critOnPlayerLabel)
+                .addGroup(statsLayout.createParallelGroup()
+                        .addComponent(maxSpecialPointsLabel)
+                        .addComponent(this.maxSpecialPoints))
+                .addGroup(statsLayout.createParallelGroup()
+                        .addComponent(fightPowerLabel)
+                        .addComponent(this.fightPower))
+                .addGroup(statsLayout.createParallelGroup()
+                        .addComponent(defencePowerLabel)
+                        .addComponent(this.defencePower))
+                .addGroup(statsLayout.createParallelGroup()
+                        .addComponent(levelLabel)
                         .addComponent(this.level))
         );
 
-        // Configure BASIC SETTINGS PANEL layout
-        layout.setHorizontalGroup(layout.createParallelGroup()
-                .addComponent(basicInfoPanel, 515, 515, 515)
-                .addComponent(fightingConditionsPanel)
+        // Configure the VARIABLES PANEL layout
+        variablesLayout.setHorizontalGroup(variablesLayout.createParallelGroup()
+                .addGroup(variablesLayout.createSequentialGroup()
+                        .addComponent(playerNameVarLabel)
+                        .addComponent(this.playerNameVar)
+                        .addComponent(defaultNameBtn))
+                .addGroup(variablesLayout.createSequentialGroup()
+                        .addComponent(experienceVarLabel)
+                        .addComponent(this.experienceVar)
+                        .addComponent(defaultExperienceBtn))
+                .addGroup(variablesLayout.createSequentialGroup()
+                        .addComponent(hitPointsVarLabel)
+                        .addComponent(this.hitPointsVar)
+                        .addComponent(defaultHitPointsBtn))
+                .addGroup(variablesLayout.createSequentialGroup()
+                        .addComponent(maxHitPointsVarLabel)
+                        .addComponent(this.maxHitPointsVar)
+                        .addComponent(defaultMaxHitPointsBtn))
+                .addGroup(variablesLayout.createSequentialGroup()
+                        .addComponent(specialPointsVarLabel)
+                        .addComponent(this.specialPointsVar)
+                        .addComponent(defaultSpecialPointsBtn))
+                .addGroup(variablesLayout.createSequentialGroup()
+                        .addComponent(maxSpecialPointsVarLabel)
+                        .addComponent(this.maxSpecialPointsVar)
+                        .addComponent(defaultMaxSpecialPointsBtn))
+                .addGroup(variablesLayout.createSequentialGroup()
+                        .addComponent(fightPowerVarLabel)
+                        .addComponent(this.fightPowerVar)
+                        .addComponent(defaultFightPowerBtn))
+                .addGroup(variablesLayout.createSequentialGroup()
+                        .addComponent(defencePowerVarLabel)
+                        .addComponent(this.defencePowerVar)
+                        .addComponent(defaultDefencePowerBtn))
+                .addGroup(variablesLayout.createSequentialGroup()
+                        .addComponent(levelVarLabel)
+                        .addComponent(this.levelVar)
+                        .addComponent(defaultLevelBtn))
         );
 
-        layout.linkSize(SwingConstants.HORIZONTAL, basicInfoPanel, fightingConditionsPanel);
+        variablesLayout.linkSize(SwingConstants.HORIZONTAL,
+                playerNameVarLabel,
+                experienceVarLabel,
+                hitPointsVarLabel,
+                maxHitPointsVarLabel,
+                specialPointsVarLabel,
+                maxSpecialPointsVarLabel,
+                fightPowerVarLabel,
+                defencePowerVarLabel,
+                levelVarLabel);
+        variablesLayout.linkSize(SwingConstants.VERTICAL,
+                this.playerNameVar,
+                this.experienceVar,
+                this.hitPointsVar,
+                this.maxHitPointsVar,
+                this.specialPointsVar,
+                this.maxSpecialPointsVar,
+                this.fightPowerVar,
+                this.defencePowerVar,
+                this.levelVar);
+
+        variablesLayout.setVerticalGroup(variablesLayout.createSequentialGroup()
+                .addGroup(variablesLayout.createParallelGroup()
+                        .addComponent(playerNameVarLabel)
+                        .addComponent(this.playerNameVar, Gui.JTF_HEIGHT,
+                                Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
+                        .addComponent(defaultNameBtn))
+                .addGroup(variablesLayout.createParallelGroup()
+                        .addComponent(experienceVarLabel)
+                        .addComponent(this.experienceVar)
+                        .addComponent(defaultExperienceBtn))
+                .addGroup(variablesLayout.createParallelGroup()
+                        .addComponent(hitPointsVarLabel)
+                        .addComponent(this.hitPointsVar)
+                        .addComponent(defaultHitPointsBtn))
+                .addGroup(variablesLayout.createParallelGroup()
+                        .addComponent(maxHitPointsVarLabel)
+                        .addComponent(this.maxHitPointsVar)
+                        .addComponent(defaultMaxHitPointsBtn))
+                .addGroup(variablesLayout.createParallelGroup()
+                        .addComponent(specialPointsVarLabel)
+                        .addComponent(this.specialPointsVar)
+                        .addComponent(defaultSpecialPointsBtn))
+                .addGroup(variablesLayout.createParallelGroup()
+                        .addComponent(maxSpecialPointsVarLabel)
+                        .addComponent(this.maxSpecialPointsVar)
+                        .addComponent(defaultMaxSpecialPointsBtn))
+                .addGroup(variablesLayout.createParallelGroup()
+                        .addComponent(fightPowerVarLabel)
+                        .addComponent(this.fightPowerVar)
+                        .addComponent(defaultFightPowerBtn))
+                .addGroup(variablesLayout.createParallelGroup()
+                        .addComponent(defencePowerVarLabel)
+                        .addComponent(this.defencePowerVar)
+                        .addComponent(defaultDefencePowerBtn))
+                .addGroup(variablesLayout.createParallelGroup()
+                        .addComponent(levelVarLabel)
+                        .addComponent(this.levelVar)
+                        .addComponent(defaultLevelBtn))
+        );
+
+        // Configure STATS PANEL layout
+        layout.setHorizontalGroup(layout.createParallelGroup()
+                .addGroup(layout.createSequentialGroup()
+                        .addComponent(this.portraitDisplay)
+                        .addComponent(portraitFindButton))
+                .addGroup(layout.createSequentialGroup()
+                        .addComponent(statsEditPanel, 380, 380, 380)
+                        .addComponent(variablesPanel))
+        );
+
+        layout.linkSize(SwingConstants.HORIZONTAL, statsEditPanel, variablesPanel);
 
         layout.setVerticalGroup(layout.createSequentialGroup()
-                .addComponent(basicInfoPanel)
-                .addComponent(fightingConditionsPanel)
+                .addGroup(layout.createParallelGroup()
+                        .addComponent(this.portraitDisplay)
+                        .addComponent(portraitFindButton))
+                .addGroup(layout.createParallelGroup()
+                    .addComponent(statsEditPanel)
+                    .addComponent(variablesPanel))
         );
     }
 
@@ -406,11 +556,11 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     {
         // Configure Class scope components
         final DefaultListModel enemyGraphics = new DefaultListModel();
-        final ArrayList<String> standardNames = this.player.getStandardGraphicsNames();
+        final ArrayList<String> standardNames = this.player.getStandardGraphics();
         for(String standardName : standardNames) {
             enemyGraphics.addElement(standardName);
         }
-        final ArrayList<String> customNames = this.player.getCustomizedGraphicsNames();
+        final ArrayList<String> customNames = this.player.getCustomGraphics();
         for(String customName : customNames) {
             enemyGraphics.addElement(customName);
         }
@@ -477,7 +627,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                                     animList.getSelectedIndex());
                             //out.println("new selection: standard " + animList.getSelectedIndex());
                         } else {
-                            location = player.getCustomizedGraphics().get(
+                            location = player.getCustomGraphics().get(
                                     animList.getSelectedIndex() - standardNames.size());
                             //out.println("new selection: custom " + (animList.getSelectedIndex() - standardNames.size()));
                         }
@@ -530,7 +680,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                         custom = true;
                     }
                     if(custom == true) {
-                        player.getCustomizedGraphics().set(
+                        player.getCustomGraphics().set(
                                 index - standardNames.size(), text);
                     } else {
                         player.getStandardGraphics().set(index, text);
@@ -586,7 +736,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
             public void actionPerformed(ActionEvent e) {
                 int index = animList.getSelectedIndex();
                 if(index < 0) { return; }
-                String loc = mainWindow.browseByType("Animation Files", "anm", "Misc");
+                String loc = mainWindow.browseByType("Misc", "Animation Files", "anm");
                 if(loc != null) {
                     if(play.isSelected()) { play.doClick(); } //press stop before we change it
                     animLoc.setText(loc);
@@ -594,7 +744,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                         player.getStandardGraphics().set(index, loc);
                     } else if(index < standardNames.size() + customNames.size()) {
                         int customIndex = index - standardNames.size();
-                        player.getCustomizedGraphics().set(customIndex, loc);
+                        player.getCustomGraphics().set(customIndex, loc);
                     }
                     //changing animation will be handled by animLoc
                 }
@@ -622,7 +772,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                 if(name == null || name.isEmpty()) { return; }
                 int customIndex = index - standardNames.size();
                 customNames.add(customIndex, name);
-                player.getCustomizedGraphics().add(customIndex, "");
+                player.getCustomGraphics().add(customIndex, "");
                 enemyGraphics.add(index, name);
                 //select the new graphic
                 animList.setSelectedIndex(index);
@@ -652,7 +802,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                         //delete custom graphic
                         int customIndex = index - standardNames.size();
                         customNames.remove(customIndex);
-                        player.getCustomizedGraphics().remove(customIndex);
+                        player.getCustomGraphics().remove(customIndex);
                         enemyGraphics.remove(index);
                         //move back on the list by 1
                         if(index > 0) {
@@ -725,37 +875,21 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     {
         // Configure Class scope components
         final DefaultListModel specialMoves = new DefaultListModel();
-        final ArrayList<String> sMoveLocs = this.player.getSpecialMoves();
-        for(String loc : sMoveLocs) {
-            String text = getSpecialMoveText(loc);
+        final ArrayList<PlayerSpecialMove> sMoves = this.player.getSpecialMoveList();
+        for(PlayerSpecialMove sMove : sMoves) {
+            String text = getSpecialMoveText(sMove.getName());
             specialMoves.addElement(text);
-        }
-        final DefaultListModel strengths = new DefaultListModel();
-        final ArrayList<String> strengthLocs = this.player.getStrengths();
-        for(String loc : strengthLocs) {
-            String text = getSpecialMoveText(loc);
-            strengths.addElement(text);
-        }
-        final DefaultListModel weaknesses = new DefaultListModel();
-        final ArrayList<String> weaknessLocs = this.player.getWeaknesses();
-        for(String loc : weaknessLocs) {
-            String text = getSpecialMoveText(loc);
-            weaknesses.addElement(text);
         }
 //        out.println("specialMoves="+sMoveLocs.toString());
 //        out.println("strengths="+strengthLocs.toString());
 //        out.println("weaknesses="+weaknessLocs.toString());
         this.sMoveList = Gui.createVerticalJList(specialMoves);
-        this.strengthList = Gui.createVerticalJList(strengths);
-        this.weaknessList = Gui.createVerticalJList(weaknesses);
         
         // Configure function Scope Components
         JScrollPane sMoveListScroller = new JScrollPane(this.sMoveList);
-        JScrollPane strengthListScroller = new JScrollPane(this.strengthList);
-        JScrollPane weaknessListScroller = new JScrollPane(this.weaknessList);
         
         JButton sMoveFindButton = new JButton("Browse");
-        JButton sMoveAddButton = new JButton("Add");
+        JButton sMoveResetButton = new JButton("The Player Can Always Use This Move");
         final JButton sMoveRemoveButton = new JButton("Remove");
         sMoveRemoveButton.setEnabled(false);
         
@@ -784,32 +918,8 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                 }
             }
         });
-        this.strengthList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if(e.getValueIsAdjusting() == false) {
-                    if(strengthList.getSelectedIndex() == -1) {
-                        strengthRemoveButton.setEnabled(false);
-                    } else {
-                        strengthRemoveButton.setEnabled(true);
-                    }
-                }
-            }
-        });
-        this.weaknessList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if(e.getValueIsAdjusting() == false) {
-                    if(weaknessList.getSelectedIndex() == -1) {
-                        weaknessRemoveButton.setEnabled(false);
-                    } else {
-                        weaknessRemoveButton.setEnabled(true);
-                    }
-                }
-            }
-        });
         
-        //browse buttons
+        //browse button
         sMoveFindButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -822,33 +932,9 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                 }
             }
         });
-        strengthFindButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int index = strengthList.getSelectedIndex();
-                if(index >= 0) {
-                    String loc = browseSpecialMove();
-                    if(loc != null) {
-                        strengths.set(index, getSpecialMoveText(loc));
-                    }
-                }
-            }
-        });
-        weaknessFindButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int index = weaknessList.getSelectedIndex();
-                if(index >= 0) {
-                    String loc = browseSpecialMove();
-                    if(loc != null) {
-                        weaknesses.set(index, getSpecialMoveText(loc));
-                    }
-                }
-            }
-        });
         
-        //add buttons
-        sMoveAddButton.addActionListener(new ActionListener() {
+        //reset button
+        sMoveResetButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //insert after current slot
@@ -862,71 +948,33 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                 sMoveList.ensureIndexIsVisible(index);
             }
         });
-        strengthAddButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //insert after current slot
-                int index = strengthList.getSelectedIndex() + 1;
-                String loc = browseSpecialMove();
-                if(loc != null) {
-                    strengths.add(index, getSpecialMoveText(loc));
-                }
-                //select the added move
-                strengthList.setSelectedIndex(index);
-                strengthList.ensureIndexIsVisible(index);
-            }
-        });
-        weaknessAddButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //insert after current slot
-                int index = weaknessList.getSelectedIndex() + 1;
-                String loc = browseSpecialMove();
-                if(loc != null) {
-                    weaknesses.add(index, getSpecialMoveText(loc));
-                }
-                //select the added move
-                weaknessList.setSelectedIndex(index);
-                weaknessList.ensureIndexIsVisible(index);
-            }
-        });
         
-        //remove buttons
+        //remove button
         sMoveRemoveButton.addActionListener(
                 Gui.simpleRemoveListener(specialMoves, sMoveList)
-        );
-        strengthRemoveButton.addActionListener(
-                Gui.simpleRemoveListener(strengths, strengthList)
-        );
-        weaknessRemoveButton.addActionListener(
-                Gui.simpleRemoveListener(weaknesses, weaknessList)
         );
 
         // Configure the necessary Panels
         JPanel sMovePanel = new JPanel();
         sMovePanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Special Move List"));
-        JPanel strengthPanel = new JPanel();
-        strengthPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Strength List"));
-        JPanel weaknessPanel = new JPanel();
-        weaknessPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Weakness List"));
+                this.defaultEtchedBorder, "Special Moves"));
+        JPanel conditionsPanel = new JPanel();
+        conditionsPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "The Player Can Use This Special Move If"));
 
         // Create Layout for Top Level Panel
         GroupLayout layout = Gui.createGroupLayout(this.specialMovesPanel);
 
         // Configure Layouts for Second Level Panels
         GroupLayout sMoveLayout = Gui.createGroupLayout(sMovePanel);
-        GroupLayout strengthLayout = Gui.createGroupLayout(strengthPanel);
-        GroupLayout weaknessLayout = Gui.createGroupLayout(weaknessPanel);
+        GroupLayout conditionsLayout = Gui.createGroupLayout(conditionsPanel);
 
         // Configure the SMOVE PANEL layout
         sMoveLayout.setHorizontalGroup(sMoveLayout.createSequentialGroup()
                 .addComponent(sMoveListScroller)
                 .addGroup(sMoveLayout.createParallelGroup()
                         .addComponent(sMoveFindButton)
-                        .addComponent(sMoveAddButton)
+                        .addComponent(sMoveResetButton)
                         .addComponent(sMoveRemoveButton))
         );
 
@@ -934,141 +982,106 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                 .addComponent(sMoveListScroller)
                 .addGroup(sMoveLayout.createSequentialGroup()
                         .addComponent(sMoveFindButton)
-                        .addComponent(sMoveAddButton)
+                        .addComponent(sMoveResetButton)
                         .addComponent(sMoveRemoveButton))
         );
 
-        // Configure the STRENGTH PANEL layout
-        strengthLayout.setHorizontalGroup(strengthLayout.createSequentialGroup()
-                .addComponent(strengthListScroller)
-                .addGroup(strengthLayout.createParallelGroup()
+        // Configure the CONDITIONS PANEL layout
+        conditionsLayout.setHorizontalGroup(conditionsLayout.createSequentialGroup()
+                .addGroup(conditionsLayout.createParallelGroup()
                         .addComponent(strengthFindButton)
                         .addComponent(strengthAddButton)
                         .addComponent(strengthRemoveButton))
         );
 
-        strengthLayout.setVerticalGroup(strengthLayout.createParallelGroup()
-                .addComponent(strengthListScroller)
-                .addGroup(strengthLayout.createSequentialGroup()
+        conditionsLayout.setVerticalGroup(conditionsLayout.createParallelGroup()
+                .addGroup(conditionsLayout.createSequentialGroup()
                         .addComponent(strengthFindButton)
                         .addComponent(strengthAddButton)
                         .addComponent(strengthRemoveButton))
-        );
-
-        // Configure the WEAKNESS PANEL layout
-        weaknessLayout.setHorizontalGroup(weaknessLayout.createSequentialGroup()
-                .addComponent(weaknessListScroller)
-                .addGroup(weaknessLayout.createParallelGroup()
-                        .addComponent(weaknessFindButton)
-                        .addComponent(weaknessAddButton)
-                        .addComponent(weaknessRemoveButton))
-        );
-
-        weaknessLayout.setVerticalGroup(weaknessLayout.createParallelGroup()
-                .addComponent(weaknessListScroller)
-                .addGroup(weaknessLayout.createSequentialGroup()
-                        .addComponent(weaknessFindButton)
-                        .addComponent(weaknessAddButton)
-                        .addComponent(weaknessRemoveButton))
         );
 
         // Configure the SPECIAL MOVE PANEL layout
         layout.setHorizontalGroup(layout.createParallelGroup()
                 .addComponent(sMovePanel)
-                .addComponent(strengthPanel)
-                .addComponent(weaknessPanel)
+                .addComponent(conditionsPanel)
         );
 
         layout.setVerticalGroup(layout.createSequentialGroup()
                 .addComponent(sMovePanel)
-                .addComponent(strengthPanel)
-                .addComponent(weaknessPanel)
+                .addComponent(conditionsPanel)
         );
     }
 
     private void createEquipmentPanel()
     {   
-        final JLabel tacticsProgramLabel = new JLabel("Program to run");
-        this.accName = new JTextField(this.player.getTacticsFile());
-        final JButton tacticsProgramFindButton = new JButton("Browse");
-        tacticsProgramLabel.setEnabled(this.useRPGCodeTactics.isSelected());
-        this.accName.setEnabled(this.useRPGCodeTactics.isSelected());
-        tacticsProgramFindButton.setEnabled(this.useRPGCodeTactics.isSelected());
-
-        JPanel battleTacticsPanel = new JPanel();
-        battleTacticsPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Battle Tactics"));
+        this.equipHead = new JCheckBox("Head");
+        this.equipNeck = new JCheckBox("Neck Accessory");
+        this.equipHandL = new JCheckBox("Left Hand");
+        this.equipHandR = new JCheckBox("Right Hand");
+        this.equipBody = new JCheckBox("Body Armour");
+        this.equipLegs = new JCheckBox("Legs");
+        boolean[] armorSlots = this.player.getArmourTypes();
+        this.equipHead.setSelected(armorSlots[0]);
+        this.equipNeck.setSelected(armorSlots[0]);
+        this.equipHandL.setSelected(armorSlots[0]);
+        this.equipHandR.setSelected(armorSlots[0]);
+        this.equipBody.setSelected(armorSlots[0]);
+        this.equipLegs.setSelected(armorSlots[0]);
         
-        JPanel aiLevelPanel = new JPanel();
-        aiLevelPanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Artificial Intelligence Level (Internal Algorithm)"));
+        final JLabel accNameLabel = new JLabel("Slot Name");
+        ArrayList<String> accNames = this.player.getAccessoryNames();
+        this.accName = new JTextField();
+        if(accNames.isEmpty() == false) { this.accName.setText(accNames.get(0)); }
+        
+        JPanel standardEquipPanel = new JPanel();
+        standardEquipPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Standard Equipment Can Be Equipped On"));
+
+        JPanel accessoriesPanel = new JPanel();
+        accessoriesPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Accessory List"));
         
         // Configure listeners
-        
-        //tactics program checkbox disable built-in ai level
-        this.useRPGCodeTactics.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                aiLevel.setEnabled(!(useRPGCodeTactics.isSelected()));
-                tacticsProgramLabel.setEnabled(useRPGCodeTactics.isSelected());
-                accName.setEnabled(useRPGCodeTactics.isSelected());
-                tacticsProgramFindButton.setEnabled(useRPGCodeTactics.isSelected());
-            }
-        });
-        
-        //browse for tactics program
-        tacticsProgramFindButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String loc = mainWindow.browseByType("Program Files", "prg", "Prg");
-                if(loc != null) {
-                    accName.setText(loc);
-                }
-            }
-        });
 
         // Configure Layouts
         GroupLayout layout = Gui.createGroupLayout(this.equipmentPanel);
 
-        GroupLayout battleTacticsLayout = Gui.createGroupLayout(battleTacticsPanel);
-        GroupLayout aiLevelLayout = Gui.createGroupLayout(aiLevelPanel);
+        GroupLayout accessoriesLayout = Gui.createGroupLayout(accessoriesPanel);
+        GroupLayout standardEquipLayout = Gui.createGroupLayout(standardEquipPanel);
         
-        aiLevelLayout.setHorizontalGroup(aiLevelLayout.createSequentialGroup()
-                .addComponent(this.aiLevel)
+        standardEquipLayout.setHorizontalGroup(standardEquipLayout.createSequentialGroup()
+                .addComponent(this.equipHead)
         );
 
-        aiLevelLayout.setVerticalGroup(aiLevelLayout.createParallelGroup()
-                .addComponent(this.aiLevel)
+        standardEquipLayout.setVerticalGroup(standardEquipLayout.createParallelGroup()
+                .addComponent(this.equipHead)
         );
 
-        battleTacticsLayout.setHorizontalGroup(battleTacticsLayout.createParallelGroup()
-                .addComponent(aiLevelPanel)
-                .addComponent(this.useRPGCodeTactics)
-                .addGroup(battleTacticsLayout.createSequentialGroup()
-                        .addComponent(tacticsProgramLabel)
-                        .addComponent(this.accName)
-                        .addComponent(tacticsProgramFindButton))
+        accessoriesLayout.setHorizontalGroup(accessoriesLayout.createParallelGroup()
+                .addComponent(standardEquipPanel)
+                .addGroup(accessoriesLayout.createSequentialGroup()
+                        .addComponent(accNameLabel)
+                        .addComponent(this.accName))
         );
 
-        battleTacticsLayout.setVerticalGroup(battleTacticsLayout.createSequentialGroup()
-                .addComponent(aiLevelPanel)
-                .addComponent(this.useRPGCodeTactics)
-                .addGroup(battleTacticsLayout.createParallelGroup()
-                        .addComponent(tacticsProgramLabel)
-                        .addComponent(this.accName)
-                        .addComponent(tacticsProgramFindButton))
+        accessoriesLayout.setVerticalGroup(accessoriesLayout.createSequentialGroup()
+                .addComponent(standardEquipPanel)
+                .addGroup(accessoriesLayout.createParallelGroup()
+                        .addComponent(accNameLabel)
+                        .addComponent(this.accName))
         );
         
-        battleTacticsLayout.linkSize(SwingConstants.VERTICAL,
-                tacticsProgramLabel, this.accName, tacticsProgramFindButton
+        accessoriesLayout.linkSize(SwingConstants.VERTICAL,
+                accNameLabel, this.accName
         );
 
         layout.setHorizontalGroup(layout.createParallelGroup()
-                .addComponent(battleTacticsPanel)
+                .addComponent(accessoriesPanel)
         );
 
         layout.setVerticalGroup(layout.createSequentialGroup()
-                .addComponent(battleTacticsPanel)
+                .addComponent(accessoriesPanel)
         );
     }
 
@@ -1092,7 +1105,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
         levelUpProgramFindButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String loc = mainWindow.browseByType("Program Files", "prg", "Prg");
+                String loc = mainWindow.browseByType("Prg", "Program Files", "prg");
                 if(loc != null) {
                     levelUpProgram.setText(loc);
                 }
@@ -1149,9 +1162,22 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
         );
     }
 
+    
+    private ActionListener varDefaultListener(
+            final JTextField varField, String varKey, char type) {
+        return new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                varField.setText(
+                        playerName.getText().replace(" ", "_")
+                        + "[" + varKey + "]" + type
+                );
+            }
+        };
+    }
 
     private String browseSpecialMove() {
-        return mainWindow.browseByType("Special Move Files", "spc", "SpcMove");
+        return mainWindow.browseByType("SpcMove", "Special Move Files", "spc");
     }
 
     private String getSpecialMoveText(String loc) {

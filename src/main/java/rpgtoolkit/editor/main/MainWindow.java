@@ -12,6 +12,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import rpgtoolkit.common.editor.types.Tile;
 import rpgtoolkit.common.io.types.Animation;
 import rpgtoolkit.common.io.types.Enemy;
+import rpgtoolkit.common.io.types.Player;
 import rpgtoolkit.common.io.types.Project;
 import rpgtoolkit.common.io.types.SpecialMove;
 import rpgtoolkit.common.io.types.TileSet;
@@ -22,6 +23,7 @@ import rpgtoolkit.editor.board.tool.BucketBrush;
 import rpgtoolkit.editor.board.tool.CustomBrush;
 import rpgtoolkit.editor.board.tool.ShapeBrush;
 import rpgtoolkit.editor.board.tool.VectorBrush;
+import rpgtoolkit.editor.character.CharacterEditor;
 import rpgtoolkit.editor.enemy.EnemyEditor;
 import rpgtoolkit.editor.main.panels.LayerPanel;
 import rpgtoolkit.editor.main.menus.MainMenuBar;
@@ -411,6 +413,10 @@ public class MainWindow extends JFrame implements InternalFrameListener
         {
             this.openEnemy();
         }
+        else if (fileName.endsWith(".tem"))
+        {
+            this.openCharacter();
+        }
         else if (fileName.endsWith(".prg"))
         {
 
@@ -460,8 +466,7 @@ public class MainWindow extends JFrame implements InternalFrameListener
     }
 
     /**
-     * Creates an animation editor window for modifying the specified animation
-     * file.
+     * Creates an enemy editor window for modifying the specified enemy file.
      */
     public void openEnemy()
     {
@@ -470,6 +475,20 @@ public class MainWindow extends JFrame implements InternalFrameListener
         desktopPane.add(enemyEditor);
 
         this.selectToolkitWindow(enemyEditor);
+    }
+
+    /**
+     * Creates a character editor window for modifying the specified character
+     * file.
+     */
+    public void openCharacter()
+    {
+        System.out.println("openCharacter()");
+        Player player = new Player(fileChooser.getSelectedFile());
+        CharacterEditor chEditor = new CharacterEditor(player);
+        desktopPane.add(chEditor);
+
+        this.selectToolkitWindow(chEditor);
     }
 
     /**
@@ -573,16 +592,16 @@ public class MainWindow extends JFrame implements InternalFrameListener
      * Browse for a file of a given type, starting in the given subdirectory of
      * the project, and return its location relative to that subdirectory.
      *
-     * @param description what to name the filter (for example, "Program Files")
-     * @param extension the file extension to filter by (the portion of the file
-     * name after the last ".")
      * @param subdirectory where within the project to start the file chooser
+     * @param description what to name the filter (for example, "Program Files")
+     * @param extensions the file extension to filter by (the portion of the file
+     * name after the last ".")
      * @return the location of the file the user selects, relative to the
      * subdirectory; or null if no file or an invalid file is selected
      */
-    public String browseByType(String description, String extension, String subdirectory) {
+    public String browseByType(String subdirectory, String description, String... extensions) {
         fileChooser.resetChoosableFileFilters();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(description, extension);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(description, extensions);
         fileChooser.setFileFilter(filter);
         File path = new File(System.getProperty("project.path") + File.separator + subdirectory);
         if(path.exists()) {
@@ -590,7 +609,11 @@ public class MainWindow extends JFrame implements InternalFrameListener
         }
         if(fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             String fileName = fileChooser.getSelectedFile().getName().toLowerCase();
-            if(fileName.endsWith("." + extension)) {
+            boolean ok = false;
+            for(String ext : extensions) {
+                if(fileName.endsWith("." + ext)) { ok = true; break; }
+            }
+            if(ok == true) {
                 String loc = fileChooser.getSelectedFile().getPath();
                 return loc.replace(path.getPath() + File.separator, "");
             }
