@@ -7,6 +7,11 @@ if (!hasProperty('mainClass')) {
     ext.mainClass = mainClassName
 }
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     compile project(':common')
+    compile group: 'org.json', name: 'json', version: '20141113'
 }

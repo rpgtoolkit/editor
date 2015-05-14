@@ -4,3 +4,11 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 
 mainClassName = 'net.rpgtoolkit.editor.Driver'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.json', name: 'json', version: '20141113'
+}
