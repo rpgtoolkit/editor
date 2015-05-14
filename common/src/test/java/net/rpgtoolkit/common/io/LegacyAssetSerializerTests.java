@@ -10,6 +10,7 @@ import net.rpgtoolkit.common.CorruptAssetException;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
 import net.rpgtoolkit.common.assets.AssetHandle;
 import net.rpgtoolkit.common.assets.AssetSerializer;
+import net.rpgtoolkit.common.assets.Item;
 import net.rpgtoolkit.common.assets.resources.ResourceAssetHandle;
 import net.rpgtoolkit.common.assets.serialization.LegacyItemSerializer;
 import org.junit.Test;
@@ -30,11 +31,12 @@ public final class LegacyAssetSerializerTests {
         final AssetDescriptor descriptor = new AssetDescriptor(
                 "resource:///assets//legacy//test.itm");
         
-        deserialize(serializer, descriptor);
+        final AssetHandle handle = deserialize(serializer, descriptor);   
+        final Item item = (Item) handle.getAsset();
                 
     }
     
-    private void deserialize(AssetSerializer serializer, 
+    private AssetHandle deserialize(AssetSerializer serializer, 
             AssetDescriptor descriptor) 
             throws CorruptAssetException, IOException {
         
@@ -48,6 +50,8 @@ public final class LegacyAssetSerializerTests {
         serializer.deserialize(handle);
         
         assertNotEquals(null, handle.getAsset());
+        
+        return handle;
 
     }
        
