@@ -27,3 +27,4 @@
 build/
 out/
 /.nb-gradle/private/
+/.nb-gradle/
