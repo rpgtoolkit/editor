@@ -3,4 +3,4 @@ apply plugin: 'application'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
-mainClassName = "rpgtoolkit.editor.main.Driver"
+mainClassName = 'net.rpgtoolkit.editor.Driver'

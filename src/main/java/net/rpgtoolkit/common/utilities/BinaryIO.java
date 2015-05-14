@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
-import net.rpgtoolkit.editor.exceptions.CorruptFileException;
+import net.rpgtoolkit.editor.CorruptFileException;
 
 /**
  * This class is design to emulate the "CommonBinaryIO.bas" file
