@@ -25,7 +25,7 @@ public class BinaryReader {
     protected ByteOrder order;
     protected byte[] buffer;
 
-    public BinaryReader(InputStream in, ByteOrder order) {
+    public BinaryReader(ByteOrder order, InputStream in) {
         this.in = in;
         this.order = order;
         this.buffer = new byte[DEFAULT_BUFFER_SIZE];
@@ -33,7 +33,15 @@ public class BinaryReader {
     }
 
     public BinaryReader(InputStream in) {
-        this(in, ByteOrder.BIG_ENDIAN);
+        this(ByteOrder.BIG_ENDIAN, in);
+    }
+    
+    public ByteOrder getByteOrder() {
+        return this.order;
+    }
+    
+    public InputStream getInputStream() {
+        return this.in;
     }
 
     public int readBytes(byte[] buffer, int offset, int length)

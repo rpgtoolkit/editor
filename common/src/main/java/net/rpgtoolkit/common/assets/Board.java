@@ -21,7 +21,7 @@ import net.rpgtoolkit.common.assets.BoardLight;
 import net.rpgtoolkit.common.assets.BoardProgram;
 import net.rpgtoolkit.common.assets.BoardSprite;
 import net.rpgtoolkit.common.assets.BoardVector;
-import net.rpgtoolkit.common.CorruptFileException;
+import net.rpgtoolkit.common.CorruptAssetException;
 import net.rpgtoolkit.common.utilities.BinaryIO;
 
 /**
@@ -831,7 +831,7 @@ public final class Board extends BasicType
 
             binaryIO.closeInput();
         }
-        catch (CorruptFileException e)
+        catch (CorruptAssetException e)
         {
 
         }

@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.ArrayList;
 
 import net.rpgtoolkit.common.utilities.BinaryIO;
-import net.rpgtoolkit.common.CorruptFileException;
+import net.rpgtoolkit.common.CorruptAssetException;
 
 /**
  * This class is responsible for reading and writing RPG Toolkit 3.1 compatible
@@ -98,12 +98,12 @@ public class Animation extends BasicType
                 }
                 else
                 {
-                    throw new CorruptFileException("Animation data is corrupt");
+                    throw new CorruptAssetException("Animation data is corrupt");
                 }
             }
             else
             {
-                throw new CorruptFileException(this.file.getName() + " is not an animation file");
+                throw new CorruptAssetException(this.file.getName() + " is not an animation file");
             }
 
             inputStream.close(); // Close IO
@@ -117,7 +117,7 @@ public class Animation extends BasicType
             e.printStackTrace();
             return false;
         }
-        catch (CorruptFileException e)
+        catch (CorruptAssetException e)
         {
             e.printStackTrace();
             return false;

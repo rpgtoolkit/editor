@@ -1,6 +1,6 @@
 package net.rpgtoolkit.common.assets;
 
-import net.rpgtoolkit.common.CorruptFileException;
+import net.rpgtoolkit.common.CorruptAssetException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -164,7 +164,7 @@ public class SpecialMove extends BasicType
 
             return true;
         }
-        catch (CorruptFileException e)
+        catch (CorruptAssetException e)
         {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             return false;

@@ -3,7 +3,7 @@ package net.rpgtoolkit.common.assets;
 import java.io.File;
 import java.io.IOException;
 
-import net.rpgtoolkit.common.CorruptFileException;
+import net.rpgtoolkit.common.CorruptAssetException;
 
 public class Background extends BasicType
 {
@@ -51,7 +51,7 @@ public class Background extends BasicType
 
             return true;
         }
-        catch (CorruptFileException e)
+        catch (CorruptAssetException e)
         {
             e.printStackTrace();
             return false;

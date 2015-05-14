@@ -57,15 +57,15 @@ public class BoardSprite extends BasicType implements Cloneable, Selectable
         this.fileName = fileName;
 
         System.out.println("Loading Item: " + fileName);
-        spriteFile = new Item(new File(System.getProperty("project.path")
-                + "/Item/" + fileName));
-        spriteFile.loadAnimations();
-        spriteFile.setActiveAnimation(0); // SOUTH FACING
+//        spriteFile = new Item(new File(System.getProperty("project.path")
+//                + "/Item/" + fileName));
+//        spriteFile.loadAnimations();
+//        spriteFile.setActiveAnimation(0); // SOUTH FACING
     }
 
     public BufferedImage getAnimationFrame()
     {
-        return spriteFile.getAnimationFrame();
+        return null; // return spriteFile.getAnimationFrame();
     }
 
     public void setX(long x)
@@ -150,12 +150,12 @@ public class BoardSprite extends BasicType implements Cloneable, Selectable
 
     public int getWidth()
     {
-        return spriteFile.getAnimationFrame().getWidth();
+        return 0; // return spriteFile.getAnimationFrame().getWidth();
     }
 
     public int getHeight()
     {
-        return spriteFile.getAnimationFrame().getHeight();
+        return 0; // return spriteFile.getAnimationFrame().getHeight();
     }
 
     public long getLayer()

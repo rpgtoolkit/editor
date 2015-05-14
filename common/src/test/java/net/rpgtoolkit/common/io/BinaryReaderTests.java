@@ -3,8 +3,9 @@ package net.rpgtoolkit.common.io;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-import static org.junit.Assert.*;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class BinaryReaderTests {
     
@@ -13,8 +14,8 @@ public class BinaryReaderTests {
     public void testReadLittleEndian() throws IOException {
         
         final BinaryReader reader = new BinaryReader(
-                Object.class.getResourceAsStream("/random"),
-                ByteOrder.LITTLE_ENDIAN);
+                ByteOrder.LITTLE_ENDIAN,
+                Object.class.getResourceAsStream("/random"));
          
         final boolean ib = reader.readBoolean();
         final byte i8 = reader.readInt8();
@@ -50,8 +51,8 @@ public class BinaryReaderTests {
     public void testReadBigEndian() throws IOException {
 
         final BinaryReader reader = new BinaryReader(
-                Object.class.getResourceAsStream("/random"),
-                ByteOrder.BIG_ENDIAN);
+                ByteOrder.BIG_ENDIAN,
+                Object.class.getResourceAsStream("/random"));
                         
         final boolean ib = reader.readBoolean();
         final byte i8 = reader.readInt8();

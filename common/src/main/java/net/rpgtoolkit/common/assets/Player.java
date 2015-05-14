@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import net.rpgtoolkit.common.CorruptFileException;
+import net.rpgtoolkit.common.CorruptAssetException;
 
 public class Player extends BasicType
 {
@@ -270,7 +270,7 @@ public class Player extends BasicType
 
             return true;
         }
-        catch (CorruptFileException e)
+        catch (CorruptAssetException e)
         {
             System.out.println("File " + file + " is not a supported character file");
             return false;

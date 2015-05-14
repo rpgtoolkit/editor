@@ -1,6 +1,6 @@
 package net.rpgtoolkit.common.assets;
 
-import net.rpgtoolkit.common.CorruptFileException;
+import net.rpgtoolkit.common.CorruptAssetException;
 
 import java.io.File;
 import java.io.IOException;
@@ -125,7 +125,7 @@ public class Enemy extends BasicType
 
             return true;
         }
-        catch (CorruptFileException e)
+        catch (CorruptAssetException e)
         {
             e.printStackTrace();
             return false;
