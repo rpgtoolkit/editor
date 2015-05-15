@@ -18,7 +18,7 @@ public class WholeNumberField extends JFormattedTextField {
     /**
      * Creates a WholeNumberField with the specified value. This will create and
      * use a Formatter that requires values that are whole numbers: non-negative
-     * integers.
+     * (long) integers.
      *
      * @param value Initial value for the WholeNumberField
      */
@@ -30,8 +30,13 @@ public class WholeNumberField extends JFormattedTextField {
     public static NumberFormatter getWholeNumFormatter() {
         NumberFormatter wholeNumberFormatter = new NumberFormatter(
                 NumberFormat.getIntegerInstance());
-        wholeNumberFormatter.setValueClass(Integer.class);
+        wholeNumberFormatter.setValueClass(Long.class);
         wholeNumberFormatter.setMinimum(0);
         return wholeNumberFormatter;
+    }
+    
+    @Override
+    public Long getValue() {
+        return (Long)super.getValue();
     }
 }

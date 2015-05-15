@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
+import javax.swing.JInternalFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
@@ -98,6 +99,24 @@ public class MainToolBar extends JToolBar
         this.saveButton = new EditorButton();
         this.saveButton.setIcon(new ImageIcon(getClass()
                 .getResource("/editor/save.png")));
+        this.saveButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MainWindow w = MainWindow.getInstance();
+                if (w.getDesktopPane().getSelectedFrame() != null)
+                {
+                    if (w.getDesktopPane().getSelectedFrame() instanceof 
+                            ToolkitEditorWindow)
+                    {
+                        ToolkitEditorWindow window = (ToolkitEditorWindow)
+                                w.getDesktopPane().getSelectedFrame();
+                        
+                        window.save();
+                    }
+                }
+            }
+        });
 
         this.saveAllButton = new EditorButton();
         this.saveAllButton.setIcon(new ImageIcon(getClass()
@@ -473,6 +492,7 @@ public class MainToolBar extends JToolBar
     public void enableButtons(boolean enable)
     {
         this.openButton.setEnabled(enable);
+        this.saveButton.setEnabled(enable);
     }
 
 }

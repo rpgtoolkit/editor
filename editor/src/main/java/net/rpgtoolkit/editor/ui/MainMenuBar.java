@@ -101,6 +101,7 @@ public class MainMenuBar extends JMenuBar
     public void enableMenus(boolean enable)
     {
         this.fileMenu.getOpenFileMenuItem().setEnabled(enable);
+        this.fileMenu.getSaveMenuItem().setEnabled(enable);
     }
     
 }

@@ -2,7 +2,6 @@ package net.rpgtoolkit.editor.editors;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
@@ -84,6 +83,16 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
     @Override
     public boolean save()
     {
+        this.move.setName(moveName.getText());
+        this.move.setDescription(description.getText());
+        this.move.setMpCost(mpCost.getValue());
+        this.move.setFightPower(fightPower.getValue());
+        this.move.setRpgcodeProgram(program.getText());
+        this.move.setMpDrainedFromTarget(mpRemovedTarget.getValue());
+        this.move.setAssociatedStatusEffect(statusEffect.getText());
+        this.move.setAssociatedAnimation(animation.getText());
+        this.move.setCanUseInBattle(battleDriven.isSelected());
+        this.move.setCanUseInMenu(boardDriven.isSelected());
         return this.move.save();
     }
 

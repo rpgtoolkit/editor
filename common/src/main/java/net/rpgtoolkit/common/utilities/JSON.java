@@ -8,8 +8,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import static java.lang.System.out;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -81,7 +79,7 @@ public class JSON {
         } catch(IOException | JSONException ex) {
             out.println("JSON data loading failed: " + ex);
             out.println("...while attempting to load " + f);
-            Logger.getLogger(JSON.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(JSON.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
@@ -176,7 +174,7 @@ public class JSON {
      * @return a new Person
      */
     /*
-    public static Person load(String fileName) {
+    public static Person open(String fileName) {
         File f = new File(GameBase.assetsDir + charactersDir + fileName + sep
                 + fileName + ".chr");
         return new Person(f);
@@ -193,9 +191,9 @@ public class JSON {
     
     @Override
     public void populateJSON(JSONStringer json) {
-        json.key("name").value(name);
-        json.key("race").value(race);
-        json.key("jump").value(jump);
+        json.key("name").value(this.name);
+        json.key("race").value(this.race);
+        json.key("jump").value(this.jump);
         //...etc
     }
 
@@ -228,7 +226,7 @@ public class JSON {
      * @return a new Combatant
      */
     /*
-    public static Combatant load(String fileName) {
+    public static Combatant open(String fileName) {
         File f = new File(GameBase.assetsDir + charactersDir + fileName + sep
                 + fileName + ".chr");
         return new Combatant(f);
@@ -252,12 +250,12 @@ public class JSON {
     
     @Override
     public void populateJSON(JSONStringer json) {
-        json.key("hp").value(maxHealth);
-        json.key("charge").value(maxCharge);
+        json.key("hp").value(this.maxHealth);
+        json.key("charge").value(this.maxCharge);
         //...etc
         
         json.key("abilities").array();
-        for(Ability a : abilityList) {
+        for(Ability a : this.abilityList) {
             json.value(a.name);
         }
         json.endArray();
