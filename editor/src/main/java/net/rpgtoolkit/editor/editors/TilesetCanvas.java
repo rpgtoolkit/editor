@@ -14,8 +14,8 @@ import java.util.LinkedList;
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
 
-import net.rpgtoolkit.common.Tile;
-import net.rpgtoolkit.common.TileSet;
+import net.rpgtoolkit.common.assets.Tile;
+import net.rpgtoolkit.common.assets.TileSet;
 
 /**
  * TODO: Deal with TileRegionSelectionEvents at some later date...

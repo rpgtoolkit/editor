@@ -5,8 +5,9 @@ import java.io.File;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import net.rpgtoolkit.common.Tile;
-import net.rpgtoolkit.common.TileSet;
+
+import net.rpgtoolkit.common.assets.Tile;
+import net.rpgtoolkit.common.assets.TileSet;
 
 public class TileEditor extends JInternalFrame
 {

@@ -1,7 +1,7 @@
 package net.rpgtoolkit.editor.editors.board;
 
 import java.awt.Rectangle;
-import net.rpgtoolkit.common.Tile;
+import net.rpgtoolkit.common.assets.Tile;
 
 /**
  * 

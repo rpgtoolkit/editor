@@ -1,6 +1,6 @@
 package net.rpgtoolkit.editor.editors;
 
-import net.rpgtoolkit.common.Player;
+import net.rpgtoolkit.common.assets.Player;
 import net.rpgtoolkit.editor.ui.MainWindow;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
 

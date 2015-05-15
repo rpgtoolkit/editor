@@ -5,8 +5,8 @@ import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import net.rpgtoolkit.common.BoardSprite;
-import net.rpgtoolkit.common.BoardVector;
+import net.rpgtoolkit.common.assets.BoardSprite;
+import net.rpgtoolkit.common.assets.BoardVector;
 import net.rpgtoolkit.editor.editors.BoardEditor;
 import net.rpgtoolkit.editor.ui.MainWindow;
 
