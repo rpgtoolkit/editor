@@ -2,7 +2,7 @@ package net.rpgtoolkit.common.utilities;
 
 import java.io.File;
 import java.util.HashMap;
-import net.rpgtoolkit.common.TileSet;
+import net.rpgtoolkit.common.assets.TileSet;
 
 /**
  * Stores a cache of loaded TileSets for reuse between boards.
