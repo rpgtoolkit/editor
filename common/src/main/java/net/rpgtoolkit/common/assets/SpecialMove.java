@@ -4,8 +4,12 @@ import net.rpgtoolkit.common.CorruptAssetException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import static java.lang.System.out;
+import net.rpgtoolkit.common.utilities.JSON;
+import org.json.JSONObject;
+import org.json.JSONStringer;
 
-public class SpecialMove extends BasicType
+public class SpecialMove extends BasicType implements JSON.Saveable
 {
     // Constants
     private final String FILE_HEADER = "RPGTLKIT SPLMOVE";
@@ -140,6 +144,40 @@ public class SpecialMove extends BasicType
     {
         try
         {
+            JSONObject json = JSON.load(this.file);
+            if(json == null) { return this.openBinary(); } //falback to binary
+            this.harvestJSON(json);
+            this.inputStream.close(); //not using binary
+            return true;
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            return false;
+        }
+    }
+
+    @Override
+    public boolean save()
+    {
+        //convert to new format without overwriting old file
+        if(this.file.getName().endsWith(".spc")) {
+            this.file = new File(this.file.getPath() + "4");
+        }
+        return JSON.save(this, this.file);
+    }
+
+    public boolean saveAs(File fileName)
+    {
+        this.file = fileName;
+        return this.save();
+    }
+    
+    public boolean openBinary()
+    {
+        out.println("Attempting to open file as binary.");
+        try
+        {
             if (binaryIO.readBinaryString().equals(FILE_HEADER)) // Valid Status File
             {
                 int majorVersion = binaryIO.readBinaryInteger();
@@ -177,7 +215,7 @@ public class SpecialMove extends BasicType
         }
     }
 
-    public boolean save()
+    public boolean saveBinary()
     {
         try
         {
@@ -208,14 +246,44 @@ public class SpecialMove extends BasicType
         }
     }
 
-    public boolean saveAs(File fileName)
-    {
-        this.file = fileName;
-        return this.save();
-    }
-    
     @Override
     public String toString() {
         return getName();
+    }
+
+    @Override
+    public void populateJSON(JSONStringer json) {
+        json.key("name").value(this.name);
+        json.key("description").value(this.description);
+        json.key("mpCost").value(this.mpCost);
+        json.key("fightPower").value(this.fightPower);
+        json.key("rpgcodeProgram").value(this.rpgcodeProgram);
+        json.key("mpDrainedFromTarget").value(this.mpDrainedFromTarget);
+        json.key("associatedStatusEffect").value(this.associatedStatusEffect);
+        json.key("associatedAnimation").value(this.associatedAnimation);
+        json.key("canUseInBattle").value(this.getCanUseInBattle());
+        json.key("canUseInMenu").value(this.getCanUseInMenu());
+}
+
+    @Override
+    public String toJSONString() {
+        JSONStringer json = new JSONStringer();
+        json.object();
+        this.populateJSON(json);
+        json.endObject();
+        return JSON.toPrettyJSON(json);
+    }
+    
+    public void harvestJSON(JSONObject json) {
+        this.name = json.optString("name");
+        this.description = json.optString("description");
+        this.mpCost = json.optLong("mpCost");
+        this.fightPower = json.optLong("fightPower");
+        this.rpgcodeProgram = json.optString("rpgcodeProgram");
+        this.mpDrainedFromTarget = json.optLong("mpDrainedFromTarget");
+        this.associatedStatusEffect = json.optString("associatedStatusEffect");
+        this.associatedAnimation = json.optString("associatedAnimation");
+        this.setCanUseInBattle(json.optBoolean("canUseInBattle"));
+        this.setCanUseInMenu(json.optBoolean("canUseInMenu"));
     }
 }
