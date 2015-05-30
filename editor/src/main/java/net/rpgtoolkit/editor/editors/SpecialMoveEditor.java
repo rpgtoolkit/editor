@@ -7,7 +7,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
-import net.rpgtoolkit.common.SpecialMove;
+import net.rpgtoolkit.common.assets.SpecialMove;
 import net.rpgtoolkit.editor.ui.MainWindow;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
 import net.rpgtoolkit.editor.ui.Gui;

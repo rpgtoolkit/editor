@@ -3,8 +3,8 @@ package net.rpgtoolkit.editor.editors.board;
 import javax.swing.table.AbstractTableModel;
 import net.rpgtoolkit.editor.editors.AbstractBoardView;
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
-import net.rpgtoolkit.common.BoardChangeListener;
-import net.rpgtoolkit.common.BoardChangedEvent;
+import net.rpgtoolkit.common.assets.BoardChangeListener;
+import net.rpgtoolkit.common.assets.BoardChangedEvent;
 import net.rpgtoolkit.editor.editors.AbstractBoardView;
 
 /**

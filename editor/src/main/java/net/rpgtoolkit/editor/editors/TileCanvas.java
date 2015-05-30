@@ -8,8 +8,9 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import net.rpgtoolkit.common.Tile;
-import net.rpgtoolkit.common.TilePixelOutOfRangeException;
+
+import net.rpgtoolkit.common.assets.Tile;
+import net.rpgtoolkit.common.assets.TilePixelOutOfRangeException;
 
 /**
  * TileCanvas class is responsible for managing the drawing and editing of a

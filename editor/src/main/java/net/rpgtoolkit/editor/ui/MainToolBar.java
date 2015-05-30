@@ -10,14 +10,12 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
-import net.rpgtoolkit.common.EditorButton;
-import net.rpgtoolkit.common.Tile;
+import net.rpgtoolkit.common.assets.Tile;
 import net.rpgtoolkit.editor.editors.board.BucketBrush;
 import net.rpgtoolkit.editor.editors.board.SelectionBrush;
 import net.rpgtoolkit.editor.editors.board.ShapeBrush;
 import net.rpgtoolkit.editor.editors.board.SpriteBrush;
 import net.rpgtoolkit.editor.editors.board.VectorBrush;
-import net.rpgtoolkit.editor.ui.MainWindow;
 
 /**
  *

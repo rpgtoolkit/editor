@@ -1,9 +1,10 @@
 package net.rpgtoolkit.editor.ui;
 
-import net.rpgtoolkit.common.Board;
-import net.rpgtoolkit.common.BoardLight;
-import net.rpgtoolkit.common.BoardSprite;
-import net.rpgtoolkit.common.BoardVector;
+import net.rpgtoolkit.common.assets.Board;
+import net.rpgtoolkit.common.assets.BoardLight;
+import net.rpgtoolkit.common.assets.BoardSprite;
+import net.rpgtoolkit.common.assets.BoardVector;
+
 
 /**
  * 

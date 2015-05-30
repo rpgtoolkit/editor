@@ -11,8 +11,10 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
-import net.rpgtoolkit.common.BoardVector;
+import net.rpgtoolkit.common.assets.BoardVector;
+
 
 /**
  * 
