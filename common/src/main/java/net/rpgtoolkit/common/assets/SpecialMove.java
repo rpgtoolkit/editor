@@ -5,11 +5,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import static java.lang.System.out;
+import net.rpgtoolkit.common.assets.files.FileAssetHandleResolver;
+import net.rpgtoolkit.common.assets.serialization.JsonSMoveSerializer;
 import net.rpgtoolkit.common.utilities.JSON;
 import org.json.JSONObject;
 import org.json.JSONStringer;
 
-public class SpecialMove extends BasicType implements JSON.Saveable
+public class SpecialMove extends BasicType implements JSON.Saveable, Asset
 {
     // Constants
     private final String FILE_HEADER = "RPGTLKIT SPLMOVE";
@@ -142,15 +144,26 @@ public class SpecialMove extends BasicType implements JSON.Saveable
 
     public boolean open()
     {
+        final AssetManager assets = new AssetManager();
+
+        assets.registerResolver(new FileAssetHandleResolver());
+        assets.registerSerializer(new JsonSMoveSerializer());
+        
         try
         {
-            JSONObject json = JSON.load(this.file);
-            if(json == null) { return this.openBinary(); } //falback to binary
-            this.harvestJSON(json);
+
+            final AssetHandle handle = assets.deserialize(
+                    new AssetDescriptor("file://" + this.getFile().getPath()));
+
+            final SpecialMove smove = (SpecialMove) handle.getAsset();
+            
+//            JSONObject json = JSON.load(this.file);
+//            if(json == null) { return this.openBinary(); } //falback to binary
+//            this.harvestJSON(json);
             this.inputStream.close(); //not using binary
             return true;
         }
-        catch (IOException e)
+        catch (IOException | CorruptAssetException e)
         {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             return false;
@@ -285,5 +298,24 @@ public class SpecialMove extends BasicType implements JSON.Saveable
         this.associatedAnimation = json.optString("associatedAnimation");
         this.setCanUseInBattle(json.optBoolean("canUseInBattle"));
         this.setCanUseInMenu(json.optBoolean("canUseInMenu"));
+    }
+
+    @Override
+    public AssetDescriptor getDescriptor() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void reset() {
+        this.name = "";
+        this.description = "";
+        this.mpCost = 0;
+        this.fightPower = 0;
+        this.rpgcodeProgram = "";
+        this.mpDrainedFromTarget = 0;
+        this.associatedStatusEffect = "";
+        this.associatedAnimation = "";
+        this.setCanUseInBattle(false);
+        this.setCanUseInMenu(false);
     }
 }
