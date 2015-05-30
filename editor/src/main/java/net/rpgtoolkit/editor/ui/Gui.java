@@ -1,9 +1,16 @@
 package net.rpgtoolkit.editor.ui;
 
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListModel;
@@ -76,6 +83,63 @@ public abstract class Gui {
                 }
             }
         };
+    }
+    
+    /**
+     * Given an image, create an icon, scaled to fit in a box of the given width
+     * and height. Preserves aspect ratio. Will scale up if the box is bigger
+     * than the image's dimensions in both directions. Will scale down if the
+     * box is smaller than image's dimensions in either direction.
+     *
+     * Hooray for Stack Overflow (David Kroukamp's answer): http://stackoverflow.com/questions/14548808/scale-the-imageicon-automatically-to-label-size
+     *
+     * @param image
+     * @param width
+     * @param height
+     * @return a new ImageIcon from the scaled image, or null if image was null
+     */
+    public static ImageIcon ImageToIcon(BufferedImage image, int width, int height) {
+        if(image == null) { return null; }
+        double scale;
+        int originalW = image.getWidth();
+        int originalH = image.getHeight();
+        if(originalW >= originalH) {
+            scale = (double)width / originalW;
+        } else {
+            scale = (double)height / originalH;
+        }
+        int resizedW = (int)(originalW * scale);
+        int resizedH = (int)(originalH * scale);
+        BufferedImage resized = new BufferedImage(
+                resizedW, resizedH, BufferedImage.TRANSLUCENT
+        );
+        Graphics2D g = resized.createGraphics();
+        g.addRenderingHints(new RenderingHints(
+                RenderingHints.KEY_RENDERING,
+                RenderingHints.VALUE_RENDER_QUALITY
+        ));
+        g.drawImage(image, 0, 0, resizedW, resizedH, null);
+        g.dispose();
+        return new ImageIcon(resized);
+    }
+
+    /**
+     * Loads an image given a filename relative to the Bitmap directory.
+     *
+     * @param fileName the fileName of the image, relative to the Bitmap
+     * directory
+     * @return the loaded image, or null if given a blank fileName or if an
+     * exception occurred
+     */
+    public static BufferedImage loadImage(String fileName) {
+        try {
+            if(!fileName.equals("")) {
+                FileInputStream fis = new FileInputStream(System.getProperty("project.path") + "/Bitmap/" + fileName);
+                return ImageIO.read(fis);
+            }
+        } catch(IOException e) {
+        }
+        return null;
     }
     
 }

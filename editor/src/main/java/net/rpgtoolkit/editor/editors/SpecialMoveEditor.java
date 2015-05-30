@@ -195,7 +195,7 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
         statusEffectButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String loc = mainWindow.browseByType("Status Effects", "ste", "StatusE");
+                String loc = mainWindow.browseByType("StatusE", "Status Effects", "ste");
                 if(loc != null) {
                     statusEffect.setText(loc);
                 }
@@ -206,7 +206,7 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
         animationButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String loc = mainWindow.browseByType("Animation Files", "anm", "Misc");
+                String loc = mainWindow.browseByType("Misc", "Animation Files", "anm");
                 if(loc != null) {
                     animation.setText(loc);
                 }
@@ -217,7 +217,7 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
         programButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String loc = mainWindow.browseByType("Program Files", "prg", "Prg");
+                String loc = mainWindow.browseByType("Prg", "Program Files", "prg");
                 if(loc != null) {
                     program.setText(loc);
                 }

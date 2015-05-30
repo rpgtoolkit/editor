@@ -44,10 +44,10 @@ public class Player extends BasicType
     private long initialLevel;
     private String profilePicture;
     private ArrayList<PlayerSpecialMove> specialMoveList;
-    private String specialMoveName;
-    private byte hasSepcialMoves;
-    private ArrayList<String> accessoryName;
-    private byte armourType[] = new byte[7];
+    private String specialMovesName;
+    private byte hasSpecialMoves;
+    private ArrayList<String> accessoryNames;
+    private boolean armourTypes[] = new boolean[7];
     private long levelType;
     private int expIncreaseFactor;
     private long maxLevel;
@@ -73,7 +73,7 @@ public class Player extends BasicType
     private ArrayList<String> customGraphicNames;
     private ArrayList<String> standingGraphics;
     private double idleTimeBeforeStanding;
-    private double frameRate;
+    private double frameRate; //Seconds between each step
     private long loopSpeed;
     private BoardVector baseVector;
     private BoardVector activationVector;
@@ -110,14 +110,539 @@ public class Player extends BasicType
         return name;
     }
 
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    /**
+     * @return the expVariableName
+     */
+    public String getExpVariableName() {
+        return expVariableName;
+    }
+
+    /**
+     * @param expVariableName the expVariableName to set
+     */
+    public void setExpVariableName(String expVariableName) {
+        this.expVariableName = expVariableName;
+    }
+
+    /**
+     * @return the dpVariableName
+     */
+    public String getDpVariableName() {
+        return dpVariableName;
+    }
+
+    /**
+     * @param dpVariableName the dpVariableName to set
+     */
+    public void setDpVariableName(String dpVariableName) {
+        this.dpVariableName = dpVariableName;
+    }
+
+    /**
+     * @return the fpVariableName
+     */
+    public String getFpVariableName() {
+        return fpVariableName;
+    }
+
+    /**
+     * @param fpVariableName the fpVariableName to set
+     */
+    public void setFpVariableName(String fpVariableName) {
+        this.fpVariableName = fpVariableName;
+    }
+
+    /**
+     * @return the hpVariableName
+     */
+    public String getHpVariableName() {
+        return hpVariableName;
+    }
+
+    /**
+     * @param hpVariableName the hpVariableName to set
+     */
+    public void setHpVariableName(String hpVariableName) {
+        this.hpVariableName = hpVariableName;
+    }
+
+    /**
+     * @return the maxHPVariableName
+     */
+    public String getMaxHPVariableName() {
+        return maxHPVariableName;
+    }
+
+    /**
+     * @param maxHPVariableName the maxHPVariableName to set
+     */
+    public void setMaxHPVariableName(String maxHPVariableName) {
+        this.maxHPVariableName = maxHPVariableName;
+    }
+
+    /**
+     * @return the nameVariableName
+     */
+    public String getNameVariableName() {
+        return nameVariableName;
+    }
+
+    /**
+     * @param nameVariableName the nameVariableName to set
+     */
+    public void setNameVariableName(String nameVariableName) {
+        this.nameVariableName = nameVariableName;
+    }
+
+    /**
+     * @return the mpVariableName
+     */
+    public String getMpVariableName() {
+        return mpVariableName;
+    }
+
+    /**
+     * @param mpVariableName the mpVariableName to set
+     */
+    public void setMpVariableName(String mpVariableName) {
+        this.mpVariableName = mpVariableName;
+    }
+
+    /**
+     * @return the maxMPVariableName
+     */
+    public String getMaxMPVariableName() {
+        return maxMPVariableName;
+    }
+
+    /**
+     * @param maxMPVariableName the maxMPVariableName to set
+     */
+    public void setMaxMPVariableName(String maxMPVariableName) {
+        this.maxMPVariableName = maxMPVariableName;
+    }
+
+    /**
+     * @return the lvlVariableName
+     */
+    public String getLvlVariableName() {
+        return lvlVariableName;
+    }
+
+    /**
+     * @param lvlVariableName the lvlVariableName to set
+     */
+    public void setLvlVariableName(String lvlVariableName) {
+        this.lvlVariableName = lvlVariableName;
+    }
+
+    /**
+     * @return the initialExperience
+     */
+    public long getInitialExperience() {
+        return initialExperience;
+    }
+
+    /**
+     * @param initialExperience the initialExperience to set
+     */
+    public void setInitialExperience(long initialExperience) {
+        this.initialExperience = initialExperience;
+    }
+
+    /**
+     * @return the initialHP
+     */
+    public long getInitialHP() {
+        return initialHP;
+    }
+
+    /**
+     * @param initialHP the initialHP to set
+     */
+    public void setInitialHP(long initialHP) {
+        this.initialHP = initialHP;
+    }
+
+    /**
+     * @return the initialMaxHP
+     */
+    public long getInitialMaxHP() {
+        return initialMaxHP;
+    }
+
+    /**
+     * @param initialMaxHP the initialMaxHP to set
+     */
+    public void setInitialMaxHP(long initialMaxHP) {
+        this.initialMaxHP = initialMaxHP;
+    }
+
+    /**
+     * @return the initialDP
+     */
+    public long getInitialDP() {
+        return initialDP;
+    }
+
+    /**
+     * @param initialDP the initialDP to set
+     */
+    public void setInitialDP(long initialDP) {
+        this.initialDP = initialDP;
+    }
+
+    /**
+     * @return the initialFP
+     */
+    public long getInitialFP() {
+        return initialFP;
+    }
+
+    /**
+     * @param initialFP the initialFP to set
+     */
+    public void setInitialFP(long initialFP) {
+        this.initialFP = initialFP;
+    }
+
+    /**
+     * @return the initialMP
+     */
+    public long getInitialMP() {
+        return initialMP;
+    }
+
+    /**
+     * @param initialMP the initialMP to set
+     */
+    public void setInitialMP(long initialMP) {
+        this.initialMP = initialMP;
+    }
+
+    /**
+     * @return the initialMaxMP
+     */
+    public long getInitialMaxMP() {
+        return initialMaxMP;
+    }
+
+    /**
+     * @param initialMaxMP the initialMaxMP to set
+     */
+    public void setInitialMaxMP(long initialMaxMP) {
+        this.initialMaxMP = initialMaxMP;
+    }
+
+    /**
+     * @return the initialLevel
+     */
+    public long getInitialLevel() {
+        return initialLevel;
+    }
+
+    /**
+     * @param initialLevel the initialLevel to set
+     */
+    public void setInitialLevel(long initialLevel) {
+        this.initialLevel = initialLevel;
+    }
+
+    /**
+     * @return the profilePicture
+     */
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    /**
+     * @param profilePicture the profilePicture to set
+     */
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
+    /**
+     * @return the specialMoveList
+     */
+    public ArrayList<PlayerSpecialMove> getSpecialMoveList() {
+        return specialMoveList;
+    }
+
+    /**
+     * @return the specialMoveName
+     */
+    public String getSpecialMovesName() {
+        return specialMovesName;
+    }
+
+    /**
+     * @param specialMoveName the specialMoveName to set
+     */
+    public void setSpecialMovesName(String specialMoveName) {
+        this.specialMovesName = specialMoveName;
+    }
+
+    /**
+     * @return the hasSepcialMoves
+     */
+    public byte getHasSpecialMoves() {
+        return hasSpecialMoves;
+    }
+
+    /**
+     * @param hasSepcialMoves the hasSepcialMoves to set
+     */
+    public void setHasSpecialMoves(byte hasSepcialMoves) {
+        this.hasSpecialMoves = hasSepcialMoves;
+    }
+
+    /**
+     * @return the accessoryName
+     */
+    public ArrayList<String> getAccessoryNames() {
+        return accessoryNames;
+    }
+
+    /**
+     * @return the armourType
+     */
+    public boolean[] getArmourTypes() {
+        return armourTypes;
+    }
+
+    /**
+     * @return the levelType
+     */
+    public long getLevelType() {
+        return levelType;
+    }
+
+    /**
+     * @param levelType the levelType to set
+     */
+    public void setLevelType(long levelType) {
+        this.levelType = levelType;
+    }
+
+    /**
+     * @return the expIncreaseFactor
+     */
+    public int getExpIncreaseFactor() {
+        return expIncreaseFactor;
+    }
+
+    /**
+     * @param expIncreaseFactor the expIncreaseFactor to set
+     */
+    public void setExpIncreaseFactor(int expIncreaseFactor) {
+        this.expIncreaseFactor = expIncreaseFactor;
+    }
+
+    /**
+     * @return the maxLevel
+     */
+    public long getMaxLevel() {
+        return maxLevel;
+    }
+
+    /**
+     * @param maxLevel the maxLevel to set
+     */
+    public void setMaxLevel(long maxLevel) {
+        this.maxLevel = maxLevel;
+    }
+
+    /**
+     * @return the percentHPIncrease
+     */
+    public int getPercentHPIncrease() {
+        return percentHPIncrease;
+    }
+
+    /**
+     * @param percentHPIncrease the percentHPIncrease to set
+     */
+    public void setPercentHPIncrease(int percentHPIncrease) {
+        this.percentHPIncrease = percentHPIncrease;
+    }
+
+    /**
+     * @return the percentMPIncrease
+     */
+    public int getPercentMPIncrease() {
+        return percentMPIncrease;
+    }
+
+    /**
+     * @param percentMPIncrease the percentMPIncrease to set
+     */
+    public void setPercentMPIncrease(int percentMPIncrease) {
+        this.percentMPIncrease = percentMPIncrease;
+    }
+
+    /**
+     * @return the percentDPIncrease
+     */
+    public int getPercentDPIncrease() {
+        return percentDPIncrease;
+    }
+
+    /**
+     * @param percentDPIncrease the percentDPIncrease to set
+     */
+    public void setPercentDPIncrease(int percentDPIncrease) {
+        this.percentDPIncrease = percentDPIncrease;
+    }
+
+    /**
+     * @return the percentFPIncrease
+     */
+    public int getPercentFPIncrease() {
+        return percentFPIncrease;
+    }
+
+    /**
+     * @param percentFPIncrease the percentFPIncrease to set
+     */
+    public void setPercentFPIncrease(int percentFPIncrease) {
+        this.percentFPIncrease = percentFPIncrease;
+    }
+
+    /**
+     * @return the programOnLevelUp
+     */
+    public String getProgramOnLevelUp() {
+        return programOnLevelUp;
+    }
+
+    /**
+     * @param programOnLevelUp the programOnLevelUp to set
+     */
+    public void setProgramOnLevelUp(String programOnLevelUp) {
+        this.programOnLevelUp = programOnLevelUp;
+    }
+
+    /**
+     * @return the levelUpType
+     */
+    public byte getLevelUpType() {
+        return levelUpType;
+    }
+
+    /**
+     * @param levelUpType the levelUpType to set
+     */
+    public void setLevelUpType(byte levelUpType) {
+        this.levelUpType = levelUpType;
+    }
+
+    /**
+     * @return the characterSize
+     */
+    public byte getCharacterSize() {
+        return characterSize;
+    }
+
+    /**
+     * @param characterSize the characterSize to set
+     */
+    public void setCharacterSize(byte characterSize) {
+        this.characterSize = characterSize;
+    }
+
+    /**
+     * @return the standardGraphics
+     */
+    public ArrayList<String> getStandardGraphics() {
+        return standardGraphics;
+    }
+
+    /**
+     * @return the standardGraphicsAnimations
+     */
+    public ArrayList<Animation> getStandardGraphicsAnimations() {
+        return standardGraphicsAnimations;
+    }
+
+    /**
+     * @return the customGraphics
+     */
+    public ArrayList<String> getCustomGraphics() {
+        return customGraphics;
+    }
+
+    /**
+     * @return the customGraphicNames
+     */
+    public ArrayList<String> getCustomGraphicNames() {
+        return customGraphicNames;
+    }
+
+    /**
+     * @return the standingGraphics
+     */
+    public ArrayList<String> getStandingGraphics() {
+        return standingGraphics;
+    }
+
+    /**
+     * @return the idleTimeBeforeStanding
+     */
+    public double getIdleTimeBeforeStanding() {
+        return idleTimeBeforeStanding;
+    }
+
+    /**
+     * @param idleTimeBeforeStanding the idleTimeBeforeStanding to set
+     */
+    public void setIdleTimeBeforeStanding(double idleTimeBeforeStanding) {
+        this.idleTimeBeforeStanding = idleTimeBeforeStanding;
+    }
+
+    /**
+     * @return the frameRate (seconds between each step)
+     */
+    public double getFrameRate() {
+        return frameRate;
+    }
+
+    /**
+     * @param frameRate the frameRate to set (seconds between each step)
+     */
+    public void setFrameRate(double frameRate) {
+        this.frameRate = frameRate;
+    }
+
     public BoardVector getBaseVector()
     {
         return baseVector;
     }
 
+    /**
+     * @param baseVector the baseVector to set
+     */
+    public void setBaseVector(BoardVector baseVector) {
+        this.baseVector = baseVector;
+    }
+
     public BoardVector getActivationVector()
     {
         return activationVector;
+    }
+
+    /**
+     * @param activationVector the activationVector to set
+     */
+    public void setActivationVector(BoardVector activationVector) {
+        this.activationVector = activationVector;
     }
 
     private boolean open()
@@ -126,7 +651,7 @@ public class Player extends BasicType
         {
             // Prepare the ArrayLists
             specialMoveList = new ArrayList<>();
-            accessoryName = new ArrayList<>();
+            accessoryNames = new ArrayList<>();
             standardGraphics = new ArrayList<>();
             customGraphics = new ArrayList<>();
             customGraphicNames = new ArrayList<>();
@@ -171,15 +696,15 @@ public class Player extends BasicType
                         PlayerSpecialMove newSpecialMove = new PlayerSpecialMove(name, minExp, minLevel, cVar, cVarTest);
                         specialMoveList.add(newSpecialMove);
                     }
-                    specialMoveName = binaryIO.readBinaryString();
-                    hasSepcialMoves = binaryIO.readBinaryByte();
+                    specialMovesName = binaryIO.readBinaryString();
+                    hasSpecialMoves = binaryIO.readBinaryByte();
                     for (int i = 0; i < 11; i++)
                     {
-                        accessoryName.add(binaryIO.readBinaryString());
+                        accessoryNames.add(binaryIO.readBinaryString());
                     }
                     for (int i = 0; i < 7; i++)
                     {
-                        armourType[i] = binaryIO.readBinaryByte();
+                        armourTypes[i] = binaryIO.readBinaryByte() == 1;
                     }
                     if (majorVersion == 3)
                     {
@@ -320,15 +845,15 @@ public class Player extends BasicType
                 binaryIO.writeBinaryString(specialMove.getConditionVariable());
                 binaryIO.writeBinaryString(specialMove.getConditionVariableTest());
             }
-            binaryIO.writeBinaryString(specialMoveName);
-            binaryIO.writeBinaryByte(hasSepcialMoves);
+            binaryIO.writeBinaryString(specialMovesName);
+            binaryIO.writeBinaryByte(hasSpecialMoves);
             for (int i = 0; i < 11; i++)
             {
-                binaryIO.writeBinaryString(accessoryName.get(i));
+                binaryIO.writeBinaryString(accessoryNames.get(i));
             }
             for (int i = 0; i < 7; i++)
             {
-                binaryIO.writeBinaryByte(armourType[i]);
+                binaryIO.writeBinaryByte(armourTypes[i] == true ? (byte)1 : (byte)0);
             }
             binaryIO.writeBinaryLong(levelType);
             binaryIO.writeBinaryInteger(expIncreaseFactor);
