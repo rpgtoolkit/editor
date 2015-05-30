@@ -361,7 +361,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
         } else if (fileName.endsWith(".tst")) {
             this.openTileset();
-        } else if (fileName.endsWith(".spc") || fileName.endsWith(".spc4")) {
+        } else if (fileName.endsWith(".spc") || fileName.endsWith(".spc.json")) {
             this.openSpecialMove();
         }
     }
