@@ -14,12 +14,12 @@ import java.util.ListIterator;
 import javax.swing.JPanel;
 
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
-import net.rpgtoolkit.common.BoardChangeListener;
-import net.rpgtoolkit.common.BoardChangedEvent;
-import net.rpgtoolkit.common.BoardLayer;
-import net.rpgtoolkit.common.Board;
+import net.rpgtoolkit.common.assets.BoardChangeListener;
+import net.rpgtoolkit.common.assets.BoardChangedEvent;
+import net.rpgtoolkit.common.assets.BoardLayer;
+import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.utilities.TileSetCache;
-import net.rpgtoolkit.common.TilePixelOutOfRangeException;
+import net.rpgtoolkit.common.assets.TilePixelOutOfRangeException;
 import net.rpgtoolkit.editor.editors.board.MultiLayerContainer;
 
 /**

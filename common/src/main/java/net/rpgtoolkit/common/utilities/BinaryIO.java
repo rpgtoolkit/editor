@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 
-import net.rpgtoolkit.common.CorruptFileException;
+import net.rpgtoolkit.common.CorruptAssetException;
 
 /**
  * This class is design to emulate the "CommonBinaryIO.bas" file
@@ -51,9 +51,9 @@ public class BinaryIO
      * Reads bytes from the input stream until a null value is read.
      *
      * @return String of bytes read from the input stream
-     * @throws CorruptFileException
+     * @throws CorruptAssetException
      */
-    public String readBinaryString() throws CorruptFileException
+    public String readBinaryString() throws CorruptAssetException
     {
         try
         {
@@ -79,7 +79,7 @@ public class BinaryIO
         }
         catch (IOException e) // STOP ON ERROR!
         {
-            throw new CorruptFileException(inputStream.toString() + " is corrupt!");
+            throw new CorruptAssetException(inputStream.toString() + " is corrupt!");
         }
     }
 
@@ -109,9 +109,9 @@ public class BinaryIO
      * Reads an integer from the input stream, in this case Integer = 2 bytes
      *
      * @return Integer value of the bytes read from the input stream
-     * @throws CorruptFileException Details of exception thrown
+     * @throws CorruptAssetException Details of exception thrown
      */
-    public int readBinaryInteger() throws CorruptFileException
+    public int readBinaryInteger() throws CorruptAssetException
     {
         try
         {
@@ -157,9 +157,9 @@ public class BinaryIO
      * Reads a long from the input stream, in this case Long = 4 bytes
      *
      * @return Long value of the bytes read from the input stream
-     * @throws CorruptFileException
+     * @throws CorruptAssetException
      */
-    public long readBinaryLong() throws CorruptFileException
+    public long readBinaryLong() throws CorruptAssetException
     {
         try
         {
@@ -201,7 +201,7 @@ public class BinaryIO
 
     }
 
-    public double readBinaryDouble() throws CorruptFileException
+    public double readBinaryDouble() throws CorruptAssetException
     {
         try
         {
@@ -243,7 +243,7 @@ public class BinaryIO
 
     }
 
-    public byte readBinaryByte() throws CorruptFileException
+    public byte readBinaryByte() throws CorruptAssetException
     {
         try
         {

@@ -3,7 +3,7 @@ package net.rpgtoolkit.editor.editors;
 
 
 import java.util.EventObject;
-import net.rpgtoolkit.common.Tile;
+import net.rpgtoolkit.common.assets.Tile;
 
 /**
  * 

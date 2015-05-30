@@ -7,8 +7,9 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
-import net.rpgtoolkit.common.Tile;
-import net.rpgtoolkit.common.Animation;
+import net.rpgtoolkit.common.assets.Tile;
+import net.rpgtoolkit.common.assets.Animation;
+
 import net.rpgtoolkit.editor.ui.MainWindow;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
 import net.rpgtoolkit.editor.ui.Gui;

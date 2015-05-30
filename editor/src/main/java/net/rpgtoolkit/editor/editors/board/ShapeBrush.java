@@ -6,7 +6,7 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
-import net.rpgtoolkit.common.Tile;
+import net.rpgtoolkit.common.assets.Tile;
 import net.rpgtoolkit.editor.editors.AbstractBoardView;
 
 /**

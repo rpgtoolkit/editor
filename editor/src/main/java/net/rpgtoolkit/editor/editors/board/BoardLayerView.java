@@ -6,12 +6,13 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.ArrayList;
-import net.rpgtoolkit.common.BoardLayer;
-import net.rpgtoolkit.common.Tile;
-import net.rpgtoolkit.common.Board;
-import net.rpgtoolkit.common.BoardSprite;
-import net.rpgtoolkit.common.BoardVector;
-import net.rpgtoolkit.common.TilePixelOutOfRangeException;
+
+import net.rpgtoolkit.common.assets.Board;
+import net.rpgtoolkit.common.assets.BoardLayer;
+import net.rpgtoolkit.common.assets.BoardSprite;
+import net.rpgtoolkit.common.assets.BoardVector;
+import net.rpgtoolkit.common.assets.Tile;
+import net.rpgtoolkit.common.assets.TilePixelOutOfRangeException;
 
 /**
  *
@@ -427,7 +428,7 @@ public final class BoardLayerView implements Cloneable
             try
             {
                 // Attempt to get the south facing frame.
-                g.drawImage(sprite.getSpriteFile().getAnimationFrame(2), x, y, null);
+               // g.drawImage(sprite.getSpriteFile().getAnimationFrame(2), x, y, null);
                 
                 // If the sprite has an animation frame.
                 if (sprite.isSelected())

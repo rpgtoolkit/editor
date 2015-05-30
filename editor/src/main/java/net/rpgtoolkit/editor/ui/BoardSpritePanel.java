@@ -10,9 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import net.rpgtoolkit.common.BoardSprite;
-
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.common.assets.BoardSprite;
 
 /**
  * 
