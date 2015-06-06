@@ -1,0 +1,12 @@
+{
+    "fightPower": 10,
+    "associatedStatusEffect": "test.ste",
+    "name": "Test Move 2",
+    "canUseInBattle": true,
+    "canUseInMenu": true,
+    "description": "Fooooooo JSON Style!",
+    "mpCost": 10,
+    "rpgcodeProgram": "",
+    "associatedAnimation": "start_e.anm",
+    "mpDrainedFromTarget": 0
+}

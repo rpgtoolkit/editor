@@ -5,7 +5,6 @@
 package net.rpgtoolkit.common.assets;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +32,13 @@ public class AssetManager {
     public int getAssetCount() {
         return this.assets.size();
     }
-    
+
+    /**
+     * Registers a serializer with the manager. Serializers are sorted in
+     * ascending order of priority, so lower priority numbers are first.
+     *
+     * @param serializer
+     */
     public void registerSerializer(final AssetSerializer serializer) {
         if (serializer == null) {
             throw new NullPointerException();

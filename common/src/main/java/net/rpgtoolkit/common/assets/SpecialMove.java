@@ -7,11 +7,8 @@ import java.io.IOException;
 import static java.lang.System.out;
 import net.rpgtoolkit.common.assets.files.FileAssetHandleResolver;
 import net.rpgtoolkit.common.assets.serialization.JsonSMoveSerializer;
-import net.rpgtoolkit.common.utilities.JSON;
-import org.json.JSONObject;
-import org.json.JSONStringer;
 
-public class SpecialMove extends BasicType implements JSON.Saveable, Asset
+public class SpecialMove extends BasicType implements Asset
 {
     // Constants
     private final String FILE_HEADER = "RPGTLKIT SPLMOVE";
@@ -170,14 +167,14 @@ public class SpecialMove extends BasicType implements JSON.Saveable, Asset
         }
     }
 
-    @Override
     public boolean save()
     {
         //convert to new format without overwriting old file
         if(this.file.getName().endsWith(".spc")) {
             this.file = new File(this.file.getPath() + "4");
         }
-        return JSON.save(this, this.file);
+//        return JSON.save(this, this.file);
+        return false;
     }
 
     public boolean saveAs(File fileName)
@@ -262,42 +259,6 @@ public class SpecialMove extends BasicType implements JSON.Saveable, Asset
     @Override
     public String toString() {
         return getName();
-    }
-
-    @Override
-    public void populateJSON(JSONStringer json) {
-        json.key("name").value(this.name);
-        json.key("description").value(this.description);
-        json.key("mpCost").value(this.mpCost);
-        json.key("fightPower").value(this.fightPower);
-        json.key("rpgcodeProgram").value(this.rpgcodeProgram);
-        json.key("mpDrainedFromTarget").value(this.mpDrainedFromTarget);
-        json.key("associatedStatusEffect").value(this.associatedStatusEffect);
-        json.key("associatedAnimation").value(this.associatedAnimation);
-        json.key("canUseInBattle").value(this.getCanUseInBattle());
-        json.key("canUseInMenu").value(this.getCanUseInMenu());
-}
-
-    @Override
-    public String toJSONString() {
-        JSONStringer json = new JSONStringer();
-        json.object();
-        this.populateJSON(json);
-        json.endObject();
-        return JSON.toPrettyJSON(json);
-    }
-    
-    public void harvestJSON(JSONObject json) {
-        this.name = json.optString("name");
-        this.description = json.optString("description");
-        this.mpCost = json.optLong("mpCost");
-        this.fightPower = json.optLong("fightPower");
-        this.rpgcodeProgram = json.optString("rpgcodeProgram");
-        this.mpDrainedFromTarget = json.optLong("mpDrainedFromTarget");
-        this.associatedStatusEffect = json.optString("associatedStatusEffect");
-        this.associatedAnimation = json.optString("associatedAnimation");
-        this.setCanUseInBattle(json.optBoolean("canUseInBattle"));
-        this.setCanUseInMenu(json.optBoolean("canUseInMenu"));
     }
 
     @Override

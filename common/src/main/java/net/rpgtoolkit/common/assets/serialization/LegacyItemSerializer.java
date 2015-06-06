@@ -27,6 +27,11 @@ public class LegacyItemSerializer
     private final int HEADER_VERSION_MINOR = 7;
 
     @Override
+    public int priority() {
+        return 1; //not our first choice
+    }
+
+    @Override
     public boolean canSerialize(AssetDescriptor descriptor) {
         final String ext = Paths.getExtension(descriptor.getURI().getPath());
         return (ext.contains("itm"));
