@@ -28,3 +28,6 @@ build/
 out/
 /.nb-gradle/private/
 /.nb-gradle/
+/common/target/
+/editor/target/
+/deps/target/
