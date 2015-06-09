@@ -31,6 +31,7 @@ import javax.swing.event.ListSelectionListener;
 import net.rpgtoolkit.editor.editors.AbstractBoardView;
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
 import net.rpgtoolkit.editor.editors.board.BoardLayersTableModel;
+import net.rpgtoolkit.editor.ui.resources.Icons;
 
 /**
  *
@@ -203,8 +204,7 @@ public class LayerPanel extends JPanel implements ChangeListener,
         this.layerScrollPane = new JScrollPane(this.layerTable);
 
         this.newLayerButton = new JButton();
-        this.newLayerButton.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/new.png")));
+        this.newLayerButton.setIcon(Icons.getSmallIcon("new"));
         this.newLayerButton.addActionListener(new ActionListener()
         {
 
@@ -219,8 +219,7 @@ public class LayerPanel extends JPanel implements ChangeListener,
         });
 
         this.moveLayerUpButton = new JButton();
-        this.moveLayerUpButton.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/arrow-090.png")));
+        this.moveLayerUpButton.setIcon(Icons.getSmallIcon("arrow-090"));
         this.moveLayerUpButton.addActionListener(new ActionListener()
         {
 
@@ -239,8 +238,7 @@ public class LayerPanel extends JPanel implements ChangeListener,
         });
 
         this.moveLayerDownButton = new JButton();
-        this.moveLayerDownButton.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/arrow-270.png")));
+        this.moveLayerDownButton.setIcon(Icons.getSmallIcon("arrow-270"));
         this.moveLayerDownButton.addActionListener(new ActionListener()
         {
 
@@ -259,8 +257,7 @@ public class LayerPanel extends JPanel implements ChangeListener,
         });
 
         this.cloneLayerButton = new JButton();
-        this.cloneLayerButton.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/copy.png")));
+        this.cloneLayerButton.setIcon(Icons.getSmallIcon("copy"));
         this.cloneLayerButton.addActionListener(new ActionListener()
         {
 
@@ -279,8 +276,7 @@ public class LayerPanel extends JPanel implements ChangeListener,
         });
 
         this.deleteLayerButton = new JButton();
-        this.deleteLayerButton.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/delete.png")));
+        this.deleteLayerButton.setIcon(Icons.getSmallIcon("delete"));
         this.deleteLayerButton.addActionListener(new ActionListener()
         {
 

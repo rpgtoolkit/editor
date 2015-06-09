@@ -17,6 +17,7 @@ import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 import net.rpgtoolkit.editor.ui.MainWindow;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
+import net.rpgtoolkit.editor.ui.resources.Icons;
 
 /**
  *
@@ -169,8 +170,7 @@ public final class FileMenu extends JMenu
     private void configureNewProjectMenuItem()
     {
         newProjectMenuItem = new JMenuItem("New Project");
-        newProjectMenuItem.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/new-project.png")));
+        newProjectMenuItem.setIcon(Icons.getSmallIcon("new-project"));
         newProjectMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
         newProjectMenuItem.setMnemonic(KeyEvent.VK_N);
@@ -183,8 +183,7 @@ public final class FileMenu extends JMenu
     private void configureOpenProjectMenuItem()
     {
         openProjectMenuItem = new JMenuItem("Open Project");
-        openProjectMenuItem.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/project.png")));
+        openProjectMenuItem.setIcon(Icons.getSmallIcon("project"));
         openProjectMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK +
                 ActionEvent.SHIFT_MASK));
@@ -206,8 +205,7 @@ public final class FileMenu extends JMenu
     {
         openFileMenuItem = new JMenuItem("Open File");
         this.openFileMenuItem.setEnabled(false);
-        openFileMenuItem.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/open.png")));
+        openFileMenuItem.setIcon(Icons.getSmallIcon("open"));
         openFileMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
         openFileMenuItem.setMnemonic(KeyEvent.VK_O);
@@ -227,8 +225,7 @@ public final class FileMenu extends JMenu
     private void configureSaveMenuItem()
     {
         saveMenuItem = new JMenuItem("Save");
-        saveMenuItem.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/save.png")));
+        saveMenuItem.setIcon(Icons.getSmallIcon("save"));
         saveMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
         saveMenuItem.setMnemonic(KeyEvent.VK_N);
@@ -270,8 +267,7 @@ public final class FileMenu extends JMenu
     private void configureSaveAllMenuItem()
     {
         saveAllMenuItem = new JMenuItem("Save All");
-        saveAllMenuItem.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/save-all.png")));
+        saveAllMenuItem.setIcon(Icons.getSmallIcon("save-all"));
         saveAllMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK +
                 ActionEvent.SHIFT_MASK));

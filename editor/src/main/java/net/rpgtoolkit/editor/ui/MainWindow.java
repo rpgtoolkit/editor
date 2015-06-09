@@ -39,6 +39,7 @@ import net.rpgtoolkit.editor.editors.TileSelectionEvent;
 import net.rpgtoolkit.editor.editors.TileSelectionListener;
 import net.rpgtoolkit.editor.editors.TilesetCanvas;
 import net.rpgtoolkit.editor.editors.TileRegionSelectionEvent;
+import net.rpgtoolkit.editor.ui.resources.Icons;
 
 /**
  * Currently opening TileSets, tiles, programs, boards, animations, characters
@@ -114,9 +115,9 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         this.toolboxPanel.add(this.lowerTabbedPane);
 
         // Application icon.
-        this.setIconImage(new ImageIcon(getClass()
-                .getResource("/editor/application.png"))
-                .getImage());
+        
+        this.setIconImage(
+                Icons.getLargeIcon("application").getImage());
 
         this.debugPane = new JPanel();
         this.debugLog = new JTextField("Debug Messages:");

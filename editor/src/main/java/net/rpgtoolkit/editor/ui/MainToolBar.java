@@ -22,6 +22,7 @@ import net.rpgtoolkit.editor.editors.board.SelectionBrush;
 import net.rpgtoolkit.editor.editors.board.ShapeBrush;
 import net.rpgtoolkit.editor.editors.board.SpriteBrush;
 import net.rpgtoolkit.editor.editors.board.VectorBrush;
+import net.rpgtoolkit.editor.ui.resources.Icons;
 
 /**
  *
@@ -83,13 +84,11 @@ public class MainToolBar extends JToolBar
         this.popupMenu.add(this.newProjectMenu);
 
         this.newButton = new EditorButton();
-        this.newButton.setIcon(new ImageIcon(getClass().getResource(
-                "/editor/new.png")));
+        this.newButton.setIcon(Icons.getSmallIcon("new"));
 
         this.openButton = new EditorButton();
         this.openButton.setEnabled(false);
-        this.openButton.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/open.png")));
+        this.openButton.setIcon(Icons.getSmallIcon("open"));
         this.openButton.addActionListener(new ActionListener()
         {
 
@@ -101,41 +100,32 @@ public class MainToolBar extends JToolBar
         });
 
         this.saveButton = new EditorButton();
-        this.saveButton.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/save.png")));
+        this.saveButton.setIcon(Icons.getSmallIcon("save"));
 
         this.saveAllButton = new EditorButton();
-        this.saveAllButton.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/save-all.png")));
+        this.saveAllButton.setIcon(Icons.getSmallIcon("save-all"));
 
         this.cutButton = new EditorButton();
-        this.cutButton.setIcon(new ImageIcon(getClass().
-                getResource("/editor/cut.png")));
+        this.cutButton.setIcon(Icons.getSmallIcon("cut"));
 
         this.copyButton = new EditorButton();
-        this.copyButton.setIcon(new ImageIcon(getClass().
-                getResource("/editor/copy.png")));
+        this.copyButton.setIcon(Icons.getSmallIcon("copy"));
 
         this.pasteButton = new EditorButton();
-        this.pasteButton.setIcon(new ImageIcon(getClass().
-                getResource("/editor/paste.png")));
+        this.pasteButton.setIcon(Icons.getSmallIcon("paste"));
 
         this.deleteButton = new EditorButton();
-        this.deleteButton.setIcon(new ImageIcon(getClass().
-                getResource("/editor/delete.png")));
+        this.deleteButton.setIcon(Icons.getSmallIcon("delete"));
 
         this.undoButton = new EditorButton();
-        this.undoButton.setIcon(new ImageIcon(getClass().
-                getResource("/editor/undo.png")));
-
+        this.undoButton.setIcon(Icons.getSmallIcon("undo"))
+                ;
         this.redoButton = new EditorButton();
-        this.redoButton.setIcon(new ImageIcon(getClass().
-                getResource("/editor/redo.png")));
+        this.redoButton.setIcon(Icons.getSmallIcon("redo"));
 
         this.pencilButton = new JToggleButton();
         this.pencilButton.setFocusable(false);
-        this.pencilButton.setIcon(new ImageIcon(getClass().
-                getResource("/editor/pencil.png")));
+        this.pencilButton.setIcon(Icons.getSmallIcon("pencil"));
         this.pencilButton.addActionListener(new ActionListener()
         {
 
@@ -151,8 +141,7 @@ public class MainToolBar extends JToolBar
 
         this.selectionButton = new JToggleButton();
         this.selectionButton.setFocusable(false);
-        this.selectionButton.setIcon(new ImageIcon(getClass().
-                getResource("/editor/selection.png")));
+        this.selectionButton.setIcon(Icons.getSmallIcon("selection"));
         this.selectionButton.addActionListener(new ActionListener()
         {
 
@@ -166,8 +155,7 @@ public class MainToolBar extends JToolBar
 
         this.bucketButton = new JToggleButton();
         this.bucketButton.setFocusable(false);
-        this.bucketButton.setIcon(new ImageIcon(getClass().
-                getResource("/editor/bucket.png")));
+        this.bucketButton.setIcon(Icons.getSmallIcon("bucket"));
         this.bucketButton.addActionListener(new ActionListener()
         {
 
@@ -182,8 +170,7 @@ public class MainToolBar extends JToolBar
 
         this.eraserButton = new JToggleButton();
         this.eraserButton.setFocusable(false);
-        this.eraserButton.setIcon(new ImageIcon(getClass().
-                getResource("/editor/eraser.png")));
+        this.eraserButton.setIcon(Icons.getSmallIcon("eraser"));
         this.eraserButton.addActionListener(new ActionListener()
         {
 
@@ -199,8 +186,7 @@ public class MainToolBar extends JToolBar
 
         this.vectorButton = new JToggleButton();
         this.vectorButton.setFocusable(false);
-        this.vectorButton.setIcon(new ImageIcon(getClass().
-                getResource("/editor/layer-shape-polyline.png")));
+        this.vectorButton.setIcon(Icons.getSmallIcon("layer-shape-polyline"));
         this.vectorButton.addActionListener(new ActionListener()
         {
 
@@ -221,8 +207,7 @@ public class MainToolBar extends JToolBar
 
         this.spriteButton = new JToggleButton();
         this.spriteButton.setFocusable(false);
-        this.spriteButton.setIcon(new ImageIcon(getClass().
-                getResource("/editor/user.png")));
+        this.spriteButton.setIcon(Icons.getSmallIcon("user"));
         this.spriteButton.addActionListener(new ActionListener()
         {
 
@@ -236,8 +221,7 @@ public class MainToolBar extends JToolBar
 
         this.lightButton = new JToggleButton();
         this.lightButton.setFocusable(false);
-        this.lightButton.setIcon(new ImageIcon(getClass().
-                getResource("/editor/flashlight-shine.png")));
+        this.lightButton.setIcon(Icons.getSmallIcon("flashlight-shine"));
         this.lightButton.addActionListener(new ActionListener()
         {
 
@@ -249,8 +233,7 @@ public class MainToolBar extends JToolBar
         });
 
         this.zoomInButton = new EditorButton();
-        this.zoomInButton.setIcon(new ImageIcon(getClass().
-                getResource("/editor/zoom-in.png")));
+        this.zoomInButton.setIcon(Icons.getSmallIcon("zoom-in"));
         this.zoomInButton.addActionListener(new ActionListener()
         {
 
@@ -262,8 +245,7 @@ public class MainToolBar extends JToolBar
         });
 
         this.zoomOutButton = new EditorButton();
-        this.zoomOutButton.setIcon(new ImageIcon(getClass().
-                getResource("/editor/zoom-out.png")));
+        this.zoomOutButton.setIcon(Icons.getSmallIcon("zoom-out"));
         this.zoomOutButton.addActionListener(new ActionListener()
         {
 
@@ -275,17 +257,14 @@ public class MainToolBar extends JToolBar
         });
 
         this.runButton = new EditorButton();
-        this.runButton.setIcon(new ImageIcon(getClass().
-                getResource("/editor/run.png")));
+        this.runButton.setIcon(Icons.getSmallIcon("run"));
         this.runButton.setEnabled(false);
 
         this.stopButton = new EditorButton();
-        this.stopButton.setIcon(new ImageIcon(getClass().
-                getResource("/editor/stop.png")));
+        this.stopButton.setIcon(Icons.getSmallIcon("stop"));
 
         this.helpButton = new EditorButton();
-        this.helpButton.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/help.png")));
+        this.helpButton.setIcon(Icons.getSmallIcon("help"));
 
         // Disable all the buttons for now
         this.newButton.setEnabled(false);
