@@ -62,6 +62,11 @@ public class PropertiesPanel extends JPanel implements ListSelectionListener
         JPanel intermediate = new JPanel(new FlowLayout());
         intermediate.add(panel);
         
+        if (panel != null)
+        {
+            intermediate.add(panel);
+        }
+        
         this.propertiesScrollPane.setViewportView(intermediate);
         this.propertiesScrollPane.getViewport().revalidate();
     }
