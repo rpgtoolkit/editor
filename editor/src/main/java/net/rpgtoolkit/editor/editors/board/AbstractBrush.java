@@ -12,7 +12,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
 
-import net.rpgtoolkit.editor.editors.AbstractBoardView;
 
 /**
  * 

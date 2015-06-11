@@ -12,7 +12,6 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 
 import net.rpgtoolkit.common.assets.Tile;
-import net.rpgtoolkit.editor.editors.AbstractBoardView;
 
 /**
  * 

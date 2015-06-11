@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package net.rpgtoolkit.editor.editors;
+package net.rpgtoolkit.editor.editors.board;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -27,6 +27,7 @@ import net.rpgtoolkit.common.assets.BoardLayer;
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.utilities.TileSetCache;
 import net.rpgtoolkit.common.assets.TilePixelOutOfRangeException;
+import net.rpgtoolkit.editor.editors.BoardEditor;
 import net.rpgtoolkit.editor.editors.board.MultiLayerContainer;
 
 /**

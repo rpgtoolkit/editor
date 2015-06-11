@@ -25,7 +25,6 @@ import java.util.logging.Logger;
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.assets.TileSet;
 import net.rpgtoolkit.common.assets.TilePixelOutOfRangeException;
-import net.rpgtoolkit.editor.editors.AbstractBoardView;
 import net.rpgtoolkit.editor.editors.BoardEditor;
 import net.rpgtoolkit.editor.ui.MainWindow;
 
