@@ -1154,12 +1154,13 @@ public final class Board extends BasicType
                 {
                     // Animated Tile
                     AnimatedTile aTile = new AnimatedTile(new File(
-                            System.getProperty("project.path") + "/tiles/"
+                            System.getProperty("project.path") + "/Tiles/"
                             + indexString));
                     indexString = aTile.getFirstFrame();
                 }
 
                 String tileSetName = indexString.split(".tst")[0] + ".tst";
+                
                 if (!cache.contains(tileSetName))
                 {
                     this.tileSet = cache.loadTileSet(tileSetName);
