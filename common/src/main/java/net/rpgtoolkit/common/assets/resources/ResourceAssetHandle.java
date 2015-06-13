@@ -4,8 +4,11 @@
  */
 package net.rpgtoolkit.common.assets.resources;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import net.rpgtoolkit.common.assets.AssetDescriptor;
@@ -31,6 +34,18 @@ public class ResourceAssetHandle extends AssetHandle {
 
     @Override
     public OutputStream getOutputStream() throws IOException {
+        throw new IOException("Internal resource assets are read-only.");
+    }
+
+    @Override
+    public BufferedReader getReader() throws IOException {
+        return new BufferedReader(new InputStreamReader(getInputStream()));
+    }
+
+    @Override
+    public BufferedWriter getWriter() throws IOException {
+//        final String path = descriptor.getURI().getPath();
+//        return new BufferedWriter(new FileWriter(ResourceAssetHandle.class.getResource(path).getFile()));
         throw new IOException("Internal resource assets are read-only.");
     }
     

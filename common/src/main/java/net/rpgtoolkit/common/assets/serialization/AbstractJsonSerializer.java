@@ -7,11 +7,9 @@ package net.rpgtoolkit.common.assets.serialization;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import static java.lang.System.out;
+import java.net.URI;
 import net.rpgtoolkit.common.CorruptAssetException;
 import net.rpgtoolkit.common.assets.AbstractAssetSerializer;
 import net.rpgtoolkit.common.assets.AssetHandle;
@@ -30,7 +28,7 @@ public abstract class AbstractJsonSerializer
     @Override
     public void serialize(AssetHandle handle)
             throws IOException, CorruptAssetException {
-        File f = new File(handle.getDescriptor().getURI());
+        URI f = handle.getDescriptor().getURI();
         String output;
         try {
             output = this.toJSONString(handle);
@@ -42,7 +40,7 @@ public abstract class AbstractJsonSerializer
             //Logger.getLogger(JSON.class.getName()).log(Level.SEVERE, null, ex);
             throw new CorruptAssetException(message);
         }
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(f))) {
+        try (BufferedWriter writer = handle.getWriter()) {
             writer.write(output);
             out.println("JSON written to " + f.getPath());
         } catch(IOException ex) {
@@ -56,14 +54,15 @@ public abstract class AbstractJsonSerializer
     
     /**
      * Loads a JSON object from disk at the File provided.
-     * @param f
+     * @param handle
      * @return the JSONObject that was loaded, or null if load failed
      * @throws java.io.IOException
      * @throws net.rpgtoolkit.common.CorruptAssetException
      */
-    public static JSONObject load(File f)
+    public static JSONObject load(AssetHandle handle)
             throws IOException, CorruptAssetException {
-        try (BufferedReader reader = new BufferedReader(new FileReader(f))){
+        URI f = handle.getDescriptor().getURI();
+        try (BufferedReader reader = handle.getReader()){
             StringBuilder source = new StringBuilder();
             String line = reader.readLine();
             while(line != null) {

@@ -5,7 +5,6 @@
 package net.rpgtoolkit.common.io;
 
 import java.io.IOException;
-import java.net.URI;
 import net.rpgtoolkit.common.CorruptAssetException;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
 import net.rpgtoolkit.common.assets.AssetHandle;
@@ -33,7 +32,7 @@ public final class LegacyAssetSerializerTests {
         
         final AssetHandle handle = deserialize(serializer, descriptor);   
         final Item item = (Item) handle.getAsset();
-                
+        
     }
     
     private AssetHandle deserialize(AssetSerializer serializer, 

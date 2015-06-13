@@ -2,6 +2,9 @@ package net.rpgtoolkit.editor.editors;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
@@ -83,6 +86,13 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
     @Override
     public boolean save()
     {
+        try {
+            mpCost.commitEdit();
+            fightPower.commitEdit();
+            mpRemovedTarget.commitEdit();
+        } catch(ParseException ex) {
+            Logger.getLogger(SpecialMoveEditor.class.getName()).log(Level.SEVERE, null, ex);
+        }
         this.move.setName(moveName.getText());
         this.move.setDescription(description.getText());
         this.move.setMpCost(mpCost.getValue());

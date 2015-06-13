@@ -5,8 +5,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import static java.lang.System.out;
-import net.rpgtoolkit.common.assets.files.FileAssetHandleResolver;
-import net.rpgtoolkit.common.assets.serialization.JsonSMoveSerializer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SpecialMove extends BasicType implements Asset
 {
@@ -34,6 +34,7 @@ public class SpecialMove extends BasicType implements Asset
     public SpecialMove(File file)
     {
         super(file);
+//        AssetManager.getInstance().addAsset(this);
         this.open();
     }
 
@@ -140,19 +141,12 @@ public class SpecialMove extends BasicType implements Asset
     }
 
     public boolean open()
-    {
-        final AssetManager assets = new AssetManager();
-
-        assets.registerResolver(new FileAssetHandleResolver());
-        assets.registerSerializer(new JsonSMoveSerializer());
-        
+    {   
         try
         {
+//            AssetManager.getInstance().deserialize(getDescriptor());
 
-            final AssetHandle handle = assets.deserialize(
-                    new AssetDescriptor("file://" + this.getFile().getPath()));
-
-            final SpecialMove smove = (SpecialMove) handle.getAsset();
+//            final SpecialMove smove = (SpecialMove) handle.getAsset();
             
 //            JSONObject json = JSON.load(this.file);
 //            if(json == null) { return this.openBinary(); } //falback to binary
@@ -160,7 +154,7 @@ public class SpecialMove extends BasicType implements Asset
             this.inputStream.close(); //not using binary
             return true;
         }
-        catch (IOException | CorruptAssetException e)
+        catch (IOException e)// | CorruptAssetException e)
         {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             return false;
@@ -171,15 +165,23 @@ public class SpecialMove extends BasicType implements Asset
     {
         //convert to new format without overwriting old file
         if(this.file.getName().endsWith(".spc")) {
-            this.file = new File(this.file.getPath() + "4");
+            this.file = new File(this.file.getPath() + ".json");
+            AssetManager.getInstance().addAsset(this);
         }
-//        return JSON.save(this, this.file);
-        return false;
+        try {
+            //        return JSON.save(this, this.file);
+            AssetManager.getInstance().serialize(getDescriptor());
+            return true;
+        } catch(IOException | CorruptAssetException ex) {
+            Logger.getLogger(SpecialMove.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
 
     public boolean saveAs(File fileName)
     {
         this.file = fileName;
+        AssetManager.getInstance().addAsset(this);
         return this.save();
     }
     
@@ -263,7 +265,7 @@ public class SpecialMove extends BasicType implements Asset
 
     @Override
     public AssetDescriptor getDescriptor() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new AssetDescriptor(this.getFile().toURI());
     }
 
     @Override

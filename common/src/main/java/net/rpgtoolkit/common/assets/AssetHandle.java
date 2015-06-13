@@ -5,10 +5,11 @@
 
 package net.rpgtoolkit.common.assets;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 
 /**
  *
@@ -24,6 +25,12 @@ public abstract class AssetHandle {
             throws IOException;
     
     public abstract OutputStream getOutputStream() 
+            throws IOException;
+    
+    public abstract BufferedReader getReader() 
+            throws IOException;
+    
+    public abstract BufferedWriter getWriter() 
             throws IOException;
     
     public Asset getAsset() {

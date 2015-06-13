@@ -37,7 +37,7 @@ public class AssetDescriptor {
         if (rhs == this) return true;
         if (rhs == null) return false;
         if (rhs.getClass() != this.getClass()) return false;
-        return this.uri.equals(rhs);
+        return this.uri.equals(((AssetDescriptor)rhs).uri);
     }
     
     @Override

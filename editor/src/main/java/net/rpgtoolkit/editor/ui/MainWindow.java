@@ -4,18 +4,25 @@ import java.awt.*;
 import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import net.rpgtoolkit.common.CorruptAssetException;
 import net.rpgtoolkit.common.assets.Animation;
+import net.rpgtoolkit.common.assets.AssetDescriptor;
+import net.rpgtoolkit.common.assets.AssetHandle;
+import net.rpgtoolkit.common.assets.AssetManager;
 import net.rpgtoolkit.common.assets.Enemy;
 import net.rpgtoolkit.common.assets.Project;
 import net.rpgtoolkit.common.assets.SpecialMove;
 import net.rpgtoolkit.common.assets.Tile;
 import net.rpgtoolkit.common.assets.TileSet;
+import net.rpgtoolkit.common.assets.files.FileAssetHandleResolver;
+import net.rpgtoolkit.common.assets.serialization.JsonSMoveSerializer;
 
 import net.rpgtoolkit.editor.editors.AnimationEditor;
 import net.rpgtoolkit.editor.editors.BoardEditor;
@@ -121,6 +128,9 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         this.debugPane.setLayout(new BorderLayout());
         this.debugPane.add(debugLog, BorderLayout.CENTER);
 
+        this.registerResolvers();
+        this.registerSerializers();
+        
         this.fileChooser = new JFileChooser();
         this.fileChooser.setCurrentDirectory(new File(this.workingDir));
 
@@ -293,6 +303,14 @@ public class MainWindow extends JFrame implements InternalFrameListener {
             }
         }
     }
+    
+    private void registerResolvers() {
+        AssetManager.getInstance().registerResolver(new FileAssetHandleResolver());
+    }
+
+    private void registerSerializers() {
+        AssetManager.getInstance().registerSerializer(new JsonSMoveSerializer());
+    }
 
     public void openProject() {
         this.fileChooser.resetChoosableFileFilters();
@@ -431,11 +449,16 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     }
 
     public void openSpecialMove() {
-        SpecialMove move = new SpecialMove(fileChooser.getSelectedFile());
-        SpecialMoveEditor sMoveEditor = new SpecialMoveEditor(move);
-        desktopPane.add(sMoveEditor);
-
+        try {
+            AssetHandle handle = AssetManager.getInstance().deserialize(
+                    new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
+            SpecialMove move = (SpecialMove)handle.getAsset();
+            SpecialMoveEditor sMoveEditor = new SpecialMoveEditor(move);
+            desktopPane.add(sMoveEditor);
         this.selectToolkitWindow(sMoveEditor);
+        } catch(IOException | CorruptAssetException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void zoomInOnBoardEditor() {
