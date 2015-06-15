@@ -8,6 +8,7 @@
 package net.rpgtoolkit.editor.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -59,12 +60,12 @@ public class PropertiesPanel extends JPanel implements ListSelectionListener
         AbstractModelPanel panel = ModelPanelFactory.getModelPanel(model);
         
         // To ensure that the internal controls are not streched.
-        JPanel intermediate = new JPanel(new FlowLayout());
-        intermediate.add(panel);
+        JPanel intermediate = new JPanel(new BorderLayout());
+        intermediate.setBackground(Color.yellow);
         
         if (panel != null)
         {
-            intermediate.add(panel);
+            intermediate.add(panel, BorderLayout.NORTH);
         }
         
         this.propertiesScrollPane.setViewportView(intermediate);

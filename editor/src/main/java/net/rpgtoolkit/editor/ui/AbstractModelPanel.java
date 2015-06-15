@@ -7,7 +7,8 @@
  */
 package net.rpgtoolkit.editor.ui;
 
-import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import net.rpgtoolkit.editor.editors.BoardEditor;
@@ -21,6 +22,9 @@ public abstract class AbstractModelPanel extends JPanel
     
     protected Object model;
     
+    protected GridBagConstraints constraints;
+    protected GridBagConstraints constraintsRight;
+    
     /*
      * *************************************************************************
      * Public Constructors
@@ -30,9 +34,22 @@ public abstract class AbstractModelPanel extends JPanel
     {
         this.model = model;
         
-        this.setLayout(new GridLayout(rows, columns));
-        this.add(new JLabel("Name"));
-        this.add(new JLabel("Value"));
+        this.setLayout(new GridBagLayout());
+        this.constraints = new GridBagConstraints();
+        this.constraints.weightx = 1.0;
+        this.constraints.weighty = 1.0;
+        this.constraints.anchor = GridBagConstraints.NORTHWEST;
+        
+        this.constraintsRight = this.constraints;
+        this.constraintsRight.fill = GridBagConstraints.HORIZONTAL;
+        
+        constraints.gridx = 0;
+        constraints.gridy = 0;        
+        this.add(new JLabel("Name"), this.constraints);
+        
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        this.add(new JLabel("Value"), this.constraintsRight);
     }
     
     /*

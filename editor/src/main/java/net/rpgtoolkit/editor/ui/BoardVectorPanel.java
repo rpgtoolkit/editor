@@ -7,6 +7,7 @@
  */
 package net.rpgtoolkit.editor.ui;
 
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -167,13 +168,37 @@ public class BoardVectorPanel extends AbstractModelPanel
             }
         });
         
-        this.add(new JLabel("Handle"));
-        this.add(this.handleTextField);
-        this.add(new JLabel("Is Closed"));
-        this.add(this.isClosedCheckBox);
-        this.add(new JLabel("Layer"));
-        this.add(this.layerSpinner);
-        this.add(new JLabel("Type"));
-        this.add(this.tileTypeComboBox);
+        this.constraints.gridx = 0;
+        this.constraints.gridy = 1;
+        this.add(new JLabel("Handle"), this.constraints);
+        
+        this.constraints.gridx = 0;
+        this.constraints.gridy = 2;
+        this.add(new JLabel("Is Closed"), this.constraints);
+        
+        this.constraints.gridx = 0;
+        this.constraints.gridy = 3;
+        this.add(new JLabel("Layer"), this.constraints);
+        
+        this.constraints.gridx = 0;
+        this.constraints.gridy = 4;
+        this.add(new JLabel("Type"), this.constraints);
+        
+        this.constraints.gridx = 1;
+        this.constraints.gridy = 1;
+        this.add(this.handleTextField, this.constraintsRight);
+        
+        this.constraints.gridx = 1;
+        this.constraints.gridy = 2;
+        this.add(this.isClosedCheckBox, this.constraintsRight);
+        
+        this.constraints.gridx = 1;
+        this.constraints.gridy = 3;
+        this.add(this.layerSpinner, this.constraintsRight);
+        
+        this.constraints.gridx = 1;
+        this.constraints.gridy = 4;
+        this.add(this.tileTypeComboBox, this.constraintsRight);
+        
     }
 }
