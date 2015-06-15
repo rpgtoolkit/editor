@@ -16,10 +16,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.rpgtoolkit</groupId>
-    <artifactId>rpgtoolkit</artifactId>
-    <version>4.0-SNAPSHOT</version>
+    <artifactId>editor-parent</artifactId>
+    <version>4.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <inceptionYear>2015</inceptionYear>
+    <name>RPG Toolkit 4.x Editor</name>
     
     <developers>
         <developer>
@@ -38,7 +39,6 @@
     </repositories>
         
     <modules>
-        <module>common</module>
         <module>editor</module>
     </modules>
     
