@@ -352,11 +352,19 @@ public class MainWindow extends JFrame implements InternalFrameListener
 
         if (this.fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
         {
-            this.activeProject = new Project(this.fileChooser.getSelectedFile());
-            System.setProperty("project.path", 
-                    this.fileChooser.getCurrentDirectory().getParent() + "/game/" 
-                            + this.activeProject.getGameTitle() + "/");
+            // Consider replacing this with Apache Commons IO removeExtension().
+            String fileName = this.fileChooser.getSelectedFile().getName().
+                    substring(0, this.fileChooser.getSelectedFile().
+                            getName().lastIndexOf('.'));
             
+            System.setProperty("project.path", 
+                    this.fileChooser.getCurrentDirectory().getParent() 
+                            + File.separator + "game" + File.separator
+                            + fileName + File.separator);
+            
+            this.activeProject = new Project(this.fileChooser.getSelectedFile(), 
+                    System.getProperty("project.path"));
+
             ProjectEditor projectEditor = new ProjectEditor(this.activeProject);
             this.desktopPane.add(projectEditor, BorderLayout.CENTER);
 

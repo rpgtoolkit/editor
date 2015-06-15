@@ -92,10 +92,15 @@ public class Project extends BasicType
      * Opens a project from an existing file
      *
      * @param file Project (.GAM) file to open
+     * @param projectPath current project path
      */
-    public Project(File file)
+    public Project(File file, String projectPath)
     {
         super(file);
+        
+        // Property is not shared between editor and common projects!
+        System.setProperty("project.path", projectPath);
+        
         this.open();
     }
 
@@ -123,9 +128,7 @@ public class Project extends BasicType
                 
                 // appends a leading slash to the games project folder
                 projectPath = "/" + projectPath.toLowerCase().replace("\\", "/");
-                System.setProperty("project.path", 
-                        System.getProperty("user.dir") + projectPath);
-
+                
                 gameTitle = binaryIO.readBinaryString();
                 mainScreenType = binaryIO.readBinaryInteger();
                 extendToFullScreen = binaryIO.readBinaryInteger();
@@ -138,13 +141,13 @@ public class Project extends BasicType
 
                 mainDisableProtectReg = binaryIO.readBinaryInteger();
                 languageFile = binaryIO.readBinaryString();
-
+                
                 String startupPrgString = binaryIO.readBinaryString();
-                startupPrg = new Program(System.getProperty("project.path") + "/Prg/" + startupPrgString);
+                startupPrg = new Program(System.getProperty("project.path") + "Prg/" + startupPrgString);
                 String initBoardString = binaryIO.readBinaryString();
-                initBoard = new Board(new File(System.getProperty("project.path") + "/Boards/" + initBoardString));
+                initBoard = new Board(new File(System.getProperty("project.path") + "Boards/" + initBoardString));
                 String initCharString = binaryIO.readBinaryString();
-                initChar = new Player(new File(System.getProperty("project.path") + "/Chrs/" + initCharString));
+                initChar = new Player(new File(System.getProperty("project.path") + "Chrs/" + initCharString));
 
                 runTime = binaryIO.readBinaryString();
                 runKey = binaryIO.readBinaryInteger();
