@@ -7,8 +7,10 @@
  */
 package net.rpgtoolkit.editor.ui;
 
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import net.rpgtoolkit.editor.editors.BoardEditor;
@@ -39,17 +41,26 @@ public abstract class AbstractModelPanel extends JPanel
         this.constraints.weightx = 1.0;
         this.constraints.weighty = 1.0;
         this.constraints.anchor = GridBagConstraints.NORTHWEST;
+        this.constraints.insets = new Insets(5, 5, 5, 5);
         
         this.constraintsRight = this.constraints;
         this.constraintsRight.fill = GridBagConstraints.HORIZONTAL;
         
+        Font font = new JLabel().getFont();
+        font = new Font(font.getName(), Font.BOLD, font.getSize());
+        
+        JLabel nameLabel = new JLabel("Name");
+        JLabel valueLabel = new JLabel("Value");
+        nameLabel.setFont(font);
+        valueLabel.setFont(font);
+        
         constraints.gridx = 0;
-        constraints.gridy = 0;        
-        this.add(new JLabel("Name"), this.constraints);
+        constraints.gridy = 0;
+        this.add(nameLabel, this.constraints);
         
         constraints.gridx = 1;
         constraints.gridy = 0;
-        this.add(new JLabel("Value"), this.constraintsRight);
+        this.add(valueLabel, this.constraintsRight);
     }
     
     /*
