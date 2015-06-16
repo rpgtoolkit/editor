@@ -10,7 +10,6 @@ package net.rpgtoolkit.editor.editors.board;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import net.rpgtoolkit.editor.editors.AbstractBoardView;
 import net.rpgtoolkit.common.assets.BoardSprite;
 
 /**

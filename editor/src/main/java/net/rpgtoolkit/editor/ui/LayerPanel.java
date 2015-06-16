@@ -28,7 +28,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.rpgtoolkit.editor.editors.AbstractBoardView;
+import net.rpgtoolkit.editor.editors.board.AbstractBoardView;
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
 import net.rpgtoolkit.editor.editors.board.BoardLayersTableModel;
 import net.rpgtoolkit.editor.ui.resources.Icons;

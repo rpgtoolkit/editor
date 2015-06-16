@@ -12,7 +12,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 
-import net.rpgtoolkit.editor.editors.AbstractBoardView;
 import net.rpgtoolkit.common.assets.BoardVector;
 
 /**

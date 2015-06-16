@@ -8,11 +8,9 @@
 package net.rpgtoolkit.editor.editors.board;
 
 import javax.swing.table.AbstractTableModel;
-import net.rpgtoolkit.editor.editors.AbstractBoardView;
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
 import net.rpgtoolkit.common.assets.BoardChangeListener;
 import net.rpgtoolkit.common.assets.BoardChangedEvent;
-import net.rpgtoolkit.editor.editors.AbstractBoardView;
 
 /**
  * We want to update the board model here, not the view. After updating the
