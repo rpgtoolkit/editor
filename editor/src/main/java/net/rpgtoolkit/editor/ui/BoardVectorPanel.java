@@ -7,7 +7,7 @@
  */
 package net.rpgtoolkit.editor.ui;
 
-import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -31,8 +31,6 @@ import net.rpgtoolkit.common.assets.BoardVector;
  */
 public class BoardVectorPanel extends AbstractModelPanel
 {
-    private static final int GRID_ROWS = 5;
-    private static final int GRID_COLS = 2;
     
     private final JSpinner layerSpinner;
     private final JCheckBox isClosedCheckBox;
@@ -52,8 +50,13 @@ public class BoardVectorPanel extends AbstractModelPanel
      */
     public BoardVectorPanel(BoardVector boardVector)
     {
-        super(boardVector, GRID_ROWS, GRID_COLS);
-        
+        ///
+        /// super
+        ///
+        super(boardVector);
+        ///
+        /// layerSpinner
+        ///
         this.layerSpinner = new JSpinner();
         this.layerSpinner.setValue(((BoardVector)this.model).getLayer());
         this.layerSpinner.addChangeListener(new ChangeListener()
@@ -90,7 +93,9 @@ public class BoardVectorPanel extends AbstractModelPanel
         
         // Store currently selected layer.
         this.lastSpinnerLayer = (int)this.layerSpinner.getValue();
-        
+        ///
+        /// isClosedCheckBox
+        ///
         this.isClosedCheckBox = new JCheckBox();
         this.isClosedCheckBox.setSelected(((BoardVector)this.model).isClosed());
         this.isClosedCheckBox.addActionListener(new ActionListener()
@@ -103,7 +108,9 @@ public class BoardVectorPanel extends AbstractModelPanel
                 updateCurrentBoardView();
             }
         });
-        
+        ///
+        /// handleTextField
+        ///
         this.handleTextField = new JTextField();
         this.handleTextField.setText(((BoardVector)this.model).getHandle());
         this.handleTextField.addFocusListener(new FocusListener()
@@ -118,14 +125,16 @@ public class BoardVectorPanel extends AbstractModelPanel
             @Override
             public void focusLost(FocusEvent e)
             {
-                if (!((BoardVector)model).getHandle().equals(handleTextField.getText()))
+                if (!((BoardVector)model).getHandle().
+                        equals(handleTextField.getText()))
                 {
                     ((BoardVector)model).setHandle(handleTextField.getText());
                 }
             }
         });
-
-        
+        ///
+        /// tileTypeComboBox
+        ///
         this.tileTypeComboBox = new JComboBox<>(TILE_TYPES);
         
         switch(((BoardVector)this.model).getTileType())
@@ -167,6 +176,11 @@ public class BoardVectorPanel extends AbstractModelPanel
                 updateCurrentBoardView();
             }
         });
+        ///
+        /// constraints
+        ///
+        this.constraints.insets = new Insets(4, 15, 0, 30);
+        this.constraintsRight.insets = new Insets(0, 0, 10, 15);
         
         this.constraints.gridx = 0;
         this.constraints.gridy = 1;
@@ -183,21 +197,23 @@ public class BoardVectorPanel extends AbstractModelPanel
         this.constraints.gridx = 0;
         this.constraints.gridy = 4;
         this.add(new JLabel("Type"), this.constraints);
-        
-        this.constraints.gridx = 1;
+        ///
+        /// constraintsRight
+        ///
+        this.constraintsRight.gridx = 1;
         this.constraints.gridy = 1;
         this.add(this.handleTextField, this.constraintsRight);
         
-        this.constraints.gridx = 1;
+        this.constraintsRight.gridx = 1;
         this.constraints.gridy = 2;
         this.add(this.isClosedCheckBox, this.constraintsRight);
         
-        this.constraints.gridx = 1;
+        this.constraintsRight.gridx = 1;
         this.constraints.gridy = 3;
         this.add(this.layerSpinner, this.constraintsRight);
         
-        this.constraints.gridx = 1;
-        this.constraints.gridy = 4;
+        this.constraintsRight.gridx = 1;
+        this.constraintsRight.gridy = 4;
         this.add(this.tileTypeComboBox, this.constraintsRight);
         
     }

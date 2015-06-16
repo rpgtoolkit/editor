@@ -27,9 +27,6 @@ import net.rpgtoolkit.common.assets.BoardSprite;
 public class BoardSpritePanel extends AbstractModelPanel
 {
 
-    private static final int GRID_ROWS = 4;
-    private static final int GRID_COLS = 2;
-
     private final JTextField fileTextField;
     private final JButton fileButton;
 
@@ -49,7 +46,7 @@ public class BoardSpritePanel extends AbstractModelPanel
         ///
         /// super
         ///
-        super(boardSprite, GRID_ROWS, GRID_COLS);
+        super(boardSprite);
         ///
         /// filePanel
         ///

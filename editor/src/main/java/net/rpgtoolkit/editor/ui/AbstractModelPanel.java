@@ -32,19 +32,17 @@ public abstract class AbstractModelPanel extends JPanel
      * Public Constructors
      * *************************************************************************
      */
-    public AbstractModelPanel(Object model, int rows, int columns)
+    public AbstractModelPanel(Object model)
     {
         this.model = model;
         
         this.setLayout(new GridBagLayout());
         this.constraints = new GridBagConstraints();
-        this.constraints.weightx = 1.0;
-        this.constraints.weighty = 1.0;
         this.constraints.anchor = GridBagConstraints.NORTHWEST;
-        this.constraints.insets = new Insets(5, 5, 5, 5);
         
-        this.constraintsRight = this.constraints;
+        this.constraintsRight = (GridBagConstraints)this.constraints.clone();
         this.constraintsRight.fill = GridBagConstraints.HORIZONTAL;
+        this.constraintsRight.weightx = 1.0;
         
         Font font = new JLabel().getFont();
         font = new Font(font.getName(), Font.BOLD, font.getSize());
@@ -53,6 +51,9 @@ public abstract class AbstractModelPanel extends JPanel
         JLabel valueLabel = new JLabel("Value");
         nameLabel.setFont(font);
         valueLabel.setFont(font);
+        
+        this.constraints.insets = new Insets(15, 15, 15, 15);
+        this.constraintsRight.insets = new Insets(15, 0, 15, 0);
         
         constraints.gridx = 0;
         constraints.gridy = 0;
