@@ -8,6 +8,7 @@
 package net.rpgtoolkit.editor.ui;
 
 import java.awt.FlowLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -130,12 +131,32 @@ public class BoardSpritePanel extends AbstractModelPanel
         ///
         /// this
         ///
-        this.add(new JLabel("Item File"));
-        this.add(filePanel);
-        this.add(new JLabel("Activation Program"));
-        this.add(activationProgramPanel);
-        this.add(new JLabel("MultiTasking Program"));
-        this.add(multiTaskingPanel);
+        this.constraints.insets = new Insets(4, 15, 0, 30);
+        this.constraintsRight.insets = new Insets(0, 0, 10, 15);
+        
+        this.constraints.gridx = 0;
+        this.constraints.gridy = 1;
+        this.add(new JLabel("Item File"), this.constraints);
+        
+        this.constraints.gridx = 0;
+        this.constraints.gridy = 2;
+        this.add(new JLabel("Activation Program"), this.constraints);
+        
+        this.constraints.gridx = 0;
+        this.constraints.gridy = 3;
+        this.add(new JLabel("MultiTasking Program"), this.constraints);
+        
+        this.constraintsRight.gridx = 1;
+        this.constraintsRight.gridy = 1;
+        this.add(filePanel, this.constraintsRight);
+        
+        this.constraintsRight.gridx = 1;
+        this.constraintsRight.gridy = 2;
+        this.add(activationProgramPanel, this.constraintsRight);
+        
+        this.constraintsRight.gridx = 1;
+        this.constraintsRight.gridy = 3;
+        this.add(multiTaskingPanel, this.constraintsRight);
     }
 
     /*

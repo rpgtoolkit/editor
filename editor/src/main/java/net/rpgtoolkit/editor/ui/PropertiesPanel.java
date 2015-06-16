@@ -101,6 +101,8 @@ public class PropertiesPanel extends JPanel implements ListSelectionListener
         this.propertiesScrollPane = new JScrollPane();
         this.propertiesScrollPane.getViewport().setScrollMode(
                 JViewport.SIMPLE_SCROLL_MODE);
+        this.propertiesScrollPane.setVerticalScrollBarPolicy(
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         
         this.setLayout(new BorderLayout());
         this.add(this.propertiesScrollPane, BorderLayout.CENTER);

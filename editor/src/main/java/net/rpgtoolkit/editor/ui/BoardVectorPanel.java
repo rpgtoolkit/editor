@@ -201,15 +201,15 @@ public class BoardVectorPanel extends AbstractModelPanel
         /// constraintsRight
         ///
         this.constraintsRight.gridx = 1;
-        this.constraints.gridy = 1;
+        this.constraintsRight.gridy = 1;
         this.add(this.handleTextField, this.constraintsRight);
         
         this.constraintsRight.gridx = 1;
-        this.constraints.gridy = 2;
+        this.constraintsRight.gridy = 2;
         this.add(this.isClosedCheckBox, this.constraintsRight);
         
         this.constraintsRight.gridx = 1;
-        this.constraints.gridy = 3;
+        this.constraintsRight.gridy = 3;
         this.add(this.layerSpinner, this.constraintsRight);
         
         this.constraintsRight.gridx = 1;
