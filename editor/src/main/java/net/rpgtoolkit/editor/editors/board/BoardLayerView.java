@@ -385,7 +385,7 @@ public final class BoardLayerView implements Cloneable
                     g.setColor(Color.RED);
                     break;
                 default:
-                    g.setColor(Color.WHITE);
+                    g.setColor(Color.ORANGE);
             }
 
             for (int i = 0; i < count - 1; i++)

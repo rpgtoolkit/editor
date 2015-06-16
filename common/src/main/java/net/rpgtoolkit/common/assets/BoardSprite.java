@@ -7,7 +7,6 @@
  */
 package net.rpgtoolkit.common.assets;
 
-import java.awt.image.BufferedImage;
 import net.rpgtoolkit.common.Selectable;
 
 public class BoardSprite extends BasicType implements Cloneable, Selectable
