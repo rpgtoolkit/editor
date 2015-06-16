@@ -1,16 +1,17 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.common.assets;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Item implements Asset {
+public class Item implements Asset
+{
 
     private final int USER_CHAR_COUNT = 51;
     private final int EQUIP_COUNT = 8;
@@ -60,7 +61,13 @@ public class Item implements Asset {
     private BoardVector vectorBase;
     private BoardVector vectorActivate;
 
-    public Item() {
+    public List<Animation> getStandardAnimations()
+    {
+        return this.standardAnimations;
+    }
+    
+    public Item()
+    {
         this.userChar = new ArrayList<>();
         this.equipLocation = new ArrayList<>();
         this.standardAnimationFiles = new ArrayList<>();
@@ -72,7 +79,8 @@ public class Item implements Asset {
     }
 
     @Override
-    public void reset() {
+    public void reset()
+    {
 
         name = "";
         description = "";
@@ -85,7 +93,8 @@ public class Item implements Asset {
         usersSpecified = 0;
 
         userChar.clear();
-        for (int i = 0; i != USER_CHAR_COUNT; i++) {
+        for (int i = 0; i != USER_CHAR_COUNT; i++)
+        {
             userChar.add("");
         }
 
@@ -93,7 +102,8 @@ public class Item implements Asset {
         sellPrice = 0;
         isKeyItem = 0;
         equipLocation.clear();
-        for (int i = 0; i != EQUIP_COUNT; i++) {
+        for (int i = 0; i != EQUIP_COUNT; i++)
+        {
             Byte tempByte = 0;
             equipLocation.add(tempByte);
         }
@@ -115,16 +125,19 @@ public class Item implements Asset {
         boardPickUpProgram = "";
         isWide = true;
         standardAnimationFiles.clear();
-        for (int i = 0; i != ANIMATION_STANDARD_COUNT; i++) {
+        for (int i = 0; i != ANIMATION_STANDARD_COUNT; i++)
+        {
             standardAnimationFiles.add("");
         }
         animationStanding.clear();
-        for (int i = 0; i != ANIMATION_STANDING_COUNT; i++) {
+        for (int i = 0; i != ANIMATION_STANDING_COUNT; i++)
+        {
             animationStanding.add("");
         }
         animationCustom.clear();
         animationCustomHandle.clear();
-        for (int i = 0; i != 5; i++) {
+        for (int i = 0; i != 5; i++)
+        {
             animationCustom.add("");
             animationCustomHandle.add("");
         }
@@ -132,28 +145,35 @@ public class Item implements Asset {
         vectorActivate = makeDefaultSpriteVector(false, false);
     }
 
-    private BoardVector makeDefaultSpriteVector(boolean isCollisionVector, boolean isIsometric) {
+    private BoardVector makeDefaultSpriteVector(boolean isCollisionVector, boolean isIsometric)
+    {
         BoardVector toReturn = new BoardVector();
-        if (isCollisionVector) {
-            if (isIsometric) {
+        if (isCollisionVector)
+        {
+            if (isIsometric)
+            {
                 toReturn.addPoint(-15, 0);
                 toReturn.addPoint(0, 7);
                 toReturn.addPoint(15, 0);
                 toReturn.addPoint(0, -7);
-            } else {
+            } else
+            {
                 //toReturn.setTileType(TT_SOLID);   //WARNING: needs to work when tiletypes exist
                 toReturn.addPoint(-15, -15);
                 toReturn.addPoint(15, -15);
                 toReturn.addPoint(15, 0);
                 toReturn.addPoint(-15, 0);
             }
-        } else {
-            if (isIsometric) {
+        } else
+        {
+            if (isIsometric)
+            {
                 toReturn.addPoint(-31, 0);
                 toReturn.addPoint(0, 15);
                 toReturn.addPoint(31, 0);
                 toReturn.addPoint(0, -15);
-            } else {
+            } else
+            {
                 //toReturn.setTileType(TT_SOLID);   //WARNING: needs to work when tiletypes exist
                 toReturn.addPoint(-24, -24);
                 toReturn.addPoint(24, -24);
@@ -164,12 +184,14 @@ public class Item implements Asset {
         return (toReturn);
     }
 
-    public List<String> getStandardAnimationFiles() {
+    public List<String> getStandardAnimationFiles()
+    {
         return standardAnimationFiles;
     }
 
     @Override
-    public AssetDescriptor getDescriptor() {
+    public AssetDescriptor getDescriptor()
+    {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

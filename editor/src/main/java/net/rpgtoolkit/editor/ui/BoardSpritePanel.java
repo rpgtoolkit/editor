@@ -53,7 +53,7 @@ public class BoardSpritePanel extends AbstractModelPanel
         ///
         this.fileTextField = new JTextField(boardSprite.getFileName());
         this.fileTextField.setEnabled(false);
-        this.fileTextField.setColumns(10);
+        this.fileTextField.setColumns(12);
 
         this.fileButton = new JButton("...");
         this.fileButton.addActionListener(new ActionListener()
@@ -80,7 +80,7 @@ public class BoardSpritePanel extends AbstractModelPanel
         this.activationProgramTextField = new JTextField(boardSprite.
                 getActivationProgram());
         this.activationProgramTextField.setEnabled(false);
-        this.activationProgramTextField.setColumns(10);
+        this.activationProgramTextField.setColumns(12);
 
         this.activationProgramButton = new JButton("...");
         this.activationProgramButton.addActionListener(new ActionListener()
@@ -107,7 +107,7 @@ public class BoardSpritePanel extends AbstractModelPanel
         this.multiTaskingTextField = new JTextField(boardSprite.
                 getMultitaskingProgram());
         this.multiTaskingTextField.setEnabled(false);
-        this.multiTaskingTextField.setColumns(10);
+        this.multiTaskingTextField.setColumns(12);
 
         this.multiTaskingButton = new JButton("...");
         this.multiTaskingButton.addActionListener(new ActionListener()
@@ -131,7 +131,7 @@ public class BoardSpritePanel extends AbstractModelPanel
         ///
         /// this
         ///
-        this.constraints.insets = new Insets(4, 15, 0, 30);
+        this.constraints.insets = new Insets(8, 15, 0, 3);
         this.constraintsRight.insets = new Insets(0, 0, 10, 15);
         
         this.constraints.gridx = 0;
