@@ -30,6 +30,7 @@ import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
 import net.rpgtoolkit.editor.ui.Gui;
 import net.rpgtoolkit.editor.ui.IntegerField;
 import net.rpgtoolkit.editor.ui.WholeNumberField;
+import net.rpgtoolkit.editor.ui.resources.Icons;
 
 /**
  * Enemy editor
@@ -412,10 +413,10 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         JScrollPane animListScroller = new JScrollPane(this.animList);
         
         JLabel animLabel = new JLabel("Animation");
-        final ImageIcon playIcon = new ImageIcon(getClass().
-                getResource("/editor/run.png"));
-        final ImageIcon stopIcon = new ImageIcon(getClass().
-                getResource("/editor/stop.png"));
+        
+        final ImageIcon playIcon = Icons.getSmallIcon("run");
+        final ImageIcon stopIcon = Icons.getSmallIcon("stop");
+        
         final JToggleButton play = new JToggleButton(playIcon);
         final JLabel animDisplay = new JLabel();
         

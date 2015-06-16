@@ -12,6 +12,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.ui.resources.Icons;
 
 /**
  *
@@ -41,16 +42,14 @@ public final class HelpMenu extends JMenu
     public void configureIndexMenuItem()
     {
         indexMenuItem = new JMenuItem("Index");     // Help Index Menu (browser based?)
-        indexMenuItem.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/help.png")));
+        indexMenuItem.setIcon(Icons.getSmallIcon("help"));
         indexMenuItem.setEnabled(false);
     }
     
     public void configureAboutMenuItem()
     {
         aboutMenuItem = new JMenuItem("About");     // About Menu
-        aboutMenuItem.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/information.png")));
+        aboutMenuItem.setIcon(Icons.getSmallIcon("information"));
         aboutMenuItem.setMnemonic(KeyEvent.VK_A);
         aboutMenuItem.setEnabled(false);
     }
