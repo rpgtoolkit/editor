@@ -21,8 +21,8 @@ public class BoardSprite extends BasicType implements Cloneable, Selectable
     private long activate;
     
     private String initialVariable;
-    private String finalVariable;
     private String initialValue;
+    private String finalVariable;
     private String finalValue;
     private String loadingVariable;
     private String loadingValue;
@@ -45,6 +45,20 @@ public class BoardSprite extends BasicType implements Cloneable, Selectable
     {
         super();
         
+        this.x = 0;
+        this.y = 0;
+        this.layer = 0;
+        this.activate = 0;
+        this.initialVariable = "";
+        this.initialValue = "";
+        this.finalVariable = "";
+        this.finalValue = "";
+        this.loadingVariable = "";
+        this.loadingValue = "";
+        this.activationType = 0;
+        this.activationProgram = "";
+        this.multitaskingProgram = "";
+        this.selected = false;
     }
 
     /*

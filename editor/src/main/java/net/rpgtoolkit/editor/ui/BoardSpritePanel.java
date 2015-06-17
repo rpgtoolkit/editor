@@ -13,12 +13,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.rpgtoolkit.common.assets.BoardSprite;
+import net.rpgtoolkit.editor.editors.board.BoardSpriteDialog;
 
 /**
  * 
@@ -36,13 +41,25 @@ public class BoardSpritePanel extends AbstractModelPanel
 
     private final JTextField multiTaskingTextField;
     private final JButton multiTaskingButton;
+    
+    private final JSpinner xSpinner;
+    private final JSpinner ySpinner;
+    private final JSpinner layerSpinner;
+    
+    private final JComboBox typeComboBox;
+    
+    private final JButton variablesJButton;
+    
+    private static final String[] ACTIVATION_TYPES = {
+        "STEP-ON", "KEYPRESS"
+    };
 
     /*
      * *************************************************************************
      * Public Constructors
      * *************************************************************************
      */
-    public BoardSpritePanel(BoardSprite boardSprite)
+    public BoardSpritePanel(final BoardSprite boardSprite)
     {
         ///
         /// super
@@ -53,7 +70,7 @@ public class BoardSpritePanel extends AbstractModelPanel
         ///
         this.fileTextField = new JTextField(boardSprite.getFileName());
         this.fileTextField.setEnabled(false);
-        this.fileTextField.setColumns(12);
+        this.fileTextField.setColumns(17);
 
         this.fileButton = new JButton("...");
         this.fileButton.addActionListener(new ActionListener()
@@ -80,7 +97,7 @@ public class BoardSpritePanel extends AbstractModelPanel
         this.activationProgramTextField = new JTextField(boardSprite.
                 getActivationProgram());
         this.activationProgramTextField.setEnabled(false);
-        this.activationProgramTextField.setColumns(12);
+        this.activationProgramTextField.setColumns(17);
 
         this.activationProgramButton = new JButton("...");
         this.activationProgramButton.addActionListener(new ActionListener()
@@ -107,7 +124,7 @@ public class BoardSpritePanel extends AbstractModelPanel
         this.multiTaskingTextField = new JTextField(boardSprite.
                 getMultitaskingProgram());
         this.multiTaskingTextField.setEnabled(false);
-        this.multiTaskingTextField.setColumns(12);
+        this.multiTaskingTextField.setColumns(17);
 
         this.multiTaskingButton = new JButton("...");
         this.multiTaskingButton.addActionListener(new ActionListener()
@@ -129,6 +146,113 @@ public class BoardSpritePanel extends AbstractModelPanel
         multiTaskingPanel.add(this.multiTaskingTextField);
         multiTaskingPanel.add(this.multiTaskingButton);
         ///
+        /// xSpinner
+        ///
+        this.xSpinner = new JSpinner();
+        this.xSpinner.setValue(((BoardSprite)this.model).getX());
+        this.xSpinner.addChangeListener(new ChangeListener()
+        {
+
+            @Override
+            public void stateChanged(ChangeEvent e)
+            {
+                
+            }
+            
+        });
+        ///
+        /// ySpinner
+        ///
+        this.ySpinner = new JSpinner();
+        this.ySpinner.setValue(((BoardSprite)this.model).getY());
+        this.ySpinner.addChangeListener(new ChangeListener()
+        {
+
+            @Override
+            public void stateChanged(ChangeEvent e)
+            {
+                
+            }
+            
+        });
+        ///
+        /// layerSpinner
+        ///
+        this.layerSpinner = new JSpinner();
+        this.layerSpinner.setValue(((BoardSprite)this.model).getLayer());
+        this.layerSpinner.addChangeListener(new ChangeListener()
+        {
+
+            @Override
+            public void stateChanged(ChangeEvent e)
+            {
+                
+            }
+            
+        });
+        ///
+        /// typeComboBox
+        ///
+        this.typeComboBox = new JComboBox(ACTIVATION_TYPES);
+        ///
+        /// variablesJButton
+        ///
+        this.variablesJButton = new JButton("Configure");
+        this.variablesJButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                BoardSpriteDialog dialog = new BoardSpriteDialog(
+                        MainWindow.getInstance(), "Configure Variables", 
+                        true, (BoardSprite)model);
+                
+                if (dialog.showDialog() == BoardSpriteDialog.APPLY)
+                {
+                    // Rather than update the BoardSprite from the dialog
+                    // we'll centralise it and perform it here.
+                    String initialVariable = dialog.getInitialVariable();
+                    String initialValue = dialog.getInitialValue();
+                    String finalVariable = dialog.getFinalVariable();
+                    String finalValue = dialog.getFinalValue();
+                    String loadingVariable = dialog.getLoadingVariable();
+                    String loadingValue = dialog.getLoadingValue();
+                    
+                    if (!boardSprite.getInitialVariable().equals(initialVariable))
+                    {
+                        boardSprite.setInitialVariable(initialVariable);
+                    }
+                    
+                    if (!boardSprite.getInitialValue().equals(initialValue))
+                    {
+                        boardSprite.setInitialValue(initialValue);
+                    }
+                    
+                    if (!boardSprite.getFinalVariable().equals(finalVariable))
+                    {
+                        boardSprite.setFinalVariable(finalVariable);
+                    }
+                    
+                    if (!boardSprite.getFinalValue().equals(finalValue))
+                    {
+                        boardSprite.setFinalValue(finalValue);
+                    }
+                    
+                    if (!boardSprite.getLoadingVariable().equals(loadingVariable))
+                    {
+                        boardSprite.setLoadingVariable(loadingVariable);
+                    }
+                    
+                    if (!boardSprite.getLoadingValue().equals(loadingValue))
+                    {
+                        boardSprite.setLoadingValue(loadingValue);
+                    }
+                }
+            }
+            
+        });
+        ///
         /// this
         ///
         this.constraints.insets = new Insets(8, 15, 0, 3);
@@ -140,11 +264,31 @@ public class BoardSpritePanel extends AbstractModelPanel
         
         this.constraints.gridx = 0;
         this.constraints.gridy = 2;
-        this.add(new JLabel("Activation Program"), this.constraints);
+        this.add(new JLabel("Activation"), this.constraints);
         
         this.constraints.gridx = 0;
         this.constraints.gridy = 3;
-        this.add(new JLabel("MultiTasking Program"), this.constraints);
+        this.add(new JLabel("MultiTasking"), this.constraints);
+        
+        this.constraints.gridx = 0;
+        this.constraints.gridy = 4;
+        this.add(new JLabel("X"), this.constraints);
+        
+        this.constraints.gridx = 0;
+        this.constraints.gridy = 5;
+        this.add(new JLabel("Y"), this.constraints);
+        
+        this.constraints.gridx = 0;
+        this.constraints.gridy = 6;
+        this.add(new JLabel("Layer"), this.constraints);
+        
+        this.constraints.gridx = 0;
+        this.constraints.gridy = 7;
+        this.add(new JLabel("Type"), this.constraints);
+        
+        this.constraints.gridx = 0;
+        this.constraints.gridy = 8;
+        this.add(new JLabel("Variables"), this.constraints);
         
         this.constraintsRight.gridx = 1;
         this.constraintsRight.gridy = 1;
@@ -157,6 +301,26 @@ public class BoardSpritePanel extends AbstractModelPanel
         this.constraintsRight.gridx = 1;
         this.constraintsRight.gridy = 3;
         this.add(multiTaskingPanel, this.constraintsRight);
+        
+        this.constraintsRight.gridx = 1;
+        this.constraintsRight.gridy = 4;
+        this.add(this.xSpinner, this.constraintsRight);
+        
+        this.constraintsRight.gridx = 1;
+        this.constraintsRight.gridy = 5;
+        this.add(this.ySpinner, this.constraintsRight);
+        
+        this.constraintsRight.gridx = 1;
+        this.constraintsRight.gridy = 6;
+        this.add(this.layerSpinner, this.constraintsRight);
+        
+        this.constraintsRight.gridx = 1;
+        this.constraintsRight.gridy = 7;
+        this.add(this.typeComboBox, this.constraintsRight);
+        
+        this.constraintsRight.gridx = 1;
+        this.constraintsRight.gridy = 8;
+        this.add(this.variablesJButton, this.constraintsRight);
     }
 
     /*
