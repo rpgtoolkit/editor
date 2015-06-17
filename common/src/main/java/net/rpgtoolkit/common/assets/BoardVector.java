@@ -51,6 +51,7 @@ public class BoardVector implements Cloneable, Selectable
         this.isClosed = false;
         this.points = new ArrayList<>();
         this.handle = "";
+        this.tileType = 1;
         this.polygon = new Polygon();
         this.selected = false;
     }

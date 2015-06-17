@@ -381,11 +381,12 @@ public final class BoardLayerView implements Cloneable
                 case 2:
                     g.setColor(Color.GREEN);
                     break;
+                case 8:
+                    g.setColor(Color.ORANGE);
+                    break;
                 case 16:
                     g.setColor(Color.RED);
                     break;
-                default:
-                    g.setColor(Color.ORANGE);
             }
 
             for (int i = 0; i < count - 1; i++)
@@ -430,7 +431,7 @@ public final class BoardLayerView implements Cloneable
             int y = (int) sprite.getY() * this.getLayer().getBoard().
                     getTileSet().getTileHeight();
 
-            //TODO: Deal with sprite selection.
+            // TODO: Deal with sprite selection.
             
             try
             {
