@@ -11,6 +11,7 @@ import java.awt.*;
 import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -39,6 +40,7 @@ import net.rpgtoolkit.editor.editors.TileSelectionEvent;
 import net.rpgtoolkit.editor.editors.TileSelectionListener;
 import net.rpgtoolkit.editor.editors.TilesetCanvas;
 import net.rpgtoolkit.editor.editors.TileRegionSelectionEvent;
+import net.rpgtoolkit.editor.utilities.TextAreaOutputStream;
 
 /**
  * Currently opening TileSets, tiles, programs, boards, animations, characters
@@ -69,8 +71,8 @@ public class MainWindow extends JFrame implements InternalFrameListener
     private JFileChooser fileChooser;
     private final String workingDir = System.getProperty("user.dir");
 
-    private final JPanel debugPane;
-    private final JTextField debugLog;
+    private final JScrollPane debugScrollPane;
+    private final JTextArea debugLog;
 
     // Project Related.
     private Project activeProject;
@@ -120,15 +122,18 @@ public class MainWindow extends JFrame implements InternalFrameListener
                 .getResource("/editor/application.png"))
                 .getImage());
 
-        this.debugPane = new JPanel();
-        this.debugLog = new JTextField("Debug Messages:");
+        this.debugLog = new JTextArea("Debug Messages:\n\n");
         this.debugLog.setEditable(false);
-        this.debugLog.setFocusable(false);
+        this.debugLog.setRows(6);
+        this.debugLog.setBackground(Color.WHITE);
+        PrintStream printStream = new PrintStream(new TextAreaOutputStream(
+                this.debugLog));
+        System.setOut(printStream);
+        System.setErr(printStream);
 
-        this.debugLog.setText(System.getProperty("user.dir"));
-
-        this.debugPane.setLayout(new BorderLayout());
-        this.debugPane.add(debugLog, BorderLayout.CENTER);
+        this.debugScrollPane = new JScrollPane(this.debugLog);
+        this.debugScrollPane.setVerticalScrollBarPolicy(
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
         this.fileChooser = new JFileChooser();
         this.fileChooser.setCurrentDirectory(new File(this.workingDir));
@@ -143,11 +148,14 @@ public class MainWindow extends JFrame implements InternalFrameListener
         this.lastSelectedTile = new Tile();
 
         this.tileSetSelectionListener = new TileSetSelectionListener();
+        
+        JPanel parent = new JPanel(new BorderLayout());
+        parent.add(this.desktopPane, BorderLayout.CENTER);
+        parent.add(this.debugScrollPane, BorderLayout.SOUTH);
 
         this.setLayout(new BorderLayout());
         this.add(this.toolBar, BorderLayout.NORTH);
-        this.add(this.desktopPane, BorderLayout.CENTER);
-        this.add(this.debugPane, BorderLayout.SOUTH);
+        this.add(parent, BorderLayout.CENTER);
         this.add(this.toolboxPanel, BorderLayout.EAST);
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
