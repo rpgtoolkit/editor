@@ -338,13 +338,14 @@ public class BoardSpritePanel extends AbstractModelPanel
 
             if (projectPath.exists())
             {
-                JFileChooser fileChooser = MainWindow.getInstance().
-                        getFileChooser();
+                JFileChooser fileChooser = new JFileChooser(
+                        new SingleRootFileSystemView(projectPath));
 
                 FileNameExtensionFilter filter = new FileNameExtensionFilter(
                         type, extension);
+                fileChooser.removeChoosableFileFilter(
+                        fileChooser.getFileFilter());
                 fileChooser.setFileFilter(filter);
-                fileChooser.setCurrentDirectory(projectPath);
 
                 if (fileChooser.showOpenDialog(MainWindow.getInstance())
                         == JFileChooser.APPROVE_OPTION)
