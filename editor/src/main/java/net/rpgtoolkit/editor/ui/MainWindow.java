@@ -66,7 +66,7 @@ public class MainWindow extends JFrame implements InternalFrameListener
     private final PropertiesPanel propertiesPanel;
     private final LayerPanel layerPanel;
 
-    private final JFileChooser fileChooser;
+    private JFileChooser fileChooser;
     private final String workingDir = System.getProperty("user.dir");
 
     private final JPanel debugPane;
@@ -383,15 +383,17 @@ public class MainWindow extends JFrame implements InternalFrameListener
 
     public void primeFileChooser()
     {
-        this.fileChooser.resetChoosableFileFilters();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                "Toolkit Files", "brd", "ene", "tem", "itm", "anm", "prg",
-                "tst", "spc");
-        this.fileChooser.setFileFilter(filter);
-
         if (this.activeProject != null)
         {
             File projectPath = new File(System.getProperty("project.path"));
+            
+            this.fileChooser = new JFileChooser(
+                    new SingleRootFileSystemView(projectPath));
+            
+            FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                "Toolkit Files", "brd", "ene", "tem", "itm", "anm", "prg",
+                "tst", "spc");
+            this.fileChooser.setFileFilter(filter);
 
             if (projectPath.exists())
             {

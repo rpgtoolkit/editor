@@ -242,7 +242,6 @@ public class BoardSpriteDialog extends JDialog
         ///
         /// this
         ///
-        this.setLocationRelativeTo(parentFrame);
         this.setResizable(false);
         this.add(paddingPanel);
     }
@@ -255,6 +254,7 @@ public class BoardSpriteDialog extends JDialog
     public int showDialog()
     {
         this.pack();
+        this.setLocationRelativeTo(this.getOwner());
         this.setVisible(true);
         
         return this.result;

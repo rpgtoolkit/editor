@@ -69,7 +69,6 @@ public class BoardSpritePanel extends AbstractModelPanel
         /// filePanel
         ///
         this.fileTextField = new JTextField(boardSprite.getFileName());
-        this.fileTextField.setEnabled(false);
         this.fileTextField.setColumns(17);
 
         this.fileButton = new JButton("...");
@@ -96,7 +95,6 @@ public class BoardSpritePanel extends AbstractModelPanel
         ///
         this.activationProgramTextField = new JTextField(boardSprite.
                 getActivationProgram());
-        this.activationProgramTextField.setEnabled(false);
         this.activationProgramTextField.setColumns(17);
 
         this.activationProgramButton = new JButton("...");
@@ -123,7 +121,6 @@ public class BoardSpritePanel extends AbstractModelPanel
         ///
         this.multiTaskingTextField = new JTextField(boardSprite.
                 getMultitaskingProgram());
-        this.multiTaskingTextField.setEnabled(false);
         this.multiTaskingTextField.setColumns(17);
 
         this.multiTaskingButton = new JButton("...");
@@ -343,8 +340,6 @@ public class BoardSpritePanel extends AbstractModelPanel
 
                 FileNameExtensionFilter filter = new FileNameExtensionFilter(
                         type, extension);
-                fileChooser.removeChoosableFileFilter(
-                        fileChooser.getFileFilter());
                 fileChooser.setFileFilter(filter);
 
                 if (fileChooser.showOpenDialog(MainWindow.getInstance())
