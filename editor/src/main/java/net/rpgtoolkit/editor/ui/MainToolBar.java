@@ -100,6 +100,25 @@ public class MainToolBar extends JToolBar
 
         this.saveButton = new EditorButton();
         this.saveButton.setIcon(Icons.getSmallIcon("save"));
+        this.saveButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MainWindow w = MainWindow.getInstance();
+                if (w.getDesktopPane().getSelectedFrame() != null)
+                {
+                    if (w.getDesktopPane().getSelectedFrame() instanceof 
+                            ToolkitEditorWindow)
+                    {
+                        ToolkitEditorWindow window = (ToolkitEditorWindow)
+                                w.getDesktopPane().getSelectedFrame();
+                        
+                        window.save();
+                    }
+                }
+            }
+        });
+
 
         this.saveAllButton = new EditorButton();
         this.saveAllButton.setIcon(Icons.getSmallIcon("save-all"));

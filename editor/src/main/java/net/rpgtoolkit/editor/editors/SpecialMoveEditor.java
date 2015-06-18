@@ -110,7 +110,11 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
         this.move.setAssociatedAnimation(animation.getText());
         this.move.setCanUseInBattle(battleDriven.isSelected());
         this.move.setCanUseInMenu(boardDriven.isSelected());
-        return this.move.save();
+        if(this.move.getFile() == null) {
+            return this.move.saveAs(mainWindow.saveByType("Special Move Files", "spc", "SpcMove"));
+        } else {
+            return this.move.save();
+        }
     }
 
     public void gracefulClose()
