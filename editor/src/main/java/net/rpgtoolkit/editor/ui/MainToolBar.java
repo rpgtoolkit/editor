@@ -17,7 +17,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import net.rpgtoolkit.common.assets.Tile;
+import net.rpgtoolkit.editor.editors.BoardEditor;
 import net.rpgtoolkit.editor.editors.board.BucketBrush;
+import net.rpgtoolkit.editor.editors.board.ProgramBrush;
 import net.rpgtoolkit.editor.editors.board.SelectionBrush;
 import net.rpgtoolkit.editor.editors.board.ShapeBrush;
 import net.rpgtoolkit.editor.editors.board.SpriteBrush;
@@ -53,6 +55,7 @@ public class MainToolBar extends JToolBar
     private final JToggleButton bucketButton;
     private final JToggleButton eraserButton;
     private final JToggleButton vectorButton;
+    private final JToggleButton programButton;
     private final JToggleButton spriteButton;
     private final JToggleButton lightButton;
 
@@ -142,6 +145,8 @@ public class MainToolBar extends JToolBar
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                toggleSelectedOnBoardEditor();
+                
                 ShapeBrush brush = new ShapeBrush();
                 brush.setTile(MainWindow.getInstance().getLastSelectedTile());
                 brush.makeRectangleBrush(new Rectangle(0, 0, 1, 1));
@@ -159,6 +164,8 @@ public class MainToolBar extends JToolBar
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                toggleSelectedOnBoardEditor();
+                
                 SelectionBrush brush = new SelectionBrush(new Tile[1][1]);
                 MainWindow.getInstance().setCurrentBrush(brush);
             }
@@ -174,6 +181,8 @@ public class MainToolBar extends JToolBar
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                toggleSelectedOnBoardEditor();
+                
                 BucketBrush brush = new BucketBrush();
                 brush.setPourTile(MainWindow.getInstance().getLastSelectedTile());
                 MainWindow.getInstance().setCurrentBrush(brush);
@@ -190,6 +199,8 @@ public class MainToolBar extends JToolBar
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                toggleSelectedOnBoardEditor();
+                
                 ShapeBrush brush = new ShapeBrush();
                 brush.makeRectangleBrush(new Rectangle(0, 0, 1, 1));
                 brush.setTile(new Tile());
@@ -207,6 +218,8 @@ public class MainToolBar extends JToolBar
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                toggleSelectedOnBoardEditor();
+                
                 VectorBrush brush = new VectorBrush();
                 MainWindow.getInstance().setCurrentBrush(brush);
 
@@ -215,6 +228,30 @@ public class MainToolBar extends JToolBar
                 {
                     MainWindow.getInstance().getMainMenuBar().getViewMenu()
                         .getShowVectorsMenuItem().setSelected(true);
+                }
+            }
+        });
+        
+        this.programButton = new JToggleButton();
+        this.programButton.setFocusable(false);
+        this.programButton.setIcon(new ImageIcon(getClass().
+                getResource("/editor/layer-shape-polyline.png")));
+        this.programButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                toggleSelectedOnBoardEditor();
+                
+                ProgramBrush brush = new ProgramBrush();
+                MainWindow.getInstance().setCurrentBrush(brush);
+
+                if (MainWindow.getInstance().getMainMenuBar().getViewMenu()
+                        .getShowProgramsMenuItem().isSelected() == false)
+                {
+                    MainWindow.getInstance().getMainMenuBar().getViewMenu()
+                        .getShowProgramsMenuItem().setSelected(true);
                 }
             }
         });
@@ -229,6 +266,8 @@ public class MainToolBar extends JToolBar
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                toggleSelectedOnBoardEditor();
+                
                 SpriteBrush brush = new SpriteBrush();
                 MainWindow.getInstance().setCurrentBrush(brush);
             }
@@ -303,6 +342,7 @@ public class MainToolBar extends JToolBar
         this.bucketButton.setEnabled(true);
         this.eraserButton.setEnabled(true);
         this.vectorButton.setEnabled(true);
+        this.programButton.setEnabled(true);
         this.spriteButton.setEnabled(true);
         this.lightButton.setEnabled(false);
         this.zoomInButton.setEnabled(true);
@@ -317,6 +357,7 @@ public class MainToolBar extends JToolBar
         this.toolButtonGroup.add(this.bucketButton);
         this.toolButtonGroup.add(this.eraserButton);
         this.toolButtonGroup.add(this.vectorButton);
+        this.toolButtonGroup.add(this.programButton);
         this.toolButtonGroup.add(this.spriteButton);
         this.toolButtonGroup.add(this.lightButton);
 
@@ -338,6 +379,7 @@ public class MainToolBar extends JToolBar
         this.add(this.bucketButton);
         this.add(this.eraserButton);
         this.add(this.vectorButton);
+        this.add(this.programButton);
         this.add(this.spriteButton);
         this.add(this.lightButton);
         this.addSeparator();
@@ -478,6 +520,26 @@ public class MainToolBar extends JToolBar
     public void enableButtons(boolean enable)
     {
         this.openButton.setEnabled(enable);
+    }
+    
+    /*
+     * *************************************************************************
+     * Private Methods
+     * *************************************************************************
+     */
+    public void toggleSelectedOnBoardEditor()
+    {
+        BoardEditor editor = MainWindow.getInstance().getCurrentBoardEditor();
+        
+        if (editor != null)
+        {
+            if (editor.getSelectedObject() != null)
+            {
+                editor.getSelectedObject().setSelected(false);
+            }
+            
+            editor.setSelectedObject(null);
+        }
     }
 
 }

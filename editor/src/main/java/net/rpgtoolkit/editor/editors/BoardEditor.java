@@ -169,7 +169,7 @@ public class BoardEditor extends ToolkitEditorWindow
         this.selectedObject = object;
         MainWindow.getInstance().getPropertiesPanel().setModel(
                 this.selectedObject);
-        boardView.repaint();
+        this.boardView.repaint();
     }
 
     /*

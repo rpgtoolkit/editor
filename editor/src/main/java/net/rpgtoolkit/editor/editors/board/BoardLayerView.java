@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.assets.BoardLayer;
+import net.rpgtoolkit.common.assets.BoardProgram;
 import net.rpgtoolkit.common.assets.BoardSprite;
 import net.rpgtoolkit.common.assets.BoardVector;
 import net.rpgtoolkit.common.assets.Tile;
@@ -356,7 +357,6 @@ public final class BoardLayerView implements Cloneable
      */
     public void drawVectors(Graphics2D g)
     {
-
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP,
                 this.opacity));
 
@@ -388,6 +388,59 @@ public final class BoardLayerView implements Cloneable
                     g.setColor(Color.RED);
                     break;
             }
+
+            for (int i = 0; i < count - 1; i++)
+            {
+                g.drawLine(
+                        vector.getPointX(i),
+                        vector.getPointY(i),
+                        vector.getPointX(i + 1),
+                        vector.getPointY(i + 1));
+            }
+
+            if (vector.isClosed())
+            {
+                // Draw the final lines
+                g.drawLine(
+                        vector.getPointX(count - 1),
+                        vector.getPointY(count - 1),
+                        vector.getPointX(0),
+                        vector.getPointY(0));
+            }
+
+            if (vector.isSelected())
+            {
+                g.setStroke(new BasicStroke(1.0f)); // Return to normal stroke.
+            }
+        }
+    }
+    
+    /**
+     * Draws the programs for this layer.
+     *
+     * @param g The graphics context to draw to.
+     */
+    public void drawPrograms(Graphics2D g)
+    {
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP,
+                this.opacity));
+
+        // Draw Vectors
+        ArrayList<BoardProgram> programs = this.layer.getPrograms();
+
+        for (BoardProgram program : programs)
+        {
+            BoardVector vector = program.getVector();
+            
+            if (vector.isSelected())
+            {
+                g.setStroke(new BasicStroke(3.0f)); // Draw it thicker.
+            }
+
+            // Draw lines from points 0 > 1 , 1 > 2, 2 > 3 etc..
+            int count = vector.getPointCount();
+
+            g.setColor(Color.YELLOW);
 
             for (int i = 0; i < count - 1; i++)
             {

@@ -7,7 +7,9 @@
  */
 package net.rpgtoolkit.common.assets;
 
-public class BoardProgram extends BasicType implements Cloneable
+import net.rpgtoolkit.common.Selectable;
+
+public class BoardProgram extends BasicType implements Cloneable, Selectable
 {
     private long layer;
     private String graphic;
@@ -149,6 +151,18 @@ public class BoardProgram extends BasicType implements Cloneable
         this.distanceRepeat = distanceRepeat;
     }
     
+    @Override
+    public boolean isSelected()
+    {
+        return this.vector.isSelected();
+    }
+
+    @Override
+    public void setSelected(boolean state)
+    {
+        this.vector.setSelected(state);
+    }
+    
     /*
      * ************************************************************************* 
      * Public Methods
@@ -180,4 +194,5 @@ public class BoardProgram extends BasicType implements Cloneable
         
         return clone;
     }
+
 }

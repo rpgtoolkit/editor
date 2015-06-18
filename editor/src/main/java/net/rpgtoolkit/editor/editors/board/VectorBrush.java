@@ -7,6 +7,7 @@
  */
 package net.rpgtoolkit.editor.editors.board;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -22,8 +23,9 @@ import net.rpgtoolkit.common.assets.BoardVector;
 public class VectorBrush extends AbstractBrush
 {
     
-    private BoardVector boardVector;
-    private boolean stillDrawing;
+    protected BoardVector boardVector;
+    protected boolean stillDrawing;
+    protected Color previewColor;
     
     /*
      * *************************************************************************
@@ -34,9 +36,9 @@ public class VectorBrush extends AbstractBrush
     {
         this.boardVector = new BoardVector();
         this.stillDrawing = false;
+        this.previewColor = Color.WHITE;
     }
-    
-    
+   
     /*
      * *************************************************************************
      * Public Getters and Setters
@@ -91,6 +93,7 @@ public class VectorBrush extends AbstractBrush
         Point lastVectorPoint = this.boardVector.getPoints()
                 .get(this.boardVector.getPoints().size() - 1);
         
+        g2d.setColor(this.previewColor);
         g2d.drawLine(lastVectorPoint.x, lastVectorPoint.y, cursor.x, cursor.y);
     }
 
@@ -128,7 +131,7 @@ public class VectorBrush extends AbstractBrush
         return null;
     }
     
-    public void finishVector()
+    public void finish()
     {
         if (this.boardVector.getPointCount() < 2)
         {
@@ -138,6 +141,20 @@ public class VectorBrush extends AbstractBrush
 
         this.boardVector = new BoardVector();
         this.stillDrawing = false;
+    }
+    
+    /*
+     * *************************************************************************
+     * Protected Methods
+     * *************************************************************************
+     */
+    protected Rectangle callRootPaint(int x, int y, Rectangle selection) 
+            throws Exception
+    {
+        // This is bad design, and is monkeying around with the inheritance
+        // model by exposing access of parent class of this class to a child.
+        // Should implement composition of inheritance in this case.
+        return super.doPaint(x, y, selection);
     }
     
 }

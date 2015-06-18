@@ -7,17 +7,9 @@
  */
 package net.rpgtoolkit.common.assets;
 
-import java.awt.Point;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
-import net.rpgtoolkit.common.assets.BoardImage;
-import net.rpgtoolkit.common.assets.BoardLight;
-import net.rpgtoolkit.common.assets.BoardProgram;
-import net.rpgtoolkit.common.assets.BoardSprite;
-import net.rpgtoolkit.common.assets.BoardVector;
 
 /**
  *
@@ -321,6 +313,51 @@ public class BoardLayer implements Cloneable
         }
         
         return vector;
+    }
+    
+    public BoardProgram findProgramAt(int x, int y)
+    {
+        // Create a small rectangle to represent the bounds of the mouse.
+        Rectangle2D mouse = new Rectangle2D.Double(x - 5, y - 5, 10, 10);
+
+        for (BoardProgram program : this.programs)
+        {
+            BoardVector vector = program.getVector();
+            
+            // There are no lines.
+            if (vector.getPoints().size() < 2)
+            {
+                continue;
+            }
+
+            for (int i = 0; i < vector.getPoints().size() - 1; i++)
+            {
+                // Build a line from the points in the polygon.
+                Line2D line2D = new Line2D.Double(vector.getPoints().get(i),
+                        vector.getPoints().get(i + 1));
+
+                // See if the mouse intersects the line of the polygon.
+                if (line2D.intersects(mouse))
+                {
+                    return program;
+                }
+            }
+        }
+
+        return null;
+    }
+    
+    public BoardProgram removeProgramAt(int x, int y)
+    {
+        BoardProgram program = findProgramAt(x, y);
+        
+        if (program != null)
+        {
+            this.programs.remove(program);
+            this.board.fireBoardChanged();
+        }
+        
+        return program;
     }
     
     public BoardSprite findSpriteAt(int x, int y)

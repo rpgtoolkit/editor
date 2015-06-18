@@ -40,6 +40,7 @@ import net.rpgtoolkit.editor.editors.TileSelectionEvent;
 import net.rpgtoolkit.editor.editors.TileSelectionListener;
 import net.rpgtoolkit.editor.editors.TilesetCanvas;
 import net.rpgtoolkit.editor.editors.TileRegionSelectionEvent;
+import net.rpgtoolkit.editor.editors.board.ProgramBrush;
 import net.rpgtoolkit.editor.utilities.TextAreaOutputStream;
 
 /**
@@ -80,6 +81,7 @@ public class MainWindow extends JFrame implements InternalFrameListener
     // Board Related.
     private boolean showGrid;
     private boolean showVectors;
+    private boolean showPrograms;
     private boolean showCoordinates;
     private AbstractBrush currentBrush;
     private Tile lastSelectedTile;
@@ -198,6 +200,16 @@ public class MainWindow extends JFrame implements InternalFrameListener
     public void setShowVectors(boolean showVectors)
     {
         this.showVectors = showVectors;
+    }
+    
+    public boolean isShowPrograms()
+    {
+        return showPrograms;
+    }
+    
+    public void setShowPrograms(boolean showPrograms)
+    {
+        this.showPrograms = showPrograms;
     }
 
     public boolean isShowCoordinates()
@@ -330,15 +342,16 @@ public class MainWindow extends JFrame implements InternalFrameListener
                 this.propertiesPanel.setModel(null);
             }
 
-            // So we do not end up drawing the vector on the other board
-            // after it has been deactivated.
-            if (this.currentBrush instanceof VectorBrush)
+            // So we do not end up drawing the vector or program on the other 
+            // board after it has been deactivated.
+            if (this.currentBrush instanceof VectorBrush || 
+                    this.currentBrush instanceof ProgramBrush)
             {
                 VectorBrush brush = (VectorBrush) this.currentBrush;
 
                 if (brush.isDrawing() && brush.getBoardVector() != null)
                 {
-                    brush.finishVector();
+                    brush.finish();
                 }
             }
         }
@@ -575,6 +588,17 @@ public class MainWindow extends JFrame implements InternalFrameListener
     public void toogleVectorsOnBoardEditor(boolean isVisible)
     {
         this.showVectors = isVisible;
+
+        if (desktopPane.getSelectedFrame() instanceof BoardEditor)
+        {
+            BoardEditor editor = (BoardEditor) desktopPane.getSelectedFrame();
+            editor.getBoardView().repaint();
+        }
+    }
+    
+    public void toogleProgramsOnBoardEditor(boolean isVisible)
+    {
+        this.showPrograms = isVisible;
 
         if (desktopPane.getSelectedFrame() instanceof BoardEditor)
         {

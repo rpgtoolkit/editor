@@ -11,6 +11,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import net.rpgtoolkit.common.assets.BoardProgram;
 
 import net.rpgtoolkit.common.assets.BoardSprite;
 import net.rpgtoolkit.common.assets.BoardVector;
@@ -134,7 +135,7 @@ public class BoardMouseAdapter extends MouseAdapter
         }
         else if (brush instanceof VectorBrush)
         {
-            // Because vectors coordinates are pixel based.
+            // Because vectors and programs coordinates are pixel based.
             point = new Point(e.getX(), e.getY());
         }
 
@@ -149,13 +150,34 @@ public class BoardMouseAdapter extends MouseAdapter
      */
     private void doMouseButton2Pressed(MouseEvent e, AbstractBrush brush)
     {
-        if (brush instanceof VectorBrush)
+        if (brush instanceof ProgramBrush)
+        {
+            ProgramBrush programBrush = (ProgramBrush) brush;
+            
+            if (programBrush.isDrawing())
+            {
+                programBrush.finish();
+            }
+            
+            BoardProgram program = this.editor.boardView.getCurrentSelectedLayer()
+                    .getLayer().removeProgramAt(e.getX(), e.getY());
+            
+            if (program != null)
+            {
+                if (program == editor.getSelectedObject())
+                {
+                    editor.getSelectedObject().setSelected(false);
+                    editor.setSelectedObject(null);
+                }
+            }
+        }
+        else if (brush instanceof VectorBrush)
         {
             VectorBrush vectorBrush = (VectorBrush) brush;
 
             if (vectorBrush.isDrawing())
             {
-                vectorBrush.finishVector();
+                vectorBrush.finish();
             }
 
             BoardVector vector = this.editor.boardView.getCurrentSelectedLayer()
@@ -187,12 +209,26 @@ public class BoardMouseAdapter extends MouseAdapter
      */
     private void doMouseButton3Pressed(MouseEvent e, AbstractBrush brush)
     {
-        if (brush instanceof VectorBrush)
+        
+        if (brush instanceof ProgramBrush)
+        {
+            // We are drawing a vector, so lets finish it.
+            if (((ProgramBrush) brush).isDrawing())
+            {
+                ((ProgramBrush) brush).finish();
+            }
+            else // We want to select a program.
+            {
+                this.selectProgram(this.editor.boardView.getCurrentSelectedLayer()
+                        .getLayer().findProgramAt(e.getX(), e.getY()));
+            }
+        }
+        else if (brush instanceof VectorBrush)
         {
             // We are drawing a vector, so lets finish it.
             if (((VectorBrush) brush).isDrawing())
             {
-                ((VectorBrush) brush).finishVector();
+                ((VectorBrush) brush).finish();
             }
             else // We want to select a vector.
             {
@@ -254,6 +290,26 @@ public class BoardMouseAdapter extends MouseAdapter
             }
 
             editor.setSelectedObject(vector);
+        }
+        else if (editor.getSelectedObject() != null)
+        {
+            editor.getSelectedObject().setSelected(false);
+            editor.setSelectedObject(null);
+        }
+    }
+    
+    private void selectProgram(BoardProgram program)
+    {
+        if (program != null)
+        {
+            program.getVector().setSelected(true);
+
+            if (editor.getSelectedObject() != null)
+            {
+                editor.getSelectedObject().setSelected(false);
+            }
+
+            editor.setSelectedObject(program);
         }
         else if (editor.getSelectedObject() != null)
         {
