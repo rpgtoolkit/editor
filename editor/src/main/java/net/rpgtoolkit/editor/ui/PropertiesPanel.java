@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package net.rpgtoolkit.editor.ui;
 
 import java.awt.BorderLayout;
@@ -54,6 +61,11 @@ public class PropertiesPanel extends JPanel implements ListSelectionListener
         // To ensure that the internal controls are not streched.
         JPanel intermediate = new JPanel(new FlowLayout());
         intermediate.add(panel);
+        
+        if (panel != null)
+        {
+            intermediate.add(panel);
+        }
         
         this.propertiesScrollPane.setViewportView(intermediate);
         this.propertiesScrollPane.getViewport().revalidate();

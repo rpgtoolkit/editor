@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package net.rpgtoolkit.editor.editors;
 
 import java.awt.event.ActionEvent;
@@ -23,6 +30,7 @@ import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
 import net.rpgtoolkit.editor.ui.Gui;
 import net.rpgtoolkit.editor.ui.IntegerField;
 import net.rpgtoolkit.editor.ui.WholeNumberField;
+import net.rpgtoolkit.editor.ui.resources.Icons;
 
 /**
  * Enemy editor
@@ -405,10 +413,10 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         JScrollPane animListScroller = new JScrollPane(this.animList);
         
         JLabel animLabel = new JLabel("Animation");
-        final ImageIcon playIcon = new ImageIcon(getClass().
-                getResource("/editor/run.png"));
-        final ImageIcon stopIcon = new ImageIcon(getClass().
-                getResource("/editor/stop.png"));
+        
+        final ImageIcon playIcon = Icons.getSmallIcon("run");
+        final ImageIcon stopIcon = Icons.getSmallIcon("stop");
+        
         final JToggleButton play = new JToggleButton(playIcon);
         final JLabel animDisplay = new JLabel();
         

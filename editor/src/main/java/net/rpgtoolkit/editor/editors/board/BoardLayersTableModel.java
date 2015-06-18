@@ -1,11 +1,16 @@
+/**
+ * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package net.rpgtoolkit.editor.editors.board;
 
 import javax.swing.table.AbstractTableModel;
-import net.rpgtoolkit.editor.editors.AbstractBoardView;
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
 import net.rpgtoolkit.common.assets.BoardChangeListener;
 import net.rpgtoolkit.common.assets.BoardChangedEvent;
-import net.rpgtoolkit.editor.editors.AbstractBoardView;
 
 /**
  * We want to update the board model here, not the view. After updating the

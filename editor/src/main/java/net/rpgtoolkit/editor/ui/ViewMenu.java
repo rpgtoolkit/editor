@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package net.rpgtoolkit.editor.ui;
 
 import java.awt.event.ActionEvent;
@@ -11,6 +18,7 @@ import javax.swing.KeyStroke;
 import net.rpgtoolkit.editor.ui.MainWindow;
 import net.rpgtoolkit.editor.ui.actions.ZoomInAction;
 import net.rpgtoolkit.editor.ui.actions.ZoomOutAction;
+import net.rpgtoolkit.editor.ui.resources.Icons;
 
 /**
  *
@@ -97,8 +105,7 @@ public final class ViewMenu extends JMenu
     public void configureZoomInMenuItem()
     {
         zoomInMenuItem = new JMenuItem("Zoom In");
-        zoomInMenuItem.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/zoom-in.png")));
+        zoomInMenuItem.setIcon(Icons.getSmallIcon("zoom-in"));
         zoomInMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_ADD, ActionEvent.CTRL_MASK));
         zoomInMenuItem.setMnemonic(KeyEvent.VK_PLUS);
@@ -111,8 +118,7 @@ public final class ViewMenu extends JMenu
     public void configureZoomOutMenuItem()
     {
         zoomOutMenuItem = new JMenuItem("Zoom Out");
-        zoomOutMenuItem.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/zoom-out.png")));
+        zoomOutMenuItem.setIcon(Icons.getSmallIcon("zoom-out"));
         zoomOutMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, ActionEvent.CTRL_MASK));
         zoomOutMenuItem.setMnemonic(KeyEvent.VK_MINUS);
@@ -125,8 +131,7 @@ public final class ViewMenu extends JMenu
     public void configureShowGridMenuItem()
     {
         showGridMenuItem = new JCheckBoxMenuItem("Show Grid");
-        showGridMenuItem.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/grid.png")));
+        showGridMenuItem.setIcon(Icons.getSmallIcon("grid"));
         showGridMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
         showGridMenuItem.setMnemonic(KeyEvent.VK_G);
@@ -139,8 +144,6 @@ public final class ViewMenu extends JMenu
     public void configureShowCoordinatesMenuItem()
     {
         showCoordinatesMenuItem = new JCheckBoxMenuItem("Show Coordinates");
-        //showGridMenuItem.setIcon(new ImageIcon(getClass()
-        //        .getResource("/editor/grid.png")));
         //showGridMenuItem.setAccelerator(
         //        KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
         //showGridMenuItem.setMnemonic(KeyEvent.VK_G);
@@ -153,8 +156,6 @@ public final class ViewMenu extends JMenu
     public void configureShowVectorsMenuItem()
     {
         showVectorsMenuItem = new JCheckBoxMenuItem("Show Vectors");
-        //showGridMenuItem.setIcon(new ImageIcon(getClass()
-        //        .getResource("/editor/grid.png")));
         //showGridMenuItem.setAccelerator(
         //        KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
         //showGridMenuItem.setMnemonic(KeyEvent.VK_G);

@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package net.rpgtoolkit.editor.ui;
 
 import java.awt.event.ActionEvent;
@@ -8,6 +15,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.ui.resources.Icons;
 
 /**
  *
@@ -61,8 +69,7 @@ public final class EditMenu extends JMenu
     public void configureUndoMenuItem()
     {
         undoMenuItem = new JMenuItem("Undo");
-        undoMenuItem.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/undo.png")));
+        undoMenuItem.setIcon(Icons.getSmallIcon("undo"));
         undoMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
         undoMenuItem.setMnemonic(KeyEvent.VK_U);
@@ -73,8 +80,7 @@ public final class EditMenu extends JMenu
     public void configureRedoMenuItem()
     {
         redoMenuItem = new JMenuItem("Redo");
-        redoMenuItem.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/redo.png")));
+        redoMenuItem.setIcon(Icons.getSmallIcon("redo"));
         redoMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
         redoMenuItem.setMnemonic(KeyEvent.VK_R);
@@ -85,8 +91,7 @@ public final class EditMenu extends JMenu
     public void configureCutMenuItem()
     {
         cutMenuItem = new JMenuItem("Cut");
-        cutMenuItem.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/cut.png")));
+        cutMenuItem.setIcon(Icons.getSmallIcon("cut"));
         cutMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
         cutMenuItem.setMnemonic(KeyEvent.VK_T);
@@ -97,8 +102,7 @@ public final class EditMenu extends JMenu
     public void configureCopyMenuItem()
     {
         copyMenuItem = new JMenuItem("Copy");
-        copyMenuItem.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/copy.png")));
+        copyMenuItem.setIcon(Icons.getSmallIcon("copy"));
         copyMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
         copyMenuItem.setMnemonic(KeyEvent.VK_C);
@@ -109,8 +113,7 @@ public final class EditMenu extends JMenu
     public void configurePasteMenuItem()
     {
         pasteMenuItem = new JMenuItem("Paste");
-        pasteMenuItem.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/paste.png")));
+        pasteMenuItem.setIcon(Icons.getSmallIcon("paste"));
         pasteMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
         pasteMenuItem.setMnemonic(KeyEvent.VK_P);
@@ -142,8 +145,7 @@ public final class EditMenu extends JMenu
     public void configureFindMenuItem()
     {
         findMenuItem = new JMenuItem("Quick Find");
-        findMenuItem.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/find.png")));
+        findMenuItem.setIcon(Icons.getSmallIcon("find"));
         findMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
         findMenuItem.setMnemonic(KeyEvent.VK_F);
@@ -154,8 +156,7 @@ public final class EditMenu extends JMenu
     public void configureQuickReplaceMenuItem()
     {
         quickReplaceMenuItem = new JMenuItem("Quick Replace");
-        quickReplaceMenuItem.setIcon(new ImageIcon(getClass()
-                .getResource("/editor/replace.png")));
+        quickReplaceMenuItem.setIcon(Icons.getSmallIcon("replace"));
         quickReplaceMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
         quickReplaceMenuItem.setMnemonic(KeyEvent.VK_R);

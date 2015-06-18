@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package net.rpgtoolkit.editor.editors.board;
 
 import java.awt.Graphics2D;
@@ -5,7 +12,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 
-import net.rpgtoolkit.editor.editors.AbstractBoardView;
 import net.rpgtoolkit.common.assets.BoardVector;
 
 /**
