@@ -166,11 +166,10 @@ public class SpecialMove extends BasicType implements Asset
         //convert to new format without overwriting old file
         if(this.file.getName().endsWith(".spc")) {
             this.file = new File(this.file.getPath() + ".json");
-            AssetManager.getInstance().addAsset(this);
         }
         try {
-            //        return JSON.save(this, this.file);
-            AssetManager.getInstance().serialize(getDescriptor());
+            AssetManager.getInstance().serialize(
+                    AssetManager.getInstance().getHandle(this));
             return true;
         } catch(IOException | CorruptAssetException ex) {
             Logger.getLogger(SpecialMove.class.getName()).log(Level.SEVERE, null, ex);
@@ -181,7 +180,6 @@ public class SpecialMove extends BasicType implements Asset
     public boolean saveAs(File fileName)
     {
         this.file = fileName;
-        AssetManager.getInstance().addAsset(this);
         return this.save();
     }
     

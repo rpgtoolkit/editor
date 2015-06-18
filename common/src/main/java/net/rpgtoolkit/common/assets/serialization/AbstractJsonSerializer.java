@@ -53,7 +53,8 @@ public abstract class AbstractJsonSerializer
     }
     
     /**
-     * Loads a JSON object from disk at the File provided.
+     * Loads a JSON object from disk using the handle provided.
+     *
      * @param handle
      * @return the JSONObject that was loaded, or null if load failed
      * @throws java.io.IOException
@@ -87,6 +88,12 @@ public abstract class AbstractJsonSerializer
         }
     }
 
+    /**
+     * Creates and populates a JSON object using the asset handle provided.
+     *
+     * @param handle
+     * @return
+     */
     public String toJSONString(AssetHandle handle) {
         JSONStringer json = new JSONStringer();
         json.object();

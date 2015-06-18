@@ -5,7 +5,6 @@
 package net.rpgtoolkit.common.assets;
 
 import java.io.IOException;
-import static java.lang.System.out;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,14 +40,27 @@ public class AssetManager {
         return this.assets.size();
     }
     
-    public void addAsset(Asset asset) {
-        if(asset == null) { return; }
-        AssetHandle handle = resolve(asset.getDescriptor());
-        if(handle != null) {
-            handle.setAsset(asset);
-            out.println("asset set");
-            this.assets.put(asset.getDescriptor(), handle);
+    /**
+     * Gets the handle for the given asset. If the asset is not already being
+     * managed, a handle for it is created and added. If a handle with the
+     * asset's descriptor is already being managed, the handle's asset is set to
+     * the given asset.
+     *
+     * @param asset
+     * @return a handle for the given asset, or null if the asset is null
+     */
+    public AssetHandle getHandle(Asset asset) {
+        if(asset == null) { return null; }
+        AssetDescriptor d = asset.getDescriptor();
+        AssetHandle h;
+        if(this.assets.containsKey(d)) {
+            h = this.assets.get(d);
+        } else {
+            h = this.resolve(d);
+            this.assets.put(d, h);
         }
+        h.setAsset(asset);
+        return h;
     }
 
     /**
@@ -71,27 +83,20 @@ public class AssetManager {
         this.resolvers.add(resolver);
     }
     
-    public AssetHandle serialize(AssetDescriptor descriptor) 
+    public AssetHandle serialize(AssetHandle handle) 
         throws IOException, CorruptAssetException {
         
-        final AssetHandle handle;
-        if (assets.containsKey(descriptor)) {
-            handle = assets.get(descriptor);
-        } else {
-            for(AssetDescriptor d : assets.keySet()) {
-                out.println(d.getURI());
-            }
-            throw new CorruptAssetException("No asset found for this descriptor: "
-                    + descriptor.getURI());
+        final AssetDescriptor descriptor = handle.getDescriptor();
+        
+        if (handle.getAsset() != null) {
+            assets.put(descriptor, handle);
         }
         
-        if (handle != null) {
-            for (AssetSerializer serializer : serializers) {
-                if (serializer.canSerialize(descriptor)) {
-                    serializer.serialize(handle);
-                }
-                break;
+        for (AssetSerializer serializer : serializers) {
+            if (serializer.canSerialize(descriptor)) {
+                serializer.serialize(handle);
             }
+            break;
         }
         
         return handle;
