@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package net.rpgtoolkit.editor.ui;
 
 import java.awt.*;
@@ -39,6 +46,7 @@ import net.rpgtoolkit.editor.editors.TileSelectionEvent;
 import net.rpgtoolkit.editor.editors.TileSelectionListener;
 import net.rpgtoolkit.editor.editors.TilesetCanvas;
 import net.rpgtoolkit.editor.editors.TileRegionSelectionEvent;
+import net.rpgtoolkit.editor.ui.resources.Icons;
 
 /**
  * Currently opening TileSets, tiles, programs, boards, animations, characters
@@ -114,9 +122,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         this.toolboxPanel.add(this.lowerTabbedPane);
 
         // Application icon.
-        this.setIconImage(new ImageIcon(getClass()
-                .getResource("/editor/application.png"))
-                .getImage());
+        this.setIconImage(
+                Icons.getLargeIcon("application").getImage());
 
         this.debugPane = new JPanel();
         this.debugLog = new JTextField("Debug Messages:");
@@ -326,6 +333,10 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
         if (this.fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             this.activeProject = new Project(this.fileChooser.getSelectedFile());
+            System.setProperty("project.path", 
+                    this.fileChooser.getCurrentDirectory().getParent() + "/game/" 
+                            + this.activeProject.getGameTitle() + "/");
+            
             ProjectEditor projectEditor = new ProjectEditor(this.activeProject);
             this.desktopPane.add(projectEditor, BorderLayout.CENTER);
 
@@ -346,7 +357,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         this.fileChooser.resetChoosableFileFilters();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
                 "Toolkit Files", "brd", "ene", "tem", "itm", "anm", "prg",
-                "tst", "spc", "spc4");
+                "tst", "spc", "json");
         this.fileChooser.setFileFilter(filter);
 
         if (this.activeProject != null) {
