@@ -40,6 +40,7 @@ import javax.swing.event.ListSelectionListener;
 import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.Player;
 import net.rpgtoolkit.common.assets.PlayerSpecialMove;
+import net.rpgtoolkit.common.assets.Program;
 import net.rpgtoolkit.common.assets.SpecialMove;
 import net.rpgtoolkit.editor.ui.Gui;
 import net.rpgtoolkit.editor.ui.IntegerField;
@@ -309,8 +310,12 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
         portraitFindButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String loc = mainWindow.browseByType(
-                        "Bitmap", "Supported Files", "png", "gif", "jpg", "jpeg", "bmp");
+                String loc = mainWindow.getRelativePath(
+                        mainWindow.browseLocationBySubdir(
+                                "Bitmap", "Supported Files", "png", "gif", "jpg", "jpeg", "bmp"
+                        ),
+                        mainWindow.getPath("Bitmap")
+                );
                 if(loc != null) {
                     player.setProfilePicture(loc);
                     portraitDisplay.setIcon(Gui.ImageToIcon(
@@ -743,7 +748,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
             public void actionPerformed(ActionEvent e) {
                 int index = animList.getSelectedIndex();
                 if(index < 0) { return; }
-                String loc = mainWindow.browseByType("Misc", "Animation Files", "anm");
+                String loc = mainWindow.browseByTypeRelative(Animation.class);
                 if(loc != null) {
                     if(play.isSelected()) { play.doClick(); } //press stop before we change it
                     animLoc.setText(loc);
@@ -1112,7 +1117,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
         levelUpProgramFindButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String loc = mainWindow.browseByType("Prg", "Program Files", "prg");
+                String loc = mainWindow.browseByTypeRelative(Program.class);
                 if(loc != null) {
                     levelUpProgram.setText(loc);
                 }
@@ -1171,7 +1176,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
     
     private ActionListener varDefaultListener(
-            final JTextField varField, String varKey, char type) {
+            final JTextField varField, final String varKey, final char type) {
         return new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1184,7 +1189,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     }
 
     private String browseSpecialMove() {
-        return mainWindow.browseByType("SpcMove", "Special Move Files", "spc");
+        return mainWindow.browseByTypeRelative(SpecialMove.class);
     }
 
     private String getSpecialMoveText(String loc) {

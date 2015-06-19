@@ -23,6 +23,7 @@ import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
 import net.rpgtoolkit.common.assets.AssetHandle;
 import net.rpgtoolkit.common.assets.AssetManager;
+import net.rpgtoolkit.common.assets.BasicType;
 import net.rpgtoolkit.common.assets.Enemy;
 import net.rpgtoolkit.common.assets.Player;
 import net.rpgtoolkit.common.assets.Project;
@@ -358,8 +359,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     public void primeFileChooser() {
         this.fileChooser.resetChoosableFileFilters();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                "Toolkit Files", "brd", "ene", "tem", "itm", "anm", "prg",
-                "tst", "spc", "json");
+                "Toolkit Files", this.getTKFileExtensions());
         this.fileChooser.setFileFilter(filter);
 
         if (this.activeProject != null) {
@@ -377,6 +377,12 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         if (this.fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             this.checkFileExtension(this.fileChooser.getSelectedFile());
         }
+    }
+    
+    private String[] getTKFileExtensions() {
+        return new String[] {
+            "brd", "ene", "tem", "itm", "anm", "prg", "tst", "spc", "json"
+        };
     }
 
     public void checkFileExtension(File file) {
@@ -478,15 +484,224 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
     public void openSpecialMove() {
         try {
-            AssetHandle handle = AssetManager.getInstance().deserialize(
-                    new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
-            SpecialMove move = (SpecialMove)handle.getAsset();
-            SpecialMoveEditor sMoveEditor = new SpecialMoveEditor(move);
+            SpecialMoveEditor sMoveEditor;
+            if(fileChooser.getSelectedFile().canRead()) {
+                AssetHandle handle = AssetManager.getInstance().deserialize(
+                        new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
+                SpecialMove move = (SpecialMove)handle.getAsset();
+                sMoveEditor = new SpecialMoveEditor(move);
+            } else {
+                sMoveEditor = new SpecialMoveEditor();
+            }
             desktopPane.add(sMoveEditor);
         this.selectToolkitWindow(sMoveEditor);
         } catch(IOException | CorruptAssetException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public String getTypeSubdirectory(Class<? extends BasicType> type) {
+        switch(type.getSimpleName()) {
+            case "Animation":
+                return "Misc";
+            case "Board":
+                return "Boards";
+            case "Enemy":
+                return "Enemy";
+            case "Item":
+                return "Item";
+            case "Player":
+                return "Chrs";
+            case "Program":
+                return "Prg";
+            case "StatusEffect":
+                return "StatusE";
+            case "SpecialMove":
+                return "SpcMove";
+            case "Tileset":
+                return "Tiles";
+            default:
+                return "";
+        }
+    }
+    
+    public String getTypeFilterDescription(Class<? extends BasicType> type) {
+        switch(type.getSimpleName()) {
+            case "Animation":
+                return "Animations";
+            case "Board":
+                return "Boards";
+            case "Enemy":
+                return "Enemies";
+            case "Item":
+                return "Items";
+            case "Player":
+                return "Characters";
+            case "Program":
+                return "Programs";
+            case "StatusEffect":
+                return "Status Effects";
+            case "Tileset":
+                return "Tilesets";
+            case "SpecialMove":
+                return "Special Moves";
+            default:
+                return "Toolkit Files";
+        }
+    }
+    
+    public String[] getTypeExtensions(Class<? extends BasicType> type) {
+        switch(type.getSimpleName()) {
+            case "Animation":
+                return new String[] {"anm"};
+            case "Board":
+                return new String[] {"brd"};
+            case "Enemy":
+                return new String[] {"ene"};
+            case "Item":
+                return new String[] {"itm"};
+            case "Player":
+                return new String[] {"tem"};
+            case "Program":
+                return new String[] {"prg"};
+            case "StatusEffect":
+                return new String[] {"ste"};
+            case "Tileset":
+                return new String[] {"tst"};
+            case "SpecialMove":
+                return new String[] {"spc", "spc.json"};
+            default:
+                return this.getTKFileExtensions();
+        }
+    }
+    
+    /**
+     * Browse for a file of the given type, starting in the subdirectory for
+     * that type, and return its location relative to the subdirectory for that
+     * type. Filters by extensions relevant to that type. This is a shortcut
+     * method for browseLocationBySubdir().
+     *
+     * @param type a BasicType class
+     * @return the location of the file the user selects, relative to the
+     * subdirectory corresponding to that type; or null if no file or an invalid
+     * file is selected (see browseLocationBySubdir())
+     */
+    public String browseByTypeRelative(Class<? extends BasicType> type) {
+        File path = this.browseByType(type);
+        if(path == null) { return null; }
+        return this.getRelativePath(path,
+                this.getPath(this.getTypeSubdirectory(type)));
+    }
+    
+    /**
+     * Browse for a file of the given type, starting in the subdirectory for
+     * that type, and return its location. Filters by extensions relevant to
+     * that type. This is a shortcut method for browseLocationBySubdir().
+     *
+     * @param type a BasicType class
+     * @return the location of the file the user selects; or null if no file or
+     * an invalid file is selected (see browseLocationBySubdir())
+     */
+    public File browseByType(Class<? extends BasicType> type) {
+        String subdir = this.getTypeSubdirectory(type);
+        String desc = getTypeFilterDescription(type);
+        String[] exts = getTypeExtensions(type);
+        return this.browseLocationBySubdir(subdir, desc, exts);
+    }
+    
+    /**
+     * Browse for a file of the given type, starting in the subdirectory for
+     * that type, and return its location relative to the subdirectory for that
+     * type. The file may not exist yet if the user types it in. Filters by
+     * extensions relevant to that type. This is a shortcut method for
+     * saveLocationBySubdir().
+     *
+     * @param type a BasicType class
+     * @return the location of the file the user selects, relative to the
+     * subdirectory corresponding to that type; or null if no file or an invalid
+     * file is selected (see saveLocationBySubdir())
+     */
+    public String saveByTypeRelative(Class<? extends BasicType> type) {
+        File path = this.saveByType(type);
+        if(path == null) { return null; }
+        return this.getRelativePath(path,
+                this.getPath(this.getTypeSubdirectory(type)));
+    }
+
+    /**
+     * Browse for a file of the given type, starting in the subdirectory for
+     * that type, and return its location. The file may not exist yet if the
+     * user types it in. Filters by extensions relevant to that type. This is a
+     * shortcut method for saveLocationBySubdir().
+     *
+     * @param type a BasicType class
+     * @return the location of the file the user selects; or null if no file or
+     * an invalid file is selected (see saveLocationBySubdir())
+     */
+    public File saveByType(Class<? extends BasicType> type) {
+        String subdir = this.getTypeSubdirectory(type);
+        String desc = getTypeFilterDescription(type);
+        String[] exts = getTypeExtensions(type);
+        return this.saveLocationBySubdir(subdir, desc, exts);
+    }
+    
+    /**
+     * Browse for a file with one of the given extensions, starting in the given
+     * subdirectory of the project, and return its location.
+     *
+     * @param subdirectory where within the project to start the file chooser
+     * @param description what to name the filter (for example, "Program Files")
+     * @param extensions the file extensions to filter by (the portion of the
+     * file name after the last ".")
+     * @return the location of the file the user selects; or null if no file or
+     * an invalid file is selected
+     */
+    public File browseLocationBySubdir(
+            String subdirectory, String description, String... extensions) {
+        File path = setFileChooserSubdirAndFilters(subdirectory, description, extensions);
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            if (validateFileChoice(path, extensions) == true) {
+                return fileChooser.getSelectedFile();
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Browse for a file with one of the given extensions, starting in the given
+     * subdirectory of the project, and return its location. May return a new
+     * filename if the user types one rather than selecting an existing file.
+     *
+     * @param subdirectory where within the project to start the file chooser
+     * @param description what to name the filter (for example, "Program Files")
+     * @param extensions the file extensions to filter by (the portion of the
+     * file name after the last ".")
+     * @return the location of the file the user selects; or null if no file or
+     * an invalid file is selected
+     */
+    public File saveLocationBySubdir(
+            String subdirectory, String description, String... extensions) {
+        File path = setFileChooserSubdirAndFilters(subdirectory, description, extensions);
+        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            if (validateFileChoice(path, extensions) == true) {
+                return fileChooser.getSelectedFile();
+            }
+        }
+        return null;
+    }
+    
+    public File getPath(String relativePath) {
+        return new File(System.getProperty("project.path") + File.separator
+                + relativePath);
+    }
+    
+    public String getRelativePath(File fullPath) {
+        return this.getRelativePath(fullPath,
+                new File(System.getProperty("project.path") + File.separator));
+    }
+    public String getRelativePath(File fullPath, File relativeTo) {
+        return fullPath.getPath().replace(
+                relativeTo.getPath() + File.separator, "");
     }
 
     public void zoomInOnBoardEditor() {
@@ -545,36 +760,46 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     }
 
     /**
-     * Browse for a file of a given type, starting in the given subdirectory of
-     * the project, and return its location relative to that subdirectory.
+     * Sets the file chooser's directory to the given subdirectory of the
+     * project, sets its filter to the given description and extensions, and
+     * returns its new file path.
      *
-     * @param subdirectory where within the project to start the file chooser
-     * @param description what to name the filter (for example, "Program Files")
-     * @param extensions the file extension to filter by (the portion of the file
-     * name after the last ".")
-     * @return the location of the file the user selects, relative to the
-     * subdirectory; or null if no file or an invalid file is selected
+     * @param subdirectory
+     * @param description
+     * @param extensions
+     * @return
      */
-    public String browseByType(String subdirectory, String description, String... extensions) {
+    private File setFileChooserSubdirAndFilters(
+            String subdirectory, String description, String... extensions) {
         fileChooser.resetChoosableFileFilters();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(description, extensions);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                description, extensions);
         fileChooser.setFileFilter(filter);
-        File path = new File(System.getProperty("project.path") + File.separator + subdirectory);
+        File path = this.getPath(subdirectory);
         if (path.exists()) {
             fileChooser.setCurrentDirectory(path);
         }
-        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            String fileName = fileChooser.getSelectedFile().getName().toLowerCase();
-            boolean ok = false;
-            for(String ext : extensions) {
-                if(fileName.endsWith("." + ext)) { ok = true; break; }
-            }
-            if(ok == true) {
-                String loc = fileChooser.getSelectedFile().getPath();
-                return loc.replace(path.getPath() + File.separator, "");
-            }
+        return path;
+    }
+
+    /**
+     * Gets the location, relative to the given path, of the file chooser's
+     * currently selected file. Returns null if the file does not end with one
+     * of the given extensions.
+     *
+     * @param extensions the file is required to end with one of these (do not
+     * include the dot that comes immediately before the extension)
+     * @param path the location will be relative to this path
+     * @return the location of the currently selected file of one of the given
+     * extensions, relative to the given path; or null if the extension does not
+     * match
+     */
+    private boolean validateFileChoice(File path, String... extensions) {
+        String fileName = fileChooser.getSelectedFile().getName().toLowerCase();
+        for(String ext : extensions) {
+            if(fileName.endsWith("." + ext)) { return true; }
         }
-        return null;
+        return false;
     }
 
     /*
