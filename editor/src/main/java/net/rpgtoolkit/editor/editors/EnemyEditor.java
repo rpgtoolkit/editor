@@ -24,6 +24,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.Enemy;
+import net.rpgtoolkit.common.assets.Program;
 import net.rpgtoolkit.common.assets.SpecialMove;
 import net.rpgtoolkit.editor.ui.MainWindow;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
@@ -262,7 +263,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         runAwayProgramButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String loc = mainWindow.browseByType("Program Files", "prg", "Prg");
+                String loc = mainWindow.browseByTypeRelative(Program.class);
                 if(loc != null) {
                     runAwayProgram.setText(loc);
                 }
@@ -416,7 +417,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         
         final ImageIcon playIcon = Icons.getSmallIcon("run");
         final ImageIcon stopIcon = Icons.getSmallIcon("stop");
-        
+
         final JToggleButton play = new JToggleButton(playIcon);
         final JLabel animDisplay = new JLabel();
         
@@ -573,7 +574,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
             public void actionPerformed(ActionEvent e) {
                 int index = animList.getSelectedIndex();
                 if(index < 0) { return; }
-                String loc = mainWindow.browseByType("Animation Files", "anm", "Misc");
+                String loc = mainWindow.browseByTypeRelative(Animation.class);
                 if(loc != null) {
                     if(play.isSelected()) { play.doClick(); } //press stop before we change it
                     animLoc.setText(loc);
@@ -1022,7 +1023,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         tacticsProgramFindButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String loc = mainWindow.browseByType("Program Files", "prg", "Prg");
+                String loc = mainWindow.browseByTypeRelative(Program.class);
                 if(loc != null) {
                     tacticsProgram.setText(loc);
                 }
@@ -1094,7 +1095,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
         victoryProgramFindButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String loc = mainWindow.browseByType("Program Files", "prg", "Prg");
+                String loc = mainWindow.browseByTypeRelative(Program.class);
                 if(loc != null) {
                     victoryProgram.setText(loc);
                 }
@@ -1153,7 +1154,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
 
 
     private String browseSpecialMove() {
-        return mainWindow.browseByType("Special Move Files", "spc", "SpcMove");
+        return mainWindow.browseByTypeRelative(SpecialMove.class);
     }
 
     private String getSpecialMoveText(String loc) {

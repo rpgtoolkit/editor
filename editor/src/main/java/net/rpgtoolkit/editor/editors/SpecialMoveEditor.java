@@ -9,13 +9,18 @@ package net.rpgtoolkit.editor.editors;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
+import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
+import net.rpgtoolkit.common.assets.Animation;
+import net.rpgtoolkit.common.assets.Program;
 import net.rpgtoolkit.common.assets.SpecialMove;
+import net.rpgtoolkit.common.assets.StatusEffect;
 import net.rpgtoolkit.editor.ui.MainWindow;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
 import net.rpgtoolkit.editor.ui.Gui;
@@ -61,9 +66,12 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
      */
     public SpecialMoveEditor()
     {
-        super("New SpecialMove", true, true, true, true);
+        super("New Special Move", true, true, true, true);
 
         this.move = new SpecialMove();
+        
+        this.setSize(555, 530);
+        this.constructWindow();
         this.setVisible(true);
     }
 
@@ -91,7 +99,31 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
     @Override
     public boolean save()
     {
-        return this.move.save();
+        try {
+            mpCost.commitEdit();
+            fightPower.commitEdit();
+            mpRemovedTarget.commitEdit();
+        } catch(ParseException ex) {
+            Logger.getLogger(SpecialMoveEditor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.move.setName(moveName.getText());
+        this.move.setDescription(description.getText());
+        this.move.setMpCost(mpCost.getValue());
+        this.move.setFightPower(fightPower.getValue());
+        this.move.setRpgcodeProgram(program.getText());
+        this.move.setMpDrainedFromTarget(mpRemovedTarget.getValue());
+        this.move.setAssociatedStatusEffect(statusEffect.getText());
+        this.move.setAssociatedAnimation(animation.getText());
+        this.move.setCanUseInBattle(battleDriven.isSelected());
+        this.move.setCanUseInMenu(boardDriven.isSelected());
+        if(this.move.getFile() == null) {
+            boolean success = this.move.saveAs(
+                    mainWindow.saveByType(SpecialMove.class));
+            this.setTitle("Editing Special Move - " + this.move.toString());
+            return success;
+        } else {
+            return this.move.save();
+        }
     }
 
     public void gracefulClose()
@@ -202,7 +234,7 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
         statusEffectButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String loc = mainWindow.browseByType("Status Effects", "ste", "StatusE");
+                String loc = mainWindow.browseByTypeRelative(StatusEffect.class);
                 if(loc != null) {
                     statusEffect.setText(loc);
                 }
@@ -213,7 +245,7 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
         animationButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String loc = mainWindow.browseByType("Animation Files", "anm", "Misc");
+                String loc = mainWindow.browseByTypeRelative(Animation.class);
                 if(loc != null) {
                     animation.setText(loc);
                 }
@@ -224,7 +256,7 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
         programButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String loc = mainWindow.browseByType("Program Files", "prg", "Prg");
+                String loc = mainWindow.browseByTypeRelative(Program.class);
                 if(loc != null) {
                     program.setText(loc);
                 }
