@@ -31,3 +31,4 @@ out/
 /common/target/
 /editor/target/
 /deps/target/
+/editor/nbactions.xml
