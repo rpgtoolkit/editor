@@ -882,36 +882,46 @@ public class MainWindow extends JFrame implements InternalFrameListener
     }
 
     /**
-     * Browse for a file of a given type, starting in the given subdirectory of
-     * the project, and return its location relative to that subdirectory.
+     * Sets the file chooser's directory to the given subdirectory of the
+     * project, sets its filter to the given description and extensions, and
+     * returns its new file path.
      *
-     * @param description what to name the filter (for example, "Program Files")
-     * @param extension the file extension to filter by (the portion of the file
-     * name after the last ".")
-     * @param subdirectory where within the project to start the file chooser
-     * @return the location of the file the user selects, relative to the
-     * subdirectory; or null if no file or an invalid file is selected
+     * @param subdirectory
+     * @param description
+     * @param extensions
+     * @return
      */
-    public String browseByType(String description, String extension, String subdirectory)
-    {
+    private File setFileChooserSubdirAndFilters(
+            String subdirectory, String description, String... extensions) {
         fileChooser.resetChoosableFileFilters();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(description, extension);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                description, extensions);
         fileChooser.setFileFilter(filter);
-        File path = new File(System.getProperty("project.path") + File.separator + subdirectory);
-        if (path.exists())
-        {
+        File path = this.getPath(subdirectory);
+        if (path.exists()) {
             fileChooser.setCurrentDirectory(path);
         }
-        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
-        {
-            String fileName = fileChooser.getSelectedFile().getName().toLowerCase();
-            if (fileName.endsWith("." + extension))
-            {
-                String loc = fileChooser.getSelectedFile().getPath();
-                return loc.replace(path.getPath() + File.separator, "");
-            }
+        return path;
+    }
+
+    /**
+     * Gets the location, relative to the given path, of the file chooser's
+     * currently selected file. Returns null if the file does not end with one
+     * of the given extensions.
+     *
+     * @param extensions the file is required to end with one of these (do not
+     * include the dot that comes immediately before the extension)
+     * @param path the location will be relative to this path
+     * @return the location of the currently selected file of one of the given
+     * extensions, relative to the given path; or null if the extension does not
+     * match
+     */
+    private boolean validateFileChoice(File path, String... extensions) {
+        String fileName = fileChooser.getSelectedFile().getName().toLowerCase();
+        for(String ext : extensions) {
+            if(fileName.endsWith("." + ext)) { return true; }
         }
-        return null;
+        return false;
     }
 
     /*
