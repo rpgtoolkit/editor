@@ -7,40 +7,151 @@
  */
 package net.rpgtoolkit.editor.ui;
 
+import java.awt.FlowLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.BoardProgram;
+import net.rpgtoolkit.editor.editors.board.BoardLayerView;
+import net.rpgtoolkit.editor.utilities.FileTools;
 
 /**
  *
  * @author Joshua Michael Daly
  */
-public class BoardProgramPanel extends AbstractModelPanel
-{
-    private JTextField fileTextField;
-    private JSpinner layerSpinner;
-    private JComboBox activationComboBox;
-    private JSpinner repeatSpinner;
+public class BoardProgramPanel extends AbstractModelPanel {
+    
+    private final JTextField fileTextField;
+    private final JButton fileButton;
+    
+    private final JSpinner layerSpinner;
+    private final JComboBox activationComboBox;
+    private final JSpinner repeatSpinner;
+    
+    private static final String[] ACTIVATION_TYPES = {
+        "STEP-ON", "KEYPRESS"
+    };
+    
+    private int lastSpinnerLayer; // Used to ensure that the selection is valid.
 
     /*
      * *************************************************************************
      * Public Constructors
      * *************************************************************************
      */
-    public BoardProgramPanel(BoardProgram boardProgram)
-    {
+    public BoardProgramPanel(BoardProgram boardProgram) {
         ///
         /// super
         ///
         super(boardProgram);
         ///
+        /// filePanel
         ///
-        ///
+        fileTextField = new JTextField(boardProgram.getFileName());
+        fileTextField.setColumns(17);
         
+        fileButton = new JButton("...");
+        fileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+                File file = FileTools.doChooseFile("prg", "Prg", "Program Files");
+                
+                if (file != null) {
+                    fileTextField.setText(file.getName());
+                }
+            }
+            
+        });
+        
+        JPanel filePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        filePanel.add(fileTextField);
+        filePanel.add(fileButton);
         ///
-        ///this
+        /// layerSpinner
         ///
+        layerSpinner = new JSpinner();
+        layerSpinner.setValue(((BoardProgram)model).getLayer());
+        layerSpinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                BoardLayerView lastLayerView = getBoardEditor().getBoardView().
+                        getLayer((int)((BoardProgram)model).getLayer());
+                
+                BoardLayerView newLayerView = getBoardEditor().getBoardView().
+                        getLayer((int)layerSpinner.getValue());
+                
+                // Make sure this is a valid move.
+                if (lastLayerView != null && newLayerView != null) {
+                    // Do the swap.
+                    ((BoardProgram)model).setLayer((int)layerSpinner.getValue());
+                    newLayerView.getLayer().getPrograms().add((BoardProgram)model);
+                    lastLayerView.getLayer().getPrograms().remove((BoardProgram)model);
+                    updateCurrentBoardView();
+                    
+                    // Store new layer selection index.
+                    lastSpinnerLayer = (int)layerSpinner.getValue();
+                } else {
+                    // Not a valid layer revert selection.
+                    layerSpinner.setValue(lastSpinnerLayer);
+                }
+            }
+        });
+        ///
+        /// activationComboBox
+        ///
+        activationComboBox = new JComboBox(ACTIVATION_TYPES);
+        ///
+        /// repeatSpinner
+        ///
+        repeatSpinner = new JSpinner();
+        ///
+        /// constaints
+        ///
+        constraints.insets = new Insets(4, 15, 0, 30);
+        constraintsRight.insets = new Insets(0, 0, 10, 15);
+        
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        add(new JLabel("Program"), constraints);
+        
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        add(new JLabel("Layer"), constraints);
+        
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        add(new JLabel("Activation"), constraints);
+        
+        constraints.gridx = 0;
+        constraints.gridy = 4;
+        add(new JLabel("EXAMPLE"), constraints);
+        ///
+        /// constraintsRight
+        ///
+        constraintsRight.gridx = 1;
+        constraintsRight.gridy = 1;
+        add(filePanel, constraintsRight);
+        
+        constraintsRight.gridx = 1;
+        constraintsRight.gridy = 2;
+        add(layerSpinner, constraintsRight);
+        
+        constraintsRight.gridx = 1;
+        constraintsRight.gridy = 3;
+        add(activationComboBox, constraintsRight);
+        
+        constraintsRight.gridx = 1;
+        constraintsRight.gridy = 4;
+        add(repeatSpinner, constraintsRight);
     }
-    
+ 
 }

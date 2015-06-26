@@ -24,6 +24,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.rpgtoolkit.common.assets.BoardSprite;
 import net.rpgtoolkit.editor.editors.board.BoardSpriteDialog;
+import net.rpgtoolkit.editor.utilities.FileTools;
 
 /**
  * 
@@ -78,7 +79,7 @@ public class BoardSpritePanel extends AbstractModelPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                File file = doChooseFile("itm", "Item", "Item Files");
+                File file = FileTools.doChooseFile("itm", "Item", "Item Files");
                 
                 if (file != null)
                 {
@@ -104,7 +105,7 @@ public class BoardSpritePanel extends AbstractModelPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                File file = doChooseFile("prg", "Prg", "Program Files");
+                File file = FileTools.doChooseFile("prg", "Prg", "Program Files");
                 
                 if (file != null)
                 {
@@ -130,7 +131,7 @@ public class BoardSpritePanel extends AbstractModelPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                File file = doChooseFile("prg", "Prg", "Program Files");
+                File file = FileTools.doChooseFile("prg", "Prg", "Program Files");
                 
                 if (file != null)
                 {
@@ -319,38 +320,4 @@ public class BoardSpritePanel extends AbstractModelPanel
         this.constraintsRight.gridy = 8;
         this.add(this.variablesJButton, this.constraintsRight);
     }
-
-    /*
-     * *************************************************************************
-     * Private Static Methods
-     * *************************************************************************
-     */
-    private static File doChooseFile(String extension, String directory, 
-            String type)
-    {
-        if (MainWindow.getInstance().getActiveProject() != null)
-        {
-            File projectPath = new File(System.getProperty("project.path") +
-                    "/" + directory);
-
-            if (projectPath.exists())
-            {
-                JFileChooser fileChooser = new JFileChooser(
-                        new SingleRootFileSystemView(projectPath));
-
-                FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                        type, extension);
-                fileChooser.setFileFilter(filter);
-
-                if (fileChooser.showOpenDialog(MainWindow.getInstance())
-                        == JFileChooser.APPROVE_OPTION)
-                {
-                    return fileChooser.getSelectedFile();
-                }
-            }
-        }
-        
-        return null;
-    }
-
 }

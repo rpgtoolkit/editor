@@ -9,9 +9,9 @@ package net.rpgtoolkit.editor.ui;
 
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.assets.BoardLight;
+import net.rpgtoolkit.common.assets.BoardProgram;
 import net.rpgtoolkit.common.assets.BoardSprite;
 import net.rpgtoolkit.common.assets.BoardVector;
-
 
 /**
  * 
@@ -44,6 +44,10 @@ public final class ModelPanelFactory
         else if (model instanceof BoardVector)
         {
             return new BoardVectorPanel((BoardVector)model);
+        }
+        else if (model instanceof BoardProgram)
+        {
+            return new BoardProgramPanel((BoardProgram)model);
         }
         else if (model instanceof BoardSprite)
         {

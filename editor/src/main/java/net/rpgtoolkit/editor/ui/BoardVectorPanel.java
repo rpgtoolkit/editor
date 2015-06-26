@@ -61,7 +61,6 @@ public class BoardVectorPanel extends AbstractModelPanel
         this.layerSpinner.setValue(((BoardVector)this.model).getLayer());
         this.layerSpinner.addChangeListener(new ChangeListener()
         {
-
             @Override
             public void stateChanged(ChangeEvent e)
             {
@@ -215,6 +214,5 @@ public class BoardVectorPanel extends AbstractModelPanel
         this.constraintsRight.gridx = 1;
         this.constraintsRight.gridy = 4;
         this.add(this.tileTypeComboBox, this.constraintsRight);
-        
     }
 }
