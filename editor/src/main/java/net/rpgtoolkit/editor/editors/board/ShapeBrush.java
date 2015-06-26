@@ -31,17 +31,30 @@ public class ShapeBrush extends AbstractBrush
      * Public Constructors
      * *************************************************************************
      */
+    /**
+     * 
+     */
     public ShapeBrush()
     {
 
     }
 
+    /**
+     * 
+     * 
+     * @param shape 
+     */
     public ShapeBrush(Area shape)
     {
         this.shape = shape;
         this.paintTile = new Tile();
     }
 
+    /**
+     * 
+     * 
+     * @param abstractBrush 
+     */
     public ShapeBrush(AbstractBrush abstractBrush)
     {
         super(abstractBrush);
@@ -58,22 +71,42 @@ public class ShapeBrush extends AbstractBrush
      * Public Getters and Setters
      * *************************************************************************
      */
+    /**
+     * 
+     * 
+     * @return 
+     */
     public Tile getTile()
     {
         return this.paintTile;
     }
 
+    /**
+     * 
+     * 
+     * @param tile 
+     */
     public void setTile(Tile tile)
     {
         this.paintTile = tile;
     }
 
+    /**
+     * 
+     * 
+     * @return 
+     */
     @Override
     public Rectangle getBounds()
     {
         return this.shape.getBounds();
     }
 
+    /**
+     * 
+     * 
+     * @return 
+     */
     @Override
     public Shape getShape()
     {
@@ -85,12 +118,24 @@ public class ShapeBrush extends AbstractBrush
      * Public Methods
      * *************************************************************************
      */
+    /**
+     * 
+     * 
+     * @param rectangle 
+     */
     public void makeRectangleBrush(Rectangle rectangle)
     {
         this.shape = new Area(new Rectangle2D.Double(rectangle.x, rectangle.y,
                 rectangle.width, rectangle.height));
     }
 
+    /**
+     * 
+     * 
+     * @param g2d
+     * @param dimension
+     * @param view 
+     */
     @Override
     public void drawPreview(Graphics2D g2d, Dimension dimension,
             AbstractBoardView view)
@@ -98,12 +143,24 @@ public class ShapeBrush extends AbstractBrush
         g2d.fill(shape);
     }
 
+    /**
+     * 
+     * 
+     * @param g2d
+     * @param view 
+     */
     @Override
     public void drawPreview(Graphics2D g2d, AbstractBoardView view)
     {
 
     }
 
+    /**
+     * 
+     * 
+     * @param brush
+     * @return 
+     */
     @Override
     public boolean equals(Brush brush)
     {
@@ -111,6 +168,15 @@ public class ShapeBrush extends AbstractBrush
                 && ((ShapeBrush) brush).shape.equals(this.shape);
     }
 
+    /**
+     * 
+     * 
+     * @param x
+     * @param y
+     * @param selection
+     * @return
+     * @throws Exception 
+     */
     @Override
     public Rectangle doPaint(int x, int y, Rectangle selection) throws Exception
     {

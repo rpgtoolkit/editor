@@ -28,7 +28,6 @@ import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.utilities.TileSetCache;
 import net.rpgtoolkit.common.assets.TilePixelOutOfRangeException;
 import net.rpgtoolkit.editor.editors.BoardEditor;
-import net.rpgtoolkit.editor.editors.board.MultiLayerContainer;
 
 /**
  * This class is an Abstract model for the visual representation of a
@@ -450,6 +449,11 @@ public abstract class AbstractBoardView extends JPanel implements
      */
     protected abstract void paintSelection(Graphics2D g);
 
+    /**
+     * A concrete BoardView will implement its own brush preview code here.
+     * 
+     * @param g 
+     */
     protected abstract void paintBrushPreview(Graphics2D g);
 
     /*

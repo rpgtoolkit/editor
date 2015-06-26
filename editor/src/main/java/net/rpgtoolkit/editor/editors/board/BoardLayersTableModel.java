@@ -8,7 +8,6 @@
 package net.rpgtoolkit.editor.editors.board;
 
 import javax.swing.table.AbstractTableModel;
-import net.rpgtoolkit.editor.editors.board.BoardLayerView;
 import net.rpgtoolkit.common.assets.BoardChangeListener;
 import net.rpgtoolkit.common.assets.BoardChangedEvent;
 
@@ -17,7 +16,6 @@ import net.rpgtoolkit.common.assets.BoardChangedEvent;
  * model will fire an event to notify the view of the change.
  * 
  * @author Joshua Michael Daly
- * @version 0.1
  */
 public class BoardLayersTableModel extends AbstractTableModel implements BoardChangeListener
 {
@@ -76,12 +74,23 @@ public class BoardLayersTableModel extends AbstractTableModel implements BoardCh
         //fireBoardDataChanged();
     }
     
+    /**
+     * 
+     * 
+     * @param column
+     * @return 
+     */
     @Override
     public String getColumnName(int column)
     {
         return BoardLayersTableModel.columnNames[column];
     }
     
+    /**
+     * 
+     * 
+     * @return 
+     */
     @Override
     public int getRowCount()
     {
@@ -95,12 +104,23 @@ public class BoardLayersTableModel extends AbstractTableModel implements BoardCh
         }
     }
 
+    /**
+     * 
+     * 
+     * @return 
+     */
     @Override
     public int getColumnCount()
     {
         return BoardLayersTableModel.columnNames.length;
     }
     
+    /**
+     * 
+     * 
+     * @param column
+     * @return 
+     */
     @Override
     public Class getColumnClass(int column)
     {
@@ -117,6 +137,13 @@ public class BoardLayersTableModel extends AbstractTableModel implements BoardCh
         return null;
     }
 
+    /**
+     * 
+     * 
+     * @param rowIndex
+     * @param columnIndex
+     * @return 
+     */
     @Override
     public Object getValueAt(int rowIndex, int columnIndex)
     {
@@ -149,6 +176,13 @@ public class BoardLayersTableModel extends AbstractTableModel implements BoardCh
         }
     }
     
+    /**
+     * 
+     * 
+     * @param rowIndex
+     * @param columnIndex
+     * @return 
+     */
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex)
     {
@@ -158,6 +192,13 @@ public class BoardLayersTableModel extends AbstractTableModel implements BoardCh
         return !(columnIndex == 0 && layer != null && !layer.isVisible());
     }
     
+    /**
+     * 
+     * 
+     * @param value
+     * @param rowIndex
+     * @param columnIndex 
+     */
     @Override
     public void setValueAt(Object value, int rowIndex, int columnIndex)
     {
@@ -189,18 +230,33 @@ public class BoardLayersTableModel extends AbstractTableModel implements BoardCh
         }
     }
 
+    /**
+     * 
+     * 
+     * @param e 
+     */
     @Override
     public void boardChanged(BoardChangedEvent e)
     {
         // Do not respond to this, or the opacity slider will not work!
     }
 
+    /**
+     * 
+     * 
+     * @param e 
+     */
     @Override
     public void boardLayerAdded(BoardChangedEvent e)
     {
         this.fireTableDataChanged();
     }
     
+    /**
+     * 
+     * 
+     * @param e 
+     */
     @Override
     public void boardLayerMovedUp(BoardChangedEvent e)
     {
@@ -208,6 +264,11 @@ public class BoardLayersTableModel extends AbstractTableModel implements BoardCh
         this.fireTableDataChanged();
     }
 
+    /**
+     * 
+     * 
+     * @param e 
+     */
     @Override
     public void boardLayerMovedDown(BoardChangedEvent e)
     {
@@ -215,12 +276,22 @@ public class BoardLayersTableModel extends AbstractTableModel implements BoardCh
         this.fireTableDataChanged();
     }
     
+    /**
+     * 
+     * 
+     * @param e 
+     */
     @Override
     public void boardLayerCloned(BoardChangedEvent e)
     {
         this.fireTableDataChanged();
     }
 
+    /**
+     * 
+     * 
+     * @param e 
+     */
     @Override
     public void boardLayerDeleted(BoardChangedEvent e)
     {

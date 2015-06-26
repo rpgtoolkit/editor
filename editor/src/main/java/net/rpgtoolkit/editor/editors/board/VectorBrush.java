@@ -32,6 +32,9 @@ public class VectorBrush extends AbstractBrush
      * Public Constructors
      * *************************************************************************
      */
+    /**
+     * 
+     */
     public VectorBrush()
     {
         this.boardVector = new BoardVector();
@@ -44,33 +47,63 @@ public class VectorBrush extends AbstractBrush
      * Public Getters and Setters
      * *************************************************************************
      */
+    /**
+     * 
+     * 
+     * @return 
+     */
     @Override
     public Shape getShape()
     {
         return this.getBounds();
     }
 
+    /**
+     * 
+     * 
+     * @return 
+     */
     @Override
     public Rectangle getBounds()
     {
         return new Rectangle(0, 0, 1, 1);
     }
     
+    /**
+     * 
+     * 
+     * @return 
+     */
     public BoardVector getBoardVector()
     {
         return this.boardVector;
     }
     
+    /**
+     * 
+     * 
+     * @param vector 
+     */
     public void setBoardVector(BoardVector vector)
     {
         this.boardVector = vector;
     }
     
+    /**
+     * 
+     * 
+     * @return 
+     */
     public boolean isDrawing()
     {
         return this.stillDrawing;
     }
     
+    /**
+     * 
+     * 
+     * @param isDrawing 
+     */
     public void setDrawing(boolean isDrawing)
     {
         this.stillDrawing = isDrawing;
@@ -80,6 +113,12 @@ public class VectorBrush extends AbstractBrush
      * *************************************************************************
      * Public Methods
      * *************************************************************************
+     */
+    /**
+     * 
+     * 
+     * @param g2d
+     * @param view 
      */
     @Override
     public void drawPreview(Graphics2D g2d, AbstractBoardView view)
@@ -97,6 +136,12 @@ public class VectorBrush extends AbstractBrush
         g2d.drawLine(lastVectorPoint.x, lastVectorPoint.y, cursor.x, cursor.y);
     }
 
+    /**
+     * 
+     * 
+     * @param brush
+     * @return 
+     */
     @Override
     public boolean equals(Brush brush)
     {
@@ -104,6 +149,15 @@ public class VectorBrush extends AbstractBrush
                 ((VectorBrush) brush).boardVector.equals(this.boardVector);
     }
     
+    /**
+     * 
+     * 
+     * @param x
+     * @param y
+     * @param selection
+     * @return
+     * @throws Exception 
+     */
     @Override
     public Rectangle doPaint(int x, int y, Rectangle selection) throws Exception
     {
@@ -131,6 +185,9 @@ public class VectorBrush extends AbstractBrush
         return null;
     }
     
+    /**
+     * 
+     */
     public void finish()
     {
         if (this.boardVector.getPointCount() < 2)
@@ -147,6 +204,15 @@ public class VectorBrush extends AbstractBrush
      * *************************************************************************
      * Protected Methods
      * *************************************************************************
+     */
+    /**
+     * 
+     * 
+     * @param x
+     * @param y
+     * @param selection
+     * @return
+     * @throws Exception 
      */
     protected Rectangle callRootPaint(int x, int y, Rectangle selection) 
             throws Exception

@@ -136,5 +136,10 @@ public interface MultiLayerContainer
      */
     public boolean inBounds(int x, int y);
 
+    /**
+     * 
+     * 
+     * @return 
+     */
     public Iterator<BoardLayerView> iterator();
 }

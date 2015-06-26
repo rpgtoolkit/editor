@@ -23,6 +23,11 @@ public class SelectionBrush extends CustomBrush
      * Public Constructors
      * *************************************************************************
      */
+    /**
+     * 
+     * 
+     * @param tiles 
+     */
     public SelectionBrush(Tile[][] tiles)
     {
         super(tiles);
@@ -33,10 +38,19 @@ public class SelectionBrush extends CustomBrush
      * Public Constructors
      * *************************************************************************
      */
+    /**
+     * 
+     * 
+     * @param x
+     * @param y
+     * @param selection
+     * @return
+     * @throws Exception 
+     */
     @Override
     public Rectangle doPaint(int x, int y, Rectangle selection) throws Exception
     {
-        // Do nothing on paint. Perhaps collected the selected tiles here?
+        // Do nothing on paint. Perhaps collect the selected tiles here?
         return null;
     }
     

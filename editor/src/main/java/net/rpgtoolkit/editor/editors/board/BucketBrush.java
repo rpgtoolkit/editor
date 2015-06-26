@@ -30,6 +30,9 @@ public class BucketBrush extends AbstractBrush
      * Public Constructors
      * *************************************************************************
      */
+    /**
+     * 
+     */
     public BucketBrush()
     {
         
@@ -40,33 +43,63 @@ public class BucketBrush extends AbstractBrush
      * Public Getters
      * *************************************************************************
      */
+    /**
+     * 
+     * 
+     * @return 
+     */
     @Override
     public Shape getShape()
     {
         return this.getBounds();
     }
 
+    /**
+     * 
+     * 
+     * @return 
+     */
     @Override
     public Rectangle getBounds()
     {
         return new Rectangle(0, 0, 1, 1);
     }
     
+    /**
+     * 
+     * 
+     * @return 
+     */
     public Tile getPourTile()
     {
         return this.pourTile;
     }
 
+    /**
+     * 
+     * 
+     * @param tile 
+     */
     public void setPourTile(Tile tile)
     {
         this.pourTile = tile;
     }
     
+    /**
+     * 
+     * 
+     * @return 
+     */
     public Tile getOldTile()
     {
         return this.oldTile;
     }
     
+    /**
+     * 
+     * 
+     * @param tile 
+     */
     public void setOldTile(Tile tile)
     {
         this.oldTile = tile;
@@ -77,18 +110,38 @@ public class BucketBrush extends AbstractBrush
      * Public Methods
      * *************************************************************************
      */
+    /**
+     * 
+     * 
+     * @param g2d
+     * @param view 
+     */
     @Override
     public void drawPreview(Graphics2D g2d, AbstractBoardView view)
     {
         
     }
 
+    /**
+     * 
+     * 
+     * @param brush
+     * @return 
+     */
     @Override
     public boolean equals(Brush brush)
     {
         return brush instanceof BucketBrush;
     }
     
+    /**
+     * 
+     * 
+     * @param x
+     * @param y
+     * @param selection
+     * @return 
+     */
     @Override
     public Rectangle doPaint(int x, int y, Rectangle selection)
     {

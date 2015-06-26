@@ -19,20 +19,68 @@ import java.awt.Rectangle;
  */
 public interface Brush
 {
+    /**
+     * 
+     * 
+     * @return 
+     */
     public int getAffectedLayers();
     
+    /**
+     * 
+     * 
+     * @return 
+     */
     public Rectangle getBounds();
     
+    /**
+     * 
+     * 
+     * @param container
+     * @param layer 
+     */
     public void startPaint(MultiLayerContainer container, int layer);
     
+    /**
+     * 
+     * 
+     * @param x
+     * @param y
+     * @param selection
+     * @return
+     * @throws Exception 
+     */
     public Rectangle doPaint(int x, int y, Rectangle selection) throws Exception;
     
+    /**
+     * 
+     * 
+     */
     public void endPaint();
     
+    /**
+     * 
+     * 
+     * @param g2d
+     * @param view 
+     */
     public void drawPreview(Graphics2D g2d, AbstractBoardView view);
     
+    /**
+     * 
+     * 
+     * @param g2d
+     * @param dimension
+     * @param view 
+     */
     public void drawPreview(Graphics2D g2d, Dimension dimension, 
             AbstractBoardView view);
     
+    /**
+     * 
+     * 
+     * @param brush
+     * @return 
+     */
     public boolean equals(Brush brush);
 }

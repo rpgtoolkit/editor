@@ -26,6 +26,9 @@ public class SpriteBrush extends AbstractBrush
      * Public Constructors
      * *************************************************************************
      */
+    /**
+     * 
+     */
     public SpriteBrush()
     {
         this.boardSprite = new BoardSprite();
@@ -36,12 +39,22 @@ public class SpriteBrush extends AbstractBrush
      * Public Getters and Setters
      * *************************************************************************
      */
+    /**
+     * 
+     * 
+     * @return 
+     */
     @Override
     public Shape getShape()
     {
         return this.getBounds();
     }
 
+    /**
+     * 
+     * 
+     * @return 
+     */
     @Override
     public Rectangle getBounds()
     {
@@ -56,11 +69,21 @@ public class SpriteBrush extends AbstractBrush
         }
     }
 
+    /**
+     * 
+     * 
+     * @return 
+     */
     public BoardSprite getBoardSprite()
     {
         return boardSprite;
     }
 
+    /**
+     * 
+     * 
+     * @param boardSprite 
+     */
     public void setBoardSprite(BoardSprite boardSprite)
     {
         this.boardSprite = boardSprite;
@@ -71,12 +94,27 @@ public class SpriteBrush extends AbstractBrush
      * Public Methods
      * *************************************************************************
      */
+    /**
+     * 
+     * 
+     * @param g2d
+     * @param view 
+     */
     @Override
     public void drawPreview(Graphics2D g2d, AbstractBoardView view)
     {
         
     }
     
+    /**
+     * 
+     * 
+     * @param x
+     * @param y
+     * @param selection
+     * @return
+     * @throws Exception 
+     */
     @Override
     public Rectangle doPaint(int x, int y, Rectangle selection) throws Exception
     {
@@ -110,6 +148,12 @@ public class SpriteBrush extends AbstractBrush
         }
     }
 
+    /**
+     * 
+     * 
+     * @param brush
+     * @return 
+     */
     @Override
     public boolean equals(Brush brush)
     {

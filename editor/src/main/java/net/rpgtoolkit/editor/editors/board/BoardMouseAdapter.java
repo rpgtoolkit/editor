@@ -20,6 +20,7 @@ import net.rpgtoolkit.editor.ui.MainWindow;
 
 /**
  *
+ * 
  * @author Joshua Michael Daly
  */
 public class BoardMouseAdapter extends MouseAdapter
@@ -33,6 +34,11 @@ public class BoardMouseAdapter extends MouseAdapter
      * Public Constructors
      * *************************************************************************
      */
+    /**
+     * 
+     * 
+     * @param boardEditor 
+     */
     public BoardMouseAdapter(BoardEditor boardEditor)
     {
         this.editor = boardEditor;
@@ -43,28 +49,39 @@ public class BoardMouseAdapter extends MouseAdapter
      * Public Methods
      * *************************************************************************
      */
+    /**
+     * 
+     * 
+     * @param e 
+     */
     @Override
     public void mousePressed(MouseEvent e)
     {
         if (this.editor.boardView.getCurrentSelectedLayer() != null)
         {
             AbstractBrush brush = MainWindow.getInstance().getCurrentBrush();
+            int button = e.getButton();
 
-            if (e.getButton() == MouseEvent.BUTTON1)
+            if (button == MouseEvent.BUTTON1)
             {
                 this.doMouseButton1Pressed(e, brush);
             }
-            else if (e.getButton() == MouseEvent.BUTTON2)
+            else if (button == MouseEvent.BUTTON2)
             {
                 this.doMouseButton2Pressed(e, brush);
             }
-            else if (e.getButton() == MouseEvent.BUTTON3)
+            else if (button == MouseEvent.BUTTON3)
             {
                 this.doMouseButton3Pressed(e, brush);
             }
         }
     }
 
+    /**
+     * 
+     * 
+     * @param e 
+     */
     @Override
     public void mouseDragged(MouseEvent e)
     {
@@ -75,6 +92,11 @@ public class BoardMouseAdapter extends MouseAdapter
         }
     }
 
+    /**
+     * 
+     * 
+     * @param e 
+     */
     @Override
     public void mouseMoved(MouseEvent e)
     {
@@ -245,6 +267,12 @@ public class BoardMouseAdapter extends MouseAdapter
         }
     }
 
+    /**
+     * 
+     * 
+     * @param e
+     * @param brush 
+     */
     private void doMouseButton1Dragged(MouseEvent e, AbstractBrush brush)
     {
         Point point = this.editor.boardView.getTileCoordinates(
@@ -278,6 +306,11 @@ public class BoardMouseAdapter extends MouseAdapter
         this.editor.doPaint(brush, point, null);
     }
 
+    /**
+     * 
+     * 
+     * @param vector 
+     */
     private void selectVector(BoardVector vector)
     {
         if (vector != null)
@@ -298,6 +331,11 @@ public class BoardMouseAdapter extends MouseAdapter
         }
     }
     
+    /**
+     * 
+     * 
+     * @param program 
+     */
     private void selectProgram(BoardProgram program)
     {
         if (program != null)
@@ -318,6 +356,11 @@ public class BoardMouseAdapter extends MouseAdapter
         }
     }
     
+    /**
+     * 
+     * 
+     * @param sprite 
+     */
     private void selectSprite(BoardSprite sprite)
     {
         if (sprite != null)
@@ -337,4 +380,5 @@ public class BoardMouseAdapter extends MouseAdapter
             editor.setSelectedObject(null);
         }
     }
+    
 }

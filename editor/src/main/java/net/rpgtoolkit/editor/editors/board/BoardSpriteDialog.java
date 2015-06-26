@@ -24,7 +24,8 @@ import javax.swing.JTextField;
 import net.rpgtoolkit.common.assets.BoardSprite;
 
 /**
- *
+ * 
+ * 
  * @author Joshua Michael Daly
  */
 public class BoardSpriteDialog extends JDialog
@@ -54,31 +55,61 @@ public class BoardSpriteDialog extends JDialog
      * Public Getters
      * *************************************************************************
      */
+    /**
+     * 
+     * 
+     * @return 
+     */
     public String getInitialVariable()
     {
         return initialVariableTextField.getText();
     }
 
+    /**
+     * 
+     * 
+     * @return 
+     */
     public String getInitialValue()
     {
         return initialValueTextField.getText();
     }
 
+    /**
+     * 
+     * 
+     * @return 
+     */
     public String getFinalVariable()
     {
         return finalVariableTextField.getText();
     }
 
+    /**
+     * 
+     * 
+     * @return 
+     */
     public String getFinalValue()
     {
         return finalValueTextField.getText();
     }
 
+    /**
+     * 
+     * 
+     * @return 
+     */
     public String getLoadingVariable()
     {
         return loadingVariableTextField.getText();
     }
 
+    /**
+     * 
+     * 
+     * @return 
+     */
     public String getLoadingValue()
     {
         return loadingValueTextField.getText();
@@ -88,6 +119,14 @@ public class BoardSpriteDialog extends JDialog
      * ************************************************************************* 
      * Public Constructors
      * *************************************************************************
+     */
+    /**
+     * 
+     * 
+     * @param parentFrame
+     * @param title
+     * @param isModal
+     * @param boardSprite 
      */
     public BoardSpriteDialog(JFrame parentFrame, String title, boolean isModal,
             BoardSprite boardSprite)
@@ -250,6 +289,11 @@ public class BoardSpriteDialog extends JDialog
      * ************************************************************************* 
      * Public Methods
      * *************************************************************************
+     */
+    /**
+     * 
+     * 
+     * @return 
      */
     public int showDialog()
     {

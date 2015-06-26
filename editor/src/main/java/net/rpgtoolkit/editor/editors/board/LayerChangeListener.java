@@ -7,8 +7,6 @@
  */
 package net.rpgtoolkit.editor.editors.board;
 
-
-
 import java.util.EventListener;
 
 /**

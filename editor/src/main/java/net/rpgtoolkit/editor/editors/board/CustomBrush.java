@@ -29,6 +29,11 @@ public class CustomBrush extends AbstractBrush
      * Public Constructors
      * *************************************************************************
      */    
+    /**
+     * 
+     * 
+     * @param tiles 
+     */
     public CustomBrush(Tile[][] tiles)
     {
         this.tiles = tiles;
@@ -40,28 +45,53 @@ public class CustomBrush extends AbstractBrush
      * Public Getters and Setters
      * *************************************************************************
      */
+    /**
+     * 
+     * 
+     * @return 
+     */
     @Override
     public Shape getShape()
     {
         return this.getBounds();
     }
     
+    /**
+     * 
+     * 
+     * @return 
+     */
     @Override
     public Rectangle getBounds()
     {
         return this.bounds;
     }
     
+    /**
+     * 
+     * 
+     * @param rectangle 
+     */
     public void setBounds(Rectangle rectangle)
     {
         this.bounds = rectangle;
     }
     
+    /**
+     * 
+     * 
+     * @return 
+     */
     public Tile[][] getTiles()
     {
         return this.tiles;
     }
     
+    /**
+     * 
+     * 
+     * @param tiles 
+     */
     public void setTiles(Tile[][] tiles)
     {
         this.tiles = tiles;
@@ -73,13 +103,23 @@ public class CustomBrush extends AbstractBrush
      * Public Methods
      * *************************************************************************
      */
-
+    /**
+     * 
+     * @param g2d
+     * @param view 
+     */
     @Override
     public void drawPreview(Graphics2D g2d, AbstractBoardView view)
     {
         
     }
 
+    /**
+     * 
+     * 
+     * @param brush
+     * @return 
+     */
     @Override
     public boolean equals(Brush brush)
     {
@@ -94,12 +134,27 @@ public class CustomBrush extends AbstractBrush
         return false;
     }
     
+    /**
+     * 
+     * 
+     * @param container
+     * @param layer 
+     */
     @Override
     public void startPaint(MultiLayerContainer container, int layer)
     {
         super.startPaint(container, layer);
     }
     
+    /**
+     * 
+     * 
+     * @param x
+     * @param y
+     * @param selection
+     * @return
+     * @throws Exception 
+     */
     @Override
     public Rectangle doPaint(int x, int y, Rectangle selection) throws Exception
     {
@@ -154,6 +209,9 @@ public class CustomBrush extends AbstractBrush
      * *************************************************************************
      * Private Methods
      * *************************************************************************
+     */
+    /**
+     * 
      */
     public void resize()
     {

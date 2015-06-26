@@ -26,7 +26,6 @@ import net.rpgtoolkit.common.assets.TilePixelOutOfRangeException;
  *
  *
  * @author Joshua Michael Daly
- * @version 0.1
  */
 public final class BoardLayerView implements Cloneable
 {
@@ -58,7 +57,7 @@ public final class BoardLayerView implements Cloneable
 
     /*
      * *************************************************************************
-     * Constructors
+     * Public Constructors
      * *************************************************************************
      */
     /**
@@ -282,31 +281,61 @@ public final class BoardLayerView implements Cloneable
         bounds.y = yOffset;
     }
 
+    /**
+     * 
+     * 
+     * @return 
+     */
     public boolean isIsVisible()
     {
         return isVisible;
     }
 
+    /**
+     * 
+     * 
+     * @param isVisible 
+     */
     public void setIsVisible(boolean isVisible)
     {
         this.isVisible = isVisible;
     }
 
+    /**
+     * 
+     * 
+     * @return 
+     */
     public boolean isIsLocked()
     {
         return isLocked;
     }
 
+    /**
+     * 
+     * 
+     * @param isLocked 
+     */
     public void setIsLocked(boolean isLocked)
     {
         this.isLocked = isLocked;
     }
 
+    /**
+     * 
+     * 
+     * @return 
+     */
     public MultiLayerContainer getParentContainer()
     {
         return parentContainer;
     }
 
+    /**
+     * 
+     * 
+     * @param parentContainer 
+     */
     public void setParentContainer(MultiLayerContainer parentContainer)
     {
         this.parentContainer = parentContainer;
@@ -370,9 +399,6 @@ public final class BoardLayerView implements Cloneable
                 g.setStroke(new BasicStroke(3.0f)); // Draw it thicker.
             }
 
-            // Draw lines from points 0 > 1 , 1 > 2, 2 > 3 etc..
-            int count = vector.getPointCount();
-
             switch (vector.getTileType())
             {
                 case 1:
@@ -389,24 +415,7 @@ public final class BoardLayerView implements Cloneable
                     break;
             }
 
-            for (int i = 0; i < count - 1; i++)
-            {
-                g.drawLine(
-                        vector.getPointX(i),
-                        vector.getPointY(i),
-                        vector.getPointX(i + 1),
-                        vector.getPointY(i + 1));
-            }
-
-            if (vector.isClosed())
-            {
-                // Draw the final lines
-                g.drawLine(
-                        vector.getPointX(count - 1),
-                        vector.getPointY(count - 1),
-                        vector.getPointX(0),
-                        vector.getPointY(0));
-            }
+            drawVectorLines(g, vector);
 
             if (vector.isSelected())
             {
@@ -437,29 +446,9 @@ public final class BoardLayerView implements Cloneable
                 g.setStroke(new BasicStroke(3.0f)); // Draw it thicker.
             }
 
-            // Draw lines from points 0 > 1 , 1 > 2, 2 > 3 etc..
-            int count = vector.getPointCount();
-
             g.setColor(Color.YELLOW);
 
-            for (int i = 0; i < count - 1; i++)
-            {
-                g.drawLine(
-                        vector.getPointX(i),
-                        vector.getPointY(i),
-                        vector.getPointX(i + 1),
-                        vector.getPointY(i + 1));
-            }
-
-            if (vector.isClosed())
-            {
-                // Draw the final lines
-                g.drawLine(
-                        vector.getPointX(count - 1),
-                        vector.getPointY(count - 1),
-                        vector.getPointX(0),
-                        vector.getPointY(0));
-            }
+            drawVectorLines(g, vector);
 
             if (vector.isSelected())
             {
@@ -513,5 +502,41 @@ public final class BoardLayerView implements Cloneable
             }
         }
     }
+    
+    /*
+     * *************************************************************************
+     * Private Methods
+     * *************************************************************************
+     */
+    /**
+     * 
+     * 
+     * @param g
+     * @param vector 
+     */
+    private void drawVectorLines(Graphics2D g, BoardVector vector)
+    {
+        // Draw lines from points 0 > 1 , 1 > 2, 2 > 3 etc..
+        int count = vector.getPointCount();
+        
+        for (int i = 0; i < count - 1; i++)
+            {
+                g.drawLine(
+                        vector.getPointX(i),
+                        vector.getPointY(i),
+                        vector.getPointX(i + 1),
+                        vector.getPointY(i + 1));
+            }
 
+            if (vector.isClosed())
+            {
+                // Draw the final lines
+                g.drawLine(
+                        vector.getPointX(count - 1),
+                        vector.getPointY(count - 1),
+                        vector.getPointX(0),
+                        vector.getPointY(0));
+            }
+    }
+    
 }

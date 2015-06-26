@@ -57,7 +57,12 @@ public class ProgramBrush extends VectorBrush
      * Public Methods
      * *************************************************************************
      */
-    
+    /**
+     * 
+     * 
+     * @param brush
+     * @return 
+     */
     @Override
     public boolean equals(Brush brush)
     {
@@ -65,6 +70,15 @@ public class ProgramBrush extends VectorBrush
                 ((ProgramBrush) brush).boardProgram.equals(this.boardProgram);
     }
     
+    /**
+     * 
+     * 
+     * @param x
+     * @param y
+     * @param selection
+     * @return
+     * @throws Exception 
+     */
     @Override
     public Rectangle doPaint(int x, int y, Rectangle selection) throws Exception
     {
@@ -94,6 +108,9 @@ public class ProgramBrush extends VectorBrush
         return null;
     }
     
+    /**
+     * 
+     */
     @Override
     public void finish()
     {
