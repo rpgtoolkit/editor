@@ -42,17 +42,23 @@ public class BoardProgramPanel extends AbstractModelPanel {
     };
     
     private int lastSpinnerLayer; // Used to ensure that the selection is valid.
+    
+    private final BoardProgram boardProgram;
 
     /*
      * *************************************************************************
      * Public Constructors
      * *************************************************************************
      */
-    public BoardProgramPanel(BoardProgram boardProgram) {
+    public BoardProgramPanel(BoardProgram program) {
         ///
         /// super
         ///
-        super(boardProgram);
+        super(program);
+        ///
+        /// boardProgram
+        ///
+        boardProgram = program;
         ///
         /// filePanel
         ///
@@ -66,6 +72,8 @@ public class BoardProgramPanel extends AbstractModelPanel {
                 File file = FileTools.doChooseFile("prg", "Prg", "Program Files");
                 
                 if (file != null) {
+                    boardProgram.setFile(file);
+                    boardProgram.setFileName(file.getName());
                     fileTextField.setText(file.getName());
                 }
             }
@@ -79,12 +87,12 @@ public class BoardProgramPanel extends AbstractModelPanel {
         /// layerSpinner
         ///
         layerSpinner = new JSpinner();
-        layerSpinner.setValue(((BoardProgram)model).getLayer());
+        layerSpinner.setValue(boardProgram.getLayer());
         layerSpinner.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
                 BoardLayerView lastLayerView = getBoardEditor().getBoardView().
-                        getLayer((int)((BoardProgram)model).getLayer());
+                        getLayer((int)boardProgram.getLayer());
                 
                 BoardLayerView newLayerView = getBoardEditor().getBoardView().
                         getLayer((int)layerSpinner.getValue());
@@ -92,9 +100,9 @@ public class BoardProgramPanel extends AbstractModelPanel {
                 // Make sure this is a valid move.
                 if (lastLayerView != null && newLayerView != null) {
                     // Do the swap.
-                    ((BoardProgram)model).setLayer((int)layerSpinner.getValue());
-                    newLayerView.getLayer().getPrograms().add((BoardProgram)model);
-                    lastLayerView.getLayer().getPrograms().remove((BoardProgram)model);
+                    boardProgram.setLayer((int)layerSpinner.getValue());
+                    newLayerView.getLayer().getPrograms().add(boardProgram);
+                    lastLayerView.getLayer().getPrograms().remove(boardProgram);
                     updateCurrentBoardView();
                     
                     // Store new layer selection index.
@@ -109,6 +117,33 @@ public class BoardProgramPanel extends AbstractModelPanel {
         /// activationComboBox
         ///
         activationComboBox = new JComboBox(ACTIVATION_TYPES);
+        
+        switch ((int)boardProgram.getActivationType()) {
+            case 0:
+                activationComboBox.setSelectedIndex(0);
+                break;
+            case 1:
+                activationComboBox.setSelectedIndex(1);
+                break;
+            default:
+        }
+        
+        activationComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                switch (activationComboBox.getSelectedIndex())
+                {
+                    case 0:
+                        boardProgram.setActivationType(0);
+                        break;
+                    case 1: 
+                        boardProgram.setActivationType(1);
+                        break;
+                    default:
+                        
+                }
+            }
+        });
         ///
         /// repeatSpinner
         ///
