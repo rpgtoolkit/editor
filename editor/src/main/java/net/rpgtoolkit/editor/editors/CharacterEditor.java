@@ -10,9 +10,14 @@ package net.rpgtoolkit.editor.editors;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.IOException;
 import static java.lang.System.out;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
@@ -37,11 +42,16 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import net.rpgtoolkit.common.CorruptAssetException;
 import net.rpgtoolkit.common.assets.Animation;
+import net.rpgtoolkit.common.assets.AssetDescriptor;
+import net.rpgtoolkit.common.assets.AssetHandle;
+import net.rpgtoolkit.common.assets.AssetManager;
 import net.rpgtoolkit.common.assets.Player;
 import net.rpgtoolkit.common.assets.PlayerSpecialMove;
 import net.rpgtoolkit.common.assets.Program;
 import net.rpgtoolkit.common.assets.SpecialMove;
+import net.rpgtoolkit.common.io.Paths;
 import net.rpgtoolkit.editor.ui.Gui;
 import net.rpgtoolkit.editor.ui.IntegerField;
 import net.rpgtoolkit.editor.ui.MainWindow;
@@ -274,6 +284,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
         // Configure function Scope Components
         String portrait = this.player.getProfilePicture();
+        out.println(portrait);
         if(portrait.isEmpty() == false) {
             this.portraitDisplay.setIcon(Gui.ImageToIcon(
                     Gui.loadImage(portrait), 64, 64));
@@ -885,50 +896,90 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     private void createSpecialMovesPanel()
     {
         // Configure Class scope components
+        this.usesSpecials = new JCheckBox("Does this character use Special Moves?");
+        //set usesSpecials later, after listeners can disable things in response
+        final JLabel specialsNameLabel = new JLabel("In-game name of special moves");
+        this.specialsName = new JTextField(this.player.getSpecialMovesName());
+        
         final DefaultListModel specialMoves = new DefaultListModel();
         final ArrayList<PlayerSpecialMove> sMoves = this.player.getSpecialMoveList();
         for(PlayerSpecialMove sMove : sMoves) {
             String text = getSpecialMoveText(sMove.getName());
-            specialMoves.addElement(text);
+            String number = Integer.toString(specialMoves.size() + 1) + ": ";
+            specialMoves.addElement(number + text);
         }
-//        out.println("specialMoves="+sMoveLocs.toString());
-//        out.println("strengths="+strengthLocs.toString());
-//        out.println("weaknesses="+weaknessLocs.toString());
         this.sMoveList = Gui.createVerticalJList(specialMoves);
+        
+        final JLabel sMoveExpMinLabel = new JLabel("Experience is at least");
+        this.sMoveExpMin = new WholeNumberField(0);
+        final JLabel sMoveLvMinLabel = new JLabel("Level is at least");
+        this.sMoveLvMin = new WholeNumberField(0);
+        final JLabel sMoveVarNameLabel = new JLabel("Or variable");
+        this.sMoveVarName = new JTextField();
+        final JLabel sMoveVarValLabel = new JLabel("equals");
+        this.sMoveVarVal = new JTextField();
         
         // Configure function Scope Components
         JScrollPane sMoveListScroller = new JScrollPane(this.sMoveList);
-        
-        JButton sMoveFindButton = new JButton("Browse");
-        JButton sMoveResetButton = new JButton("The Player Can Always Use This Move");
+
+        final JButton sMoveFindButton = new JButton("Browse");
+        final JButton sMoveAddButton = new JButton("Add");
         final JButton sMoveRemoveButton = new JButton("Remove");
         sMoveRemoveButton.setEnabled(false);
         
-        JButton strengthFindButton = new JButton("Browse");
-        JButton strengthAddButton = new JButton("Add");
-        final JButton strengthRemoveButton = new JButton("Remove");
-        strengthRemoveButton.setEnabled(false);
-        
-        JButton weaknessFindButton = new JButton("Browse");
-        JButton weaknessAddButton = new JButton("Add");
         final JButton weaknessRemoveButton = new JButton("Remove");
-        weaknessRemoveButton.setEnabled(false);
+        final JButton sMoveAlwaysButton = new JButton("The Player Can Always Use This Move");
+        weaknessRemoveButton.setEnabled(true);
         
         // Configure listeners
+        
+        //uses specials
+        this.usesSpecials.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sMoveList.setEnabled(usesSpecials.isSelected());
+                specialsNameLabel.setEnabled(usesSpecials.isSelected());
+                specialsName.setEnabled(usesSpecials.isSelected());
+                sMoveFindButton.setEnabled(usesSpecials.isSelected());
+                sMoveAddButton.setEnabled(usesSpecials.isSelected());
+            }
+        });
         
         //change selection
         this.sMoveList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if(e.getValueIsAdjusting() == false) {
+                    sMoveAlwaysButton.doClick();
                     if(sMoveList.getSelectedIndex() == -1) {
                         sMoveRemoveButton.setEnabled(false);
+                        sMoveExpMinLabel.setEnabled(false);
+                        sMoveExpMin.setEnabled(false);
+                        sMoveLvMinLabel.setEnabled(false);
+                        sMoveLvMin.setEnabled(false);
+                        sMoveVarNameLabel.setEnabled(false);
+                        sMoveVarName.setEnabled(false);
+                        sMoveVarValLabel.setEnabled(false);
+                        sMoveVarVal.setEnabled(false);
+                        sMoveAlwaysButton.setEnabled(false);
                     } else {
                         sMoveRemoveButton.setEnabled(true);
+                        sMoveExpMinLabel.setEnabled(true);
+                        sMoveExpMin.setEnabled(true);
+                        sMoveLvMinLabel.setEnabled(true);
+                        sMoveLvMin.setEnabled(true);
+                        sMoveVarNameLabel.setEnabled(true);
+                        sMoveVarName.setEnabled(true);
+                        sMoveVarValLabel.setEnabled(true);
+                        sMoveVarVal.setEnabled(true);
+                        sMoveAlwaysButton.setEnabled(true);
                     }
                 }
             }
         });
+        
+        //check/uncheck uses specials now that the listeners exist
+        this.usesSpecials.setSelected(this.player.getHasSpecialMoves());
         
         //browse button
         sMoveFindButton.addActionListener(new ActionListener() {
@@ -938,21 +989,23 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                 if(index >= 0) {
                     String loc = browseSpecialMove();
                     if(loc != null) {
-                        specialMoves.set(index, getSpecialMoveText(loc));
+                        specialMoves.set(index, Integer.toString(index + 1)
+                                + ": " + getSpecialMoveText(loc));
                     }
                 }
             }
         });
         
-        //reset button
-        sMoveResetButton.addActionListener(new ActionListener() {
+        //add button
+        sMoveAddButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //insert after current slot
                 int index = sMoveList.getSelectedIndex() + 1;
                 String loc = browseSpecialMove();
                 if(loc != null) {
-                    specialMoves.add(index, getSpecialMoveText(loc));
+                    specialMoves.add(index, Integer.toString(index + 1)
+                            + ": " + getSpecialMoveText(loc));
                 }
                 //select the added move
                 sMoveList.setSelectedIndex(index);
@@ -964,11 +1017,37 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
         sMoveRemoveButton.addActionListener(
                 Gui.simpleRemoveListener(specialMoves, sMoveList)
         );
+        
+        sMoveExpMin.addPropertyChangeListener("value", new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                out.println("sMoveExpMin property change!");
+                out.println(sMoveExpMin.getValue());
+            }
+        });
+//                    sMoveLvMin.getValue();
+//                    sMoveVarName.getText();
+//                    sMoveLvMin.getText();
+        
+        //always button
+        sMoveAlwaysButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sMoveExpMin.setValue(0);
+                sMoveLvMin.setValue(0);
+                sMoveVarName.setText("");
+                sMoveLvMin.setText("");
+            }
+        });
 
         // Configure the necessary Panels
+        JPanel settingsPanel = new JPanel();
+        settingsPanel.setBorder(BorderFactory.createTitledBorder(
+                this.defaultEtchedBorder, "Settings"));
         JPanel sMovePanel = new JPanel();
         sMovePanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Special Moves"));
+                this.defaultEtchedBorder, "Special Moves the Player Can Use"));
         JPanel conditionsPanel = new JPanel();
         conditionsPanel.setBorder(BorderFactory.createTitledBorder(
                 this.defaultEtchedBorder, "The Player Can Use This Special Move If"));
@@ -977,15 +1056,29 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
         GroupLayout layout = Gui.createGroupLayout(this.specialMovesPanel);
 
         // Configure Layouts for Second Level Panels
+        GroupLayout settingsLayout = Gui.createGroupLayout(settingsPanel);
         GroupLayout sMoveLayout = Gui.createGroupLayout(sMovePanel);
         GroupLayout conditionsLayout = Gui.createGroupLayout(conditionsPanel);
+        
+        // Configure the SETTINGS PANEL layout
+        settingsLayout.setHorizontalGroup(settingsLayout.createParallelGroup()
+                .addComponent(this.usesSpecials)
+                .addComponent(specialsNameLabel)
+                .addComponent(this.specialsName)
+        );
+
+        settingsLayout.setVerticalGroup(settingsLayout.createSequentialGroup()
+                .addComponent(this.usesSpecials)
+                .addComponent(specialsNameLabel)
+                .addComponent(this.specialsName)
+        );
 
         // Configure the SMOVE PANEL layout
         sMoveLayout.setHorizontalGroup(sMoveLayout.createSequentialGroup()
                 .addComponent(sMoveListScroller)
                 .addGroup(sMoveLayout.createParallelGroup()
                         .addComponent(sMoveFindButton)
-                        .addComponent(sMoveResetButton)
+                        .addComponent(sMoveAddButton)
                         .addComponent(sMoveRemoveButton))
         );
 
@@ -993,32 +1086,48 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                 .addComponent(sMoveListScroller)
                 .addGroup(sMoveLayout.createSequentialGroup()
                         .addComponent(sMoveFindButton)
-                        .addComponent(sMoveResetButton)
+                        .addComponent(sMoveAddButton)
                         .addComponent(sMoveRemoveButton))
         );
 
         // Configure the CONDITIONS PANEL layout
         conditionsLayout.setHorizontalGroup(conditionsLayout.createSequentialGroup()
                 .addGroup(conditionsLayout.createParallelGroup()
-                        .addComponent(strengthFindButton)
-                        .addComponent(strengthAddButton)
-                        .addComponent(strengthRemoveButton))
+                        .addComponent(sMoveExpMinLabel)
+                        .addComponent(this.sMoveExpMin)
+                        .addComponent(sMoveLvMinLabel)
+                        .addComponent(this.sMoveLvMin)
+                        .addGroup(conditionsLayout.createSequentialGroup()
+                                .addComponent(sMoveVarNameLabel)
+                                .addComponent(this.sMoveVarName)
+                                .addComponent(sMoveVarValLabel)
+                                .addComponent(this.sMoveVarVal))
+                        .addComponent(sMoveAlwaysButton))
         );
 
         conditionsLayout.setVerticalGroup(conditionsLayout.createParallelGroup()
                 .addGroup(conditionsLayout.createSequentialGroup()
-                        .addComponent(strengthFindButton)
-                        .addComponent(strengthAddButton)
-                        .addComponent(strengthRemoveButton))
+                        .addComponent(sMoveExpMinLabel)
+                        .addComponent(this.sMoveExpMin)
+                        .addComponent(sMoveLvMinLabel)
+                        .addComponent(this.sMoveLvMin)
+                        .addGroup(conditionsLayout.createParallelGroup()
+                                .addComponent(sMoveVarNameLabel)
+                                .addComponent(this.sMoveVarName)
+                                .addComponent(sMoveVarValLabel)
+                                .addComponent(this.sMoveVarVal))
+                        .addComponent(sMoveAlwaysButton))
         );
 
-        // Configure the SPECIAL MOVE PANEL layout
+        // Configure the Top Level Panel layout
         layout.setHorizontalGroup(layout.createParallelGroup()
+                .addComponent(settingsPanel)
                 .addComponent(sMovePanel)
                 .addComponent(conditionsPanel)
         );
 
         layout.setVerticalGroup(layout.createSequentialGroup()
+                .addComponent(settingsPanel)
                 .addComponent(sMovePanel)
                 .addComponent(conditionsPanel)
         );
@@ -1203,12 +1312,17 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     }
     
     private SpecialMove loadSpecialMove(String loc) {
-        if(loc.endsWith(".spc")) {
-            File f = new File(System.getProperty("project.path")
-                    + sep + "SpcMove" + sep + loc);
+        if(Paths.getExtension(loc).contains("spc")) {
+            File f = mainWindow.getPath("SpcMove" + sep + loc);
             if(f.canRead()) {
 //                out.println("loaded special move from location " + loc + "!");
-                return new SpecialMove(f);
+                try {
+                    AssetHandle handle = AssetManager.getInstance().deserialize(
+                            new AssetDescriptor(f.toURI()));
+                    return (SpecialMove)handle.getAsset();
+                } catch(IOException | CorruptAssetException ex) {
+                    Logger.getLogger(CharacterEditor.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
         return null;
