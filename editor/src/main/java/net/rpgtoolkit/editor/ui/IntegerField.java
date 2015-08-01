@@ -40,6 +40,11 @@ public class IntegerField extends JFormattedTextField {
     
     @Override
     public Long getValue() {
-        return (Long)super.getValue();
+        Object val = super.getValue();
+        if(val instanceof Integer) {
+            return Long.valueOf((Integer)val);
+        } else {
+            return (Long)super.getValue();
+        }
     }
 }
