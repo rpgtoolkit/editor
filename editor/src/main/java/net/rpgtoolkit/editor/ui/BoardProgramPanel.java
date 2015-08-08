@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -35,7 +36,7 @@ public class BoardProgramPanel extends AbstractModelPanel {
     
     private final JSpinner layerSpinner;
     private final JComboBox activationComboBox;
-    private final JSpinner repeatSpinner;
+    private final JCheckBox isClosedCheckBox;
     
     private static final String[] ACTIVATION_TYPES = {
         "STEP-ON", "KEYPRESS"
@@ -145,9 +146,20 @@ public class BoardProgramPanel extends AbstractModelPanel {
             }
         });
         ///
-        /// repeatSpinner
+        /// isClosedCheckBox
         ///
-        repeatSpinner = new JSpinner();
+        this.isClosedCheckBox = new JCheckBox();
+        this.isClosedCheckBox.setSelected(((BoardProgram)this.model).getVector().isClosed());
+        this.isClosedCheckBox.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                ((BoardProgram)model).getVector().setClosed(isClosedCheckBox.isSelected());
+                updateCurrentBoardView();
+            }
+        });
         ///
         /// constaints
         ///
@@ -168,7 +180,7 @@ public class BoardProgramPanel extends AbstractModelPanel {
         
         constraints.gridx = 0;
         constraints.gridy = 4;
-        add(new JLabel("EXAMPLE"), constraints);
+        add(new JLabel("Is Closed"), constraints);
         ///
         /// constraintsRight
         ///
@@ -186,7 +198,7 @@ public class BoardProgramPanel extends AbstractModelPanel {
         
         constraintsRight.gridx = 1;
         constraintsRight.gridy = 4;
-        add(repeatSpinner, constraintsRight);
+        add(isClosedCheckBox, constraintsRight);
     }
  
 }

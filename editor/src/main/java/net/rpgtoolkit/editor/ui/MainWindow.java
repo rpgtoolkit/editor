@@ -52,7 +52,6 @@ import net.rpgtoolkit.editor.editors.TilesetCanvas;
 import net.rpgtoolkit.editor.editors.TileRegionSelectionEvent;
 import net.rpgtoolkit.editor.ui.resources.Icons;
 import net.rpgtoolkit.editor.editors.board.ProgramBrush;
-import net.rpgtoolkit.editor.utilities.TextAreaOutputStream;
 
 /**
  * Currently opening TileSets, tiles, programs, boards, animations, characters
@@ -137,10 +136,6 @@ public class MainWindow extends JFrame implements InternalFrameListener
         this.debugLog.setEditable(false);
         this.debugLog.setRows(6);
         this.debugLog.setBackground(Color.WHITE);
-        PrintStream printStream = new PrintStream(new TextAreaOutputStream(
-                this.debugLog));
-        System.setOut(printStream);
-        System.setErr(printStream);
 
         this.debugScrollPane = new JScrollPane(this.debugLog);
         this.debugScrollPane.setVerticalScrollBarPolicy(
