@@ -57,7 +57,7 @@ public class BoardMouseAdapter extends MouseAdapter
     @Override
     public void mousePressed(MouseEvent e)
     {
-        if (this.editor.boardView.getCurrentSelectedLayer() != null)
+        if (this.editor.getBoardView().getCurrentSelectedLayer() != null)
         {
             AbstractBrush brush = MainWindow.getInstance().getCurrentBrush();
             int button = e.getButton();
@@ -85,7 +85,7 @@ public class BoardMouseAdapter extends MouseAdapter
     @Override
     public void mouseDragged(MouseEvent e)
     {
-        if (this.editor.boardView.getCurrentSelectedLayer() != null)
+        if (this.editor.getBoardView().getCurrentSelectedLayer() != null)
         {
             AbstractBrush brush = MainWindow.getInstance().getCurrentBrush();
             this.doMouseButton1Dragged(e, brush);
@@ -100,11 +100,11 @@ public class BoardMouseAdapter extends MouseAdapter
     @Override
     public void mouseMoved(MouseEvent e)
     {
-        this.editor.cursorTileLocation = this.editor.boardView.getTileCoordinates(
-                (int) (e.getX() / this.editor.boardView.getZoom()),
-                (int) (e.getY() / this.editor.boardView.getZoom()));
-        this.editor.cursorLocation = new Point(e.getX(), e.getY());
-        this.editor.boardView.repaint();
+        this.editor.setCursorTileLocation(this.editor.getBoardView().getTileCoordinates(
+                (int) (e.getX() / this.editor.getBoardView().getZoom()),
+                (int) (e.getY() / this.editor.getBoardView().getZoom())));
+        this.editor.setCursorLocation(new Point(e.getX(), e.getY()));
+        this.editor.getBoardView().repaint();
     }
 
     /*
@@ -121,9 +121,9 @@ public class BoardMouseAdapter extends MouseAdapter
     private void doMouseButton1Pressed(MouseEvent e, AbstractBrush brush)
     {
         Rectangle bucketSelection = null;
-        Point point = this.editor.boardView.getTileCoordinates(
-                (int) (e.getX() / this.editor.boardView.getZoom()),
-                (int) (e.getY() / this.editor.boardView.getZoom()));
+        Point point = this.editor.getBoardView().getTileCoordinates(
+                (int) (e.getX() / this.editor.getBoardView().getZoom()),
+                (int) (e.getY() / this.editor.getBoardView().getZoom()));
 
         if (brush instanceof SelectionBrush)
         {
@@ -131,29 +131,29 @@ public class BoardMouseAdapter extends MouseAdapter
             this.editor.setSelection(new Rectangle(
                     this.origin.x, this.origin.y,
                     0, 0));
-            this.editor.selectedTiles = this.editor.
-                    createTileLayerFromRegion(this.editor.selection);
+            this.editor.setSelectedTiles(this.editor.
+                    createTileLayerFromRegion(this.editor.getSelection()));
         }
-        else if (brush instanceof ShapeBrush && this.editor.selection != null)
+        else if (brush instanceof ShapeBrush && this.editor.getSelection() != null)
         {
-            this.editor.selection = null;
+            this.editor.setSelection(null);
         }
-        else if (brush instanceof BucketBrush && this.editor.selection != null)
+        else if (brush instanceof BucketBrush && this.editor.getSelection() != null)
         {
             // To compensate for the fact that the selection
             // is 1 size too small in both width and height.
             // Bit of a hack really.
-            this.editor.selection.width++;
-            this.editor.selection.height++;
+            this.editor.getSelection().width++;
+            this.editor.getSelection().height++;
 
-            if (this.editor.selection.contains(point))
+            if (this.editor.getSelection().contains(point))
             {
-                bucketSelection = (Rectangle) this.editor.selection.clone();
+                bucketSelection = (Rectangle) this.editor.getSelection().clone();
             }
 
             // Revert back to original dimensions.
-            this.editor.selection.width--;
-            this.editor.selection.height--;
+            this.editor.getSelection().width--;
+            this.editor.getSelection().height--;
         }
         else if (brush instanceof VectorBrush)
         {
@@ -181,14 +181,14 @@ public class BoardMouseAdapter extends MouseAdapter
                 programBrush.finish();
             }
             
-            BoardProgram program = this.editor.boardView.getCurrentSelectedLayer()
+            BoardProgram program = this.editor.getBoardView().getCurrentSelectedLayer()
                     .getLayer().removeProgramAt(e.getX(), e.getY());
             
             if (program != null)
             {
                 if (program == editor.getSelectedObject())
                 {
-                    editor.getSelectedObject().setSelected(false);
+                    editor.getSelectedObject().setSelectedState(false);
                     editor.setSelectedObject(null);
                 }
             }
@@ -202,24 +202,24 @@ public class BoardMouseAdapter extends MouseAdapter
                 vectorBrush.finish();
             }
 
-            BoardVector vector = this.editor.boardView.getCurrentSelectedLayer()
+            BoardVector vector = this.editor.getBoardView().getCurrentSelectedLayer()
                     .getLayer().removeVectorAt(e.getX(), e.getY());
 
             if (vector != null)
             {
                 if (vector == editor.getSelectedObject())
                 {
-                    editor.getSelectedObject().setSelected(false);
+                    editor.getSelectedObject().setSelectedState(false);
                     editor.setSelectedObject(null);
                 }
             }
         }
         else if (brush instanceof SpriteBrush)
         {
-            this.editor.boardView.getCurrentSelectedLayer().getLayer()
+            this.editor.getBoardView().getCurrentSelectedLayer().getLayer()
                     .removeSpriteAt(
-                            e.getX() / this.editor.board.getTileSet().getTileWidth(), 
-                            e.getY() / this.editor.board.getTileSet().getTileHeight());
+                            e.getX() / this.editor.getBoard().getTileSet().getTileWidth(), 
+                            e.getY() / this.editor.getBoard().getTileSet().getTileHeight());
         }
     }
 
@@ -241,7 +241,7 @@ public class BoardMouseAdapter extends MouseAdapter
             }
             else // We want to select a program.
             {
-                this.selectProgram(this.editor.boardView.getCurrentSelectedLayer()
+                this.selectProgram(this.editor.getBoardView().getCurrentSelectedLayer()
                         .getLayer().findProgramAt(e.getX(), e.getY()));
             }
         }
@@ -254,16 +254,16 @@ public class BoardMouseAdapter extends MouseAdapter
             }
             else // We want to select a vector.
             {
-                this.selectVector(this.editor.boardView.getCurrentSelectedLayer()
+                this.selectVector(this.editor.getBoardView().getCurrentSelectedLayer()
                         .getLayer().findVectorAt(e.getX(), e.getY()));
             }
         }
         else if (brush instanceof SpriteBrush)
         {
-            this.selectSprite(this.editor.boardView.getCurrentSelectedLayer().getLayer()
+            this.selectSprite(this.editor.getBoardView().getCurrentSelectedLayer().getLayer()
                     .findSpriteAt(
-                            e.getX() / this.editor.board.getTileSet().getTileWidth(), 
-                            e.getY() / this.editor.board.getTileSet().getTileHeight()));
+                            e.getX() / this.editor.getBoard().getTileSet().getTileWidth(), 
+                            e.getY() / this.editor.getBoard().getTileSet().getTileHeight()));
         }
     }
 
@@ -275,11 +275,11 @@ public class BoardMouseAdapter extends MouseAdapter
      */
     private void doMouseButton1Dragged(MouseEvent e, AbstractBrush brush)
     {
-        Point point = this.editor.boardView.getTileCoordinates(
-                (int) (e.getX() / this.editor.boardView.getZoom()),
-                (int) (e.getY() / this.editor.boardView.getZoom()));
-        this.editor.cursorTileLocation = point;
-        this.editor.cursorLocation = new Point(e.getX(), e.getY());
+        Point point = this.editor.getBoardView().getTileCoordinates(
+                (int) (e.getX() / this.editor.getBoardView().getZoom()),
+                (int) (e.getY() / this.editor.getBoardView().getZoom()));
+        this.editor.setCursorTileLocation(point);
+        this.editor.setCursorLocation(new Point(e.getX(), e.getY()));
 
         if (brush instanceof VectorBrush)
         {
@@ -290,17 +290,17 @@ public class BoardMouseAdapter extends MouseAdapter
             Rectangle select = new Rectangle(this.origin.x, this.origin.y, 0, 0);
             select.add(point);
 
-            if (!select.equals(this.editor.selection))
+            if (!select.equals(this.editor.getSelection()))
             {
                 this.editor.setSelection(select);
             }
 
-            this.editor.selectedTiles = this.editor.
-                    createTileLayerFromRegion(this.editor.selection);
+            this.editor.setSelectedTiles(this.editor.
+                    createTileLayerFromRegion(this.editor.getSelection()));
         }
-        else if (brush instanceof ShapeBrush && this.editor.selection != null)
+        else if (brush instanceof ShapeBrush && this.editor.getSelection() != null)
         {
-            this.editor.selection = null;
+            this.editor.setSelection(null);
         }
 
         this.editor.doPaint(brush, point, null);
@@ -315,18 +315,18 @@ public class BoardMouseAdapter extends MouseAdapter
     {
         if (vector != null)
         {
-            vector.setSelected(true);
+            vector.setSelectedState(true);
 
             if (editor.getSelectedObject() != null)
             {
-                editor.getSelectedObject().setSelected(false);
+                editor.getSelectedObject().setSelectedState(false);
             }
 
             editor.setSelectedObject(vector);
         }
         else if (editor.getSelectedObject() != null)
         {
-            editor.getSelectedObject().setSelected(false);
+            editor.getSelectedObject().setSelectedState(false);
             editor.setSelectedObject(null);
         }
     }
@@ -340,18 +340,18 @@ public class BoardMouseAdapter extends MouseAdapter
     {
         if (program != null)
         {
-            program.getVector().setSelected(true);
+            program.getVector().setSelectedState(true);
 
             if (editor.getSelectedObject() != null)
             {
-                editor.getSelectedObject().setSelected(false);
+                editor.getSelectedObject().setSelectedState(false);
             }
 
             editor.setSelectedObject(program);
         }
         else if (editor.getSelectedObject() != null)
         {
-            editor.getSelectedObject().setSelected(false);
+            editor.getSelectedObject().setSelectedState(false);
             editor.setSelectedObject(null);
         }
     }
@@ -365,18 +365,18 @@ public class BoardMouseAdapter extends MouseAdapter
     {
         if (sprite != null)
         {
-            sprite.setSelected(true);
+            sprite.setSelectedState(true);
             
             if (editor.getSelectedObject() != null)
             {
-                editor.getSelectedObject().setSelected(false);
+                editor.getSelectedObject().setSelectedState(false);
             }
             
             editor.setSelectedObject(sprite);
         }
         else if (editor.getSelectedObject() != null)
         {
-            editor.getSelectedObject().setSelected(false);
+            editor.getSelectedObject().setSelectedState(false);
             editor.setSelectedObject(null);
         }
     }

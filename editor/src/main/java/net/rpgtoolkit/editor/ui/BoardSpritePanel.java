@@ -21,6 +21,7 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.BoardSprite;
+import net.rpgtoolkit.editor.editors.board.BoardLayerView;
 import net.rpgtoolkit.editor.editors.board.BoardSpriteDialog;
 import net.rpgtoolkit.editor.utilities.FileTools;
 
@@ -44,6 +45,8 @@ public class BoardSpritePanel extends AbstractModelPanel
     private final JSpinner xSpinner;
     private final JSpinner ySpinner;
     private final JSpinner layerSpinner;
+    
+    private int lastSpinnerLayer; // Used to ensure that the selection is valid.
     
     private final JComboBox typeComboBox;
     
@@ -152,7 +155,12 @@ public class BoardSpritePanel extends AbstractModelPanel
             @Override
             public void stateChanged(ChangeEvent e)
             {
+                BoardSprite sprite = (BoardSprite)model;
                 
+                if (sprite.getX() != (int)xSpinner.getValue()) {
+                    sprite.setX((int)xSpinner.getValue());
+                    updateCurrentBoardView();
+                }
             }
             
         });
@@ -167,7 +175,12 @@ public class BoardSpritePanel extends AbstractModelPanel
             @Override
             public void stateChanged(ChangeEvent e)
             {
+                BoardSprite sprite = (BoardSprite)model;
                 
+                if (sprite.getY() != (int)ySpinner.getValue()) {
+                    sprite.setY((int)ySpinner.getValue());
+                    updateCurrentBoardView();
+                }
             }
             
         });
@@ -182,7 +195,28 @@ public class BoardSpritePanel extends AbstractModelPanel
             @Override
             public void stateChanged(ChangeEvent e)
             {
+                BoardSprite sprite = (BoardSprite)model;
                 
+                BoardLayerView lastLayerView = getBoardEditor().getBoardView().
+                        getLayer((int)sprite.getLayer());
+                
+                BoardLayerView newLayerView = getBoardEditor().getBoardView().
+                        getLayer((int)layerSpinner.getValue());
+                
+                // Make sure this is a valid move.
+                if (lastLayerView != null && newLayerView != null) {
+                    // Do the swap.
+                    sprite.setLayer((int)layerSpinner.getValue());
+                    newLayerView.getLayer().getSprites().add(sprite);
+                    lastLayerView.getLayer().getSprites().remove(sprite);
+                    updateCurrentBoardView();
+                    
+                    // Store new layer selection index.
+                    lastSpinnerLayer = (int)layerSpinner.getValue();
+                } else {
+                    // Not a valid layer revert selection.
+                    layerSpinner.setValue(lastSpinnerLayer);
+                }
             }
             
         });

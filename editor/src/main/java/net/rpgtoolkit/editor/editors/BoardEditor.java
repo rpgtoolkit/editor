@@ -37,18 +37,20 @@ public class BoardEditor extends ToolkitEditorWindow
 
     private JScrollPane scrollPane;
 
-    public BoardView2D boardView;
-    public Board board;
+    private BoardView2D boardView;
+    private Board board;
 
     private BoardMouseAdapter boardMouseAdapter;
 
-    public Point cursorTileLocation;
-    public Point cursorLocation;
-    public Rectangle selection;
+    private Point cursorTileLocation;
+    private Point cursorLocation;
+    private Rectangle selection;
 
-    public Tile[][] selectedTiles;
+    private Tile[][] selectedTiles;
     
     private Selectable selectedObject;
+    
+    private boolean selectedState;
 
     /*
      * *************************************************************************
@@ -143,10 +145,18 @@ public class BoardEditor extends ToolkitEditorWindow
     {
         return this.cursorTileLocation;
     }
+    
+    public void setCursorTileLocation(Point location) {
+        cursorTileLocation = location;
+    }
 
     public Point getCursorLocation()
     {
         return this.cursorLocation;
+    }
+    
+    public void setCursorLocation(Point location) {
+        cursorLocation = location;
     }
 
     public Rectangle getSelection()
@@ -159,6 +169,10 @@ public class BoardEditor extends ToolkitEditorWindow
         return this.selectedTiles;
     }
     
+    public void setSelectedTiles(Tile[][] tiles) {
+        selectedTiles = tiles;
+    }
+    
     public Selectable getSelectedObject()
     {
         return this.selectedObject;
@@ -166,12 +180,18 @@ public class BoardEditor extends ToolkitEditorWindow
     
     public void setSelectedObject(Selectable object)
     {
-        this.selectedObject = object;
+        if (object == null) {
+            selectedObject = board;
+        }
+        else {
+            this.selectedObject = object;
+        }
+        
         MainWindow.getInstance().getPropertiesPanel().setModel(
                 this.selectedObject);
         this.boardView.repaint();
     }
-
+    
     /*
      * *************************************************************************
      * Public Methods
@@ -200,7 +220,7 @@ public class BoardEditor extends ToolkitEditorWindow
     {
         return this.board.save();
     }
-
+    
     /*
      * *************************************************************************
      * Protected Getters and Setters

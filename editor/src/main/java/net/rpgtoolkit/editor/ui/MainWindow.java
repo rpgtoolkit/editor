@@ -12,7 +12,6 @@ import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -289,7 +288,8 @@ public class MainWindow extends JFrame implements InternalFrameListener
     {
         if (e.getInternalFrame() instanceof BoardEditor)
         {
-            this.upperTabbedPane.setSelectedComponent(this.tileSetPanel);
+            upperTabbedPane.setSelectedComponent(tileSetPanel);
+            propertiesPanel.setModel(((BoardEditor)e.getInternalFrame()).getBoard());
         }
     }
 
@@ -325,9 +325,11 @@ public class MainWindow extends JFrame implements InternalFrameListener
             BoardEditor editor = (BoardEditor) e.getInternalFrame();
             this.layerPanel.setBoardView(editor.getBoardView());
 
-            if (editor.getSelectedObject() != null)
-            {
+            if (editor.getSelectedObject() != null) {
                 this.propertiesPanel.setModel(editor.getSelectedObject());
+            }
+            else {
+                this.propertiesPanel.setModel(editor.getBoard());
             }
         }
     }
@@ -344,7 +346,8 @@ public class MainWindow extends JFrame implements InternalFrameListener
                 this.layerPanel.clearTable();
             }
 
-            if (this.propertiesPanel.getModel() == editor.getSelectedObject())
+            if (this.propertiesPanel.getModel() == editor.getSelectedObject() 
+                    || propertiesPanel.getModel() == editor)
             {
                 this.propertiesPanel.setModel(null);
             }

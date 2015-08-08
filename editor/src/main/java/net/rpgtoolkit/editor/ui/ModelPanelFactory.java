@@ -39,7 +39,7 @@ public final class ModelPanelFactory
     {
         if (model instanceof Board)
         {
-            
+            return new BoardPanel((Board)model);
         }
         else if (model instanceof BoardVector)
         {

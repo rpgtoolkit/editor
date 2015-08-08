@@ -161,7 +161,7 @@ public class BoardProgramPanel extends AbstractModelPanel {
             }
         });
         ///
-        /// constaints
+        /// constraints
         ///
         constraints.insets = new Insets(4, 15, 0, 30);
         constraintsRight.insets = new Insets(0, 0, 10, 15);

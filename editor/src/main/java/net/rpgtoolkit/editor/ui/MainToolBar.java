@@ -139,11 +139,10 @@ public class MainToolBar extends JToolBar
         this.deleteButton.setIcon(Icons.getSmallIcon("delete"));
 
         this.undoButton = new EditorButton();
-        this.undoButton.setIcon(Icons.getSmallIcon("undo"))
-                ;
+        this.undoButton.setIcon(Icons.getSmallIcon("undo"));
         this.redoButton = new EditorButton();
         this.redoButton.setIcon(Icons.getSmallIcon("redo"));
-
+        
         this.pencilButton = new JToggleButton();
         this.pencilButton.setFocusable(false);
         this.pencilButton.setIcon(Icons.getSmallIcon("pencil"));
@@ -532,7 +531,7 @@ public class MainToolBar extends JToolBar
         {
             if (editor.getSelectedObject() != null)
             {
-                editor.getSelectedObject().setSelected(false);
+                editor.getSelectedObject().setSelectedState(false);
             }
             
             editor.setSelectedObject(null);
