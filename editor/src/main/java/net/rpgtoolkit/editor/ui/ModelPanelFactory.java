@@ -7,6 +7,10 @@
  */
 package net.rpgtoolkit.editor.ui;
 
+import net.rpgtoolkit.editor.editors.board.panels.BoardProgramPanel;
+import net.rpgtoolkit.editor.editors.board.panels.BoardPanel;
+import net.rpgtoolkit.editor.editors.board.panels.BoardVectorPanel;
+import net.rpgtoolkit.editor.editors.board.panels.BoardSpritePanel;
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.assets.BoardLight;
 import net.rpgtoolkit.common.assets.BoardProgram;

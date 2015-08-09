@@ -378,7 +378,7 @@ public final class BoardView2D extends AbstractBoardView
     @Override
     protected void paintSelection(Graphics2D g)
     {
-        TileSet tileset = this.board.getTileSet();
+        TileSet tileset = this.board.getTileSets().getFirst();
         Rectangle selection = this.boardEditor.getSelection();
 
         g.setColor(new Color(100, 100, 255));
@@ -406,8 +406,8 @@ public final class BoardView2D extends AbstractBoardView
     {
         Rectangle cursor = MainWindow.getInstance().getCurrentBrush().getBounds();
         Point selection = this.boardEditor.getCursorTileLocation();
-        int tileWidth = board.getTileSet().getTileWidth();
-        int tileHeight = board.getTileSet().getTileHeight();
+        int tileWidth = board.getTileSets().getFirst().getTileWidth();
+        int tileHeight = board.getTileSets().getFirst().getTileHeight();
         int centerX = (selection.x * tileWidth)
                 - (((int) cursor.getWidth() / 2) * tileWidth);
         int centerY = (selection.y * tileHeight)

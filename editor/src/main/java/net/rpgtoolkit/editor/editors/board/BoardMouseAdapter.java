@@ -218,8 +218,10 @@ public class BoardMouseAdapter extends MouseAdapter
         {
             this.editor.getBoardView().getCurrentSelectedLayer().getLayer()
                     .removeSpriteAt(
-                            e.getX() / this.editor.getBoard().getTileSet().getTileWidth(), 
-                            e.getY() / this.editor.getBoard().getTileSet().getTileHeight());
+                            e.getX() / this.editor.getBoard().getTileSets().
+                                    getFirst().getTileWidth(), 
+                            e.getY() / this.editor.getBoard().getTileSets().
+                                    getFirst().getTileHeight());
         }
     }
 
@@ -262,8 +264,10 @@ public class BoardMouseAdapter extends MouseAdapter
         {
             this.selectSprite(this.editor.getBoardView().getCurrentSelectedLayer().getLayer()
                     .findSpriteAt(
-                            e.getX() / this.editor.getBoard().getTileSet().getTileWidth(), 
-                            e.getY() / this.editor.getBoard().getTileSet().getTileHeight()));
+                            e.getX() / this.editor.getBoard().getTileSets().
+                                    getFirst().getTileWidth(), 
+                            e.getY() / this.editor.getBoard().getTileSets().
+                                    getFirst().getTileHeight()));
         }
     }
 

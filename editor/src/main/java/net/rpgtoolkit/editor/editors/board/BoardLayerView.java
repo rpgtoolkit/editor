@@ -469,9 +469,9 @@ public final class BoardLayerView implements Cloneable
         for (BoardSprite sprite : this.layer.getSprites())
         {
             int x = (int) sprite.getX() * this.getLayer().getBoard().
-                    getTileSet().getTileWidth();
+                    getTileSets().getFirst().getTileWidth();
             int y = (int) sprite.getY() * this.getLayer().getBoard().
-                    getTileSet().getTileHeight();
+                    getTileSets().getFirst().getTileHeight();
 
             // TODO: Deal with sprite selection.
             

@@ -32,7 +32,7 @@ import net.rpgtoolkit.common.assets.Tile;
 import net.rpgtoolkit.common.assets.TileSet;
 import net.rpgtoolkit.common.assets.files.FileAssetHandleResolver;		
 import net.rpgtoolkit.common.assets.serialization.JsonSMoveSerializer;
-
+import net.rpgtoolkit.common.utilities.TileSetCache;
 import net.rpgtoolkit.editor.editors.AnimationEditor;
 import net.rpgtoolkit.editor.editors.BoardEditor;
 import net.rpgtoolkit.editor.editors.CharacterEditor;
@@ -302,7 +302,11 @@ public class MainWindow extends JFrame implements InternalFrameListener
     @Override
     public void internalFrameClosed(InternalFrameEvent e)
     {
-
+        if (e.getInternalFrame() instanceof BoardEditor) {
+            BoardEditor editor = (BoardEditor)e.getInternalFrame();
+            TileSetCache.getInstance().removeTileSets(
+                    editor.getBoard().getTileSetNames());
+        }
     }
 
     @Override
@@ -513,10 +517,10 @@ public class MainWindow extends JFrame implements InternalFrameListener
             boardEditor.setVisible(true);
             boardEditor.toFront();
 
-            if (boardEditor.getBoard().getTileSet() != null)
+            if (boardEditor.getBoard().getTileSets().getFirst() != null)
             {
                 this.tileSetPanel.setTilesetCanvas(new TilesetCanvas(
-                        boardEditor.getBoard().getTileSet()));
+                        boardEditor.getBoard().getTileSets().getFirst()));
                 this.tileSetPanel.getTilesetCanvas().addTileSelectionListener(
                         this.tileSetSelectionListener);
             }

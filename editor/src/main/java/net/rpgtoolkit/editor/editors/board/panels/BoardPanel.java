@@ -1,4 +1,4 @@
-package net.rpgtoolkit.editor.ui;
+package net.rpgtoolkit.editor.editors.board.panels;
 
 import java.awt.FlowLayout;
 import java.awt.Insets;
@@ -12,6 +12,7 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.Board;
+import net.rpgtoolkit.editor.ui.AbstractModelPanel;
 
 /**
  * 

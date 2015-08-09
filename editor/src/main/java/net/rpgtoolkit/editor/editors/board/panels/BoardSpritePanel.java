@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package net.rpgtoolkit.editor.ui;
+package net.rpgtoolkit.editor.editors.board.panels;
 
 import java.awt.FlowLayout;
 import java.awt.Insets;
@@ -23,6 +23,8 @@ import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.BoardSprite;
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
 import net.rpgtoolkit.editor.editors.board.BoardSpriteDialog;
+import net.rpgtoolkit.editor.ui.AbstractModelPanel;
+import net.rpgtoolkit.editor.ui.MainWindow;
 import net.rpgtoolkit.editor.utilities.FileTools;
 
 /**

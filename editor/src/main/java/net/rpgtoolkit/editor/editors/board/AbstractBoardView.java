@@ -374,8 +374,8 @@ public abstract class AbstractBoardView extends JPanel implements
      * @return tile coordinates
      */
     public Point getTileCoordinates(int x, int y) {
-        int tileWidth = this.board.getTileSet().getTileWidth() + 1;
-        int tileHeight = this.board.getTileSet().getTileHeight() + 1;
+        int tileWidth = this.board.getTileSets().getFirst().getTileWidth() + 1;
+        int tileHeight = this.board.getTileSets().getFirst().getTileHeight() + 1;
 
         int tileX = Math.max(0, Math.min(x / tileWidth, this.board.getWidth() - 1));
         int tileY = Math.max(0, Math.min(y / tileHeight, this.board.getHeight() - 1));
@@ -716,15 +716,12 @@ public abstract class AbstractBoardView extends JPanel implements
     }
 
     /**
-     * Populates the TileSetCache for this board. Note: This Cache should be
-     * centralized to save each editor needlessly eating memory for the same
-     * tile sets!
+     * Populates the TileSetCache for this board.
      *
      * @param board The Toolkit board we want to load tiles for.
      */
     private void loadTiles(Board board) {
-        TileSetCache tileSetCache = new TileSetCache();
-        board.initializeTileSetCache(tileSetCache);
+        board.updateTileSetCache();
         board.createLayers();
 
         for (BoardLayer layer : board.getLayers()) {
