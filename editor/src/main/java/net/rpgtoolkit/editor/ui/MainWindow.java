@@ -32,7 +32,6 @@ import net.rpgtoolkit.common.assets.Tile;
 import net.rpgtoolkit.common.assets.TileSet;
 import net.rpgtoolkit.common.assets.files.FileAssetHandleResolver;		
 import net.rpgtoolkit.common.assets.serialization.JsonSMoveSerializer;
-import net.rpgtoolkit.common.utilities.TileSetCache;
 import net.rpgtoolkit.editor.editors.AnimationEditor;
 import net.rpgtoolkit.editor.editors.BoardEditor;
 import net.rpgtoolkit.editor.editors.CharacterEditor;
@@ -47,7 +46,6 @@ import net.rpgtoolkit.editor.editors.SpecialMoveEditor;
 import net.rpgtoolkit.editor.editors.TileEditor;
 import net.rpgtoolkit.editor.editors.TileSelectionEvent;
 import net.rpgtoolkit.editor.editors.TileSelectionListener;
-import net.rpgtoolkit.editor.editors.TilesetCanvas;
 import net.rpgtoolkit.editor.editors.TileRegionSelectionEvent;
 import net.rpgtoolkit.editor.ui.resources.Icons;
 import net.rpgtoolkit.editor.editors.board.ProgramBrush;
@@ -64,6 +62,8 @@ public class MainWindow extends JFrame implements InternalFrameListener
 
     // Singleton.
     private static final MainWindow instance = new MainWindow();
+    
+    public static final int TILE_SIZE = 32;
 
     private final JDesktopPane desktopPane;
 
@@ -277,6 +277,10 @@ public class MainWindow extends JFrame implements InternalFrameListener
     {
         return activeProject;
     }
+    
+    public TileSelectionListener getTileSetSelectionListener() {
+        return tileSetSelectionListener;
+    }
 
     /*
      * *************************************************************************
@@ -288,8 +292,10 @@ public class MainWindow extends JFrame implements InternalFrameListener
     {
         if (e.getInternalFrame() instanceof BoardEditor)
         {
+            BoardEditor editor = (BoardEditor)e.getInternalFrame();
+            
             upperTabbedPane.setSelectedComponent(tileSetPanel);
-            propertiesPanel.setModel(((BoardEditor)e.getInternalFrame()).getBoard());
+            propertiesPanel.setModel(editor.getBoard());
         }
     }
 
@@ -302,11 +308,7 @@ public class MainWindow extends JFrame implements InternalFrameListener
     @Override
     public void internalFrameClosed(InternalFrameEvent e)
     {
-        if (e.getInternalFrame() instanceof BoardEditor) {
-            BoardEditor editor = (BoardEditor)e.getInternalFrame();
-            TileSetCache.getInstance().removeTileSets(
-                    editor.getBoard().getTileSetNames());
-        }
+        
     }
 
     @Override
@@ -328,7 +330,7 @@ public class MainWindow extends JFrame implements InternalFrameListener
         {
             BoardEditor editor = (BoardEditor) e.getInternalFrame();
             this.layerPanel.setBoardView(editor.getBoardView());
-
+            
             if (editor.getSelectedObject() != null) {
                 this.propertiesPanel.setModel(editor.getSelectedObject());
             }
@@ -517,16 +519,7 @@ public class MainWindow extends JFrame implements InternalFrameListener
             boardEditor.setVisible(true);
             boardEditor.toFront();
 
-            if (boardEditor.getBoard().getTileSets().getFirst() != null)
-            {
-                this.tileSetPanel.setTilesetCanvas(new TilesetCanvas(
-                        boardEditor.getBoard().getTileSets().getFirst()));
-                this.tileSetPanel.getTilesetCanvas().addTileSelectionListener(
-                        this.tileSetSelectionListener);
-            }
-
             this.desktopPane.add(boardEditor);
-
             this.selectToolkitWindow(boardEditor);
         }
         catch (FileNotFoundException ex)
@@ -574,11 +567,8 @@ public class MainWindow extends JFrame implements InternalFrameListener
 
     public void openTileset()
     {
-        this.tileSetPanel.setTilesetCanvas(new TilesetCanvas(
-                new TileSet(fileChooser.getSelectedFile())));
-        this.tileSetPanel.getTilesetCanvas().addTileSelectionListener(
-                this.tileSetSelectionListener);
-        this.upperTabbedPane.setSelectedComponent(this.tileSetPanel);
+        TileSet tileSet = new TileSet(fileChooser.getSelectedFile());
+        tileSetPanel.addTileSet(tileSet);
     }
 
     public void openSpecialMove() {

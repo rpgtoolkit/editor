@@ -21,6 +21,7 @@ import net.rpgtoolkit.common.assets.BoardSprite;
 import net.rpgtoolkit.common.assets.BoardVector;
 import net.rpgtoolkit.common.assets.Tile;
 import net.rpgtoolkit.common.assets.TilePixelOutOfRangeException;
+import net.rpgtoolkit.editor.ui.MainWindow;
 
 /**
  *
@@ -468,10 +469,8 @@ public final class BoardLayerView implements Cloneable
 
         for (BoardSprite sprite : this.layer.getSprites())
         {
-            int x = (int) sprite.getX() * this.getLayer().getBoard().
-                    getTileSets().getFirst().getTileWidth();
-            int y = (int) sprite.getY() * this.getLayer().getBoard().
-                    getTileSets().getFirst().getTileHeight();
+            int x = (int) sprite.getX() * MainWindow.TILE_SIZE + 1;
+            int y = (int) sprite.getY() * MainWindow.TILE_SIZE + 1;
 
             // TODO: Deal with sprite selection.
             

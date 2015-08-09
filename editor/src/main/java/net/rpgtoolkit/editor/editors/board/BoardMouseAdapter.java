@@ -100,7 +100,8 @@ public class BoardMouseAdapter extends MouseAdapter
     @Override
     public void mouseMoved(MouseEvent e)
     {
-        this.editor.setCursorTileLocation(this.editor.getBoardView().getTileCoordinates(
+        this.editor.setCursorTileLocation(this.editor.getBoardView().
+                getTileCoordinates(
                 (int) (e.getX() / this.editor.getBoardView().getZoom()),
                 (int) (e.getY() / this.editor.getBoardView().getZoom())));
         this.editor.setCursorLocation(new Point(e.getX(), e.getY()));
@@ -218,10 +219,8 @@ public class BoardMouseAdapter extends MouseAdapter
         {
             this.editor.getBoardView().getCurrentSelectedLayer().getLayer()
                     .removeSpriteAt(
-                            e.getX() / this.editor.getBoard().getTileSets().
-                                    getFirst().getTileWidth(), 
-                            e.getY() / this.editor.getBoard().getTileSets().
-                                    getFirst().getTileHeight());
+                            e.getX() / MainWindow.TILE_SIZE + 1, 
+                            e.getY() / MainWindow.TILE_SIZE + 1);
         }
     }
 
@@ -264,10 +263,8 @@ public class BoardMouseAdapter extends MouseAdapter
         {
             this.selectSprite(this.editor.getBoardView().getCurrentSelectedLayer().getLayer()
                     .findSpriteAt(
-                            e.getX() / this.editor.getBoard().getTileSets().
-                                    getFirst().getTileWidth(), 
-                            e.getY() / this.editor.getBoard().getTileSets().
-                                    getFirst().getTileHeight()));
+                            e.getX() / MainWindow.TILE_SIZE + 1, 
+                            e.getY() / MainWindow.TILE_SIZE + 1));
         }
     }
 

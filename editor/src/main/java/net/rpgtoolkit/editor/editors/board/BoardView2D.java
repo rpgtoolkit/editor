@@ -201,6 +201,50 @@ public final class BoardView2D extends AbstractBoardView
             }
         }
     }
+    
+    /**
+     * Handles the drawing of the grid on the graphics context. It draws a grid
+     * based on the boards width and height in tiles.
+     *
+     * IMPROVEMENT: Move this functionality to an external class named
+     * "GridDrawer" this would save repeating the code on the TileSet viewer and
+     * potentially elsewhere.
+     *
+     * @param g The graphics context to draw too.
+     */
+    @Override
+    protected void paintGrid(Graphics2D g)
+    {
+        // Determine tile size
+        Dimension tileSize = new Dimension(32, 32);
+
+        if (tileSize.width <= 0 || tileSize.height <= 0)
+        {
+            return;
+        }
+
+        // Determine lines to draw from clipping rectangle
+        Rectangle clipRectangle = new Rectangle(bufferedImage.getWidth(),
+                bufferedImage.getHeight());
+        int startX = (clipRectangle.x / tileSize.width * tileSize.width);
+        int startY = (clipRectangle.y / tileSize.height * tileSize.height);
+        int endX = (clipRectangle.x + clipRectangle.width);
+        int endY = (clipRectangle.y + clipRectangle.height);
+
+        g.setColor(this.getGridColor());
+
+        for (int x = startX; x < endX; x += tileSize.width)
+        {
+            g.drawLine(x, clipRectangle.y, x, clipRectangle.y
+                    + clipRectangle.height - 1);
+        }
+
+        for (int y = startY; y < endY; y += tileSize.height)
+        {
+            g.drawLine(clipRectangle.x, y, clipRectangle.x
+                    + clipRectangle.width - 1, y);
+        }
+    }
 
     /**
      * Handles the drawing of each layers set of vectors and draws them to the
@@ -255,50 +299,6 @@ public final class BoardView2D extends AbstractBoardView
         for (BoardLayerView layer : layers)
         {
             layer.drawSprites(g);
-        }
-    }
-
-    /**
-     * Handles the drawing of the grid on the graphics context. It draws a grid
-     * based on the boards width and height in tiles.
-     *
-     * IMPROVEMENT: Move this functionality to an external class named
-     * "GridDrawer" this would save repeating the code on the TileSet viewer and
-     * potentially elsewhere.
-     *
-     * @param g The graphics context to draw too.
-     */
-    @Override
-    protected void paintGrid(Graphics2D g)
-    {
-        // Determine tile size
-        Dimension tileSize = new Dimension(32, 32);
-
-        if (tileSize.width <= 0 || tileSize.height <= 0)
-        {
-            return;
-        }
-
-        // Determine lines to draw from clipping rectangle
-        Rectangle clipRectangle = new Rectangle(bufferedImage.getWidth(),
-                bufferedImage.getHeight());
-        int startX = (clipRectangle.x / tileSize.width * tileSize.width);
-        int startY = (clipRectangle.y / tileSize.height * tileSize.height);
-        int endX = (clipRectangle.x + clipRectangle.width);
-        int endY = (clipRectangle.y + clipRectangle.height);
-
-        g.setColor(this.getGridColor());
-
-        for (int x = startX; x < endX; x += tileSize.width)
-        {
-            g.drawLine(x, clipRectangle.y, x, clipRectangle.y
-                    + clipRectangle.height - 1);
-        }
-
-        for (int y = startY; y < endY; y += tileSize.height)
-        {
-            g.drawLine(clipRectangle.x, y, clipRectangle.x
-                    + clipRectangle.width - 1, y);
         }
     }
 
@@ -378,7 +378,7 @@ public final class BoardView2D extends AbstractBoardView
     @Override
     protected void paintSelection(Graphics2D g)
     {
-        TileSet tileset = this.board.getTileSets().getFirst();
+        TileSet tileset = this.board.getTileSets().values().iterator().next();
         Rectangle selection = this.boardEditor.getSelection();
 
         g.setColor(new Color(100, 100, 255));
@@ -406,8 +406,10 @@ public final class BoardView2D extends AbstractBoardView
     {
         Rectangle cursor = MainWindow.getInstance().getCurrentBrush().getBounds();
         Point selection = this.boardEditor.getCursorTileLocation();
-        int tileWidth = board.getTileSets().getFirst().getTileWidth();
-        int tileHeight = board.getTileSets().getFirst().getTileHeight();
+        
+        int tileWidth = MainWindow.TILE_SIZE;
+        int tileHeight = MainWindow.TILE_SIZE;
+        
         int centerX = (selection.x * tileWidth)
                 - (((int) cursor.getWidth() / 2) * tileWidth);
         int centerY = (selection.y * tileHeight)

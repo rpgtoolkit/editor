@@ -30,7 +30,7 @@ import net.rpgtoolkit.common.assets.TileSet;
  * @author Geoff Wilson
  * @author Joshua Michael Daly
  */
-public final class TilesetCanvas extends JPanel implements Scrollable
+public final class TileSetCanvas extends JPanel implements Scrollable
 {
     private static final int TILES_PER_ROW = 9;
     
@@ -49,7 +49,7 @@ public final class TilesetCanvas extends JPanel implements Scrollable
      * Public Constructors
      * *************************************************************************
      */
-    public TilesetCanvas(TileSet tileset)
+    public TileSetCanvas(TileSet tileset)
     {
         super();
 

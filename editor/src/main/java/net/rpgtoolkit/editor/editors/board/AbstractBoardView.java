@@ -28,6 +28,7 @@ import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.utilities.TileSetCache;
 import net.rpgtoolkit.common.assets.TilePixelOutOfRangeException;
 import net.rpgtoolkit.editor.editors.BoardEditor;
+import net.rpgtoolkit.editor.ui.MainWindow;
 
 /**
  * This class is an Abstract model for the visual representation of a
@@ -374,8 +375,8 @@ public abstract class AbstractBoardView extends JPanel implements
      * @return tile coordinates
      */
     public Point getTileCoordinates(int x, int y) {
-        int tileWidth = this.board.getTileSets().getFirst().getTileWidth() + 1;
-        int tileHeight = this.board.getTileSets().getFirst().getTileHeight() + 1;
+        int tileWidth  = MainWindow.TILE_SIZE + 1;
+        int tileHeight = MainWindow.TILE_SIZE + 1;
 
         int tileX = Math.max(0, Math.min(x / tileWidth, this.board.getWidth() - 1));
         int tileY = Math.max(0, Math.min(y / tileHeight, this.board.getHeight() - 1));
@@ -406,6 +407,13 @@ public abstract class AbstractBoardView extends JPanel implements
      * @param g The graphics context to draw on.
      */
     protected abstract void paintLayers(Graphics2D g);
+    
+    /**
+     * A concrete BoardView will implement its own grid drawing code here.
+     *
+     * @param g The graphics context to draw on.
+     */
+    protected abstract void paintGrid(Graphics2D g);
 
     /**
      * A concrete BoardView will implement its own vector drawing code here.
@@ -420,13 +428,6 @@ public abstract class AbstractBoardView extends JPanel implements
      * @param g The graphics context to draw on.
      */
     protected abstract void paintPrograms(Graphics2D g);
-
-    /**
-     * A concrete BoardView will implement its own grid drawing code here.
-     *
-     * @param g The graphics context to draw on.
-     */
-    protected abstract void paintGrid(Graphics2D g);
 
     /**
      * A concrete BoardView will implement its own coordinate drawing code here.
