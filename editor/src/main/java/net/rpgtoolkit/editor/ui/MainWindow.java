@@ -525,6 +525,10 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         }
     }
     
+    public String getImageSubdirectory() {
+        return "Bitmap";
+    }
+    
     public String getTypeFilterDescription(Class<? extends BasicType> type) {
         switch(type.getSimpleName()) {
             case "Animation":
@@ -550,6 +554,10 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         }
     }
     
+    public String getImageFilterDescription() {
+        return "Supported Files";
+    }
+    
     public String[] getTypeExtensions(Class<? extends BasicType> type) {
         switch(type.getSimpleName()) {
             case "Animation":
@@ -569,10 +577,14 @@ public class MainWindow extends JFrame implements InternalFrameListener {
             case "Tileset":
                 return new String[] {"tst"};
             case "SpecialMove":
-                return new String[] {"spc", "spc.json"};
+                return new String[] {"spc", "json"};
             default:
                 return this.getTKFileExtensions();
         }
+    }
+    
+    public String[] getImageExtensions() {
+        return new String[] {"png", "gif", "jpg", "jpeg", "bmp"};
     }
     
     /**
@@ -690,15 +702,38 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         return null;
     }
     
+    /**
+     * Constructs a File with a full path, given a path relative to the project
+     * directory.
+     *
+     * @param relativePath the relative path, such as "Enemy/foo.ene.json"
+     * @return the full path, for example
+     * "C:\Bar\RPG Toolkit 4\game\example\Enemy\foo.ene.json" on Windows
+     */
     public File getPath(String relativePath) {
         return new File(System.getProperty("project.path") + File.separator
                 + relativePath);
     }
     
+    /**
+     * Gets the part of fullPath relative to the project directory.
+     *
+     * @param fullPath
+     * @return
+     */
     public String getRelativePath(File fullPath) {
         return this.getRelativePath(fullPath,
                 new File(System.getProperty("project.path") + File.separator));
     }
+
+    /**
+     * Gets the part of fullPath relative to relativeTo. Use when relativeTo is
+     * an ancestor of fullPath.
+     *
+     * @param fullPath
+     * @param relativeTo
+     * @return
+     */
     public String getRelativePath(File fullPath, File relativeTo) {
         return fullPath.getPath().replace(
                 relativeTo.getPath() + File.separator, "");

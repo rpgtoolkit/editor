@@ -141,7 +141,9 @@ public abstract class Gui {
     public static BufferedImage loadImage(String fileName) {
         try {
             if(!fileName.equals("")) {
-                FileInputStream fis = new FileInputStream(System.getProperty("project.path") + "/Bitmap/" + fileName);
+                String subdir = MainWindow.getInstance().getImageSubdirectory();
+                FileInputStream fis = new FileInputStream(
+                        MainWindow.getInstance().getPath(subdir + fileName));
                 return ImageIO.read(fis);
             }
         } catch(IOException e) {

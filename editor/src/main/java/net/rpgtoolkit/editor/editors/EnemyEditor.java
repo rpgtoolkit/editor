@@ -1177,8 +1177,10 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
     }
     
     private SpecialMove loadSpecialMove(String loc) {
-        if(Paths.getExtension(loc).contains("spc")) {
-            File f = mainWindow.getPath("SpcMove" + sep + loc);
+        if(Paths.getExtension("/"+loc).contains("spc")) {
+            File f = mainWindow.getPath(
+                    mainWindow.getTypeSubdirectory(SpecialMove.class)
+                            + sep + loc);
             if(f.canRead()) {
 //                out.println("loaded special move from location " + loc + "!");
                 try {

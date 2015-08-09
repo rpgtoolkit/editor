@@ -324,9 +324,11 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
             public void actionPerformed(ActionEvent e) {
                 String loc = mainWindow.getRelativePath(
                         mainWindow.browseLocationBySubdir(
-                                "Bitmap", "Supported Files", "png", "gif", "jpg", "jpeg", "bmp"
+                                mainWindow.getImageSubdirectory(),
+                                mainWindow.getImageFilterDescription(),
+                                mainWindow.getImageExtensions()
                         ),
-                        mainWindow.getPath("Bitmap")
+                        mainWindow.getPath(mainWindow.getImageSubdirectory())
                 );
                 if(loc != null) {
                     player.setProfilePicture(loc);
@@ -895,7 +897,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
     private void createSpecialMovesPanel()
     {
-        // Configure Class scope components
+        // Configure components
         this.usesSpecials = new JCheckBox("Does this character use Special Moves?");
         //set usesSpecials later, after listeners can disable things in response
         final JLabel specialsNameLabel = new JLabel("In-game name of special moves");
@@ -919,17 +921,15 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
         final JLabel sMoveVarValLabel = new JLabel("equals");
         this.sMoveVarVal = new JTextField();
         
-        // Configure function Scope Components
         JScrollPane sMoveListScroller = new JScrollPane(this.sMoveList);
 
         final JButton sMoveFindButton = new JButton("Browse");
+        sMoveFindButton.setEnabled(false);
         final JButton sMoveAddButton = new JButton("Add");
         final JButton sMoveRemoveButton = new JButton("Remove");
         sMoveRemoveButton.setEnabled(false);
         
-        final JButton weaknessRemoveButton = new JButton("Remove");
         final JButton sMoveAlwaysButton = new JButton("The Player Can Always Use This Move");
-        weaknessRemoveButton.setEnabled(true);
         
         // Configure listeners
         
@@ -940,8 +940,24 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                 sMoveList.setEnabled(usesSpecials.isSelected());
                 specialsNameLabel.setEnabled(usesSpecials.isSelected());
                 specialsName.setEnabled(usesSpecials.isSelected());
-                sMoveFindButton.setEnabled(usesSpecials.isSelected());
                 sMoveAddButton.setEnabled(usesSpecials.isSelected());
+                if(usesSpecials.isSelected() == true
+                        && sMoveList.getSelectedIndex() != -1) {
+                    sMoveFindButton.setEnabled(true);
+                    sMoveRemoveButton.setEnabled(true);
+                } else {
+                    sMoveFindButton.setEnabled(false);
+                    sMoveRemoveButton.setEnabled(false);
+                }
+                sMoveExpMinLabel.setEnabled(usesSpecials.isSelected());
+                sMoveExpMin.setEnabled(usesSpecials.isSelected());
+                sMoveLvMinLabel.setEnabled(usesSpecials.isSelected());
+                sMoveLvMin.setEnabled(usesSpecials.isSelected());
+                sMoveVarNameLabel.setEnabled(usesSpecials.isSelected());
+                sMoveVarName.setEnabled(usesSpecials.isSelected());
+                sMoveVarValLabel.setEnabled(usesSpecials.isSelected());
+                sMoveVarVal.setEnabled(usesSpecials.isSelected());
+                sMoveAlwaysButton.setEnabled(usesSpecials.isSelected());
             }
         });
         
@@ -952,6 +968,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                 if(e.getValueIsAdjusting() == false) {
                     sMoveAlwaysButton.doClick();
                     if(sMoveList.getSelectedIndex() == -1) {
+                        sMoveFindButton.setEnabled(false);
                         sMoveRemoveButton.setEnabled(false);
                         sMoveExpMinLabel.setEnabled(false);
                         sMoveExpMin.setEnabled(false);
@@ -963,6 +980,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                         sMoveVarVal.setEnabled(false);
                         sMoveAlwaysButton.setEnabled(false);
                     } else {
+                        sMoveFindButton.setEnabled(true);
                         sMoveRemoveButton.setEnabled(true);
                         sMoveExpMinLabel.setEnabled(true);
                         sMoveExpMin.setEnabled(true);
@@ -979,7 +997,10 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
         });
         
         //check/uncheck uses specials now that the listeners exist
-        this.usesSpecials.setSelected(this.player.getHasSpecialMoves());
+        this.usesSpecials.setSelected(true);
+        if(this.player.getHasSpecialMoves() == false) {
+            this.usesSpecials.doClick();
+        }
         
         //browse button
         sMoveFindButton.addActionListener(new ActionListener() {
@@ -1312,10 +1333,11 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     }
     
     private SpecialMove loadSpecialMove(String loc) {
-        if(Paths.getExtension(loc).contains("spc")) {
-            File f = mainWindow.getPath("SpcMove" + sep + loc);
+        if(Paths.getExtension("/"+loc).contains("spc")) {
+            File f = mainWindow.getPath(
+                    mainWindow.getTypeSubdirectory(SpecialMove.class)
+                            + sep + loc);
             if(f.canRead()) {
-//                out.println("loaded special move from location " + loc + "!");
                 try {
                     AssetHandle handle = AssetManager.getInstance().deserialize(
                             new AssetDescriptor(f.toURI()));
