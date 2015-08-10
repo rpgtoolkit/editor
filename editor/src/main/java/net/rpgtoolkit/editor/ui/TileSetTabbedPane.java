@@ -9,6 +9,8 @@ package net.rpgtoolkit.editor.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Collection;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
@@ -22,7 +24,7 @@ import net.rpgtoolkit.editor.ui.resources.Icons;
  *
  * @author Joshua Michael Daly
  */
-public class TileSetPanel extends JTabbedPane {
+public class TileSetTabbedPane extends JTabbedPane {
 
     private final JButton openTileSetButton;
 
@@ -31,7 +33,7 @@ public class TileSetPanel extends JTabbedPane {
      * Public Constructors
      * *************************************************************************
      */
-    public TileSetPanel() {
+    public TileSetTabbedPane() {
         openTileSetButton = new JButton("Open TileSet");
         openTileSetButton.addActionListener(new ActionListener() {
 
@@ -39,9 +41,24 @@ public class TileSetPanel extends JTabbedPane {
             public void actionPerformed(ActionEvent ae) {
                 MainWindow.getInstance().openFile();
             }
-            
+
         });
-        
+
+        addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                JTabbedPane tabs = (JTabbedPane) e.getSource();
+
+                int index = tabs.indexAtLocation(e.getX(), e.getY());
+
+                if (index > 0 && e.getButton() == MouseEvent.BUTTON3) {
+                    tabs.remove(index);
+                }
+            }
+
+        });
+
         addTab(null, Icons.getLargeIcon("plus"), openTileSetButton);
         setTabPlacement(JTabbedPane.BOTTOM);
     }
@@ -53,7 +70,7 @@ public class TileSetPanel extends JTabbedPane {
      */
     public void addTileSet(TileSet tileSet) {
         String tabName = tileSet.getName().replace(".tst", "");
-        
+
         if (indexOfTab(tabName) < 0) {
             JScrollPane scrollPane = new JScrollPane();
             scrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);

@@ -74,7 +74,7 @@ public class MainWindow extends JFrame implements InternalFrameListener
     private final JTabbedPane upperTabbedPane;
     private final JTabbedPane lowerTabbedPane;
     private final ProjectPanel projectPanel;
-    private final TileSetPanel tileSetPanel;
+    private final TileSetTabbedPane tileSetPanel;
     private final PropertiesPanel propertiesPanel;
     private final LayerPanel layerPanel;
 
@@ -112,7 +112,7 @@ public class MainWindow extends JFrame implements InternalFrameListener
         this.desktopPane.setDesktopManager(new ToolkitDesktopManager(this));
 
         this.projectPanel = new ProjectPanel();
-        this.tileSetPanel = new TileSetPanel();
+        this.tileSetPanel = new TileSetTabbedPane();
         this.upperTabbedPane = new JTabbedPane();
         this.upperTabbedPane.addTab("Project", this.projectPanel);
         this.upperTabbedPane.addTab("Tileset", this.tileSetPanel);
