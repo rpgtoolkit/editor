@@ -378,22 +378,24 @@ public final class BoardView2D extends AbstractBoardView
     @Override
     protected void paintSelection(Graphics2D g)
     {
-        TileSet tileset = this.board.getTileSets().values().iterator().next();
+        int tileWidth = MainWindow.TILE_SIZE;
+        int tileHeight = tileWidth;
+        
         Rectangle selection = this.boardEditor.getSelection();
 
         g.setColor(new Color(100, 100, 255));
         g.drawRect(
-                selection.x * tileset.getTileWidth(),
-                selection.y * tileset.getTileHeight(),
-                (selection.width + 1) * tileset.getTileWidth(),
-                (selection.height + 1) * tileset.getTileHeight());
+                selection.x * tileWidth,
+                selection.y * tileHeight,
+                (selection.width + 1) * tileWidth,
+                (selection.height + 1) * tileHeight);
         g.setComposite(AlphaComposite.getInstance(
                 AlphaComposite.SRC_ATOP, 0.2f));
         g.fillRect(
-                selection.x * tileset.getTileWidth() + 1,
-                selection.y * tileset.getTileHeight() + 1,
-                (selection.width + 1) * tileset.getTileWidth() - 1,
-                (selection.height + 1) * tileset.getTileHeight() - 1);
+                selection.x * tileWidth + 1,
+                selection.y * tileHeight + 1,
+                (selection.width + 1) * tileWidth - 1,
+                (selection.height + 1) * tileHeight - 1);
     }
 
     /**

@@ -47,6 +47,7 @@ import net.rpgtoolkit.editor.editors.TileEditor;
 import net.rpgtoolkit.editor.editors.TileSelectionEvent;
 import net.rpgtoolkit.editor.editors.TileSelectionListener;
 import net.rpgtoolkit.editor.editors.TileRegionSelectionEvent;
+import net.rpgtoolkit.editor.editors.board.NewBoardDialog;
 import net.rpgtoolkit.editor.ui.resources.Icons;
 import net.rpgtoolkit.editor.editors.board.ProgramBrush;
 
@@ -508,13 +509,30 @@ public class MainWindow extends JFrame implements InternalFrameListener
 
         this.selectToolkitWindow(animationEditor);
     }
+    
+    public void createNewBoard() {
+        NewBoardDialog dialog = new NewBoardDialog();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+        
+        if (dialog.getValue() != null) {
+            BoardEditor boardEditor = new BoardEditor("", 
+                    dialog.getValue()[0],
+                    dialog.getValue()[1]);
+            boardEditor.addInternalFrameListener(this);
+            boardEditor.setVisible(true);
+            boardEditor.toFront();
+
+            this.desktopPane.add(boardEditor);
+            this.selectToolkitWindow(boardEditor);
+        }
+    }
 
     public void openBoard()
     {
         try
         {
-            BoardEditor boardEditor = new BoardEditor(this,
-                    fileChooser.getSelectedFile());
+            BoardEditor boardEditor = new BoardEditor(fileChooser.getSelectedFile());
             boardEditor.addInternalFrameListener(this);
             boardEditor.setVisible(true);
             boardEditor.toFront();

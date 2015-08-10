@@ -32,9 +32,6 @@ import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
  */
 public class BoardEditor extends ToolkitEditorWindow
 {
-
-    private MainWindow parentWindow;
-
     private JScrollPane scrollPane;
 
     private BoardView2D boardView;
@@ -69,31 +66,26 @@ public class BoardEditor extends ToolkitEditorWindow
      * This constructor is used when opening an existing board, it does not make
      * the window visible.
      *
-     * @param parent This BoardEditors parent window.
-     * @param fileName The board file that to open.
+     * @param file The board file that to open.
+     * @throws java.io.FileNotFoundException
      */
-    public BoardEditor(MainWindow parent, File fileName) throws FileNotFoundException
+    public BoardEditor(File file) throws FileNotFoundException
     {
         super("Board Viewer", true, true, true, true);
-
         this.boardMouseAdapter = new BoardMouseAdapter(this);
-
-        this.parentWindow = parent;
-        this.board = new Board(fileName);
-        this.boardView = new BoardView2D(this, board);
-        this.boardView.addMouseListener(this.boardMouseAdapter);
-        this.boardView.addMouseMotionListener(this.boardMouseAdapter);
-
-        this.scrollPane = new JScrollPane(this.boardView);
-        this.scrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
-        this.scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-
-        this.cursorTileLocation = new Point(0, 0);
-        this.cursorLocation = new Point(0, 0);
-
-        this.setTitle("Viewing " + fileName.getAbsolutePath());
-        this.add(scrollPane);
-        this.pack();
+        
+        board = new Board(file);
+        
+        initialise(board, file.getAbsolutePath());
+    }
+    
+    public BoardEditor(String fileName, int width, int height) {
+        super("Board Viewer", true, true, true, true);
+        this.boardMouseAdapter = new BoardMouseAdapter(this);
+        
+        board = new Board(width, height);
+        
+        initialise(board, fileName);
     }
 
     /*
@@ -101,16 +93,6 @@ public class BoardEditor extends ToolkitEditorWindow
      * Public Getters and Setters
      * *************************************************************************
      */
-    public MainWindow getParentWindow()
-    {
-        return parentWindow;
-    }
-
-    public void setParentWindow(MainWindow parent)
-    {
-        this.parentWindow = parent;
-    }
-
     public JScrollPane getScrollPane()
     {
         return scrollPane;
@@ -274,5 +256,26 @@ public class BoardEditor extends ToolkitEditorWindow
 
         return tiles;
     }
+    
+    /*
+     * *************************************************************************
+     * Private Methods
+     * *************************************************************************
+     */
+    private void initialise(Board board, String fileName) {
+        this.boardView = new BoardView2D(this, board);
+        this.boardView.addMouseListener(this.boardMouseAdapter);
+        this.boardView.addMouseMotionListener(this.boardMouseAdapter);
 
+        this.scrollPane = new JScrollPane(this.boardView);
+        this.scrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
+        this.scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+        this.cursorTileLocation = new Point(0, 0);
+        this.cursorLocation = new Point(0, 0);
+
+        this.setTitle("Viewing " + fileName);
+        this.add(scrollPane);
+        this.pack();
+    }
 }
