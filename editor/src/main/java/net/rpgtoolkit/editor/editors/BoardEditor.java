@@ -84,6 +84,7 @@ public class BoardEditor extends ToolkitEditorWindow
         this.boardMouseAdapter = new BoardMouseAdapter(this);
         
         board = new Board(width, height);
+        board.addLayer();
         
         initialise(board, fileName);
     }
