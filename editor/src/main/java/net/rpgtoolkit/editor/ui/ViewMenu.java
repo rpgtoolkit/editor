@@ -9,13 +9,11 @@ package net.rpgtoolkit.editor.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
-import net.rpgtoolkit.editor.ui.MainWindow;
 import net.rpgtoolkit.editor.ui.actions.ZoomInAction;
 import net.rpgtoolkit.editor.ui.actions.ZoomOutAction;
 import net.rpgtoolkit.editor.ui.resources.Icons;
@@ -34,6 +32,7 @@ public final class ViewMenu extends JMenu
     private JCheckBoxMenuItem showCoordinatesMenuItem;
     private JCheckBoxMenuItem showVectorsMenuItem;
     private JCheckBoxMenuItem showProgramsMenuItem;
+    private JCheckBoxMenuItem snapToGridMenuItem;
     
     /*
      * *************************************************************************
@@ -57,6 +56,7 @@ public final class ViewMenu extends JMenu
         this.configureShowCoordinatesMenuItem();
         this.configureShowVectorsMenuItem();
         this.configureShowProgramsMenuItem();
+        configureSnapToGridMenuItem();
         
         this.add(zoomInMenuItem);
         this.add(zoomOutMenuItem);
@@ -65,6 +65,8 @@ public final class ViewMenu extends JMenu
         this.add(showCoordinatesMenuItem);
         this.add(showVectorsMenuItem);
         this.add(showProgramsMenuItem);
+        add(new JSeparator());
+        add(snapToGridMenuItem);
     }
     
     /*
@@ -183,4 +185,13 @@ public final class ViewMenu extends JMenu
         //showGridMenuItem.setMnemonic(KeyEvent.VK_G);
         showProgramsMenuItem.addItemListener(new ShowProgramsItemListener(parent));
     }
+    
+    /**
+     * 
+     */
+    public void configureSnapToGridMenuItem() {
+        snapToGridMenuItem = new JCheckBoxMenuItem("Snap to Grid");
+        snapToGridMenuItem.addItemListener(new SnapToGridItemListener());
+    }
+    
 }

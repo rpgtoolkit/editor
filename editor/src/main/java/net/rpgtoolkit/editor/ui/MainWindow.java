@@ -93,6 +93,7 @@ public class MainWindow extends JFrame implements InternalFrameListener
     private boolean showVectors;
     private boolean showPrograms;
     private boolean showCoordinates;
+    private boolean snapToGrid;
     private AbstractBrush currentBrush;
     private Tile lastSelectedTile;
 
@@ -229,6 +230,14 @@ public class MainWindow extends JFrame implements InternalFrameListener
         this.showCoordinates = isShowCoordinates;
     }
 
+    public boolean isSnapToGrid() {
+        return snapToGrid;
+    }
+
+    public void setSnapToGrid(boolean snapToGrid) {
+        this.snapToGrid = snapToGrid;
+    }
+    
     public AbstractBrush getCurrentBrush()
     {
         return this.currentBrush;

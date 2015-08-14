@@ -10,7 +10,6 @@ package net.rpgtoolkit.editor.ui;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import javax.swing.JCheckBoxMenuItem;
-import net.rpgtoolkit.editor.ui.MainWindow;
 
 /**
  *

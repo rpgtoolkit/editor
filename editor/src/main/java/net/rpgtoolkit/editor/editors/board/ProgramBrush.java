@@ -11,6 +11,7 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import net.rpgtoolkit.common.assets.BoardProgram;
 import net.rpgtoolkit.common.assets.BoardVector;
+import net.rpgtoolkit.editor.ui.MainWindow;
 
 /**
  * 
@@ -100,8 +101,15 @@ public class ProgramBrush extends VectorBrush
                 this.affectedContainer.getLayer(this.initialLayer).
                         getLayer().getPrograms().add(this.boardProgram);
             }
+            
+            int[] coordinates = {x, y};
 
-            this.boardVector.addPoint(x, y);
+            if (MainWindow.getInstance().isSnapToGrid()) {
+                coordinates = MainWindow.getInstance().getCurrentBoardEditor().
+                        calculateSnapCoordinates(x, y);
+            }
+
+            this.boardVector.addPoint(coordinates[0], coordinates[1]);
             boardLayerView.getLayer().getBoard().fireBoardChanged();
         }
         
