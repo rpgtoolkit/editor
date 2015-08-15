@@ -1,9 +1,8 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of
+ * the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.editor.editors.board.panels;
 
@@ -28,330 +27,299 @@ import net.rpgtoolkit.editor.ui.MainWindow;
 import net.rpgtoolkit.editor.utilities.FileTools;
 
 /**
- * 
- * 
+ *
+ *
  * @author Joshua Michael Daly
  */
-public class BoardSpritePanel extends AbstractModelPanel
-{
+public class BoardSpritePanel extends AbstractModelPanel {
 
-    private final JTextField fileTextField;
-    private final JButton fileButton;
+  private final JTextField fileTextField;
+  private final JButton fileButton;
 
-    private final JTextField activationProgramTextField;
-    private final JButton activationProgramButton;
+  private final JTextField activationProgramTextField;
+  private final JButton activationProgramButton;
 
-    private final JTextField multiTaskingTextField;
-    private final JButton multiTaskingButton;
-    
-    private final JSpinner xSpinner;
-    private final JSpinner ySpinner;
-    private final JSpinner layerSpinner;
-    
-    private int lastSpinnerLayer; // Used to ensure that the selection is valid.
-    
-    private final JComboBox typeComboBox;
-    
-    private final JButton variablesJButton;
-    
-    private static final String[] ACTIVATION_TYPES = {
-        "STEP-ON", "KEYPRESS"
-    };
+  private final JTextField multiTaskingTextField;
+  private final JButton multiTaskingButton;
 
-    /*
-     * *************************************************************************
-     * Public Constructors
-     * *************************************************************************
-     */
-    public BoardSpritePanel(final BoardSprite boardSprite)
-    {
-        ///
-        /// super
-        ///
-        super(boardSprite);
-        ///
-        /// filePanel
-        ///
-        this.fileTextField = new JTextField(boardSprite.getFileName());
-        this.fileTextField.setColumns(17);
+  private final JSpinner xSpinner;
+  private final JSpinner ySpinner;
+  private final JSpinner layerSpinner;
 
-        this.fileButton = new JButton("...");
-        this.fileButton.addActionListener(new ActionListener()
-        {
+  private int lastSpinnerLayer; // Used to ensure that the selection is valid.
 
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                File file = FileTools.doChooseFile("itm", "Item", "Item Files");
-                
-                if (file != null)
-                {
-                    fileTextField.setText(file.getName());
-                }
-            }
-        });
+  private final JComboBox typeComboBox;
 
-        JPanel filePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        filePanel.add(this.fileTextField);
-        filePanel.add(this.fileButton);
-        ///
-        /// activationProgramPanel
-        ///
-        this.activationProgramTextField = new JTextField(boardSprite.
-                getActivationProgram());
-        this.activationProgramTextField.setColumns(17);
+  private final JButton variablesJButton;
 
-        this.activationProgramButton = new JButton("...");
-        this.activationProgramButton.addActionListener(new ActionListener()
-        {
+  private static final String[] ACTIVATION_TYPES = {
+    "STEP-ON", "KEYPRESS"
+  };
 
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                File file = FileTools.doChooseFile("prg", "Prg", "Program Files");
-                
-                if (file != null)
-                {
-                    activationProgramTextField.setText(file.getName());
-                }
-            }
-        });
+  public BoardSpritePanel(final BoardSprite boardSprite) {
+    ///
+    /// super
+    ///
+    super(boardSprite);
+    ///
+    /// filePanel
+    ///
+    fileTextField = new JTextField(boardSprite.getFileName());
+    fileTextField.setColumns(17);
 
-        JPanel activationProgramPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        activationProgramPanel.add(this.activationProgramTextField);
-        activationProgramPanel.add(this.activationProgramButton);
-        ///
-        /// multiTaskingPanel
-        ///
-        this.multiTaskingTextField = new JTextField(boardSprite.
-                getMultitaskingProgram());
-        this.multiTaskingTextField.setColumns(17);
+    fileButton = new JButton("...");
+    fileButton.addActionListener(new ActionListener() {
 
-        this.multiTaskingButton = new JButton("...");
-        this.multiTaskingButton.addActionListener(new ActionListener()
-        {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        File file = FileTools.doChooseFile("itm", "Item", "Item Files");
 
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                File file = FileTools.doChooseFile("prg", "Prg", "Program Files");
-                
-                if (file != null)
-                {
-                    multiTaskingTextField.setText(file.getName());
-                }
-            }
-        });
+        if (file != null) {
+          fileTextField.setText(file.getName());
+        }
+      }
+    });
 
-        JPanel multiTaskingPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        multiTaskingPanel.add(this.multiTaskingTextField);
-        multiTaskingPanel.add(this.multiTaskingButton);
-        ///
-        /// xSpinner
-        ///
-        this.xSpinner = new JSpinner();
-        this.xSpinner.setValue(((BoardSprite)this.model).getX());
-        this.xSpinner.addChangeListener(new ChangeListener()
-        {
+    JPanel filePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    filePanel.add(fileTextField);
+    filePanel.add(fileButton);
+    ///
+    /// activationProgramPanel
+    ///
+    activationProgramTextField = new JTextField(boardSprite.
+            getActivationProgram());
+    activationProgramTextField.setColumns(17);
 
-            @Override
-            public void stateChanged(ChangeEvent e)
-            {
-                BoardSprite sprite = (BoardSprite)model;
-                
-                if (sprite.getX() != (int)xSpinner.getValue()) {
-                    sprite.setX((int)xSpinner.getValue());
-                    updateCurrentBoardView();
-                }
-            }
-            
-        });
-        ///
-        /// ySpinner
-        ///
-        this.ySpinner = new JSpinner();
-        this.ySpinner.setValue(((BoardSprite)this.model).getY());
-        this.ySpinner.addChangeListener(new ChangeListener()
-        {
+    activationProgramButton = new JButton("...");
+    activationProgramButton.addActionListener(new ActionListener() {
 
-            @Override
-            public void stateChanged(ChangeEvent e)
-            {
-                BoardSprite sprite = (BoardSprite)model;
-                
-                if (sprite.getY() != (int)ySpinner.getValue()) {
-                    sprite.setY((int)ySpinner.getValue());
-                    updateCurrentBoardView();
-                }
-            }
-            
-        });
-        ///
-        /// layerSpinner
-        ///
-        this.layerSpinner = new JSpinner();
-        this.layerSpinner.setValue(((BoardSprite)this.model).getLayer());
-        this.layerSpinner.addChangeListener(new ChangeListener()
-        {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        File file = FileTools.doChooseFile("prg", "Prg", "Program Files");
 
-            @Override
-            public void stateChanged(ChangeEvent e)
-            {
-                BoardSprite sprite = (BoardSprite)model;
-                
-                BoardLayerView lastLayerView = getBoardEditor().getBoardView().
-                        getLayer((int)sprite.getLayer());
-                
-                BoardLayerView newLayerView = getBoardEditor().getBoardView().
-                        getLayer((int)layerSpinner.getValue());
-                
-                // Make sure this is a valid move.
-                if (lastLayerView != null && newLayerView != null) {
-                    // Do the swap.
-                    sprite.setLayer((int)layerSpinner.getValue());
-                    newLayerView.getLayer().getSprites().add(sprite);
-                    lastLayerView.getLayer().getSprites().remove(sprite);
-                    updateCurrentBoardView();
-                    
-                    // Store new layer selection index.
-                    lastSpinnerLayer = (int)layerSpinner.getValue();
-                } else {
-                    // Not a valid layer revert selection.
-                    layerSpinner.setValue(lastSpinnerLayer);
-                }
-            }
-            
-        });
-        ///
-        /// typeComboBox
-        ///
-        this.typeComboBox = new JComboBox(ACTIVATION_TYPES);
-        ///
-        /// variablesJButton
-        ///
-        this.variablesJButton = new JButton("Configure");
-        this.variablesJButton.addActionListener(new ActionListener()
-        {
+        if (file != null) {
+          activationProgramTextField.setText(file.getName());
+        }
+      }
+    });
 
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                BoardSpriteDialog dialog = new BoardSpriteDialog(
-                        MainWindow.getInstance(), "Configure Variables", 
-                        true, (BoardSprite)model);
-                
-                if (dialog.showDialog() == BoardSpriteDialog.APPLY)
-                {
+    JPanel activationProgramPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    activationProgramPanel.add(activationProgramTextField);
+    activationProgramPanel.add(activationProgramButton);
+    ///
+    /// multiTaskingPanel
+    ///
+    multiTaskingTextField = new JTextField(boardSprite.
+            getMultitaskingProgram());
+    multiTaskingTextField.setColumns(17);
+
+    multiTaskingButton = new JButton("...");
+    multiTaskingButton.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        File file = FileTools.doChooseFile("prg", "Prg", "Program Files");
+
+        if (file != null) {
+          multiTaskingTextField.setText(file.getName());
+        }
+      }
+    });
+
+    JPanel multiTaskingPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    multiTaskingPanel.add(multiTaskingTextField);
+    multiTaskingPanel.add(multiTaskingButton);
+    ///
+    /// xSpinner
+    ///
+    xSpinner = new JSpinner();
+    xSpinner.setValue(((BoardSprite) model).getX());
+    xSpinner.addChangeListener(new ChangeListener() {
+
+      @Override
+      public void stateChanged(ChangeEvent e) {
+        BoardSprite sprite = (BoardSprite) model;
+
+        if (sprite.getX() != (int) xSpinner.getValue()) {
+          sprite.setX((int) xSpinner.getValue());
+          updateCurrentBoardView();
+        }
+      }
+
+    });
+    ///
+    /// ySpinner
+    ///
+    ySpinner = new JSpinner();
+    ySpinner.setValue(((BoardSprite) model).getY());
+    ySpinner.addChangeListener(new ChangeListener() {
+
+      @Override
+      public void stateChanged(ChangeEvent e) {
+        BoardSprite sprite = (BoardSprite) model;
+
+        if (sprite.getY() != (int) ySpinner.getValue()) {
+          sprite.setY((int) ySpinner.getValue());
+          updateCurrentBoardView();
+        }
+      }
+
+    });
+    ///
+    /// layerSpinner
+    ///
+    layerSpinner = new JSpinner();
+    layerSpinner.setValue(((BoardSprite) model).getLayer());
+    layerSpinner.addChangeListener(new ChangeListener() {
+
+      @Override
+      public void stateChanged(ChangeEvent e) {
+        BoardSprite sprite = (BoardSprite) model;
+
+        BoardLayerView lastLayerView = getBoardEditor().getBoardView().
+                getLayer((int) sprite.getLayer());
+
+        BoardLayerView newLayerView = getBoardEditor().getBoardView().
+                getLayer((int) layerSpinner.getValue());
+
+        // Make sure this is a valid move.
+        if (lastLayerView != null && newLayerView != null) {
+          // Do the swap.
+          sprite.setLayer((int) layerSpinner.getValue());
+          newLayerView.getLayer().getSprites().add(sprite);
+          lastLayerView.getLayer().getSprites().remove(sprite);
+          updateCurrentBoardView();
+
+          // Store new layer selection index.
+          lastSpinnerLayer = (int) layerSpinner.getValue();
+        } else {
+          // Not a valid layer revert selection.
+          layerSpinner.setValue(lastSpinnerLayer);
+        }
+      }
+
+    });
+    ///
+    /// typeComboBox
+    ///
+    typeComboBox = new JComboBox(ACTIVATION_TYPES);
+    ///
+    /// variablesJButton
+    ///
+    variablesJButton = new JButton("Configure");
+    variablesJButton.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        BoardSpriteDialog dialog = new BoardSpriteDialog(
+                MainWindow.getInstance(), "Configure Variables",
+                true, (BoardSprite) model);
+
+        if (dialog.showDialog() == BoardSpriteDialog.APPLY) {
                     // Rather than update the BoardSprite from the dialog
-                    // we'll centralise it and perform it here.
-                    String initialVariable = dialog.getInitialVariable();
-                    String initialValue = dialog.getInitialValue();
-                    String finalVariable = dialog.getFinalVariable();
-                    String finalValue = dialog.getFinalValue();
-                    String loadingVariable = dialog.getLoadingVariable();
-                    String loadingValue = dialog.getLoadingValue();
-                    
-                    if (!boardSprite.getInitialVariable().equals(initialVariable))
-                    {
-                        boardSprite.setInitialVariable(initialVariable);
-                    }
-                    
-                    if (!boardSprite.getInitialValue().equals(initialValue))
-                    {
-                        boardSprite.setInitialValue(initialValue);
-                    }
-                    
-                    if (!boardSprite.getFinalVariable().equals(finalVariable))
-                    {
-                        boardSprite.setFinalVariable(finalVariable);
-                    }
-                    
-                    if (!boardSprite.getFinalValue().equals(finalValue))
-                    {
-                        boardSprite.setFinalValue(finalValue);
-                    }
-                    
-                    if (!boardSprite.getLoadingVariable().equals(loadingVariable))
-                    {
-                        boardSprite.setLoadingVariable(loadingVariable);
-                    }
-                    
-                    if (!boardSprite.getLoadingValue().equals(loadingValue))
-                    {
-                        boardSprite.setLoadingValue(loadingValue);
-                    }
-                }
-            }
-            
-        });
-        ///
-        /// this
-        ///
-        this.constraints.insets = new Insets(8, 15, 0, 3);
-        this.constraintsRight.insets = new Insets(0, 0, 10, 15);
-        
-        this.constraints.gridx = 0;
-        this.constraints.gridy = 1;
-        this.add(new JLabel("Item File"), this.constraints);
-        
-        this.constraints.gridx = 0;
-        this.constraints.gridy = 2;
-        this.add(new JLabel("Activation"), this.constraints);
-        
-        this.constraints.gridx = 0;
-        this.constraints.gridy = 3;
-        this.add(new JLabel("MultiTasking"), this.constraints);
-        
-        this.constraints.gridx = 0;
-        this.constraints.gridy = 4;
-        this.add(new JLabel("X"), this.constraints);
-        
-        this.constraints.gridx = 0;
-        this.constraints.gridy = 5;
-        this.add(new JLabel("Y"), this.constraints);
-        
-        this.constraints.gridx = 0;
-        this.constraints.gridy = 6;
-        this.add(new JLabel("Layer"), this.constraints);
-        
-        this.constraints.gridx = 0;
-        this.constraints.gridy = 7;
-        this.add(new JLabel("Type"), this.constraints);
-        
-        this.constraints.gridx = 0;
-        this.constraints.gridy = 8;
-        this.add(new JLabel("Variables"), this.constraints);
-        
-        this.constraintsRight.gridx = 1;
-        this.constraintsRight.gridy = 1;
-        this.add(filePanel, this.constraintsRight);
-        
-        this.constraintsRight.gridx = 1;
-        this.constraintsRight.gridy = 2;
-        this.add(activationProgramPanel, this.constraintsRight);
-        
-        this.constraintsRight.gridx = 1;
-        this.constraintsRight.gridy = 3;
-        this.add(multiTaskingPanel, this.constraintsRight);
-        
-        this.constraintsRight.gridx = 1;
-        this.constraintsRight.gridy = 4;
-        this.add(this.xSpinner, this.constraintsRight);
-        
-        this.constraintsRight.gridx = 1;
-        this.constraintsRight.gridy = 5;
-        this.add(this.ySpinner, this.constraintsRight);
-        
-        this.constraintsRight.gridx = 1;
-        this.constraintsRight.gridy = 6;
-        this.add(this.layerSpinner, this.constraintsRight);
-        
-        this.constraintsRight.gridx = 1;
-        this.constraintsRight.gridy = 7;
-        this.add(this.typeComboBox, this.constraintsRight);
-        
-        this.constraintsRight.gridx = 1;
-        this.constraintsRight.gridy = 8;
-        this.add(this.variablesJButton, this.constraintsRight);
-    }
+          // we'll centralise it and perform it here.
+          String initialVariable = dialog.getInitialVariable();
+          String initialValue = dialog.getInitialValue();
+          String finalVariable = dialog.getFinalVariable();
+          String finalValue = dialog.getFinalValue();
+          String loadingVariable = dialog.getLoadingVariable();
+          String loadingValue = dialog.getLoadingValue();
+
+          if (!boardSprite.getInitialVariable().equals(initialVariable)) {
+            boardSprite.setInitialVariable(initialVariable);
+          }
+
+          if (!boardSprite.getInitialValue().equals(initialValue)) {
+            boardSprite.setInitialValue(initialValue);
+          }
+
+          if (!boardSprite.getFinalVariable().equals(finalVariable)) {
+            boardSprite.setFinalVariable(finalVariable);
+          }
+
+          if (!boardSprite.getFinalValue().equals(finalValue)) {
+            boardSprite.setFinalValue(finalValue);
+          }
+
+          if (!boardSprite.getLoadingVariable().equals(loadingVariable)) {
+            boardSprite.setLoadingVariable(loadingVariable);
+          }
+
+          if (!boardSprite.getLoadingValue().equals(loadingValue)) {
+            boardSprite.setLoadingValue(loadingValue);
+          }
+        }
+      }
+
+    });
+    ///
+    /// this
+    ///
+    constraints.insets = new Insets(8, 15, 0, 3);
+    constraintsRight.insets = new Insets(0, 0, 10, 15);
+
+    constraints.gridx = 0;
+    constraints.gridy = 1;
+    add(new JLabel("Item File"), constraints);
+
+    constraints.gridx = 0;
+    constraints.gridy = 2;
+    add(new JLabel("Activation"), constraints);
+
+    constraints.gridx = 0;
+    constraints.gridy = 3;
+    add(new JLabel("MultiTasking"), constraints);
+
+    constraints.gridx = 0;
+    constraints.gridy = 4;
+    add(new JLabel("X"), constraints);
+
+    constraints.gridx = 0;
+    constraints.gridy = 5;
+    add(new JLabel("Y"), constraints);
+
+    constraints.gridx = 0;
+    constraints.gridy = 6;
+    add(new JLabel("Layer"), constraints);
+
+    constraints.gridx = 0;
+    constraints.gridy = 7;
+    add(new JLabel("Type"), constraints);
+
+    constraints.gridx = 0;
+    constraints.gridy = 8;
+    add(new JLabel("Variables"), constraints);
+
+    constraintsRight.gridx = 1;
+    constraintsRight.gridy = 1;
+    add(filePanel, constraintsRight);
+
+    constraintsRight.gridx = 1;
+    constraintsRight.gridy = 2;
+    add(activationProgramPanel, constraintsRight);
+
+    constraintsRight.gridx = 1;
+    constraintsRight.gridy = 3;
+    add(multiTaskingPanel, constraintsRight);
+
+    constraintsRight.gridx = 1;
+    constraintsRight.gridy = 4;
+    add(xSpinner, constraintsRight);
+
+    constraintsRight.gridx = 1;
+    constraintsRight.gridy = 5;
+    add(ySpinner, constraintsRight);
+
+    constraintsRight.gridx = 1;
+    constraintsRight.gridy = 6;
+    add(layerSpinner, constraintsRight);
+
+    constraintsRight.gridx = 1;
+    constraintsRight.gridy = 7;
+    add(typeComboBox, constraintsRight);
+
+    constraintsRight.gridx = 1;
+    constraintsRight.gridy = 8;
+    add(variablesJButton, constraintsRight);
+  }
 }

@@ -1,9 +1,8 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of
+ * the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.editor.ui;
 
@@ -15,36 +14,33 @@ import javax.swing.JCheckBoxMenuItem;
  *
  * @author Joshua Michael Daly
  */
-public class ShowGridItemListener implements ItemListener
-{
-    private MainWindow parent;
+public class ShowGridItemListener implements ItemListener {
 
-    /**
-     * 
-     */
-    public ShowGridItemListener()
-    {
-        
-    }
-    
-    /**
-     * 
-     * @param parent 
-     */
-    public ShowGridItemListener(MainWindow parent)
-    {
-        this.parent = parent;
-    }
+  private MainWindow parent;
 
-    /**
-     * 
-     * @param e 
-     */
-    @Override
-    public void itemStateChanged(ItemEvent e) 
-    {
-        JCheckBoxMenuItem showGridMenuItem = (JCheckBoxMenuItem)e.getItem();
-        
-        this.parent.toogleGridOnBoardEditor(showGridMenuItem.isSelected());
-    }
+  /**
+   *
+   */
+  public ShowGridItemListener() {
+
+  }
+
+  /**
+   *
+   * @param parent
+   */
+  public ShowGridItemListener(MainWindow parent) {
+    this.parent = parent;
+  }
+
+  /**
+   *
+   * @param e
+   */
+  @Override
+  public void itemStateChanged(ItemEvent e) {
+    JCheckBoxMenuItem showGridMenuItem = (JCheckBoxMenuItem) e.getItem();
+
+    parent.toogleGridOnBoardEditor(showGridMenuItem.isSelected());
+  }
 }
