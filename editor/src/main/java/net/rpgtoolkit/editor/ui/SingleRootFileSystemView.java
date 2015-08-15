@@ -34,7 +34,7 @@ public class SingleRootFileSystemView extends FileSystemView {
   public SingleRootFileSystemView(File root) {
     super();
 
-    root = root;
+    this.root = root;
     roots[0] = root;
   }
 

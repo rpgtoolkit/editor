@@ -27,7 +27,7 @@ import net.rpgtoolkit.editor.ui.MainWindow;
  *
  * @author Joshua Michael Daly
  */
-public final class BoardLayerView implements Cloneable {
+public class BoardLayerView {
 
   /**
    * Layer this view represents.
@@ -36,23 +36,23 @@ public final class BoardLayerView implements Cloneable {
   /**
    * Is it visible?
    */
-  protected boolean isVisible;
+  private boolean isVisible;
   /**
    * Is it locked?
    */
-  protected boolean isLocked;
+  private boolean isLocked;
   /**
    * A reference to to MultilayerContainer this layer belongs to.
    */
-  protected MultiLayerContainer parentContainer;
+  private MultiLayerContainer parentContainer;
   /**
    * Layer opacity 100%, 80% etc.
    */
-  protected float opacity;
+  private float opacity;
   /**
    * Bounds of the layer.
    */
-  protected Rectangle bounds;
+  private Rectangle bounds;
 
   /**
    * Default constructor.
@@ -207,7 +207,7 @@ public final class BoardLayerView implements Cloneable {
    * @param opacity The new opacity for this layer.
    */
   public void setOpacity(float opacity) {
-    if (opacity != opacity) {
+    if (this.opacity != opacity) {
       this.opacity = opacity;
 
       if (isVisible() && layer != null) {
@@ -365,6 +365,8 @@ public final class BoardLayerView implements Cloneable {
         case 16:
           g.setColor(Color.RED);
           break;
+        default:
+          
       }
 
       drawVectorLines(g, vector);

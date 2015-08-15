@@ -242,7 +242,9 @@ public final class BoardView2D extends AbstractBoardView {
     ArrayList<BoardLayerView> layers = getLayerArrayList();
 
     for (BoardLayerView layer : layers) {
-      layer.drawSprites(g);
+      if (layer.isIsVisible()) {
+        layer.drawSprites(g);
+      }
     }
   }
 

@@ -56,12 +56,12 @@ public class LayerPanel extends JPanel implements ChangeListener,
   private JPanel buttonPanel;
 
   public LayerPanel() {
-    initialize();
+    init();
   }
 
   public LayerPanel(AbstractBoardView boardView) {
     this.boardView = boardView;
-    initialize();
+    init();
   }
 
   public AbstractBoardView getBoardView() {
@@ -81,7 +81,7 @@ public class LayerPanel extends JPanel implements ChangeListener,
    * TODO: Possibly consider moving this to a dedicated listener class later. For now leave it here
    * for simplicity.
    *
-   * Used to keep track of changes in on the opacity <code>JSlider</code>. If there is an open board
+   * Used to keep track of changes on the opacity <code>JSlider</code>. If there is an open board
    * and a layer is selected then the layers opacity will be updated.
    *
    * @param e
@@ -130,7 +130,7 @@ public class LayerPanel extends JPanel implements ChangeListener,
     layerTable.setModel(new BoardLayersTableModel());
   }
 
-  private void initialize() {
+  private void init() {
     opacitySlider = new JSlider(0, 100, 100);
     opacitySlider.addChangeListener(this);
 
@@ -149,7 +149,7 @@ public class LayerPanel extends JPanel implements ChangeListener,
       layerTable = new JTable(new BoardLayersTableModel(boardView));
 
       if (boardView.getBoard().getLayers().size() > 0) {
-        layerTable.changeSelection(0, 0, false, false);
+        layerTable.setRowSelectionInterval(layerTable.getModel().getRowCount() - 1, 0);
       }
     } else {
       layerTable = new JTable(new BoardLayersTableModel());
@@ -169,6 +169,7 @@ public class LayerPanel extends JPanel implements ChangeListener,
       public void actionPerformed(ActionEvent e) {
         if (boardView != null) {
           boardView.getBoard().addLayer();
+          layerTable.setRowSelectionInterval(layerTable.getModel().getRowCount() - 1, 0);
         }
       }
     });
@@ -180,9 +181,13 @@ public class LayerPanel extends JPanel implements ChangeListener,
       @Override
       public void actionPerformed(ActionEvent e) {
         if (boardView != null) {
-          if (boardView.getBoard().getLayers().size() > 0) {
-            boardView.getBoard().moveLayerUp((boardView.getBoard().getLayers().size()
-                    - layerTable.getSelectedRow()) - 1);
+          if (layerTable.getSelectedRow() > 0) {
+            int selectedIndex = layerTable.getSelectedRow();
+            boolean result = boardView.getBoard().moveLayerUp(
+                    -(selectedIndex - layerTable.getRowCount() + 1));
+            if (result) {
+              layerTable.setRowSelectionInterval(selectedIndex - 1, selectedIndex - 1);
+            }
           }
         }
       }
@@ -195,9 +200,14 @@ public class LayerPanel extends JPanel implements ChangeListener,
       @Override
       public void actionPerformed(ActionEvent e) {
         if (boardView != null) {
-          if (layerTable.getSelectedRow() > -1) {
-            boardView.getBoard().moveLayerDown((boardView.getBoard().getLayers().size()
-                    - layerTable.getSelectedRow()) - 1);
+          if (layerTable.getSelectedRow() < layerTable.getRowCount() - 1) {
+            int selectedIndex = layerTable.getSelectedRow();
+            boolean result = boardView.getBoard().moveLayerDown(
+                    -(selectedIndex - layerTable.getRowCount() + 1));
+
+            if (result) {
+              layerTable.setRowSelectionInterval(selectedIndex + 1, selectedIndex + 1);
+            }
           }
         }
       }
@@ -211,8 +221,10 @@ public class LayerPanel extends JPanel implements ChangeListener,
       public void actionPerformed(ActionEvent e) {
         if (boardView != null) {
           if (layerTable.getSelectedRow() > -1) {
+            int selectedIndex = layerTable.getSelectedRow();
             boardView.getBoard().cloneLayer((boardView.getBoard().getLayers().size()
-                    - layerTable.getSelectedRow()) - 1);
+                    - selectedIndex) - 1);
+            layerTable.setRowSelectionInterval(selectedIndex, selectedIndex);
           }
         }
       }
@@ -226,8 +238,17 @@ public class LayerPanel extends JPanel implements ChangeListener,
       public void actionPerformed(ActionEvent e) {
         if (boardView != null) {
           if (layerTable.getSelectedRow() > -1) {
+            int selectedIndex = layerTable.getSelectedRow();
             boardView.getBoard().deleteLayer((boardView.getBoard().getLayers().size()
                     - layerTable.getSelectedRow()) - 1);
+
+            if (layerTable.getRowCount() > 0) {
+              if (selectedIndex == 0) {
+                layerTable.setRowSelectionInterval(selectedIndex, selectedIndex);
+              } else {
+                layerTable.setRowSelectionInterval(selectedIndex - 1, selectedIndex - 1);
+              }
+            }
           }
         }
       }

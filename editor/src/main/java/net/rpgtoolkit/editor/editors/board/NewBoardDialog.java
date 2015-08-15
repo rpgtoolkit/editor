@@ -34,11 +34,11 @@ public class NewBoardDialog extends JDialog {
             "New Board",
             JDialog.ModalityType.APPLICATION_MODAL);
 
-    widthSpinner = new JSpinner(new SpinnerNumberModel(10, 3, 100, 1));
+    widthSpinner = new JSpinner(new SpinnerNumberModel(10, 3, 50, 1));
     ((JSpinner.DefaultEditor) widthSpinner.getEditor()).
             getTextField().setColumns(7);
 
-    heightSpinner = new JSpinner(new SpinnerNumberModel(10, 3, 100, 1));
+    heightSpinner = new JSpinner(new SpinnerNumberModel(10, 3, 50, 1));
     ((JSpinner.DefaultEditor) heightSpinner.getEditor()).
             getTextField().setColumns(7);
 

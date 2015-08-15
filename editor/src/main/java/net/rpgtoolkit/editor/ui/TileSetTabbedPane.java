@@ -46,7 +46,7 @@ public class TileSetTabbedPane extends JTabbedPane {
 
         int index = tabs.indexAtLocation(e.getX(), e.getY());
 
-        if (index > 0 && e.getButton() == MouseEvent.BUTTON3) {
+        if (index > 0 && e.getButton() == MouseEvent.BUTTON2) {
           tabs.remove(index);
         }
       }

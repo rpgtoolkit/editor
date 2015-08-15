@@ -305,6 +305,7 @@ public class MainWindow extends JFrame implements InternalFrameListener
             BoardEditor editor = (BoardEditor)e.getInternalFrame();
             
             upperTabbedPane.setSelectedComponent(tileSetPanel);
+            lowerTabbedPane.setSelectedComponent(layerPanel);
             propertiesPanel.setModel(editor.getBoard());
         }
     }
@@ -970,9 +971,11 @@ public class MainWindow extends JFrame implements InternalFrameListener
             }
             else
             {
-                currentBrush = new ShapeBrush();
-                ((ShapeBrush) currentBrush).makeRectangleBrush(
+                ShapeBrush shapeBrush = new ShapeBrush();
+                shapeBrush.setTile(e.getTile());
+                shapeBrush.makeRectangleBrush(
                         new Rectangle(0, 0, 1, 1));
+                currentBrush = shapeBrush;
                 toolBar.getPencilButton().setSelected(true);
             }
 
