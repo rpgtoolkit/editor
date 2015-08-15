@@ -126,7 +126,7 @@ public class MainWindow extends JFrame implements InternalFrameListener
         this.lowerTabbedPane.addTab("Layers", this.layerPanel);
 
         this.toolboxPanel = new JPanel(new GridLayout(2, 1));
-        this.toolboxPanel.setPreferredSize(new Dimension(320, 0));
+        this.toolboxPanel.setPreferredSize(new Dimension(352, 0));
         this.toolboxPanel.add(this.upperTabbedPane);
         this.toolboxPanel.add(this.lowerTabbedPane);
 

@@ -50,8 +50,14 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
     super();
 
     this.tileset = tileset;
-    bufferedImage = new BufferedImage(289, (32 * ((tileset.getTileCount()
-            / TILES_PER_ROW) + 1)) + 1, BufferedImage.TYPE_INT_ARGB);
+    int width = 320;
+    int height = 32 * ((tileset.getTileCount()- 1)  / TILES_PER_ROW);
+    
+    if (height == 0) {
+      height = 32;
+    }
+    
+    bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
     tilesetMouseAdapter = new TilesetMouseAdapter();
     addMouseListener(tilesetMouseAdapter);
@@ -236,7 +242,7 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
       // Update coordinates to draw at.
       x += 32;
       i++;
-      if (i % 9 == 0) {
+      if (i % 10 == 0) {
         y += 32;
         x = 0;
       }

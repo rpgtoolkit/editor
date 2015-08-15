@@ -6,6 +6,7 @@
  */
 package net.rpgtoolkit.editor.ui;
 
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -28,6 +29,8 @@ public class TileSetTabbedPane extends JTabbedPane {
   private final JButton openTileSetButton;
 
   public TileSetTabbedPane() {
+    setFont(new Font(getFont().getFontName(), Font.PLAIN, 10));
+    
     openTileSetButton = new JButton("Open TileSet");
     openTileSetButton.addActionListener(new ActionListener() {
 
