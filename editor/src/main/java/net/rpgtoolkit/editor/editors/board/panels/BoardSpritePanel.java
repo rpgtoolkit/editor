@@ -101,6 +101,7 @@ public class BoardSpritePanel extends AbstractModelPanel {
           activationProgramTextField.setText(file.getName());
         }
       }
+      
     });
 
     JPanel activationProgramPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -216,8 +217,6 @@ public class BoardSpritePanel extends AbstractModelPanel {
                 true, (BoardSprite) model);
 
         if (dialog.showDialog() == BoardSpriteDialog.APPLY) {
-                    // Rather than update the BoardSprite from the dialog
-          // we'll centralise it and perform it here.
           String initialVariable = dialog.getInitialVariable();
           String initialValue = dialog.getInitialValue();
           String finalVariable = dialog.getFinalVariable();

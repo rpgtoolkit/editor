@@ -23,19 +23,14 @@ import javax.swing.filechooser.FileSystemView;
  */
 public class SingleRootFileSystemView extends FileSystemView {
 
-  File root;
-  File[] roots = new File[1];
+  private File root;
+  private File[] roots;
 
-  /*
-   * *************************************************************************
-   * Public Constructors
-   * *************************************************************************
-   */
   public SingleRootFileSystemView(File root) {
     super();
 
     this.root = root;
-    roots[0] = root;
+    roots = new File[] {root};
   }
 
   @Override

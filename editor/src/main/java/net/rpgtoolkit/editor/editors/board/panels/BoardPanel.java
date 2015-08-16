@@ -4,6 +4,7 @@ import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -12,7 +13,11 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.Board;
+import net.rpgtoolkit.editor.editors.board.BoardNeighboursDialog;
+import net.rpgtoolkit.editor.editors.board.BoardSpriteDialog;
 import net.rpgtoolkit.editor.ui.AbstractModelPanel;
+import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.utilities.FileTools;
 
 /**
  *
@@ -32,7 +37,7 @@ public class BoardPanel extends AbstractModelPanel {
   private final JTextField entryProgramTextField;
   private final JButton entryProgramButton;
 
-  public BoardPanel(Object model) {
+  public BoardPanel(final Object model) {
     ///
     /// super
     ///
@@ -70,8 +75,13 @@ public class BoardPanel extends AbstractModelPanel {
     configureButton.addActionListener(new ActionListener() {
 
       @Override
-      public void actionPerformed(ActionEvent ae) {
+      public void actionPerformed(ActionEvent e) {
+        BoardNeighboursDialog dialog = new BoardNeighboursDialog(MainWindow.getInstance(), 
+                "Configure Neighbours", true, (Board) model);
 
+        if (dialog.showDialog() == BoardSpriteDialog.APPLY) { 
+          ((Board) model).setDirectionalLinks(dialog.getNeighbours());
+        }
       }
 
     });
@@ -86,7 +96,11 @@ public class BoardPanel extends AbstractModelPanel {
 
       @Override
       public void actionPerformed(ActionEvent ae) {
+        File file = FileTools.doChooseFile("wav", "Media", "Audio Files");
 
+        if (file != null) {
+          musicFileTextField.setText(file.getName());
+        }
       }
 
     });
@@ -105,7 +119,11 @@ public class BoardPanel extends AbstractModelPanel {
 
       @Override
       public void actionPerformed(ActionEvent ae) {
+        File file = FileTools.doChooseFile("prg", "Prg", "Program Files");
 
+        if (file != null) {
+          entryProgramTextField.setText(file.getName());
+        }
       }
 
     });
