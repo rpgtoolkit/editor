@@ -62,10 +62,15 @@ public class BoardEditor extends ToolkitEditorWindow {
   public BoardEditor(File file) throws FileNotFoundException {
     super("Board Viewer", true, true, true, true);
     boardMouseAdapter = new BoardMouseAdapter(this);
-
     board = new Board(file);
-
-    initialise(board, file.getAbsolutePath());
+    init(board, file.getAbsolutePath());
+  }
+  
+  public BoardEditor(Board board) {
+    super("Board Viewer", true, true, true, true);
+    boardMouseAdapter = new BoardMouseAdapter(this);
+    this.board = board;
+    init(board, board.getDescriptor().getURI().getPath());
   }
 
   /**
@@ -77,11 +82,9 @@ public class BoardEditor extends ToolkitEditorWindow {
   public BoardEditor(String fileName, int width, int height) {
     super("Board Viewer", true, true, true, true);
     boardMouseAdapter = new BoardMouseAdapter(this);
-
     board = new Board(width, height);
     board.addLayer();
-
-    initialise(board, fileName);
+    init(board, fileName);
   }
 
   /*
@@ -323,7 +326,7 @@ public class BoardEditor extends ToolkitEditorWindow {
     return coordinates;
   }
 
-  private void initialise(Board board, String fileName) {
+  private void init(Board board, String fileName) {
     boardView = new BoardView2D(this, board);
     boardView.addMouseListener(boardMouseAdapter);
     boardView.addMouseMotionListener(boardMouseAdapter);
