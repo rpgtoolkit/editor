@@ -1,9 +1,9 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.editor.ui;
 
@@ -20,9 +20,9 @@ import javax.swing.event.InternalFrameListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.rpgtoolkit.common.CorruptAssetException;
 import net.rpgtoolkit.common.assets.Animation;
-import net.rpgtoolkit.common.assets.AssetDescriptor;
-import net.rpgtoolkit.common.assets.AssetHandle;
-import net.rpgtoolkit.common.assets.AssetManager;
+import net.rpgtoolkit.common.assets.AssetDescriptor;		
+import net.rpgtoolkit.common.assets.AssetHandle;		
+import net.rpgtoolkit.common.assets.AssetManager;		
 import net.rpgtoolkit.common.assets.BasicType;
 import net.rpgtoolkit.common.assets.Enemy;
 import net.rpgtoolkit.common.assets.Player;
@@ -30,9 +30,8 @@ import net.rpgtoolkit.common.assets.Project;
 import net.rpgtoolkit.common.assets.SpecialMove;
 import net.rpgtoolkit.common.assets.Tile;
 import net.rpgtoolkit.common.assets.TileSet;
-import net.rpgtoolkit.common.assets.files.FileAssetHandleResolver;
+import net.rpgtoolkit.common.assets.files.FileAssetHandleResolver;		
 import net.rpgtoolkit.common.assets.serialization.JsonSMoveSerializer;
-
 import net.rpgtoolkit.editor.editors.AnimationEditor;
 import net.rpgtoolkit.editor.editors.BoardEditor;
 import net.rpgtoolkit.editor.editors.CharacterEditor;
@@ -47,9 +46,10 @@ import net.rpgtoolkit.editor.editors.SpecialMoveEditor;
 import net.rpgtoolkit.editor.editors.TileEditor;
 import net.rpgtoolkit.editor.editors.TileSelectionEvent;
 import net.rpgtoolkit.editor.editors.TileSelectionListener;
-import net.rpgtoolkit.editor.editors.TilesetCanvas;
 import net.rpgtoolkit.editor.editors.TileRegionSelectionEvent;
+import net.rpgtoolkit.editor.editors.board.NewBoardDialog;
 import net.rpgtoolkit.editor.ui.resources.Icons;
+import net.rpgtoolkit.editor.editors.board.ProgramBrush;
 
 /**
  * Currently opening TileSets, tiles, programs, boards, animations, characters
@@ -58,10 +58,13 @@ import net.rpgtoolkit.editor.ui.resources.Icons;
  * @author Geoff Wilson
  * @author Joshua Michael Daly
  */
-public class MainWindow extends JFrame implements InternalFrameListener {
+public class MainWindow extends JFrame implements InternalFrameListener
+{
 
     // Singleton.
     private static final MainWindow instance = new MainWindow();
+    
+    public static final int TILE_SIZE = 32;
 
     private final JDesktopPane desktopPane;
 
@@ -72,15 +75,15 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     private final JTabbedPane upperTabbedPane;
     private final JTabbedPane lowerTabbedPane;
     private final ProjectPanel projectPanel;
-    private final TileSetPanel tileSetPanel;
+    private final TileSetTabbedPane tileSetPanel;
     private final PropertiesPanel propertiesPanel;
     private final LayerPanel layerPanel;
 
-    private final JFileChooser fileChooser;
+    private JFileChooser fileChooser;
     private final String workingDir = System.getProperty("user.dir");
 
-    private final JPanel debugPane;
-    private final JTextField debugLog;
+    private final JScrollPane debugScrollPane;
+    private final JTextArea debugLog;
 
     // Project Related.
     private Project activeProject;
@@ -88,7 +91,9 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     // Board Related.
     private boolean showGrid;
     private boolean showVectors;
+    private boolean showPrograms;
     private boolean showCoordinates;
+    private boolean snapToGrid;
     private AbstractBrush currentBrush;
     private Tile lastSelectedTile;
 
@@ -100,7 +105,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
      * Private Constructors
      * *************************************************************************
      */
-    private MainWindow() {
+    private MainWindow()
+    {
         super("RPG Toolkit 4.0");
 
         this.desktopPane = new JDesktopPane();
@@ -108,7 +114,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         this.desktopPane.setDesktopManager(new ToolkitDesktopManager(this));
 
         this.projectPanel = new ProjectPanel();
-        this.tileSetPanel = new TileSetPanel();
+        this.tileSetPanel = new TileSetTabbedPane();
         this.upperTabbedPane = new JTabbedPane();
         this.upperTabbedPane.addTab("Project", this.projectPanel);
         this.upperTabbedPane.addTab("Tileset", this.tileSetPanel);
@@ -120,27 +126,25 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         this.lowerTabbedPane.addTab("Layers", this.layerPanel);
 
         this.toolboxPanel = new JPanel(new GridLayout(2, 1));
-        this.toolboxPanel.setPreferredSize(new Dimension(320, 0));
+        this.toolboxPanel.setPreferredSize(new Dimension(352, 0));
         this.toolboxPanel.add(this.upperTabbedPane);
         this.toolboxPanel.add(this.lowerTabbedPane);
 
         // Application icon.
-        this.setIconImage(
-                Icons.getLargeIcon("application").getImage());
+        this.setIconImage(Icons.getLargeIcon("application").getImage());
 
-        this.debugPane = new JPanel();
-        this.debugLog = new JTextField("Debug Messages:");
+        this.debugLog = new JTextArea("Debug Messages:\n\n");
         this.debugLog.setEditable(false);
-        this.debugLog.setFocusable(false);
+        this.debugLog.setRows(6);
+        this.debugLog.setBackground(Color.WHITE);
 
-        this.debugLog.setText(System.getProperty("user.dir"));
-
-        this.debugPane.setLayout(new BorderLayout());
-        this.debugPane.add(debugLog, BorderLayout.CENTER);
-
-        this.registerResolvers();
-        this.registerSerializers();
+        this.debugScrollPane = new JScrollPane(this.debugLog);
+        this.debugScrollPane.setVerticalScrollBarPolicy(
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         
+        this.registerResolvers();		
+        this.registerSerializers();
+
         this.fileChooser = new JFileChooser();
         this.fileChooser.setCurrentDirectory(new File(this.workingDir));
 
@@ -154,11 +158,14 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         this.lastSelectedTile = new Tile();
 
         this.tileSetSelectionListener = new TileSetSelectionListener();
+        
+        JPanel parent = new JPanel(new BorderLayout());
+        parent.add(this.desktopPane, BorderLayout.CENTER);
+        parent.add(this.debugScrollPane, BorderLayout.SOUTH);
 
         this.setLayout(new BorderLayout());
         this.add(this.toolBar, BorderLayout.NORTH);
-        this.add(this.desktopPane, BorderLayout.CENTER);
-        this.add(this.debugPane, BorderLayout.SOUTH);
+        this.add(parent, BorderLayout.CENTER);
         this.add(this.toolboxPanel, BorderLayout.EAST);
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -173,76 +180,116 @@ public class MainWindow extends JFrame implements InternalFrameListener {
      * Public Getters and Setters
      * *************************************************************************
      */
-    public static MainWindow getInstance() {
+    public static MainWindow getInstance()
+    {
         return instance;
     }
 
-    public JDesktopPane getDesktopPane() {
+    public JDesktopPane getDesktopPane()
+    {
         return this.desktopPane;
     }
 
-    public boolean isShowGrid() {
+    public boolean isShowGrid()
+    {
         return showGrid;
     }
 
-    public void setShowGrid(boolean isShowGrid) {
+    public void setShowGrid(boolean isShowGrid)
+    {
         this.showGrid = isShowGrid;
     }
 
-    public boolean isShowVectors() {
+    public boolean isShowVectors()
+    {
         return showVectors;
     }
 
-    public void setShowVectors(boolean showVectors) {
+    public void setShowVectors(boolean showVectors)
+    {
         this.showVectors = showVectors;
     }
+    
+    public boolean isShowPrograms()
+    {
+        return showPrograms;
+    }
+    
+    public void setShowPrograms(boolean showPrograms)
+    {
+        this.showPrograms = showPrograms;
+    }
 
-    public boolean isShowCoordinates() {
+    public boolean isShowCoordinates()
+    {
         return showCoordinates;
     }
 
-    public void setShowCoordinates(boolean isShowCoordinates) {
+    public void setShowCoordinates(boolean isShowCoordinates)
+    {
         this.showCoordinates = isShowCoordinates;
     }
 
-    public AbstractBrush getCurrentBrush() {
+    public boolean isSnapToGrid() {
+        return snapToGrid;
+    }
+
+    public void setSnapToGrid(boolean snapToGrid) {
+        this.snapToGrid = snapToGrid;
+    }
+    
+    public AbstractBrush getCurrentBrush()
+    {
         return this.currentBrush;
     }
 
-    public void setCurrentBrush(AbstractBrush brush) {
+    public void setCurrentBrush(AbstractBrush brush)
+    {
         this.currentBrush = brush;
     }
 
-    public Tile getLastSelectedTile() {
+    public Tile getLastSelectedTile()
+    {
         return this.lastSelectedTile;
     }
 
-    public MainMenuBar getMainMenuBar() {
+    public MainMenuBar getMainMenuBar()
+    {
         return this.menuBar;
     }
 
-    public MainToolBar getMainToolBar() {
+    public MainToolBar getMainToolBar()
+    {
         return this.toolBar;
     }
 
-    public PropertiesPanel getPropertiesPanel() {
+    public PropertiesPanel getPropertiesPanel()
+    {
         return this.propertiesPanel;
     }
 
-    public BoardEditor getCurrentBoardEditor() {
-        if (this.desktopPane.getSelectedFrame() instanceof BoardEditor) {
+    public BoardEditor getCurrentBoardEditor()
+    {
+        if (this.desktopPane.getSelectedFrame() instanceof BoardEditor)
+        {
             return (BoardEditor) this.desktopPane.getSelectedFrame();
         }
 
         return null;
     }
 
-    public JFileChooser getFileChooser() {
+    public JFileChooser getFileChooser()
+    {
         return this.fileChooser;
     }
 
-    public Project getActiveProject() {
+    public Project getActiveProject()
+    {
         return activeProject;
+    }
+    
+    public TileSelectionListener getTileSetSelectionListener() {
+        return tileSetSelectionListener;
     }
 
     /*
@@ -251,64 +298,87 @@ public class MainWindow extends JFrame implements InternalFrameListener {
      * *************************************************************************
      */
     @Override
-    public void internalFrameOpened(InternalFrameEvent e) {
-        if (e.getInternalFrame() instanceof BoardEditor) {
-            this.upperTabbedPane.setSelectedComponent(this.tileSetPanel);
+    public void internalFrameOpened(InternalFrameEvent e)
+    {
+        if (e.getInternalFrame() instanceof BoardEditor)
+        {
+            BoardEditor editor = (BoardEditor)e.getInternalFrame();
+            
+            upperTabbedPane.setSelectedComponent(tileSetPanel);
+            lowerTabbedPane.setSelectedComponent(layerPanel);
+            propertiesPanel.setModel(editor.getBoard());
         }
     }
 
     @Override
-    public void internalFrameClosing(InternalFrameEvent e) {
+    public void internalFrameClosing(InternalFrameEvent e)
+    {
 
     }
 
     @Override
-    public void internalFrameClosed(InternalFrameEvent e) {
+    public void internalFrameClosed(InternalFrameEvent e)
+    {
+        
+    }
+
+    @Override
+    public void internalFrameIconified(InternalFrameEvent e)
+    {
 
     }
 
     @Override
-    public void internalFrameIconified(InternalFrameEvent e) {
+    public void internalFrameDeiconified(InternalFrameEvent e)
+    {
 
     }
 
     @Override
-    public void internalFrameDeiconified(InternalFrameEvent e) {
-
-    }
-
-    @Override
-    public void internalFrameActivated(InternalFrameEvent e) {
-        if (e.getInternalFrame() instanceof BoardEditor) {
+    public void internalFrameActivated(InternalFrameEvent e)
+    {
+        if (e.getInternalFrame() instanceof BoardEditor)
+        {
             BoardEditor editor = (BoardEditor) e.getInternalFrame();
             this.layerPanel.setBoardView(editor.getBoardView());
-
+            
             if (editor.getSelectedObject() != null) {
                 this.propertiesPanel.setModel(editor.getSelectedObject());
             }
+            else {
+                this.propertiesPanel.setModel(editor.getBoard());
+            }
         }
     }
 
     @Override
-    public void internalFrameDeactivated(InternalFrameEvent e) {
-        if (e.getInternalFrame() instanceof BoardEditor) {
+    public void internalFrameDeactivated(InternalFrameEvent e)
+    {
+        if (e.getInternalFrame() instanceof BoardEditor)
+        {
             BoardEditor editor = (BoardEditor) e.getInternalFrame();
 
-            if (this.layerPanel.getBoardView().equals(editor.getBoardView())) {
+            if (this.layerPanel.getBoardView().equals(editor.getBoardView()))
+            {
                 this.layerPanel.clearTable();
             }
 
-            if (this.propertiesPanel.getModel() == editor.getSelectedObject()) {
+            if (this.propertiesPanel.getModel() == editor.getSelectedObject() 
+                    || propertiesPanel.getModel() == editor)
+            {
                 this.propertiesPanel.setModel(null);
             }
 
-            // So we do not end up drawing the vector on the other board
-            // after it has been deactivated.
-            if (this.currentBrush instanceof VectorBrush) {
+            // So we do not end up drawing the vector or program on the other 
+            // board after it has been deactivated.
+            if (this.currentBrush instanceof VectorBrush || 
+                    this.currentBrush instanceof ProgramBrush)
+            {
                 VectorBrush brush = (VectorBrush) this.currentBrush;
 
-                if (brush.isDrawing() && brush.getBoardVector() != null) {
-                    brush.finishVector();
+                if (brush.isDrawing() && brush.getBoardVector() != null)
+                {
+                    brush.finish();
                 }
             }
         }
@@ -322,7 +392,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         AssetManager.getInstance().registerSerializer(new JsonSMoveSerializer());
     }
 
-    public void openProject() {
+    public void openProject()
+    {
         this.fileChooser.resetChoosableFileFilters();
         FileNameExtensionFilter filter
                 = new FileNameExtensionFilter("Toolkit Project", "gam");
@@ -330,16 +401,26 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
         File mainFolder = new File(this.workingDir + "/main");
 
-        if (mainFolder.exists()) {
+        if (mainFolder.exists())
+        {
             this.fileChooser.setCurrentDirectory(mainFolder);
         }
 
-        if (this.fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            this.activeProject = new Project(this.fileChooser.getSelectedFile());
-            System.setProperty("project.path", 
-                    this.fileChooser.getCurrentDirectory().getParent() + "/game/" 
-                            + this.activeProject.getGameTitle() + "/");
+        if (this.fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+        {
+            // Consider replacing this with Apache Commons IO removeExtension().
+            String fileName = this.fileChooser.getSelectedFile().getName().
+                    substring(0, this.fileChooser.getSelectedFile().
+                            getName().lastIndexOf('.'));
             
+            System.setProperty("project.path", 
+                    this.fileChooser.getCurrentDirectory().getParent() 
+                            + File.separator + "game" + File.separator
+                            + fileName + File.separator);
+            
+            this.activeProject = new Project(this.fileChooser.getSelectedFile(), 
+                    System.getProperty("project.path"));
+
             ProjectEditor projectEditor = new ProjectEditor(this.activeProject);
             this.desktopPane.add(projectEditor, BorderLayout.CENTER);
 
@@ -356,25 +437,32 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         }
     }
 
-    public void primeFileChooser() {
-        this.fileChooser.resetChoosableFileFilters();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                "Toolkit Files", this.getTKFileExtensions());
-        this.fileChooser.setFileFilter(filter);
-
-        if (this.activeProject != null) {
+    public void primeFileChooser()
+    {
+        if (this.activeProject != null)
+        {
             File projectPath = new File(System.getProperty("project.path"));
+            
+            this.fileChooser = new JFileChooser(
+                    new SingleRootFileSystemView(projectPath));
+            
+            FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                "Toolkit Files", this.getTKFileExtensions());
+            this.fileChooser.setFileFilter(filter);
 
-            if (projectPath.exists()) {
+            if (projectPath.exists())
+            {
                 this.fileChooser.setCurrentDirectory(projectPath);
             }
         }
     }
 
-    public void openFile() {
+    public void openFile()
+    {
         this.primeFileChooser();
 
-        if (this.fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+        if (this.fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+        {
             this.checkFileExtension(this.fileChooser.getSelectedFile());
         }
     }
@@ -385,22 +473,36 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         };
     }
 
-    public void checkFileExtension(File file) {
+    public void checkFileExtension(File file)
+    {
         String fileName = file.getName().toLowerCase();
 
-        if (fileName.endsWith(".anm")) {
+        if (fileName.endsWith(".anm"))
+        {
             this.openAnimation();
-        } else if (fileName.endsWith(".brd")) {
+        }
+        else if (fileName.endsWith(".brd"))
+        {
             this.openBoard();
-        } else if (fileName.endsWith(".ene")) {
+        }
+        else if (fileName.endsWith(".ene"))
+        {
             this.openEnemy();
-        } else if (fileName.endsWith(".tem")) {
+        }
+        else if (fileName.endsWith(".tem"))
+        {
             this.openCharacter();
-        } else if (fileName.endsWith(".prg")) {
+        }
+        else if (fileName.endsWith(".prg"))
+        {
 
-        } else if (fileName.endsWith(".tst")) {
+        }
+        else if (fileName.endsWith(".tst"))
+        {
             this.openTileset();
-        } else if (fileName.endsWith(".spc") || fileName.endsWith(".spc.json")) {
+        }
+        else if (fileName.endsWith(".spc") || fileName.endsWith(".spc.json"))
+        {
             this.openSpecialMove();
         }
     }
@@ -409,48 +511,64 @@ public class MainWindow extends JFrame implements InternalFrameListener {
      * Creates an animation editor window for modifying the specified animation
      * file.
      */
-    public void openAnimation() {
+    public void openAnimation()
+    {
         Animation animation = new Animation(fileChooser.getSelectedFile());
         AnimationEditor animationEditor = new AnimationEditor(animation);
         desktopPane.add(animationEditor);
 
         this.selectToolkitWindow(animationEditor);
     }
-
-    public void openBoard() {
-        try {
-            BoardEditor boardEditor = new BoardEditor(this,
-                    fileChooser.getSelectedFile());
+    
+    public void createNewBoard() {
+        NewBoardDialog dialog = new NewBoardDialog();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+        
+        if (dialog.getValue() != null) {
+            BoardEditor boardEditor = new BoardEditor("", 
+                    dialog.getValue()[0],
+                    dialog.getValue()[1]);
             boardEditor.addInternalFrameListener(this);
             boardEditor.setVisible(true);
             boardEditor.toFront();
 
-            if (boardEditor.getBoard().getTileSet() != null) {
-                this.tileSetPanel.setTilesetCanvas(new TilesetCanvas(
-                        boardEditor.getBoard().getTileSet()));
-                this.tileSetPanel.getTilesetCanvas().addTileSelectionListener(
-                        this.tileSetSelectionListener);
-            }
+            this.desktopPane.add(boardEditor);
+            this.selectToolkitWindow(boardEditor);
+        }
+    }
+
+    public void openBoard()
+    {
+        try
+        {
+            BoardEditor boardEditor = new BoardEditor(fileChooser.getSelectedFile());
+            boardEditor.addInternalFrameListener(this);
+            boardEditor.setVisible(true);
+            boardEditor.toFront();
 
             this.desktopPane.add(boardEditor);
-
             this.selectToolkitWindow(boardEditor);
-        } catch (FileNotFoundException ex) {
+        }
+        catch (FileNotFoundException ex)
+        {
             System.out.println("Failed to open board: " + ex.getMessage());
         }
     }
 
     /**
-     * Creates an enemy editor window for modifying the specified enemy file.
+     * Creates an animation editor window for modifying the specified animation
+     * file.
      */
-    public void openEnemy() {
+    public void openEnemy()
+    {
         Enemy enemy = new Enemy(fileChooser.getSelectedFile());
         EnemyEditor enemyEditor = new EnemyEditor(enemy);
         desktopPane.add(enemyEditor);
 
         this.selectToolkitWindow(enemyEditor);
     }
-
+    
     /**
      * Creates a character editor window for modifying the specified character
      * file.
@@ -468,18 +586,17 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     /**
      * Creates a TileSet editor window for modifying the specified TileSet.
      */
-    public void openTile() {
+    public void openTile()
+    {
         TileEditor testTileEditor = new TileEditor(
                 fileChooser.getSelectedFile());
         desktopPane.add(testTileEditor);
     }
 
-    public void openTileset() {
-        this.tileSetPanel.setTilesetCanvas(new TilesetCanvas(
-                new TileSet(fileChooser.getSelectedFile())));
-        this.tileSetPanel.getTilesetCanvas().addTileSelectionListener(
-                this.tileSetSelectionListener);
-        this.upperTabbedPane.setSelectedComponent(this.tileSetPanel);
+    public void openTileset()
+    {
+        TileSet tileSet = new TileSet(fileChooser.getSelectedFile());
+        tileSetPanel.addTileSet(tileSet);
     }
 
     public void openSpecialMove() {
@@ -704,42 +821,63 @@ public class MainWindow extends JFrame implements InternalFrameListener {
                 relativeTo.getPath() + File.separator, "");
     }
 
-    public void zoomInOnBoardEditor() {
-        if (desktopPane.getSelectedFrame() instanceof BoardEditor) {
+    public void zoomInOnBoardEditor()
+    {
+        if (desktopPane.getSelectedFrame() instanceof BoardEditor)
+        {
             BoardEditor editor = (BoardEditor) desktopPane.getSelectedFrame();
             editor.zoomIn();
         }
     }
 
-    public void zoomOutOnBoardEditor() {
-        if (desktopPane.getSelectedFrame() instanceof BoardEditor) {
+    public void zoomOutOnBoardEditor()
+    {
+        if (desktopPane.getSelectedFrame() instanceof BoardEditor)
+        {
             BoardEditor editor = (BoardEditor) desktopPane.getSelectedFrame();
             editor.zoomOut();
         }
     }
 
-    public void toogleGridOnBoardEditor(boolean isVisible) {
+    public void toogleGridOnBoardEditor(boolean isVisible)
+    {
         this.showGrid = isVisible;
 
-        if (this.desktopPane.getSelectedFrame() instanceof BoardEditor) {
+        if (this.desktopPane.getSelectedFrame() instanceof BoardEditor)
+        {
             BoardEditor editor = (BoardEditor) this.desktopPane.getSelectedFrame();
             editor.getBoardView().repaint();
         }
     }
 
-    public void toogleCoordinatesOnBoardEditor(boolean isVisible) {
+    public void toogleCoordinatesOnBoardEditor(boolean isVisible)
+    {
         this.showCoordinates = isVisible;
 
-        if (desktopPane.getSelectedFrame() instanceof BoardEditor) {
+        if (desktopPane.getSelectedFrame() instanceof BoardEditor)
+        {
             BoardEditor editor = (BoardEditor) desktopPane.getSelectedFrame();
             editor.getBoardView().repaint();
         }
     }
 
-    public void toogleVectorsOnBoardEditor(boolean isVisible) {
+    public void toogleVectorsOnBoardEditor(boolean isVisible)
+    {
         this.showVectors = isVisible;
 
-        if (desktopPane.getSelectedFrame() instanceof BoardEditor) {
+        if (desktopPane.getSelectedFrame() instanceof BoardEditor)
+        {
+            BoardEditor editor = (BoardEditor) desktopPane.getSelectedFrame();
+            editor.getBoardView().repaint();
+        }
+    }
+    
+    public void toogleProgramsOnBoardEditor(boolean isVisible)
+    {
+        this.showPrograms = isVisible;
+
+        if (desktopPane.getSelectedFrame() instanceof BoardEditor)
+        {
             BoardEditor editor = (BoardEditor) desktopPane.getSelectedFrame();
             editor.getBoardView().repaint();
         }
@@ -750,10 +888,14 @@ public class MainWindow extends JFrame implements InternalFrameListener {
      * Private Methods
      * *************************************************************************
      */
-    private void selectToolkitWindow(ToolkitEditorWindow window) {
-        try {
+    private void selectToolkitWindow(ToolkitEditorWindow window)
+    {
+        try
+        {
             window.setSelected(true);
-        } catch (PropertyVetoException ex) {
+        }
+        catch (PropertyVetoException ex)
+        {
             Logger.getLogger(MainWindow.class.getName()).
                     log(Level.SEVERE, null, ex);
         }
@@ -807,7 +949,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
      * Private Inner Classes
      * *************************************************************************
      */
-    private class TileSetSelectionListener implements TileSelectionListener {
+    private class TileSetSelectionListener implements TileSelectionListener
+    {
 
         /*
          * *********************************************************************
@@ -815,29 +958,42 @@ public class MainWindow extends JFrame implements InternalFrameListener {
          * *********************************************************************
          */
         @Override
-        public void tileSelected(TileSelectionEvent e) {
-            if (currentBrush instanceof ShapeBrush) {
+        public void tileSelected(TileSelectionEvent e)
+        {
+            if (currentBrush instanceof ShapeBrush)
+            {
                 ((ShapeBrush) currentBrush).setTile(e.getTile());
                 toolBar.getPencilButton().setSelected(true);
-            } else if (currentBrush instanceof BucketBrush) {
+            }
+            else if (currentBrush instanceof BucketBrush)
+            {
                 ((BucketBrush) currentBrush).setPourTile(e.getTile());
-            } else {
-                currentBrush = new ShapeBrush();
-                ((ShapeBrush) currentBrush).makeRectangleBrush(
+            }
+            else
+            {
+                ShapeBrush shapeBrush = new ShapeBrush();
+                shapeBrush.setTile(e.getTile());
+                shapeBrush.makeRectangleBrush(
                         new Rectangle(0, 0, 1, 1));
+                currentBrush = shapeBrush;
                 toolBar.getPencilButton().setSelected(true);
             }
 
-            if (lastSelectedTile != e.getTile()) {
+            if (lastSelectedTile != e.getTile())
+            {
                 lastSelectedTile = e.getTile();
             }
         }
 
         @Override
-        public void tileRegionSelected(TileRegionSelectionEvent e) {
-            if (!(currentBrush instanceof CustomBrush)) {
+        public void tileRegionSelected(TileRegionSelectionEvent e)
+        {
+            if (!(currentBrush instanceof CustomBrush))
+            {
                 currentBrush = new CustomBrush(e.getTiles());
-            } else {
+            }
+            else
+            {
                 ((CustomBrush) currentBrush).setTiles(e.getTiles());
             }
 

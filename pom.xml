@@ -64,6 +64,11 @@
             <version>2.11</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     
     <build>

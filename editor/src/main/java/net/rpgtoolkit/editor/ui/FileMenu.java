@@ -10,26 +10,25 @@ package net.rpgtoolkit.editor.ui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
-import net.rpgtoolkit.editor.ui.MainWindow;
-import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
 import net.rpgtoolkit.editor.ui.resources.Icons;
 
 /**
  *
  * @author Joshua Michael Daly
  */
-public final class FileMenu extends JMenu
+public final class FileMenu extends JMenu implements ActionListener
 {
     
     private final MainWindow parent;
     
     private JMenu newMenu;
     private JMenuItem newProjectMenuItem;
+    private JMenuItem newBoardMenuItem;
+    
     private JMenu openMenu;
     private JMenuItem openProjectMenuItem;
     private JMenuItem openFileMenuItem;
@@ -123,6 +122,21 @@ public final class FileMenu extends JMenu
     
     /*
      * *************************************************************************
+     * Public Methods
+     * *************************************************************************
+     */
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == newProjectMenuItem) {
+            
+        }
+        else if (e.getSource() == newBoardMenuItem) {
+            MainWindow.getInstance().createNewBoard();
+        }
+    }
+    
+    /*
+     * *************************************************************************
      * Private Methods
      * *************************************************************************
      */
@@ -145,10 +159,12 @@ public final class FileMenu extends JMenu
     private void configureNewSubMenu()
     {
         this.configureNewProjectMenuItem();
+        configureNewBoardMenuItem();
         
         newMenu = new JMenu("New");
-        newMenu.setEnabled(false);
+        newMenu.setEnabled(true);
         newMenu.add(newProjectMenuItem);
+        newMenu.add(newBoardMenuItem);
     }
     
     /**
@@ -175,6 +191,12 @@ public final class FileMenu extends JMenu
                 KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
         newProjectMenuItem.setMnemonic(KeyEvent.VK_N);
         newProjectMenuItem.setEnabled(false);
+    }
+    
+    private void configureNewBoardMenuItem() {
+        newBoardMenuItem = new JMenuItem("New Board");
+        newBoardMenuItem.setEnabled(true);
+        newBoardMenuItem.addActionListener(this);
     }
     
     /**
@@ -291,4 +313,5 @@ public final class FileMenu extends JMenu
             }
         });
     }
+
 }
