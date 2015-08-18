@@ -62,10 +62,15 @@ public class BoardEditor extends ToolkitEditorWindow {
   public BoardEditor(File file) throws FileNotFoundException {
     super("Board Viewer", true, true, true, true);
     boardMouseAdapter = new BoardMouseAdapter(this);
-
     board = new Board(file);
-
-    initialise(board, file.getAbsolutePath());
+    init(board, file.getAbsolutePath());
+  }
+  
+  public BoardEditor(Board board) {
+    super("Board Viewer", true, true, true, true);
+    boardMouseAdapter = new BoardMouseAdapter(this);
+    this.board = board;
+    init(board, board.getDescriptor().getURI().getPath());
   }
 
   /**
@@ -77,18 +82,10 @@ public class BoardEditor extends ToolkitEditorWindow {
   public BoardEditor(String fileName, int width, int height) {
     super("Board Viewer", true, true, true, true);
     boardMouseAdapter = new BoardMouseAdapter(this);
-
     board = new Board(width, height);
     board.addLayer();
-
-    initialise(board, fileName);
+    init(board, fileName);
   }
-
-  /*
-   * *************************************************************************
-   * Public Getters and Setters
-   * *************************************************************************
-   */
 
   /**
    *
@@ -241,7 +238,33 @@ public class BoardEditor extends ToolkitEditorWindow {
    */
   @Override
   public boolean save() {
-    return board.save();
+    boolean success = false;
+    
+    if (board.getFile() == null) {
+      File file = MainWindow.getInstance().saveByType(Board.class);
+      
+      if (file != null) {
+        success = board.saveAs(file);
+        setTitle("Editing Board - " + board.toString());
+      }
+    } else {
+      success = board.save();
+    }
+    
+    return success;
+  }
+  
+  /**
+   * 
+   * 
+   * @param file
+   * @return 
+   */
+  @Override
+  public boolean saveAs(File file) {
+    board.setFile(file);
+    
+    return save();
   }
 
   /**
@@ -251,6 +274,21 @@ public class BoardEditor extends ToolkitEditorWindow {
   public void setSelection(Rectangle rectangle) {
     selection = rectangle;
     boardView.repaint();
+  }
+  
+  /**
+   * 
+   */
+  public static void toggleSelectedOnBoardEditor() {
+    BoardEditor editor = MainWindow.getInstance().getCurrentBoardEditor();
+
+    if (editor != null) {
+      if (editor.getSelectedObject() != null) {
+        editor.getSelectedObject().setSelectedState(false);
+      }
+
+      editor.setSelectedObject(null);
+    }
   }
 
   /**
@@ -323,7 +361,7 @@ public class BoardEditor extends ToolkitEditorWindow {
     return coordinates;
   }
 
-  private void initialise(Board board, String fileName) {
+  private void init(Board board, String fileName) {
     boardView = new BoardView2D(this, board);
     boardView.addMouseListener(boardMouseAdapter);
     boardView.addMouseMotionListener(boardMouseAdapter);
@@ -335,7 +373,7 @@ public class BoardEditor extends ToolkitEditorWindow {
     cursorTileLocation = new Point(0, 0);
     cursorLocation = new Point(0, 0);
 
-    setTitle("Viewing " + fileName);
+    setTitle("Editing - " + fileName);
     add(scrollPane);
     pack();
   }

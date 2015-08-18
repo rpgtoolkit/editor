@@ -71,7 +71,9 @@ public class BoardMouseAdapter extends MouseAdapter {
       int x = (int) (e.getX() / editor.getBoardView().getZoom());
       int y = (int) (e.getY() / editor.getBoardView().getZoom());
 
-      if (brush instanceof ShapeBrush) {
+      if (brush instanceof ShapeBrush 
+              || brush instanceof SelectionBrush
+              || brush instanceof CustomBrush) {
         doMouseButton1Dragged(brush, x, y);
       }
     }

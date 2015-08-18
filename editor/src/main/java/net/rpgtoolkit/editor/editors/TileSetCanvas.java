@@ -31,7 +31,7 @@ import net.rpgtoolkit.common.assets.TileSet;
  */
 public final class TileSetCanvas extends JPanel implements Scrollable {
 
-  private static final int TILES_PER_ROW = 9;
+  private static final int TILES_PER_ROW = 10;
 
   private final LinkedList<TileSelectionListener> tileSelectionListeners = new LinkedList<>();
 
