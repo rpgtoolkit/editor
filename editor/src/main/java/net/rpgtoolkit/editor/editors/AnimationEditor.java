@@ -1,14 +1,14 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of
+ * the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.editor.editors;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -26,248 +26,247 @@ import net.rpgtoolkit.editor.ui.Gui;
  * @author Geoff Wilson
  * @author Joshua Michael Daly
  */
-public class AnimationEditor extends ToolkitEditorWindow
-{
+public class AnimationEditor extends ToolkitEditorWindow {
 
-    private final Animation animation;
-    private JPanel timeLinePanel;
-    private JPanel framePanel;
-    private JPanel controlPanel;
+  private final Animation animation;
+  private JPanel timeLinePanel;
+  private JPanel framePanel;
+  private JPanel controlPanel;
 
-    private final Border defaultEtchedBorder = BorderFactory.
-            createEtchedBorder(EtchedBorder.LOWERED);
+  private final Border defaultEtchedBorder = BorderFactory.
+          createEtchedBorder(EtchedBorder.LOWERED);
 
-    // CONTROL PANEL
-    private JTextField frameWidth;
-    private JTextField frameHeight;
-    private JTextField frameTime;
-    private JTextField frameFile;
-    private JTextField frameSound;
+  // CONTROL PANEL
+  private JTextField frameWidth;
+  private JTextField frameHeight;
+  private JTextField frameTime;
+  private JTextField frameFile;
+  private JTextField frameSound;
 
-    /*
-     * *************************************************************************
-     * Public Constructors
-     * *************************************************************************
-     */
-    public AnimationEditor(Animation theAnimation)
-    {
-        super("Editing Animation", true, true, true, true);
-        this.animation = theAnimation;
+  /*
+   * *************************************************************************
+   * Public Constructors
+   * *************************************************************************
+   */
+  public AnimationEditor(Animation theAnimation) {
+    super("Editing Animation", true, true, true, true);
+    this.animation = theAnimation;
 
-        this.configureInterface();
-    }
+    this.configureInterface();
+  }
 
-    /*
-     * *************************************************************************
-     * Public Methods
-     * *************************************************************************
-     */
-    @Override
-    public boolean save()
-    {
-        return this.animation.save();
-    }
+  /*
+   * *************************************************************************
+   * Public Methods
+   * *************************************************************************
+   */
+  @Override
+  public boolean save() {
+    return this.animation.save();
+  }
 
-    public void gracefulClose()
-    {
+  /**
+   *
+   *
+   * @param file
+   * @return
+   */
+  @Override
+  public boolean saveAs(File file) {
+    animation.setFile(file);
 
-    }
+    return save();
+  }
 
-    public void setWindowParent(MainWindow parent)
-    {
+  public void gracefulClose() {
 
-    }
+  }
 
-    /*
-     * *************************************************************************
-     * Private Methods
-     * *************************************************************************
-     */
-    private void configureInterface()
-    {
-        this.setSize(800, 600);
-        this.setVisible(true);
+  public void setWindowParent(MainWindow parent) {
 
-        GroupLayout layout = new GroupLayout(this.getContentPane());
-        this.getContentPane().setLayout(layout);
-        layout.setAutoCreateGaps(true);
-        layout.setAutoCreateContainerGaps(true);
+  }
 
-        this.framePanel = new JPanel();
-        //this.framePanel.setBackground(new Color(255,0,255));
+  /*
+   * *************************************************************************
+   * Private Methods
+   * *************************************************************************
+   */
+  private void configureInterface() {
+    this.setSize(800, 600);
+    this.setVisible(true);
 
-        this.timeLinePanel = new JPanel();
-        this.timeLinePanel.setBorder(BorderFactory.createTitledBorder(
-                this.defaultEtchedBorder, "Timeline"));
-        this.configureTimeLine();
+    GroupLayout layout = new GroupLayout(this.getContentPane());
+    this.getContentPane().setLayout(layout);
+    layout.setAutoCreateGaps(true);
+    layout.setAutoCreateContainerGaps(true);
 
-        this.controlPanel = new JPanel();
-        this.configureControlPanel();
+    this.framePanel = new JPanel();
+    //this.framePanel.setBackground(new Color(255,0,255));
 
-        layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                .addGroup(layout.createSequentialGroup()
-                        .addComponent(this.framePanel)
-                        .addComponent(this.controlPanel, 150, 150, 150))
-                .addComponent(this.timeLinePanel)
-        );
+    this.timeLinePanel = new JPanel();
+    this.timeLinePanel.setBorder(BorderFactory.createTitledBorder(
+            this.defaultEtchedBorder, "Timeline"));
+    this.configureTimeLine();
 
-        layout.setVerticalGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup()
-                        .addComponent(this.framePanel)
-                        .addComponent(this.controlPanel))
-                .addComponent(this.timeLinePanel, 75, 75, 75)
-        );
+    this.controlPanel = new JPanel();
+    this.configureControlPanel();
 
-    }
+    layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+            .addGroup(layout.createSequentialGroup()
+                    .addComponent(this.framePanel)
+                    .addComponent(this.controlPanel, 150, 150, 150))
+            .addComponent(this.timeLinePanel)
+    );
 
-    private void configureControlPanel()
-    {
-        this.frameWidth = new JTextField(Long.toString(this.animation.getAnimationWidth()));
-        this.frameHeight = new JTextField(Long.toString(this.animation.getAnimationHeight()));
-        this.frameTime = new JTextField(Double.toString(this.animation.getFrameDelay()));
-        this.frameFile = new JTextField(this.animation.getFrame(0).getFrameName());
-        this.frameSound = new JTextField(this.animation.getFrame(0).getFrameSound());
+    layout.setVerticalGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup()
+                    .addComponent(this.framePanel)
+                    .addComponent(this.controlPanel))
+            .addComponent(this.timeLinePanel, 75, 75, 75)
+    );
 
-        JLabel widthLabel = new JLabel("x");
-        JLabel heightLabel = new JLabel("y");
-        JLabel timeLabel = new JLabel("Frame Time");
-        JLabel nameLabel = new JLabel("Frame File");
-        JLabel soundLabel = new JLabel("Frame Sound");
-        JButton nameBrowseButton = new JButton("...");
-        JButton soundBrowseButton = new JButton("...");
+  }
 
-        JPanel sizePanel = new JPanel();
-        sizePanel.setBorder(BorderFactory.createTitledBorder(this.defaultEtchedBorder, "Size"));
-        JPanel delayPanel = new JPanel();
-        delayPanel.setBorder(BorderFactory.createTitledBorder(this.defaultEtchedBorder, "Time"));
-        JPanel colorPanel = new JPanel();
-        colorPanel.setBorder(BorderFactory.createTitledBorder(this.defaultEtchedBorder, "Color"));
-        JPanel miscPanel = new JPanel();
-        miscPanel.setBorder(BorderFactory.createTitledBorder(this.defaultEtchedBorder, "Details"));
+  private void configureControlPanel() {
+    this.frameWidth = new JTextField(Long.toString(this.animation.getAnimationWidth()));
+    this.frameHeight = new JTextField(Long.toString(this.animation.getAnimationHeight()));
+    this.frameTime = new JTextField(Double.toString(this.animation.getFrameDelay()));
+    this.frameFile = new JTextField(this.animation.getFrame(0).getFrameName());
+    this.frameSound = new JTextField(this.animation.getFrame(0).getFrameSound());
 
-        GroupLayout layout = Gui.createGroupLayout(this.controlPanel);
+    JLabel widthLabel = new JLabel("x");
+    JLabel heightLabel = new JLabel("y");
+    JLabel timeLabel = new JLabel("Frame Time");
+    JLabel nameLabel = new JLabel("Frame File");
+    JLabel soundLabel = new JLabel("Frame Sound");
+    JButton nameBrowseButton = new JButton("...");
+    JButton soundBrowseButton = new JButton("...");
 
-        GroupLayout sizeLayout = Gui.createGroupLayout(sizePanel);
+    JPanel sizePanel = new JPanel();
+    sizePanel.setBorder(BorderFactory.createTitledBorder(this.defaultEtchedBorder, "Size"));
+    JPanel delayPanel = new JPanel();
+    delayPanel.setBorder(BorderFactory.createTitledBorder(this.defaultEtchedBorder, "Time"));
+    JPanel colorPanel = new JPanel();
+    colorPanel.setBorder(BorderFactory.createTitledBorder(this.defaultEtchedBorder, "Color"));
+    JPanel miscPanel = new JPanel();
+    miscPanel.setBorder(BorderFactory.createTitledBorder(this.defaultEtchedBorder, "Details"));
 
-        GroupLayout delayLayout = Gui.createGroupLayout(delayPanel);
+    GroupLayout layout = Gui.createGroupLayout(this.controlPanel);
 
-        GroupLayout miscLayout = Gui.createGroupLayout(miscPanel);
+    GroupLayout sizeLayout = Gui.createGroupLayout(sizePanel);
 
-        miscLayout.setHorizontalGroup(miscLayout.createParallelGroup()
-                .addComponent(nameLabel)
-                .addGroup(miscLayout.createSequentialGroup()
-                        .addComponent(this.frameFile)
-                        .addComponent(nameBrowseButton))
-                .addComponent(soundLabel)
-                .addGroup(miscLayout.createSequentialGroup()
-                        .addComponent(this.frameSound)
-                        .addComponent(soundBrowseButton))
-        );
+    GroupLayout delayLayout = Gui.createGroupLayout(delayPanel);
 
-        miscLayout.linkSize(this.frameFile, this.frameSound);
+    GroupLayout miscLayout = Gui.createGroupLayout(miscPanel);
 
-        miscLayout.setVerticalGroup(miscLayout.createSequentialGroup()
-                .addComponent(nameLabel)
-                .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(this.frameFile, Gui.JTF_HEIGHT, 
-                                Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
-                        .addComponent(nameBrowseButton))
-                .addComponent(soundLabel)
-                .addGroup(miscLayout.createParallelGroup()
-                        .addComponent(this.frameSound)
-                        .addComponent(soundBrowseButton))
-        );
+    miscLayout.setHorizontalGroup(miscLayout.createParallelGroup()
+            .addComponent(nameLabel)
+            .addGroup(miscLayout.createSequentialGroup()
+                    .addComponent(this.frameFile)
+                    .addComponent(nameBrowseButton))
+            .addComponent(soundLabel)
+            .addGroup(miscLayout.createSequentialGroup()
+                    .addComponent(this.frameSound)
+                    .addComponent(soundBrowseButton))
+    );
 
-        delayLayout.setHorizontalGroup(delayLayout.createParallelGroup()
-                .addComponent(timeLabel)
-                .addComponent(this.frameTime)
-        );
+    miscLayout.linkSize(this.frameFile, this.frameSound);
 
-        delayLayout.setVerticalGroup(delayLayout.createSequentialGroup()
-                .addComponent(timeLabel)
-                .addComponent(this.frameTime, Gui.JTF_HEIGHT, 
-                        Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
-        );
+    miscLayout.setVerticalGroup(miscLayout.createSequentialGroup()
+            .addComponent(nameLabel)
+            .addGroup(miscLayout.createParallelGroup()
+                    .addComponent(this.frameFile, Gui.JTF_HEIGHT,
+                            Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
+                    .addComponent(nameBrowseButton))
+            .addComponent(soundLabel)
+            .addGroup(miscLayout.createParallelGroup()
+                    .addComponent(this.frameSound)
+                    .addComponent(soundBrowseButton))
+    );
 
-        sizeLayout.setHorizontalGroup(sizeLayout.createParallelGroup()
-                .addGroup(sizeLayout.createSequentialGroup()
-                        .addComponent(widthLabel)
-                        .addComponent(this.frameWidth))
-                .addGroup(sizeLayout.createSequentialGroup()
-                        .addComponent(heightLabel)
-                        .addComponent(this.frameHeight))
-        );
+    delayLayout.setHorizontalGroup(delayLayout.createParallelGroup()
+            .addComponent(timeLabel)
+            .addComponent(this.frameTime)
+    );
 
-        sizeLayout.linkSize(SwingConstants.VERTICAL, this.frameWidth, 
-                this.frameHeight);
+    delayLayout.setVerticalGroup(delayLayout.createSequentialGroup()
+            .addComponent(timeLabel)
+            .addComponent(this.frameTime, Gui.JTF_HEIGHT,
+                    Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
+    );
 
-        sizeLayout.setVerticalGroup(sizeLayout.createSequentialGroup()
-                .addGroup(sizeLayout.createParallelGroup()
-                        .addComponent(widthLabel)
-                        .addComponent(this.frameWidth, Gui.JTF_HEIGHT, 
-                                Gui.JTF_HEIGHT, Gui.JTF_HEIGHT))
-                .addGroup(sizeLayout.createParallelGroup()
-                        .addComponent(heightLabel)
-                        .addComponent(this.frameHeight))
-        );
+    sizeLayout.setHorizontalGroup(sizeLayout.createParallelGroup()
+            .addGroup(sizeLayout.createSequentialGroup()
+                    .addComponent(widthLabel)
+                    .addComponent(this.frameWidth))
+            .addGroup(sizeLayout.createSequentialGroup()
+                    .addComponent(heightLabel)
+                    .addComponent(this.frameHeight))
+    );
 
-        layout.setHorizontalGroup(layout.createParallelGroup()
-                .addComponent(sizePanel)
-                .addComponent(delayPanel)
-                .addComponent(colorPanel)
-                .addComponent(miscPanel)
-        );
+    sizeLayout.linkSize(SwingConstants.VERTICAL, this.frameWidth,
+            this.frameHeight);
 
-        layout.setVerticalGroup(layout.createSequentialGroup()
-                .addComponent(sizePanel)
-                .addComponent(delayPanel)
-                .addComponent(colorPanel)
-                .addComponent(miscPanel)
-        );
-    }
+    sizeLayout.setVerticalGroup(sizeLayout.createSequentialGroup()
+            .addGroup(sizeLayout.createParallelGroup()
+                    .addComponent(widthLabel)
+                    .addComponent(this.frameWidth, Gui.JTF_HEIGHT,
+                            Gui.JTF_HEIGHT, Gui.JTF_HEIGHT))
+            .addGroup(sizeLayout.createParallelGroup()
+                    .addComponent(heightLabel)
+                    .addComponent(this.frameHeight))
+    );
 
-    private void configureTimeLine()
-    {
-        long frameCount = this.animation.getFrameCount();
-        ArrayList<JLabel> frames = new ArrayList<>();
+    layout.setHorizontalGroup(layout.createParallelGroup()
+            .addComponent(sizePanel)
+            .addComponent(delayPanel)
+            .addComponent(colorPanel)
+            .addComponent(miscPanel)
+    );
 
-        for (int i = 0; i < frameCount; i++)
-        {
-            JLabel tempButton = new JLabel();
+    layout.setVerticalGroup(layout.createSequentialGroup()
+            .addComponent(sizePanel)
+            .addComponent(delayPanel)
+            .addComponent(colorPanel)
+            .addComponent(miscPanel)
+    );
+  }
 
-            if (!this.animation.getFrame(i).getFrameName().equals(""))
-            {
+  private void configureTimeLine() {
+    long frameCount = this.animation.getFrameCount();
+    ArrayList<JLabel> frames = new ArrayList<>();
 
-                BufferedImage bi = new BufferedImage(
-                        (int) this.animation.getAnimationWidth(),
-                        (int) this.animation.getAnimationHeight(),
-                        BufferedImage.TYPE_4BYTE_ABGR);
-                Graphics2D g = bi.createGraphics();
+    for (int i = 0; i < frameCount; i++) {
+      JLabel tempButton = new JLabel();
 
-                Tile aTile = this.animation.getFrame(i).getFrameTile();
-                // Draw the tile
+      if (!this.animation.getFrame(i).getFrameName().equals("")) {
 
-                BufferedImage test = aTile.getTileAsImage();
+        BufferedImage bi = new BufferedImage(
+                (int) this.animation.getAnimationWidth(),
+                (int) this.animation.getAnimationHeight(),
+                BufferedImage.TYPE_4BYTE_ABGR);
+        Graphics2D g = bi.createGraphics();
 
-                tempButton.setIcon(new ImageIcon(aTile.getTileAsImage()));
-                tempButton.paint(g);
+        Tile aTile = this.animation.getFrame(i).getFrameTile();
+        // Draw the tile
 
-                if (i == 0)
-                {
-                    tempButton.setBorder(BorderFactory.createLineBorder(Color.RED));
-                }
-                else
-                {
-                    tempButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-                }
+        BufferedImage test = aTile.getTileAsImage();
 
-                this.timeLinePanel.add(tempButton);
-            }
+        tempButton.setIcon(new ImageIcon(aTile.getTileAsImage()));
+        tempButton.paint(g);
+
+        if (i == 0) {
+          tempButton.setBorder(BorderFactory.createLineBorder(Color.RED));
+        } else {
+          tempButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         }
 
-        for (JLabel button : frames)
-        {
-            this.timeLinePanel.add(button);
-        }
+        this.timeLinePanel.add(tempButton);
+      }
     }
+
+    for (JLabel button : frames) {
+      this.timeLinePanel.add(button);
+    }
+  }
 }

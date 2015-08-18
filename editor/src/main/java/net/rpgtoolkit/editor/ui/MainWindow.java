@@ -6,14 +6,23 @@
  */
 package net.rpgtoolkit.editor.ui;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Rectangle;
 import java.beans.PropertyVetoException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.*;
+import javax.swing.JDesktopPane;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -99,11 +108,6 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   // Listeners.
   private final TileSetSelectionListener tileSetSelectionListener;
 
-  /*
-   * *************************************************************************
-   * Private Constructors
-   * *************************************************************************
-   */
   private MainWindow() {
     super("RPG Toolkit 4.0");
 
@@ -150,8 +154,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     this.toolBar = new MainToolBar();
 
     this.currentBrush = new ShapeBrush();
-    ((ShapeBrush) this.currentBrush).makeRectangleBrush(
-            new Rectangle(0, 0, 1, 1));
+    ((ShapeBrush) this.currentBrush).makeRectangleBrush(new Rectangle(0, 0, 1, 1));
 
     this.lastSelectedTile = new Tile();
 
@@ -173,11 +176,6 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     this.setJMenuBar(this.menuBar);
   }
 
-  /*
-   * *************************************************************************
-   * Public Getters and Setters
-   * *************************************************************************
-   */
   public static MainWindow getInstance() {
     return instance;
   }
@@ -270,11 +268,6 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     return tileSetSelectionListener;
   }
 
-  /*
-   * *************************************************************************
-   * Public Methods
-   * *************************************************************************
-   */
   @Override
   public void internalFrameOpened(InternalFrameEvent e) {
     if (e.getInternalFrame() instanceof BoardEditor) {
@@ -359,8 +352,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
   public void openProject() {
     this.fileChooser.resetChoosableFileFilters();
-    FileNameExtensionFilter filter
-            = new FileNameExtensionFilter("Toolkit Project", "gam");
+    FileNameExtensionFilter filter = new FileNameExtensionFilter("Toolkit Project", "gam");
     this.fileChooser.setFileFilter(filter);
 
     File mainFolder = new File(this.workingDir + "/main");
@@ -370,7 +362,6 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     }
 
     if (this.fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-      // Consider replacing this with Apache Commons IO removeExtension().
       String fileName = this.fileChooser.getSelectedFile().getName().
               substring(0, this.fileChooser.getSelectedFile().
                       getName().lastIndexOf('.'));
@@ -467,9 +458,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     dialog.setVisible(true);
 
     if (dialog.getValue() != null) {
-      BoardEditor boardEditor = new BoardEditor("",
-              dialog.getValue()[0],
-              dialog.getValue()[1]);
+      BoardEditor boardEditor = new BoardEditor("Untitled", dialog.getValue()[0], dialog.getValue()[1]);
       boardEditor.addInternalFrameListener(this);
       boardEditor.setVisible(true);
       boardEditor.toFront();
@@ -811,11 +800,6 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     }
   }
 
-  /*
-   * *************************************************************************
-   * Private Methods
-   * *************************************************************************
-   */
   private void selectToolkitWindow(ToolkitEditorWindow window) {
     try {
       window.setSelected(true);
@@ -867,18 +851,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     return false;
   }
 
-  /*
-   * *************************************************************************
-   * Private Inner Classes
-   * *************************************************************************
-   */
   private class TileSetSelectionListener implements TileSelectionListener {
 
-    /*
-     * *********************************************************************
-     * Private Inner Classes
-     * *********************************************************************
-     */
     @Override
     public void tileSelected(TileSelectionEvent e) {
       if (currentBrush instanceof ShapeBrush) {

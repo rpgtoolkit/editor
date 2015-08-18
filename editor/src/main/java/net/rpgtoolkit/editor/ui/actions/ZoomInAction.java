@@ -16,29 +16,13 @@ import net.rpgtoolkit.editor.ui.MainWindow;
  */
 public class ZoomInAction extends AbstractAction {
 
-  private MainWindow parent;
-
-  /**
-   *
-   */
-  public ZoomInAction() {
-
-  }
-
-  /**
-   *
-   * @param parent
-   */
-  public ZoomInAction(MainWindow parent) {
-    this.parent = parent;
-  }
-
   /**
    *
    * @param e
    */
   @Override
   public void actionPerformed(ActionEvent e) {
-    parent.zoomInOnBoardEditor();
+    MainWindow.getInstance().zoomInOnBoardEditor();
   }
+  
 }

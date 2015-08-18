@@ -16,18 +16,9 @@ import net.rpgtoolkit.editor.ui.MainWindow;
  */
 public class ZoomOutAction extends AbstractAction {
 
-  private MainWindow parent;
-
-  public ZoomOutAction() {
-
-  }
-
-  public ZoomOutAction(MainWindow parent) {
-    this.parent = parent;
-  }
-
   @Override
   public void actionPerformed(ActionEvent e) {
-    parent.zoomOutOnBoardEditor();
+    MainWindow.getInstance().zoomOutOnBoardEditor();
   }
+
 }
