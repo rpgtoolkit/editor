@@ -6,6 +6,7 @@
  */
 package net.rpgtoolkit.editor.ui;
 
+import net.rpgtoolkit.editor.editors.board.panels.AbstractModelPanel;
 import net.rpgtoolkit.editor.editors.board.panels.BoardProgramPanel;
 import net.rpgtoolkit.editor.editors.board.panels.BoardPanel;
 import net.rpgtoolkit.editor.editors.board.panels.BoardVectorPanel;

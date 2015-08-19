@@ -6,22 +6,11 @@
  */
 package net.rpgtoolkit.editor.ui;
 
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.ButtonGroup;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
-import net.rpgtoolkit.common.assets.Tile;
-import net.rpgtoolkit.editor.editors.BoardEditor;
-import net.rpgtoolkit.editor.editors.board.BucketBrush;
-import net.rpgtoolkit.editor.editors.board.ProgramBrush;
-import net.rpgtoolkit.editor.editors.board.SelectionBrush;
-import net.rpgtoolkit.editor.editors.board.ShapeBrush;
-import net.rpgtoolkit.editor.editors.board.SpriteBrush;
-import net.rpgtoolkit.editor.editors.board.VectorBrush;
 import net.rpgtoolkit.editor.ui.actions.BucketAction;
 import net.rpgtoolkit.editor.ui.actions.EraserAction;
 import net.rpgtoolkit.editor.ui.actions.HelpAction;
@@ -96,7 +85,6 @@ public class MainToolBar extends JToolBar {
     newButton.setIcon(Icons.getSmallIcon("new"));
 
     openButton = new EditorButton();
-    openButton.setEnabled(false);
     openButton.setAction(new OpenFileAction());
     openButton.setIcon(Icons.getSmallIcon("open"));
     
@@ -186,29 +174,7 @@ public class MainToolBar extends JToolBar {
     helpButton.setIcon(Icons.getSmallIcon("help"));
 
     // Disable all the buttons for now
-    newButton.setEnabled(false);
-    openButton.setEnabled(false);
-    saveButton.setEnabled(false);
-    saveAllButton.setEnabled(false);
-    cutButton.setEnabled(false);
-    copyButton.setEnabled(false);
-    pasteButton.setEnabled(false);
-    deleteButton.setEnabled(false);
-    undoButton.setEnabled(false);
-    redoButton.setEnabled(false);
-    pencilButton.setEnabled(true);
-    selectionButton.setEnabled(true);
-    bucketButton.setEnabled(true);
-    eraserButton.setEnabled(true);
-    vectorButton.setEnabled(true);
-    programButton.setEnabled(true);
-    spriteButton.setEnabled(true);
-    lightButton.setEnabled(false);
-    zoomInButton.setEnabled(true);
-    zoomOutButton.setEnabled(true);
-    runButton.setEnabled(false);
-    stopButton.setEnabled(false);
-    helpButton.setEnabled(false);
+    toggleButtonStates(false);
 
     toolButtonGroup = new ButtonGroup();
     toolButtonGroup.add(pencilButton);
@@ -343,9 +309,30 @@ public class MainToolBar extends JToolBar {
     return helpButton;
   }
 
-  public void enableButtons(boolean enable) {
+  public final void toggleButtonStates(boolean enable) {
+    newButton.setEnabled(enable);
     openButton.setEnabled(enable);
     saveButton.setEnabled(enable);
+    saveAllButton.setEnabled(enable);
+    cutButton.setEnabled(enable);
+    copyButton.setEnabled(enable);
+    pasteButton.setEnabled(enable);
+    deleteButton.setEnabled(enable);
+    undoButton.setEnabled(enable);
+    redoButton.setEnabled(enable);
+    pencilButton.setEnabled(enable);
+    selectionButton.setEnabled(enable);
+    bucketButton.setEnabled(enable);
+    eraserButton.setEnabled(enable);
+    vectorButton.setEnabled(enable);
+    programButton.setEnabled(enable);
+    spriteButton.setEnabled(enable);
+    lightButton.setEnabled(enable);
+    zoomInButton.setEnabled(enable);
+    zoomOutButton.setEnabled(enable);
+    runButton.setEnabled(enable);
+    stopButton.setEnabled(enable);
+    helpButton.setEnabled(enable);
   }
 
 }

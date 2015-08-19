@@ -7,7 +7,6 @@
 package net.rpgtoolkit.editor.editors.board.panels;
 
 import java.awt.FlowLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -22,7 +21,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.BoardProgram;
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
-import net.rpgtoolkit.editor.ui.AbstractModelPanel;
 import net.rpgtoolkit.editor.utilities.FileTools;
 
 /**
@@ -155,9 +153,6 @@ public class BoardProgramPanel extends AbstractModelPanel {
     ///
     /// constraints
     ///
-    constraints.insets = new Insets(4, 15, 0, 30);
-    constraintsRight.insets = new Insets(0, 0, 10, 15);
-
     constraints.gridx = 0;
     constraints.gridy = 1;
     add(new JLabel("Program"), constraints);

@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
@@ -15,7 +14,6 @@ import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.editor.editors.board.BoardNeighboursDialog;
 import net.rpgtoolkit.editor.editors.board.BoardSpriteDialog;
-import net.rpgtoolkit.editor.ui.AbstractModelPanel;
 import net.rpgtoolkit.editor.ui.MainWindow;
 import net.rpgtoolkit.editor.utilities.FileTools;
 
@@ -45,8 +43,7 @@ public class BoardPanel extends AbstractModelPanel {
     ///
     /// widthSpinner
     ///
-    widthSpinner = new JSpinner();
-    widthSpinner.setValue(((Board) model).getWidth());
+    widthSpinner = getJSpinner(((Board) model).getWidth());
     widthSpinner.addChangeListener(new ChangeListener() {
 
       @Override
@@ -58,8 +55,7 @@ public class BoardPanel extends AbstractModelPanel {
     ///
     /// heightSpinner
     ///
-    heightSpinner = new JSpinner();
-    heightSpinner.setValue(((Board) model).getHeight());
+    heightSpinner = getJSpinner(((Board) model).getWidth());
     heightSpinner.addChangeListener(new ChangeListener() {
 
       @Override
@@ -71,7 +67,7 @@ public class BoardPanel extends AbstractModelPanel {
     ///
     /// configureButton
     ///
-    configureButton = new JButton("Configure");
+    configureButton = getJButton("Configure");
     configureButton.addActionListener(new ActionListener() {
 
       @Override
@@ -88,10 +84,9 @@ public class BoardPanel extends AbstractModelPanel {
     ///
     /// musicPanel
     ///
-    musicFileTextField = new JTextField(((Board) model).getBackgroundMusic());
-    musicFileTextField.setColumns(17);
+    musicFileTextField = getJTextField(((Board) model).getBackgroundMusic());
 
-    musicFileButton = new JButton("...");
+    musicFileButton = getJButton("...");
     musicFileButton.addActionListener(new ActionListener() {
 
       @Override
@@ -111,10 +106,9 @@ public class BoardPanel extends AbstractModelPanel {
     ///
     /// entryProgramPanel
     ///
-    entryProgramTextField = new JTextField(((Board) model).getFirstRunProgram());
-    entryProgramTextField.setColumns(17);
+    entryProgramTextField = getJTextField(((Board) model).getFirstRunProgram());
 
-    entryProgramButton = new JButton("...");
+    entryProgramButton = getJButton("...");
     entryProgramButton.addActionListener(new ActionListener() {
 
       @Override
@@ -134,28 +128,28 @@ public class BoardPanel extends AbstractModelPanel {
     ///
     /// this
     ///
-    constraints.insets = new Insets(8, 15, 0, 3);
-    constraintsRight.insets = new Insets(0, 0, 10, 15);
-
+    constraints.insets = new Insets(4, 4, 0, 30);
+    //constraintsRight.insets = new Insets(0, 0, 10, 15);
+    
     constraints.gridx = 0;
     constraints.gridy = 1;
-    add(new JLabel("Width"), constraints);
+    add(getJLabel("Width"), constraints);
 
     constraints.gridx = 0;
     constraints.gridy = 2;
-    add(new JLabel("Height"), constraints);
+    add(getJLabel("Height"), constraints);
 
     constraints.gridx = 0;
     constraints.gridy = 3;
-    add(new JLabel("Neighbours"), constraints);
+    add(getJLabel("Neighbours"), constraints);
 
     constraints.gridx = 0;
     constraints.gridy = 4;
-    add(new JLabel("Music"), constraints);
+    add(getJLabel("Music"), constraints);
 
     constraints.gridx = 0;
     constraints.gridy = 5;
-    add(new JLabel("Entry Program"), constraints);
+    add(getJLabel("Entry Program"), constraints);
 
     constraintsRight.gridx = 1;
     constraintsRight.gridy = 1;

@@ -323,7 +323,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       }
 
       if (this.propertiesPanel.getModel() == editor.getSelectedObject()
-              || propertiesPanel.getModel() == editor) {
+              || propertiesPanel.getModel() == editor.getBoard()) {
         this.propertiesPanel.setModel(null);
       }
 
@@ -386,7 +386,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
               + this.activeProject.getGameTitle());
 
       this.menuBar.enableMenus(true);
-      this.toolBar.enableButtons(true);
+      this.toolBar.toggleButtonStates(true);
     }
   }
 
@@ -471,10 +471,20 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   public void openBoard() {
     try {
       BoardEditor boardEditor;
-      if (fileChooser.getSelectedFile().canRead()) {
-        AssetHandle handle = AssetManager.getInstance().deserialize(
-                new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
-        Board board = (Board) handle.getAsset();
+      File selectedFile = fileChooser.getSelectedFile();
+
+      if (selectedFile.canRead()) {
+        Board board;
+
+        if (selectedFile.getName().endsWith(".brd")) {
+          board = new Board(selectedFile);
+          board.openBinary();
+        } else {
+          AssetHandle handle = AssetManager.getInstance().deserialize(
+                  new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
+          board = (Board) handle.getAsset();
+        }
+        
         boardEditor = new BoardEditor(board);
       } else {
         boardEditor = new BoardEditor();
@@ -601,7 +611,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       case "Animation":
         return new String[]{"anm"};
       case "Board":
-        return new String[]{"brd"};
+        return new String[]{"brd", "brd.json"};
       case "Enemy":
         return new String[]{"ene"};
       case "Item":

@@ -22,7 +22,6 @@ import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.BoardSprite;
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
 import net.rpgtoolkit.editor.editors.board.BoardSpriteDialog;
-import net.rpgtoolkit.editor.ui.AbstractModelPanel;
 import net.rpgtoolkit.editor.ui.MainWindow;
 import net.rpgtoolkit.editor.utilities.FileTools;
 

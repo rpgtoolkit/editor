@@ -21,7 +21,6 @@ import javax.swing.event.ChangeListener;
 
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
 import net.rpgtoolkit.common.assets.BoardVector;
-import net.rpgtoolkit.editor.ui.AbstractModelPanel;
 
 /**
  *

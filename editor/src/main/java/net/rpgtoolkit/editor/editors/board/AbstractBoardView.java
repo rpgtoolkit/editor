@@ -690,9 +690,6 @@ public abstract class AbstractBoardView extends JPanel implements
    * @param board The Toolkit board we want to load tiles for.
    */
   private void loadTiles(Board board) {
-    board.updateTileSetCache();
-    board.createLayers();
-
     for (BoardLayer layer : board.getLayers()) {
       BoardLayerView layerView = new BoardLayerView(layer);
       addLayerView(layerView);
