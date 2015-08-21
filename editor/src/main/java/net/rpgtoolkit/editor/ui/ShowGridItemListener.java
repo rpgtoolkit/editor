@@ -16,23 +16,6 @@ import javax.swing.JCheckBoxMenuItem;
  */
 public class ShowGridItemListener implements ItemListener {
 
-  private MainWindow parent;
-
-  /**
-   *
-   */
-  public ShowGridItemListener() {
-
-  }
-
-  /**
-   *
-   * @param parent
-   */
-  public ShowGridItemListener(MainWindow parent) {
-    this.parent = parent;
-  }
-
   /**
    *
    * @param e
@@ -41,6 +24,6 @@ public class ShowGridItemListener implements ItemListener {
   public void itemStateChanged(ItemEvent e) {
     JCheckBoxMenuItem showGridMenuItem = (JCheckBoxMenuItem) e.getItem();
 
-    parent.toogleGridOnBoardEditor(showGridMenuItem.isSelected());
+    MainWindow.getInstance().toogleGridOnBoardEditor(showGridMenuItem.isSelected());
   }
 }

@@ -6,11 +6,11 @@
  */
 package net.rpgtoolkit.editor.editors.board.panels;
 
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import javax.swing.GroupLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -30,9 +30,16 @@ import net.rpgtoolkit.common.assets.BoardVector;
 public class BoardVectorPanel extends AbstractModelPanel {
 
   private final JSpinner layerSpinner;
+  private final JLabel layerLabel;
+  
   private final JCheckBox isClosedCheckBox;
+  private final JLabel isClosedLabel;
+  
   private final JTextField handleTextField;
+  private final JLabel handleLabel;
+  
   private final JComboBox<String> tileTypeComboBox;
+  private final JLabel tileTypeLabel;
 
   private static final String[] TILE_TYPES = {
     "SOLID", "UNDER", "STAIRS", "WAYPOINT"
@@ -152,43 +159,36 @@ public class BoardVectorPanel extends AbstractModelPanel {
       }
     });
     ///
-    /// constraints
+    /// this
     ///
-    constraints.insets = new Insets(4, 15, 0, 30);
-    constraintsRight.insets = new Insets(0, 0, 10, 15);
-
-    constraints.gridx = 0;
-    constraints.gridy = 1;
-    add(new JLabel("Handle"), constraints);
-
-    constraints.gridx = 0;
-    constraints.gridy = 2;
-    add(new JLabel("Is Closed"), constraints);
-
-    constraints.gridx = 0;
-    constraints.gridy = 3;
-    add(new JLabel("Layer"), constraints);
-
-    constraints.gridx = 0;
-    constraints.gridy = 4;
-    add(new JLabel("Type"), constraints);
-    ///
-    /// constraintsRight
-    ///
-    constraintsRight.gridx = 1;
-    constraintsRight.gridy = 1;
-    add(handleTextField, constraintsRight);
-
-    constraintsRight.gridx = 1;
-    constraintsRight.gridy = 2;
-    add(isClosedCheckBox, constraintsRight);
-
-    constraintsRight.gridx = 1;
-    constraintsRight.gridy = 3;
-    add(layerSpinner, constraintsRight);
-
-    constraintsRight.gridx = 1;
-    constraintsRight.gridy = 4;
-    add(tileTypeComboBox, constraintsRight);
+    horizontalGroup.addGroup(
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(handleLabel = getJLabel("Handle"))
+                    .addComponent(isClosedLabel = getJLabel("Is Closed"))
+                    .addComponent(layerLabel = getJLabel("Layer"))
+                    .addComponent(tileTypeLabel = getJLabel("Type")));
+    
+    horizontalGroup.addGroup(
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(handleTextField)
+                    .addComponent(isClosedCheckBox)
+                    .addComponent(layerSpinner)
+                    .addComponent(tileTypeComboBox));
+    
+    layout.setHorizontalGroup(horizontalGroup);
+    
+    verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(handleLabel).addComponent(handleTextField));
+    
+    verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(isClosedLabel).addComponent(isClosedCheckBox));
+    
+    verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(layerLabel).addComponent(layerSpinner));
+    
+    verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(tileTypeLabel).addComponent(tileTypeComboBox));
+  
+    layout.setVerticalGroup(verticalGroup);
   }
 }

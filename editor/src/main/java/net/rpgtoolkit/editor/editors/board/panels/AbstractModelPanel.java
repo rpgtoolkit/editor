@@ -7,9 +7,8 @@
 package net.rpgtoolkit.editor.editors.board.panels;
 
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -28,26 +27,25 @@ public abstract class AbstractModelPanel extends JPanel {
   protected static final int COLUMNS = 10;
   
   protected Object model;
-  
   protected Font font;
+  
+  protected GroupLayout layout;
+  protected SequentialGroup horizontalGroup;
+  protected SequentialGroup verticalGroup;
 
-  protected GridBagConstraints constraints;
-  protected GridBagConstraints constraintsRight;
 
   public AbstractModelPanel(Object model) {
     this.model = model;
-    
-    font = new Font(new JLabel().getFont().getName(), Font.PLAIN, 10);
+    font = new JLabel().getFont();
 
-    setLayout(new GridBagLayout());
-    constraints = new GridBagConstraints();
-    constraints.anchor = GridBagConstraints.NORTHWEST;
-    constraints.insets = new Insets(4, 15, 0, 0);
+    layout = new GroupLayout(this);
+    layout.setAutoCreateGaps(true);
+    layout.setAutoCreateContainerGaps(true);
     
-    constraintsRight = (GridBagConstraints) constraints.clone();
-    constraintsRight.fill = GridBagConstraints.HORIZONTAL;
-    constraintsRight.weightx = 1.0;
-    constraintsRight.insets = new Insets(0, 30, 0, 4);
+    horizontalGroup = layout.createSequentialGroup();
+    verticalGroup = layout.createSequentialGroup();
+    
+    setLayout(layout);
   }
 
   public Object getModel() {

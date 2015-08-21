@@ -6,22 +6,18 @@
  */
 package net.rpgtoolkit.editor.editors.board.panels;
 
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import javax.swing.JButton;
+import javax.swing.GroupLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.BoardProgram;
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
-import net.rpgtoolkit.editor.utilities.FileTools;
 
 /**
  *
@@ -29,12 +25,17 @@ import net.rpgtoolkit.editor.utilities.FileTools;
  */
 public class BoardProgramPanel extends AbstractModelPanel {
 
-  private final JTextField fileTextField;
-  private final JButton fileButton;
+  private final JTextField programTextField;
+  private final JLabel programLabel;
 
   private final JSpinner layerSpinner;
+  private final JLabel layerLabel;
+  
   private final JComboBox activationComboBox;
+  private final JLabel activationLabel;
+  
   private final JCheckBox isClosedCheckBox;
+  private final JLabel isClosedLabel;
 
   private static final String[] ACTIVATION_TYPES = {
     "STEP-ON", "KEYPRESS"
@@ -54,29 +55,10 @@ public class BoardProgramPanel extends AbstractModelPanel {
     ///
     boardProgram = program;
     ///
-    /// filePanel
+    /// programTextField
     ///
-    fileTextField = new JTextField(boardProgram.getFileName());
-    fileTextField.setColumns(17);
-
-    fileButton = new JButton("...");
-    fileButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        File file = FileTools.doChooseFile("prg", "Prg", "Program Files");
-
-        if (file != null) {
-          boardProgram.setFile(file);
-          boardProgram.setFileName(file.getName());
-          fileTextField.setText(file.getName());
-        }
-      }
-
-    });
-
-    JPanel filePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    filePanel.add(fileTextField);
-    filePanel.add(fileButton);
+    programTextField = new JTextField(boardProgram.getFileName());
+    programTextField.setColumns(17);
     ///
     /// layerSpinner
     ///
@@ -151,40 +133,36 @@ public class BoardProgramPanel extends AbstractModelPanel {
       }
     });
     ///
-    /// constraints
+    /// this
     ///
-    constraints.gridx = 0;
-    constraints.gridy = 1;
-    add(new JLabel("Program"), constraints);
-
-    constraints.gridx = 0;
-    constraints.gridy = 2;
-    add(new JLabel("Layer"), constraints);
-
-    constraints.gridx = 0;
-    constraints.gridy = 3;
-    add(new JLabel("Activation"), constraints);
-
-    constraints.gridx = 0;
-    constraints.gridy = 4;
-    add(new JLabel("Is Closed"), constraints);
-    ///
-    /// constraintsRight
-    ///
-    constraintsRight.gridx = 1;
-    constraintsRight.gridy = 1;
-    add(filePanel, constraintsRight);
-
-    constraintsRight.gridx = 1;
-    constraintsRight.gridy = 2;
-    add(layerSpinner, constraintsRight);
-
-    constraintsRight.gridx = 1;
-    constraintsRight.gridy = 3;
-    add(activationComboBox, constraintsRight);
-
-    constraintsRight.gridx = 1;
-    constraintsRight.gridy = 4;
-    add(isClosedCheckBox, constraintsRight);
+    horizontalGroup.addGroup(
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(programLabel = getJLabel("Program"))
+                    .addComponent(layerLabel = getJLabel("Layer"))
+                    .addComponent(activationLabel = getJLabel("Activation"))
+                    .addComponent(isClosedLabel = getJLabel("Is Closed")));
+    
+    horizontalGroup.addGroup(
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(programTextField)
+                    .addComponent(layerSpinner)
+                    .addComponent(activationComboBox)
+                    .addComponent(isClosedCheckBox));
+    
+    layout.setHorizontalGroup(horizontalGroup);
+    
+    verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(programLabel).addComponent(programTextField));
+    
+    verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(layerLabel).addComponent(layerSpinner));
+    
+    verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(activationLabel).addComponent(activationComboBox));
+    
+    verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(isClosedLabel).addComponent(isClosedCheckBox));
+  
+    layout.setVerticalGroup(verticalGroup);
   }
 }

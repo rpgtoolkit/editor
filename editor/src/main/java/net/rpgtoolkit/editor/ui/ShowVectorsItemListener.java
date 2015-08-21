@@ -16,20 +16,10 @@ import javax.swing.JCheckBoxMenuItem;
  */
 public class ShowVectorsItemListener implements ItemListener {
 
-  private MainWindow parent;
-
-  public ShowVectorsItemListener() {
-
-  }
-
-  public ShowVectorsItemListener(MainWindow parent) {
-    this.parent = parent;
-  }
-
   @Override
   public void itemStateChanged(ItemEvent e) {
     JCheckBoxMenuItem showVectorsMenuItem = (JCheckBoxMenuItem) e.getItem();
 
-    parent.toogleVectorsOnBoardEditor(showVectorsMenuItem.isSelected());
+    MainWindow.getInstance().toogleVectorsOnBoardEditor(showVectorsMenuItem.isSelected());
   }
 }

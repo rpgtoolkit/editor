@@ -16,20 +16,10 @@ import javax.swing.JCheckBoxMenuItem;
  */
 public class ShowProgramsItemListener implements ItemListener {
 
-  private MainWindow parent;
-
-  public ShowProgramsItemListener() {
-
-  }
-
-  public ShowProgramsItemListener(MainWindow parent) {
-    this.parent = parent;
-  }
-
   @Override
   public void itemStateChanged(ItemEvent e) {
     JCheckBoxMenuItem showProgramsMenuItem = (JCheckBoxMenuItem) e.getItem();
 
-    parent.toogleProgramsOnBoardEditor(showProgramsMenuItem.isSelected());
+    MainWindow.getInstance().toogleProgramsOnBoardEditor(showProgramsMenuItem.isSelected());
   }
 }

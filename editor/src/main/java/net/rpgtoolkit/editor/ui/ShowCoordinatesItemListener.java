@@ -16,21 +16,11 @@ import javax.swing.JCheckBoxMenuItem;
  */
 public class ShowCoordinatesItemListener implements ItemListener {
 
-  private MainWindow parent;
-
-  public ShowCoordinatesItemListener() {
-
-  }
-
-  public ShowCoordinatesItemListener(MainWindow parent) {
-    this.parent = parent;
-  }
-
   @Override
   public void itemStateChanged(ItemEvent e) {
     JCheckBoxMenuItem showCoordinatesMenuItem = (JCheckBoxMenuItem) e.getItem();
 
-    parent.toogleCoordinatesOnBoardEditor(
+    MainWindow.getInstance().toogleCoordinatesOnBoardEditor(
             showCoordinatesMenuItem.isSelected());
   }
 }

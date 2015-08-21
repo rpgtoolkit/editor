@@ -6,15 +6,12 @@
  */
 package net.rpgtoolkit.editor.editors.board.panels;
 
-import java.awt.FlowLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
@@ -23,7 +20,6 @@ import net.rpgtoolkit.common.assets.BoardSprite;
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
 import net.rpgtoolkit.editor.editors.board.BoardSpriteDialog;
 import net.rpgtoolkit.editor.ui.MainWindow;
-import net.rpgtoolkit.editor.utilities.FileTools;
 
 /**
  *
@@ -33,23 +29,30 @@ import net.rpgtoolkit.editor.utilities.FileTools;
 public class BoardSpritePanel extends AbstractModelPanel {
 
   private final JTextField fileTextField;
-  private final JButton fileButton;
+  private final JLabel fileLabel;
 
   private final JTextField activationProgramTextField;
-  private final JButton activationProgramButton;
+  private final JLabel activationProgramLabel;
 
   private final JTextField multiTaskingTextField;
-  private final JButton multiTaskingButton;
+  private final JLabel multiTaskingLabel;
 
   private final JSpinner xSpinner;
+  private final JLabel xLabel;
+  
   private final JSpinner ySpinner;
+  private final JLabel yLabel;
+  
   private final JSpinner layerSpinner;
+  private final JLabel layerLabel;
 
   private int lastSpinnerLayer; // Used to ensure that the selection is valid.
 
   private final JComboBox typeComboBox;
+  private final JLabel typeLabel;
 
-  private final JButton variablesJButton;
+  private final JButton variablesButton;
+  private final JLabel variablesLabel;
 
   private static final String[] ACTIVATION_TYPES = {
     "STEP-ON", "KEYPRESS"
@@ -61,74 +64,22 @@ public class BoardSpritePanel extends AbstractModelPanel {
     ///
     super(boardSprite);
     ///
-    /// filePanel
+    /// fileTextField
     ///
     fileTextField = new JTextField(boardSprite.getFileName());
     fileTextField.setColumns(17);
-
-    fileButton = new JButton("...");
-    fileButton.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        File file = FileTools.doChooseFile("itm", "Item", "Item Files");
-
-        if (file != null) {
-          fileTextField.setText(file.getName());
-        }
-      }
-    });
-
-    JPanel filePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    filePanel.add(fileTextField);
-    filePanel.add(fileButton);
     ///
-    /// activationProgramPanel
+    /// activationTextField
     ///
     activationProgramTextField = new JTextField(boardSprite.
             getActivationProgram());
     activationProgramTextField.setColumns(17);
-
-    activationProgramButton = new JButton("...");
-    activationProgramButton.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        File file = FileTools.doChooseFile("prg", "Prg", "Program Files");
-
-        if (file != null) {
-          activationProgramTextField.setText(file.getName());
-        }
-      }
-      
-    });
-
-    JPanel activationProgramPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    activationProgramPanel.add(activationProgramTextField);
-    activationProgramPanel.add(activationProgramButton);
     ///
-    /// multiTaskingPanel
+    /// multiTaskingTextField
     ///
     multiTaskingTextField = new JTextField(boardSprite.
             getMultitaskingProgram());
     multiTaskingTextField.setColumns(17);
-
-    multiTaskingButton = new JButton("...");
-    multiTaskingButton.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        File file = FileTools.doChooseFile("prg", "Prg", "Program Files");
-
-        if (file != null) {
-          multiTaskingTextField.setText(file.getName());
-        }
-      }
-    });
-
-    JPanel multiTaskingPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    multiTaskingPanel.add(multiTaskingTextField);
-    multiTaskingPanel.add(multiTaskingButton);
     ///
     /// xSpinner
     ///
@@ -204,10 +155,10 @@ public class BoardSpritePanel extends AbstractModelPanel {
     ///
     typeComboBox = new JComboBox(ACTIVATION_TYPES);
     ///
-    /// variablesJButton
+    /// variablesButton
     ///
-    variablesJButton = new JButton("Configure");
-    variablesJButton.addActionListener(new ActionListener() {
+    variablesButton = new JButton("Configure");
+    variablesButton.addActionListener(new ActionListener() {
 
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -253,71 +204,58 @@ public class BoardSpritePanel extends AbstractModelPanel {
     ///
     /// this
     ///
-    constraints.insets = new Insets(8, 15, 0, 3);
-    constraintsRight.insets = new Insets(0, 0, 10, 15);
+    horizontalGroup.addGroup(
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(fileLabel = getJLabel("Item File"))
+                    .addComponent(activationProgramLabel = getJLabel("Activation Program"))
+                    .addComponent(multiTaskingLabel = getJLabel("MultiTasking Program"))
+                    .addComponent(xLabel = getJLabel("X"))
+                    .addComponent(yLabel = getJLabel("Y"))
+                    .addComponent(layerLabel = getJLabel("Layer"))
+                    .addComponent(typeLabel = getJLabel("Type"))
+                    .addComponent(variablesLabel = getJLabel("Variables")));
+    
+    horizontalGroup.addGroup(
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(fileTextField)
+                    .addComponent(activationProgramTextField)
+                    .addComponent(multiTaskingTextField)
+                    .addComponent(xSpinner)
+                    .addComponent(ySpinner)
+                    .addComponent(layerSpinner)
+                    .addComponent(typeComboBox)
+                    .addComponent(variablesButton));
+    
+    layout.setHorizontalGroup(horizontalGroup);
+    
+    verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(fileLabel).addComponent(fileTextField));
+    
+    verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(activationProgramLabel).addComponent(activationProgramTextField));
+    
+    verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(multiTaskingLabel).addComponent(multiTaskingTextField));
+    
+    verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(xLabel).addComponent(xSpinner));
+    
+    verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(yLabel).addComponent(ySpinner));
+    
+    verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(yLabel).addComponent(ySpinner));
+    
+    verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(layerLabel).addComponent(layerSpinner));
+    
+    verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(typeLabel).addComponent(typeComboBox));
+    
+    verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(variablesLabel).addComponent(variablesButton));
+  
+    layout.setVerticalGroup(verticalGroup);
 
-    constraints.gridx = 0;
-    constraints.gridy = 1;
-    add(new JLabel("Item File"), constraints);
-
-    constraints.gridx = 0;
-    constraints.gridy = 2;
-    add(new JLabel("Activation"), constraints);
-
-    constraints.gridx = 0;
-    constraints.gridy = 3;
-    add(new JLabel("MultiTasking"), constraints);
-
-    constraints.gridx = 0;
-    constraints.gridy = 4;
-    add(new JLabel("X"), constraints);
-
-    constraints.gridx = 0;
-    constraints.gridy = 5;
-    add(new JLabel("Y"), constraints);
-
-    constraints.gridx = 0;
-    constraints.gridy = 6;
-    add(new JLabel("Layer"), constraints);
-
-    constraints.gridx = 0;
-    constraints.gridy = 7;
-    add(new JLabel("Type"), constraints);
-
-    constraints.gridx = 0;
-    constraints.gridy = 8;
-    add(new JLabel("Variables"), constraints);
-
-    constraintsRight.gridx = 1;
-    constraintsRight.gridy = 1;
-    add(filePanel, constraintsRight);
-
-    constraintsRight.gridx = 1;
-    constraintsRight.gridy = 2;
-    add(activationProgramPanel, constraintsRight);
-
-    constraintsRight.gridx = 1;
-    constraintsRight.gridy = 3;
-    add(multiTaskingPanel, constraintsRight);
-
-    constraintsRight.gridx = 1;
-    constraintsRight.gridy = 4;
-    add(xSpinner, constraintsRight);
-
-    constraintsRight.gridx = 1;
-    constraintsRight.gridy = 5;
-    add(ySpinner, constraintsRight);
-
-    constraintsRight.gridx = 1;
-    constraintsRight.gridy = 6;
-    add(layerSpinner, constraintsRight);
-
-    constraintsRight.gridx = 1;
-    constraintsRight.gridy = 7;
-    add(typeComboBox, constraintsRight);
-
-    constraintsRight.gridx = 1;
-    constraintsRight.gridy = 8;
-    add(variablesJButton, constraintsRight);
   }
 }
