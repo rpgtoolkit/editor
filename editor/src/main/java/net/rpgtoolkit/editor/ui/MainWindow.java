@@ -633,7 +633,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       case "Tileset":
         return new String[] {"tst"};
       case "SpecialMove":
-        return new String[] {"spc", "spc.json"};
+        return new String[] {"spc", "json"};
       default:
         return this.getTKFileExtensions();
     }
