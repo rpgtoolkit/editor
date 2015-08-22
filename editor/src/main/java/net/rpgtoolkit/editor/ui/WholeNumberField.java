@@ -39,6 +39,7 @@ public class WholeNumberField extends JFormattedTextField {
                 NumberFormat.getIntegerInstance());
         wholeNumberFormatter.setValueClass(Long.class);
         wholeNumberFormatter.setMinimum(0L);
+        wholeNumberFormatter.setCommitsOnValidEdit(true);
         return wholeNumberFormatter;
     }
     

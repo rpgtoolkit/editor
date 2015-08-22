@@ -320,6 +320,11 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
                 fightPowerLabel,
                 defencePowerLabel);
         basicInfoLayout.linkSize(SwingConstants.VERTICAL,
+                enemyNameLabel,
+                maxHitPointsLabel,
+                maxSpecialPointsLabel,
+                fightPowerLabel,
+                defencePowerLabel,
                 this.enemyName,
                 this.maxHitPoints,
                 this.maxSpecialPoints,
@@ -360,11 +365,14 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
                         .addComponent(this.critOnPlayer))
         );
 
-        fightingConditionsLayout.linkSize(SwingConstants.HORIZONTAL, 
+        fightingConditionsLayout.linkSize(SwingConstants.HORIZONTAL,
                 runAwayProgramLabel,
                 critOnEnemyLabel,
                 critOnPlayerLabel);
-        fightingConditionsLayout.linkSize(SwingConstants.VERTICAL, 
+        fightingConditionsLayout.linkSize(SwingConstants.VERTICAL,
+                runAwayProgramLabel,
+                critOnEnemyLabel,
+                critOnPlayerLabel,
                 this.runAwayProgram,
                 this.critOnEnemy,
                 this.critOnPlayer);

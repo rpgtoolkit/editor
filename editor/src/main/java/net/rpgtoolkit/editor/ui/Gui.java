@@ -143,10 +143,11 @@ public abstract class Gui {
             if(!fileName.equals("")) {
                 String subdir = MainWindow.getInstance().getImageSubdirectory();
                 FileInputStream fis = new FileInputStream(
-                        MainWindow.getInstance().getPath(subdir + fileName));
+                        MainWindow.getInstance().getPath(subdir + "/" + fileName));
                 return ImageIO.read(fis);
             }
         } catch(IOException e) {
+            System.err.println(e);
         }
         return null;
     }

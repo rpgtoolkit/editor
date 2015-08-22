@@ -40,6 +40,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import net.rpgtoolkit.common.CorruptAssetException;
@@ -284,7 +286,6 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
         // Configure function Scope Components
         String portrait = this.player.getProfilePicture();
-        out.println(portrait);
         if(portrait.isEmpty() == false) {
             this.portraitDisplay.setIcon(Gui.ImageToIcon(
                     Gui.loadImage(portrait), 64, 64));
@@ -414,6 +415,15 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                 defencePowerLabel,
                 levelLabel);
         statsLayout.linkSize(SwingConstants.VERTICAL,
+                playerNameLabel,
+                experienceLabel,
+                hitPointsLabel,
+                maxHitPointsLabel,
+                specialPointsLabel,
+                maxSpecialPointsLabel,
+                fightPowerLabel,
+                defencePowerLabel,
+                levelLabel,
                 this.playerName,
                 this.experience,
                 this.hitPoints,
@@ -506,6 +516,15 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                 defencePowerVarLabel,
                 levelVarLabel);
         variablesLayout.linkSize(SwingConstants.VERTICAL,
+                playerNameVarLabel,
+                experienceVarLabel,
+                hitPointsVarLabel,
+                maxHitPointsVarLabel,
+                specialPointsVarLabel,
+                maxSpecialPointsVarLabel,
+                fightPowerVarLabel,
+                defencePowerVarLabel,
+                levelVarLabel,
                 this.playerNameVar,
                 this.experienceVar,
                 this.hitPointsVar,
@@ -966,8 +985,8 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if(e.getValueIsAdjusting() == false) {
-                    sMoveAlwaysButton.doClick();
                     if(sMoveList.getSelectedIndex() == -1) {
+                        sMoveAlwaysButton.doClick();
                         sMoveFindButton.setEnabled(false);
                         sMoveRemoveButton.setEnabled(false);
                         sMoveExpMinLabel.setEnabled(false);
@@ -980,14 +999,20 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                         sMoveVarVal.setEnabled(false);
                         sMoveAlwaysButton.setEnabled(false);
                     } else {
+                        int index = sMoveList.getSelectedIndex();
+                        PlayerSpecialMove move = sMoves.get(index);
                         sMoveFindButton.setEnabled(true);
                         sMoveRemoveButton.setEnabled(true);
+                        sMoveExpMin.setValue(move.getMinExperience());
                         sMoveExpMinLabel.setEnabled(true);
                         sMoveExpMin.setEnabled(true);
+                        sMoveLvMin.setValue(move.getMinLevel());
                         sMoveLvMinLabel.setEnabled(true);
                         sMoveLvMin.setEnabled(true);
+                        sMoveVarName.setText(move.getConditionVariable());
                         sMoveVarNameLabel.setEnabled(true);
                         sMoveVarName.setEnabled(true);
+                        sMoveVarVal.setText(move.getConditionVariableTest());
                         sMoveVarValLabel.setEnabled(true);
                         sMoveVarVal.setEnabled(true);
                         sMoveAlwaysButton.setEnabled(true);
@@ -1009,9 +1034,17 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                 int index = sMoveList.getSelectedIndex();
                 if(index >= 0) {
                     String loc = browseSpecialMove();
-                    if(loc != null) {
+                    if (loc != null) {
+                        SpecialMove sMove = loadSpecialMove(loc);
+                        PlayerSpecialMove pMove
+                                = new PlayerSpecialMove(sMove.getName(), 0, 0, "", "");
+                        sMoves.set(index, pMove);
                         specialMoves.set(index, Integer.toString(index + 1)
                                 + ": " + getSpecialMoveText(loc));
+                        sMoveExpMin.setValue(pMove.getMinExperience());
+                        sMoveLvMin.setValue(pMove.getMinLevel());
+                        sMoveVarName.setText(pMove.getConditionVariable());
+                        sMoveVarVal.setText(pMove.getConditionVariableTest());
                     }
                 }
             }
@@ -1024,7 +1057,9 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                 //insert after current slot
                 int index = sMoveList.getSelectedIndex() + 1;
                 String loc = browseSpecialMove();
-                if(loc != null) {
+                if (loc != null) {
+                    SpecialMove move = loadSpecialMove(loc);
+                    sMoves.add(index, new PlayerSpecialMove(move.getName(), 0, 0, "", ""));
                     specialMoves.add(index, Integer.toString(index + 1)
                             + ": " + getSpecialMoveText(loc));
                 }
@@ -1035,21 +1070,116 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
         });
         
         //remove button
-        sMoveRemoveButton.addActionListener(
-                Gui.simpleRemoveListener(specialMoves, sMoveList)
-        );
+        sMoveRemoveButton.addActionListener( new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = sMoveList.getSelectedIndex();
+                if(index >= 0) {
+                    sMoves.remove(index);
+                }
+                Gui.simpleRemoveListener(specialMoves, sMoveList).actionPerformed(e);
+            }
+        });
         
+        //move list (the one backing the JList, not the one on the Player)
+        specialMoves.addListDataListener(new ListDataListener() {
+
+            @Override
+            public void intervalAdded(ListDataEvent e) {
+                updateNumberLabels(e.getIndex0() + 1);
+            }
+
+            @Override
+            public void intervalRemoved(ListDataEvent e) {
+                updateNumberLabels(e.getIndex0());
+            }
+            
+            private void updateNumberLabels(int startingIndex) {
+                for (int i = startingIndex; i < specialMoves.getSize(); i++) {
+                    String text = specialMoves.get(i).toString().replaceFirst("\\d+: ", "");
+                    specialMoves.set(i, Integer.toString(i + 1) + ": " + text);
+                }
+            }
+
+            @Override
+            public void contentsChanged(ListDataEvent e) {
+                //no effect
+            }
+        });
+        
+        //player special move properties
         sMoveExpMin.addPropertyChangeListener("value", new PropertyChangeListener() {
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                out.println("sMoveExpMin property change!");
                 out.println(sMoveExpMin.getValue());
+                int index = sMoveList.getSelectedIndex();
+                if (index != -1) {
+                    sMoves.get(index).setMinExperience(sMoveExpMin.getValue());
+                }
             }
         });
-//                    sMoveLvMin.getValue();
-//                    sMoveVarName.getText();
-//                    sMoveLvMin.getText();
+        
+        sMoveLvMin.addPropertyChangeListener("value", new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                out.println(sMoveLvMin.getValue());
+                int index = sMoveList.getSelectedIndex();
+                if (index != -1) {
+                    sMoves.get(index).setMinLevel(sMoveLvMin.getValue());
+                }
+            }
+        });
+        
+        sMoveVarName.getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updateVar();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateVar();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+            }
+            
+            private void updateVar() {
+                int index = sMoveList.getSelectedIndex();
+                if (index != -1) {
+                    sMoves.get(index).setConditionVariable(sMoveVarName.getText());
+                }
+            }
+        });
+        
+        sMoveVarVal.getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updateVar();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateVar();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+            }
+            
+            private void updateVar() {
+                int index = sMoveList.getSelectedIndex();
+                if (index != -1) {
+                    sMoves.get(index).setConditionVariableTest(sMoveVarVal.getText());
+                }
+            }
+        });
         
         //always button
         sMoveAlwaysButton.addActionListener(new ActionListener() {
@@ -1058,7 +1188,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                 sMoveExpMin.setValue(0);
                 sMoveLvMin.setValue(0);
                 sMoveVarName.setText("");
-                sMoveLvMin.setText("");
+                sMoveVarVal.setText("");
             }
         });
 
@@ -1084,15 +1214,19 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
         // Configure the SETTINGS PANEL layout
         settingsLayout.setHorizontalGroup(settingsLayout.createParallelGroup()
                 .addComponent(this.usesSpecials)
-                .addComponent(specialsNameLabel)
-                .addComponent(this.specialsName)
+                .addGroup(settingsLayout.createSequentialGroup()
+                        .addComponent(specialsNameLabel)
+                        .addComponent(this.specialsName))
         );
 
         settingsLayout.setVerticalGroup(settingsLayout.createSequentialGroup()
                 .addComponent(this.usesSpecials)
-                .addComponent(specialsNameLabel)
-                .addComponent(this.specialsName)
+                .addGroup(settingsLayout.createParallelGroup()
+                        .addComponent(specialsNameLabel)
+                        .addComponent(this.specialsName))
         );
+        
+        settingsLayout.linkSize(SwingConstants.VERTICAL, specialsNameLabel, this.specialsName);
 
         // Configure the SMOVE PANEL layout
         sMoveLayout.setHorizontalGroup(sMoveLayout.createSequentialGroup()
@@ -1112,33 +1246,40 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
         );
 
         // Configure the CONDITIONS PANEL layout
-        conditionsLayout.setHorizontalGroup(conditionsLayout.createSequentialGroup()
-                .addGroup(conditionsLayout.createParallelGroup()
-                        .addComponent(sMoveExpMinLabel)
-                        .addComponent(this.sMoveExpMin)
-                        .addComponent(sMoveLvMinLabel)
-                        .addComponent(this.sMoveLvMin)
-                        .addGroup(conditionsLayout.createSequentialGroup()
-                                .addComponent(sMoveVarNameLabel)
-                                .addComponent(this.sMoveVarName)
-                                .addComponent(sMoveVarValLabel)
-                                .addComponent(this.sMoveVarVal))
-                        .addComponent(sMoveAlwaysButton))
-        );
-
-        conditionsLayout.setVerticalGroup(conditionsLayout.createParallelGroup()
+        conditionsLayout.setHorizontalGroup(conditionsLayout.createParallelGroup()
                 .addGroup(conditionsLayout.createSequentialGroup()
                         .addComponent(sMoveExpMinLabel)
                         .addComponent(this.sMoveExpMin)
+                ).addGroup(conditionsLayout.createSequentialGroup()
                         .addComponent(sMoveLvMinLabel)
                         .addComponent(this.sMoveLvMin)
-                        .addGroup(conditionsLayout.createParallelGroup()
-                                .addComponent(sMoveVarNameLabel)
-                                .addComponent(this.sMoveVarName)
-                                .addComponent(sMoveVarValLabel)
-                                .addComponent(this.sMoveVarVal))
-                        .addComponent(sMoveAlwaysButton))
+                ).addGroup(conditionsLayout.createSequentialGroup()
+                        .addComponent(sMoveVarNameLabel)
+                        .addComponent(this.sMoveVarName)
+                        .addComponent(sMoveVarValLabel)
+                        .addComponent(this.sMoveVarVal))
+                .addComponent(sMoveAlwaysButton)
         );
+
+        conditionsLayout.setVerticalGroup(conditionsLayout.createSequentialGroup()
+                .addGroup(conditionsLayout.createParallelGroup()
+                        .addComponent(sMoveExpMinLabel)
+                        .addComponent(this.sMoveExpMin)
+                ).addGroup(conditionsLayout.createParallelGroup()
+                        .addComponent(sMoveLvMinLabel)
+                        .addComponent(this.sMoveLvMin)
+                ).addGroup(conditionsLayout.createParallelGroup()
+                        .addComponent(sMoveVarNameLabel)
+                        .addComponent(this.sMoveVarName)
+                        .addComponent(sMoveVarValLabel)
+                        .addComponent(this.sMoveVarVal))
+                .addComponent(sMoveAlwaysButton)
+        );
+        
+        conditionsLayout.linkSize(SwingConstants.HORIZONTAL, sMoveExpMinLabel, sMoveLvMinLabel);
+        conditionsLayout.linkSize(SwingConstants.VERTICAL,
+                sMoveExpMinLabel, sMoveLvMinLabel, sMoveVarNameLabel, sMoveVarValLabel,
+                this.sMoveExpMin, this.sMoveLvMin, this.sMoveVarName, this.sMoveVarVal);
 
         // Configure the Top Level Panel layout
         layout.setHorizontalGroup(layout.createParallelGroup()
