@@ -4,26 +4,24 @@
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of
  * the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package net.rpgtoolkit.editor.ui;
+package net.rpgtoolkit.editor.ui.listeners;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import javax.swing.JCheckBoxMenuItem;
+import net.rpgtoolkit.editor.ui.MainWindow;
 
 /**
  *
  * @author Joshua Michael Daly
  */
-public class ShowGridItemListener implements ItemListener {
+public class ShowCoordinatesItemListener implements ItemListener {
 
-  /**
-   *
-   * @param e
-   */
   @Override
   public void itemStateChanged(ItemEvent e) {
-    JCheckBoxMenuItem showGridMenuItem = (JCheckBoxMenuItem) e.getItem();
+    JCheckBoxMenuItem showCoordinatesMenuItem = (JCheckBoxMenuItem) e.getItem();
 
-    MainWindow.getInstance().toogleGridOnBoardEditor(showGridMenuItem.isSelected());
+    MainWindow.getInstance().toogleCoordinatesOnBoardEditor(
+            showCoordinatesMenuItem.isSelected());
   }
 }

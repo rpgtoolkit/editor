@@ -6,6 +6,7 @@
  */
 package net.rpgtoolkit.editor.editors;
 
+import net.rpgtoolkit.editor.ui.listeners.TileSelectionListener;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;

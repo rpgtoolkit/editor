@@ -55,7 +55,7 @@ import net.rpgtoolkit.editor.editors.ProjectEditor;
 import net.rpgtoolkit.editor.editors.SpecialMoveEditor;
 import net.rpgtoolkit.editor.editors.TileEditor;
 import net.rpgtoolkit.editor.editors.TileSelectionEvent;
-import net.rpgtoolkit.editor.editors.TileSelectionListener;
+import net.rpgtoolkit.editor.ui.listeners.TileSelectionListener;
 import net.rpgtoolkit.editor.editors.TileRegionSelectionEvent;
 import net.rpgtoolkit.editor.editors.board.NewBoardDialog;
 import net.rpgtoolkit.editor.ui.resources.Icons;

@@ -6,6 +6,11 @@
  */
 package net.rpgtoolkit.editor.ui;
 
+import net.rpgtoolkit.editor.ui.listeners.SnapToGridItemListener;
+import net.rpgtoolkit.editor.ui.listeners.ShowVectorsItemListener;
+import net.rpgtoolkit.editor.ui.listeners.ShowProgramsItemListener;
+import net.rpgtoolkit.editor.ui.listeners.ShowGridItemListener;
+import net.rpgtoolkit.editor.ui.listeners.ShowCoordinatesItemListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.JCheckBoxMenuItem;
