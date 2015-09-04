@@ -22,6 +22,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
+import net.rpgtoolkit.common.utilities.PropertiesSingleton;
 
 /**
  * Contains useful shortcuts and constants for building editors via Swing.
@@ -141,7 +142,10 @@ public abstract class Gui {
     public static BufferedImage loadImage(String fileName) {
         try {
             if(!fileName.equals("")) {
-                FileInputStream fis = new FileInputStream(System.getProperty("project.path") + "/Bitmap/" + fileName);
+                FileInputStream fis = new FileInputStream(System.getProperty("project.path")
+                        + "/" + 
+                        PropertiesSingleton.getProperty("toolkit.directory.bitmap") 
+                        + "/" + fileName);
                 return ImageIO.read(fis);
             }
         } catch(IOException e) {

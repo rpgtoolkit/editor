@@ -46,6 +46,7 @@ import net.rpgtoolkit.editor.ui.IntegerField;
 import net.rpgtoolkit.editor.ui.MainWindow;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
 import net.rpgtoolkit.editor.ui.WholeNumberField;
+import net.rpgtoolkit.common.utilities.PropertiesSingleton;
 
 /**
  * Player Character Editor
@@ -308,11 +309,10 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     portraitFindButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        String loc = mainWindow.getRelativePath(
-                mainWindow.browseLocationBySubdir(
-                        "Bitmap", "Supported Files", "png", "gif", "jpg", "jpeg", "bmp"
+        String loc = mainWindow.getRelativePath(mainWindow.browseLocationBySubdir(PropertiesSingleton.getProperty("toolkit.directory.bitmap"), 
+                        "Supported Files", "png", "gif", "jpg", "jpeg", "bmp"
                 ),
-                mainWindow.getPath("Bitmap")
+                mainWindow.getPath(PropertiesSingleton.getProperty("toolkit.directory.bitmap"))
         );
         if (loc != null) {
           player.setProfilePicture(loc);
@@ -699,7 +699,9 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
           if (text.endsWith(".anm")) {
             //update image if the location is valid
             File f = new File(System.getProperty("project.path")
-                    + sep + "Misc" + sep + text);
+                    + sep 
+                    + PropertiesSingleton.getProperty("toolkit.directory.misc") 
+                    + sep + text);
             if (f.canRead()) {
               selectedAnim = new Animation(f);
 //                            out.println("new animation!");
@@ -1212,7 +1214,9 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
   private SpecialMove loadSpecialMove(String loc) {
     if (loc.endsWith(".spc")) {
       File f = new File(System.getProperty("project.path")
-              + sep + "SpcMove" + sep + loc);
+              + sep 
+              + PropertiesSingleton.getProperty("toolkit.directory.specialmove")
+              + sep + loc);
       if (f.canRead()) {
 //                out.println("loaded special move from location " + loc + "!");
         return new SpecialMove(f);

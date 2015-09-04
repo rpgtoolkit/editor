@@ -20,6 +20,7 @@ import net.rpgtoolkit.common.assets.BoardSprite;
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
 import net.rpgtoolkit.editor.editors.board.BoardSpriteDialog;
 import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.common.utilities.PropertiesSingleton;
 
 /**
  *
@@ -66,7 +67,9 @@ public class BoardSpritePanel extends AbstractModelPanel {
     ///
     /// fileComboBox
     ///
-    File directory = new File(System.getProperty("project.path") + "Item" + File.separator);
+    File directory = new File(System.getProperty("project.path") 
+            + PropertiesSingleton.getProperty("toolkit.directory.item") 
+            + File.separator);
     String[] exts = new String[]{"itm"};
     fileComboBox = getFileListJComboBox(directory, exts, true);
     fileComboBox.setSelectedItem(boardSprite.getFileName());

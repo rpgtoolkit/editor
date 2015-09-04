@@ -60,6 +60,7 @@ import net.rpgtoolkit.editor.editors.TileRegionSelectionEvent;
 import net.rpgtoolkit.editor.editors.board.NewBoardDialog;
 import net.rpgtoolkit.editor.ui.resources.Icons;
 import net.rpgtoolkit.editor.editors.board.ProgramBrush;
+import net.rpgtoolkit.common.utilities.PropertiesSingleton;
 
 /**
  * Currently opening TileSets, tiles, programs, boards, animations, characters etc.
@@ -559,23 +560,23 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   public String getTypeSubdirectory(Class<? extends BasicType> type) {
     switch (type.getSimpleName()) {
       case "Animation":
-        return "Misc";
+        return PropertiesSingleton.getProperty("toolkit.directory.misc");
       case "Board":
-        return "Boards";
+        return PropertiesSingleton.getProperty("toolkit.directory.board");
       case "Enemy":
-        return "Enemy";
+        return PropertiesSingleton.getProperty("toolkit.directory.enemy");
       case "Item":
-        return "Item";
+        return PropertiesSingleton.getProperty("toolkit.directory.item");
       case "Player":
-        return "Chrs";
+        return PropertiesSingleton.getProperty("toolkit.directory.character");
       case "Program":
-        return "Prg";
+        return PropertiesSingleton.getProperty("toolkit.directory.program");
       case "StatusEffect":
-        return "StatusE";
+        return PropertiesSingleton.getProperty("toolkit.directory.statuseffect");
       case "SpecialMove":
-        return "SpcMove";
+        return PropertiesSingleton.getProperty("toolkit.directory.specialmove");
       case "Tileset":
-        return "Tiles";
+        return PropertiesSingleton.getProperty("toolkit.directory.tileset");
       default:
         return "";
     }
@@ -586,7 +587,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       case "Animation":
         return "Animations";
       case "Board":
-        return "Boards";
+        return PropertiesSingleton.getProperty("toolkit.directory.board");
       case "Enemy":
         return "Enemies";
       case "Item":

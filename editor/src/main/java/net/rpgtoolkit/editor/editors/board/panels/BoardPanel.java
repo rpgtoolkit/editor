@@ -15,6 +15,7 @@ import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.editor.editors.board.BoardNeighboursDialog;
 import net.rpgtoolkit.editor.editors.board.BoardSpriteDialog;
 import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.common.utilities.PropertiesSingleton;
 
 /**
  *
@@ -87,7 +88,9 @@ public class BoardPanel extends AbstractModelPanel {
     ///
     /// musicTextField
     ///
-    File directory = new File(System.getProperty("project.path") + "Media" + File.separator);
+    File directory = new File(System.getProperty("project.path") 
+            + PropertiesSingleton.getProperty("toolkit.directory.media")
+            + File.separator);
     String[] exts = new String[] {"wav", "mp3"};
     musicFileComboBox = getFileListJComboBox(directory, exts, true);
     musicFileComboBox.setSelectedItem(board.getBackgroundMusic());
