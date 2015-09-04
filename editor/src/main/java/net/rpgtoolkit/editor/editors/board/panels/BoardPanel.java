@@ -105,7 +105,9 @@ public class BoardPanel extends AbstractModelPanel {
     ///
     /// entryProgramTextField
     ///
-    directory = new File(System.getProperty("project.path") + "Prg" + File.separator);
+    directory = new File(System.getProperty("project.path") 
+            + PropertiesSingleton.getProperty("toolkit.directory.program") 
+            + File.separator);
     exts = new String[] {"prg"};
     entryProgramComboBox = getFileListJComboBox(directory, exts, true);
     entryProgramComboBox.setSelectedItem(board.getFirstRunProgram());

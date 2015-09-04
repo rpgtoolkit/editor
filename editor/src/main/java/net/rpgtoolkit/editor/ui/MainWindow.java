@@ -356,7 +356,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     FileNameExtensionFilter filter = new FileNameExtensionFilter("Toolkit Project", "gam");
     this.fileChooser.setFileFilter(filter);
 
-    File mainFolder = new File(this.workingDir + "/main");
+    File mainFolder = new File(this.workingDir + "/"
+            + PropertiesSingleton.getProperty("toolkit.directory.main"));
 
     if (mainFolder.exists()) {
       this.fileChooser.setCurrentDirectory(mainFolder);
@@ -369,7 +370,9 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
       System.setProperty("project.path",
               this.fileChooser.getCurrentDirectory().getParent()
-              + File.separator + "game" + File.separator
+              + File.separator 
+                      + PropertiesSingleton.getProperty("toolkit.directory.game") 
+                      + File.separator
               + fileName + File.separator);
 
       this.activeProject = new Project(this.fileChooser.getSelectedFile(),

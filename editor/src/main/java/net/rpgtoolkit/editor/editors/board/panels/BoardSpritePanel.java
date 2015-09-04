@@ -84,7 +84,9 @@ public class BoardSpritePanel extends AbstractModelPanel {
     ///
     /// activationComboBox
     ///
-    directory = new File(System.getProperty("project.path") + "Prg" + File.separator);
+    directory = new File(System.getProperty("project.path") 
+            + PropertiesSingleton.getProperty("toolkit.directory.program") 
+            + File.separator);
     exts = new String[]{"prg"};
     activationComboBox = getFileListJComboBox(directory, exts, true);
     activationComboBox.setSelectedItem(boardSprite.getFileName());
