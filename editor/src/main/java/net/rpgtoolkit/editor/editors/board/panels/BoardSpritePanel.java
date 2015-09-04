@@ -8,12 +8,12 @@ package net.rpgtoolkit.editor.editors.board.panels;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.BoardSprite;
@@ -28,21 +28,21 @@ import net.rpgtoolkit.editor.ui.MainWindow;
  */
 public class BoardSpritePanel extends AbstractModelPanel {
 
-  private final JTextField fileTextField;
+  private final JComboBox fileComboBox;
   private final JLabel fileLabel;
 
-  private final JTextField activationProgramTextField;
+  private final JComboBox activationComboBox;
   private final JLabel activationProgramLabel;
 
-  private final JTextField multiTaskingTextField;
+  private final JComboBox multiTaskingComboBox;
   private final JLabel multiTaskingLabel;
 
   private final JSpinner xSpinner;
   private final JLabel xLabel;
-  
+
   private final JSpinner ySpinner;
   private final JLabel yLabel;
-  
+
   private final JSpinner layerSpinner;
   private final JLabel layerLabel;
 
@@ -64,22 +64,48 @@ public class BoardSpritePanel extends AbstractModelPanel {
     ///
     super(boardSprite);
     ///
-    /// fileTextField
+    /// fileComboBox
     ///
-    fileTextField = new JTextField(boardSprite.getFileName());
-    fileTextField.setColumns(17);
+    File directory = new File(System.getProperty("project.path") + "Item" + File.separator);
+    String[] exts = new String[]{"itm"};
+    fileComboBox = getFileListJComboBox(directory, exts, true);
+    fileComboBox.setSelectedItem(boardSprite.getFileName());
+    fileComboBox.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        boardSprite.setFileName((String) fileComboBox.getSelectedItem());
+      }
+
+    });
     ///
-    /// activationTextField
+    /// activationComboBox
     ///
-    activationProgramTextField = new JTextField(boardSprite.
-            getActivationProgram());
-    activationProgramTextField.setColumns(17);
+    directory = new File(System.getProperty("project.path") + "Prg" + File.separator);
+    exts = new String[]{"prg"};
+    activationComboBox = getFileListJComboBox(directory, exts, true);
+    activationComboBox.setSelectedItem(boardSprite.getFileName());
+    activationComboBox.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        boardSprite.setActivationProgram((String) activationComboBox.getSelectedItem());
+      }
+
+    });
     ///
     /// multiTaskingTextField
     ///
-    multiTaskingTextField = new JTextField(boardSprite.
-            getMultitaskingProgram());
-    multiTaskingTextField.setColumns(17);
+    multiTaskingComboBox = getFileListJComboBox(directory, exts, true);
+    multiTaskingComboBox.setSelectedItem(boardSprite.getFileName());
+    multiTaskingComboBox.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        boardSprite.setMultitaskingProgram((String) multiTaskingComboBox.getSelectedItem());
+      }
+
+    });
     ///
     /// xSpinner
     ///
@@ -119,8 +145,7 @@ public class BoardSpritePanel extends AbstractModelPanel {
     ///
     /// layerSpinner
     ///
-    layerSpinner = new JSpinner();
-    layerSpinner.setValue(((BoardSprite) model).getLayer());
+    layerSpinner = getJSpinner(((BoardSprite) model).getLayer());
     layerSpinner.addChangeListener(new ChangeListener() {
 
       @Override
@@ -154,10 +179,23 @@ public class BoardSpritePanel extends AbstractModelPanel {
     /// typeComboBox
     ///
     typeComboBox = new JComboBox(ACTIVATION_TYPES);
+    typeComboBox.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        String type = (String) typeComboBox.getSelectedItem();
+        if (type.equals(ACTIVATION_TYPES[0])) {
+          boardSprite.setActivationType(0);
+        } else {
+          boardSprite.setActivationType(1);
+        }
+      }
+
+    });
     ///
     /// variablesButton
     ///
-    variablesButton = new JButton("Configure");
+    variablesButton = getJButton("Configure");
     variablesButton.addActionListener(new ActionListener() {
 
       @Override
@@ -206,56 +244,55 @@ public class BoardSpritePanel extends AbstractModelPanel {
     ///
     horizontalGroup.addGroup(
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(fileLabel = getJLabel("Item File"))
-                    .addComponent(activationProgramLabel = getJLabel("Activation Program"))
-                    .addComponent(multiTaskingLabel = getJLabel("MultiTasking Program"))
-                    .addComponent(xLabel = getJLabel("X"))
-                    .addComponent(yLabel = getJLabel("Y"))
-                    .addComponent(layerLabel = getJLabel("Layer"))
-                    .addComponent(typeLabel = getJLabel("Type"))
-                    .addComponent(variablesLabel = getJLabel("Variables")));
-    
+            .addComponent(fileLabel = getJLabel("Item File"))
+            .addComponent(activationProgramLabel = getJLabel("Activation Program"))
+            .addComponent(multiTaskingLabel = getJLabel("MultiTasking Program"))
+            .addComponent(xLabel = getJLabel("X"))
+            .addComponent(yLabel = getJLabel("Y"))
+            .addComponent(layerLabel = getJLabel("Layer"))
+            .addComponent(typeLabel = getJLabel("Type"))
+            .addComponent(variablesLabel = getJLabel("Variables")));
+
     horizontalGroup.addGroup(
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(fileTextField)
-                    .addComponent(activationProgramTextField)
-                    .addComponent(multiTaskingTextField)
-                    .addComponent(xSpinner)
-                    .addComponent(ySpinner)
-                    .addComponent(layerSpinner)
-                    .addComponent(typeComboBox)
-                    .addComponent(variablesButton));
-    
+            .addComponent(fileComboBox)
+            .addComponent(activationComboBox)
+            .addComponent(multiTaskingComboBox)
+            .addComponent(xSpinner)
+            .addComponent(ySpinner)
+            .addComponent(layerSpinner)
+            .addComponent(typeComboBox)
+            .addComponent(variablesButton));
+
     layout.setHorizontalGroup(horizontalGroup);
-    
+
     verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-            .addComponent(fileLabel).addComponent(fileTextField));
-    
+            .addComponent(fileLabel).addComponent(fileComboBox));
+
     verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-            .addComponent(activationProgramLabel).addComponent(activationProgramTextField));
-    
+            .addComponent(activationProgramLabel).addComponent(activationComboBox));
+
     verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-            .addComponent(multiTaskingLabel).addComponent(multiTaskingTextField));
-    
+            .addComponent(multiTaskingLabel).addComponent(multiTaskingComboBox));
+
     verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
             .addComponent(xLabel).addComponent(xSpinner));
-    
+
     verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
             .addComponent(yLabel).addComponent(ySpinner));
-    
+
     verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
             .addComponent(yLabel).addComponent(ySpinner));
-    
+
     verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
             .addComponent(layerLabel).addComponent(layerSpinner));
-    
+
     verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
             .addComponent(typeLabel).addComponent(typeComboBox));
-    
+
     verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
             .addComponent(variablesLabel).addComponent(variablesButton));
-  
-    layout.setVerticalGroup(verticalGroup);
 
+    layout.setVerticalGroup(verticalGroup);
   }
 }

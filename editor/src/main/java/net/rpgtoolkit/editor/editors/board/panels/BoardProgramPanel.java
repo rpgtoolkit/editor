@@ -8,12 +8,12 @@ package net.rpgtoolkit.editor.editors.board.panels;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import javax.swing.GroupLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.BoardProgram;
@@ -25,7 +25,7 @@ import net.rpgtoolkit.editor.editors.board.BoardLayerView;
  */
 public class BoardProgramPanel extends AbstractModelPanel {
 
-  private final JTextField programTextField;
+  private final JComboBox programComboBox;
   private final JLabel programLabel;
 
   private final JSpinner layerSpinner;
@@ -55,15 +55,24 @@ public class BoardProgramPanel extends AbstractModelPanel {
     ///
     boardProgram = program;
     ///
-    /// programTextField
+    /// programComboBox
     ///
-    programTextField = new JTextField(boardProgram.getFileName());
-    programTextField.setColumns(17);
+    File directory = new File(System.getProperty("project.path") + "Prg" + File.separator);
+    String[] exts = new String[] {"prg"};
+    programComboBox = getFileListJComboBox(directory, exts, true);
+    programComboBox.setSelectedItem(boardProgram.getFileName());
+    programComboBox.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        boardProgram.setFileName((String)programComboBox.getSelectedItem());
+      }
+
+    });
     ///
     /// layerSpinner
     ///
-    layerSpinner = new JSpinner();
-    layerSpinner.setValue(boardProgram.getLayer());
+    layerSpinner = getJSpinner(boardProgram.getLayer());
     layerSpinner.addChangeListener(new ChangeListener() {
       @Override
       public void stateChanged(ChangeEvent e) {
@@ -144,7 +153,7 @@ public class BoardProgramPanel extends AbstractModelPanel {
     
     horizontalGroup.addGroup(
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(programTextField)
+                    .addComponent(programComboBox)
                     .addComponent(layerSpinner)
                     .addComponent(activationComboBox)
                     .addComponent(isClosedCheckBox));
@@ -152,7 +161,7 @@ public class BoardProgramPanel extends AbstractModelPanel {
     layout.setHorizontalGroup(horizontalGroup);
     
     verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-            .addComponent(programLabel).addComponent(programTextField));
+            .addComponent(programLabel).addComponent(programComboBox));
     
     verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
             .addComponent(layerLabel).addComponent(layerSpinner));

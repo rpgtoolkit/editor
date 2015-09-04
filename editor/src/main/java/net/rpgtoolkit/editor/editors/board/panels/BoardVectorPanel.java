@@ -55,8 +55,7 @@ public class BoardVectorPanel extends AbstractModelPanel {
     ///
     /// layerSpinner
     ///
-    layerSpinner = new JSpinner();
-    layerSpinner.setValue(((BoardVector) model).getLayer());
+    layerSpinner = getJSpinner(((BoardVector) model).getLayer());
     layerSpinner.addChangeListener(new ChangeListener() {
       @Override
       public void stateChanged(ChangeEvent e) {
@@ -101,8 +100,7 @@ public class BoardVectorPanel extends AbstractModelPanel {
     ///
     /// handleTextField
     ///
-    handleTextField = new JTextField();
-    handleTextField.setText(((BoardVector) model).getHandle());
+    handleTextField = getJTextField(((BoardVector) model).getHandle());
     handleTextField.addFocusListener(new FocusListener() {
 
       @Override
