@@ -538,8 +538,9 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
           }
           if (text.endsWith(".anm")) {
             //update image if the location is valid
-            File f = new File(System.getProperty("project.path")
-                    + sep + "Misc" + sep + text);
+            File f = mainWindow.getPath(
+                    mainWindow.getTypeSubdirectory(Animation.class)
+                    + sep + text);
             if (f.canRead()) {
               selectedAnim = new Animation(f);
 //                            out.println("new animation!");

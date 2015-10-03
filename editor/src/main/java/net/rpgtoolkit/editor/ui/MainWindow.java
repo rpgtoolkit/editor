@@ -55,11 +55,12 @@ import net.rpgtoolkit.editor.editors.ProjectEditor;
 import net.rpgtoolkit.editor.editors.SpecialMoveEditor;
 import net.rpgtoolkit.editor.editors.TileEditor;
 import net.rpgtoolkit.editor.editors.TileSelectionEvent;
-import net.rpgtoolkit.editor.editors.TileSelectionListener;
+import net.rpgtoolkit.editor.ui.listeners.TileSelectionListener;
 import net.rpgtoolkit.editor.editors.TileRegionSelectionEvent;
 import net.rpgtoolkit.editor.editors.board.NewBoardDialog;
 import net.rpgtoolkit.editor.ui.resources.Icons;
 import net.rpgtoolkit.editor.editors.board.ProgramBrush;
+import net.rpgtoolkit.common.utilities.PropertiesSingleton;
 
 /**
  * Currently opening TileSets, tiles, programs, boards, animations, characters etc.
@@ -355,7 +356,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     FileNameExtensionFilter filter = new FileNameExtensionFilter("Toolkit Project", "gam");
     this.fileChooser.setFileFilter(filter);
 
-    File mainFolder = new File(this.workingDir + "/main");
+    File mainFolder = new File(this.workingDir + "/"
+            + PropertiesSingleton.getProperty("toolkit.directory.main"));
 
     if (mainFolder.exists()) {
       this.fileChooser.setCurrentDirectory(mainFolder);
@@ -368,7 +370,9 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
       System.setProperty("project.path",
               this.fileChooser.getCurrentDirectory().getParent()
-              + File.separator + "game" + File.separator
+              + File.separator 
+                      + PropertiesSingleton.getProperty("toolkit.directory.game") 
+                      + File.separator
               + fileName + File.separator);
 
       this.activeProject = new Project(this.fileChooser.getSelectedFile(),
@@ -416,7 +420,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   }
 
   private String[] getTKFileExtensions() {
-    return new String[] {
+    return new String[]{
       "brd", "ene", "tem", "itm", "anm", "prg", "tst", "spc", "json"
     };
   }
@@ -559,30 +563,30 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   public String getTypeSubdirectory(Class<? extends BasicType> type) {
     switch (type.getSimpleName()) {
       case "Animation":
-        return "Misc";
+        return PropertiesSingleton.getProperty("toolkit.directory.misc");
       case "Board":
-        return "Boards";
+        return PropertiesSingleton.getProperty("toolkit.directory.board");
       case "Enemy":
-        return "Enemy";
+        return PropertiesSingleton.getProperty("toolkit.directory.enemy");
       case "Item":
-        return "Item";
+        return PropertiesSingleton.getProperty("toolkit.directory.item");
       case "Player":
-        return "Chrs";
+        return PropertiesSingleton.getProperty("toolkit.directory.character");
       case "Program":
-        return "Prg";
+        return PropertiesSingleton.getProperty("toolkit.directory.program");
       case "StatusEffect":
-        return "StatusE";
+        return PropertiesSingleton.getProperty("toolkit.directory.statuseffect");
       case "SpecialMove":
-        return "SpcMove";
+        return PropertiesSingleton.getProperty("toolkit.directory.specialmove");
       case "Tileset":
-        return "Tiles";
+        return PropertiesSingleton.getProperty("toolkit.directory.tileset");
       default:
         return "";
     }
   }
 
     public String getImageSubdirectory() {
-        return "Bitmap";
+        return PropertiesSingleton.getProperty("toolkit.directory.bitmap");
     }
     
   public String getTypeFilterDescription(Class<? extends BasicType> type) {
@@ -590,7 +594,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       case "Animation":
         return "Animations";
       case "Board":
-        return "Boards";
+        return PropertiesSingleton.getProperty("toolkit.directory.board");
       case "Enemy":
         return "Enemies";
       case "Item":
@@ -617,23 +621,23 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   public String[] getTypeExtensions(Class<? extends BasicType> type) {
     switch (type.getSimpleName()) {
       case "Animation":
-        return new String[] {"anm"};
+        return new String[]{"anm"};
       case "Board":
-        return new String[] {"brd", "brd.json"};
+        return new String[]{"brd", "brd.json"};
       case "Enemy":
-        return new String[] {"ene"};
+        return new String[]{"ene"};
       case "Item":
-        return new String[] {"itm"};
+        return new String[]{"itm"};
       case "Player":
-        return new String[] {"tem"};
+        return new String[]{"tem"};
       case "Program":
-        return new String[] {"prg"};
+        return new String[]{"prg"};
       case "StatusEffect":
-        return new String[] {"ste"};
+        return new String[]{"ste"};
       case "Tileset":
-        return new String[] {"tst"};
+        return new String[]{"tst"};
       case "SpecialMove":
-        return new String[] {"spc", "json"};
+        return new String[]{"spc", "json"};
       default:
         return this.getTKFileExtensions();
     }

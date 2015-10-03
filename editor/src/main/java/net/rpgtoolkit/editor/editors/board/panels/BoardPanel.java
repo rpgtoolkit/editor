@@ -2,18 +2,20 @@ package net.rpgtoolkit.editor.editors.board.panels;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.editor.editors.board.BoardNeighboursDialog;
 import net.rpgtoolkit.editor.editors.board.BoardSpriteDialog;
 import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.common.utilities.PropertiesSingleton;
 
 /**
  *
@@ -31,21 +33,21 @@ public class BoardPanel extends AbstractModelPanel {
   private final JButton configureButton;
   private final JLabel configureLabel;
 
-  private final JTextField musicFileTextField;
+  private final JComboBox musicFileComboBox;
   private final JLabel musicLabel;
 
-  private final JTextField entryProgramTextField;
+  private final JComboBox entryProgramComboBox;
   private final JLabel entryProgramLabel;
 
-  public BoardPanel(final Object model) {
+  public BoardPanel(final Board board) {
     ///
     /// super
     ///
-    super(model);
+    super(board);
     ///
     /// widthSpinner
     ///
-    widthSpinner = getJSpinner(((Board) model).getWidth());
+    widthSpinner = getJSpinner(board.getWidth());
     widthSpinner.addChangeListener(new ChangeListener() {
 
       @Override
@@ -57,7 +59,7 @@ public class BoardPanel extends AbstractModelPanel {
     ///
     /// heightSpinner
     ///
-    heightSpinner = getJSpinner(((Board) model).getWidth());
+    heightSpinner = getJSpinner(board.getWidth());
     heightSpinner.addChangeListener(new ChangeListener() {
 
       @Override
@@ -75,7 +77,7 @@ public class BoardPanel extends AbstractModelPanel {
       @Override
       public void actionPerformed(ActionEvent e) {
         BoardNeighboursDialog dialog = new BoardNeighboursDialog(MainWindow.getInstance(), 
-                "Configure Neighbours", true, (Board) model);
+                "Configure Neighbours", true, board);
 
         if (dialog.showDialog() == BoardSpriteDialog.APPLY) { 
           ((Board) model).setDirectionalLinks(dialog.getNeighbours());
@@ -86,11 +88,37 @@ public class BoardPanel extends AbstractModelPanel {
     ///
     /// musicTextField
     ///
-    musicFileTextField = getJTextField(((Board) model).getBackgroundMusic());
+    File directory = new File(System.getProperty("project.path") 
+            + PropertiesSingleton.getProperty("toolkit.directory.media")
+            + File.separator);
+    String[] exts = new String[] {"wav", "mp3"};
+    musicFileComboBox = getFileListJComboBox(directory, exts, true);
+    musicFileComboBox.setSelectedItem(board.getBackgroundMusic());
+    musicFileComboBox.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        board.setBackgroundMusic((String)musicFileComboBox.getSelectedItem());
+      }
+      
+    });
     ///
     /// entryProgramTextField
     ///
-    entryProgramTextField = getJTextField(((Board) model).getFirstRunProgram());
+    directory = new File(System.getProperty("project.path") 
+            + PropertiesSingleton.getProperty("toolkit.directory.program") 
+            + File.separator);
+    exts = new String[] {"prg"};
+    entryProgramComboBox = getFileListJComboBox(directory, exts, true);
+    entryProgramComboBox.setSelectedItem(board.getFirstRunProgram());
+    entryProgramComboBox.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        board.setFirstRunProgram((String)entryProgramComboBox.getSelectedItem());
+      }
+
+    });
     ///
     /// this
     ///
@@ -107,8 +135,8 @@ public class BoardPanel extends AbstractModelPanel {
                     .addComponent(widthSpinner)
                     .addComponent(heightSpinner)
                     .addComponent(configureButton)
-                    .addComponent(musicFileTextField)
-                    .addComponent(entryProgramTextField));
+                    .addComponent(musicFileComboBox)
+                    .addComponent(entryProgramComboBox));
     
     layout.setHorizontalGroup(horizontalGroup);
     
@@ -122,10 +150,10 @@ public class BoardPanel extends AbstractModelPanel {
             .addComponent(configureLabel).addComponent(configureButton));
     
     verticalGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE)
-            .addComponent(musicLabel).addComponent(musicFileTextField));
+            .addComponent(musicLabel).addComponent(musicFileComboBox));
     
     verticalGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE)
-            .addComponent(entryProgramLabel).addComponent(entryProgramTextField));
+            .addComponent(entryProgramLabel).addComponent(entryProgramComboBox));
   
     layout.setVerticalGroup(verticalGroup);
   }

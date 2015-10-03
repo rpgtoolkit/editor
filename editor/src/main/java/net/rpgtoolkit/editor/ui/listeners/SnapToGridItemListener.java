@@ -1,8 +1,9 @@
-package net.rpgtoolkit.editor.ui;
+package net.rpgtoolkit.editor.ui.listeners;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import javax.swing.JCheckBoxMenuItem;
+import net.rpgtoolkit.editor.ui.MainWindow;
 
 /**
  *

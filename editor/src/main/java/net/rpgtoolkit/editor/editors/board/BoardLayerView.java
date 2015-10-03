@@ -360,7 +360,7 @@ public class BoardLayerView {
           g.setColor(Color.GREEN);
           break;
         case 8:
-          g.setColor(Color.ORANGE);
+          g.setColor(Color.MAGENTA);
           break;
         case 16:
           g.setColor(Color.RED);

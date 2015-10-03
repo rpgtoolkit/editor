@@ -25,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.assets.BoardSprite;
+import net.rpgtoolkit.common.utilities.PropertiesSingleton;
 import net.rpgtoolkit.editor.utilities.FileTools;
 
 /**
@@ -145,7 +146,9 @@ public class BoardNeighboursDialog extends JDialog {
 
       @Override
       public void actionPerformed(ActionEvent e) {
-        File file = FileTools.doChooseFile("brd", "Boards", "Board Files");
+        File file = FileTools.doChooseFile("brd",
+                PropertiesSingleton.getProperty("toolkit.directory.board"),
+                "Board Files");
 
         if (file != null) {
           northNeighbourTextField.setText(file.getName());
@@ -161,7 +164,9 @@ public class BoardNeighboursDialog extends JDialog {
 
       @Override
       public void actionPerformed(ActionEvent e) {
-        File file = FileTools.doChooseFile("brd", "Boards", "Board Files");
+        File file = FileTools.doChooseFile("brd",
+                PropertiesSingleton.getProperty("toolkit.directory.board"),
+                "Board Files");
 
         if (file != null) {
           southNeighbourTextField.setText(file.getName());
@@ -177,7 +182,9 @@ public class BoardNeighboursDialog extends JDialog {
 
       @Override
       public void actionPerformed(ActionEvent e) {
-        File file = FileTools.doChooseFile("brd", "Boards", "Board Files");
+        File file = FileTools.doChooseFile("brd",
+                PropertiesSingleton.getProperty("toolkit.directory.board"),
+                "Board Files");
 
         if (file != null) {
           eastNeighbourTextField.setText(file.getName());
@@ -193,7 +200,9 @@ public class BoardNeighboursDialog extends JDialog {
 
       @Override
       public void actionPerformed(ActionEvent e) {
-        File file = FileTools.doChooseFile("brd", "Boards", "Board Files");
+        File file = FileTools.doChooseFile("brd",
+                PropertiesSingleton.getProperty("toolkit.directory.board"),
+                "Board Files");
 
         if (file != null) {
           westNeighbourTextField.setText(file.getName());
