@@ -252,7 +252,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     tabPane.addTab("Stats and Portrait", this.statsPanel);
     tabPane.addTab("Graphics", this.graphicsPanel);
     tabPane.addTab("Special Moves", this.specialMovesPanel);
-    tabPane.addTab("Equipment", this.equipmentPanel);
+    tabPane.addTab("Equippable Items", this.equipmentPanel);
     tabPane.addTab("Levels", this.levelsPanel);
 
     this.add(tabPane);
@@ -1313,16 +1313,22 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     this.equipHandR = new JCheckBox("Right Hand");
     this.equipBody = new JCheckBox("Body Armour");
     this.equipLegs = new JCheckBox("Legs");
+    //start at 1 for head (not sure what slot 0 is)
     boolean[] armorSlots = this.player.getArmourTypes();
-    this.equipHead.setSelected(armorSlots[0]);
-    this.equipNeck.setSelected(armorSlots[0]);
-    this.equipHandL.setSelected(armorSlots[0]);
-    this.equipHandR.setSelected(armorSlots[0]);
-    this.equipBody.setSelected(armorSlots[0]);
-    this.equipLegs.setSelected(armorSlots[0]);
+    this.equipHead.setSelected(armorSlots[1]);
+    this.equipNeck.setSelected(armorSlots[2]);
+    this.equipHandL.setSelected(armorSlots[3]);
+    this.equipHandR.setSelected(armorSlots[4]);
+    this.equipBody.setSelected(armorSlots[5]);
+    this.equipLegs.setSelected(armorSlots[6]);
 
-    final JLabel accNameLabel = new JLabel("Slot Name");
+    final DefaultListModel accessories = new DefaultListModel();
     ArrayList<String> accNames = this.player.getAccessoryNames();
+    for (String n : accNames) {
+      accessories.addElement(n);
+    }
+    this.accList = Gui.createVerticalJList(accessories);
+    final JLabel accNameLabel = new JLabel("Slot Name");
     this.accName = new JTextField();
     if (accNames.isEmpty() == false) {
       this.accName.setText(accNames.get(0));
@@ -1334,27 +1340,38 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
     JPanel accessoriesPanel = new JPanel();
     accessoriesPanel.setBorder(BorderFactory.createTitledBorder(
-        this.defaultEtchedBorder, "Accessory List"));
+        this.defaultEtchedBorder, "Additional Accessory Slots"));
 
     // Configure listeners
 
     // Configure Layouts
     GroupLayout layout = Gui.createGroupLayout(this.equipmentPanel);
 
-    GroupLayout accessoriesLayout = Gui.createGroupLayout(accessoriesPanel);
     GroupLayout standardEquipLayout = Gui.createGroupLayout(standardEquipPanel);
+    GroupLayout accessoriesLayout = Gui.createGroupLayout(accessoriesPanel);
 
-    standardEquipLayout.setHorizontalGroup(standardEquipLayout.createSequentialGroup()
+    standardEquipLayout.setHorizontalGroup(standardEquipLayout.createParallelGroup()
         .addComponent(this.equipHead)
+        .addComponent(this.equipNeck)
+        .addComponent(this.equipHandL)
+        .addComponent(this.equipHandR)
+        .addComponent(this.equipBody)
+        .addComponent(this.equipLegs)
     );
 
-    standardEquipLayout.setVerticalGroup(standardEquipLayout.createParallelGroup()
+    standardEquipLayout.setVerticalGroup(standardEquipLayout.createSequentialGroup()
         .addComponent(this.equipHead)
+        .addComponent(this.equipNeck)
+        .addComponent(this.equipHandL)
+        .addComponent(this.equipHandR)
+        .addComponent(this.equipBody)
+        .addComponent(this.equipLegs)
     );
 
     accessoriesLayout.setHorizontalGroup(accessoriesLayout.createParallelGroup()
         .addComponent(standardEquipPanel)
         .addGroup(accessoriesLayout.createSequentialGroup()
+            .addComponent(accList)
             .addComponent(accNameLabel)
             .addComponent(this.accName))
     );
@@ -1362,6 +1379,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     accessoriesLayout.setVerticalGroup(accessoriesLayout.createSequentialGroup()
         .addComponent(standardEquipPanel)
         .addGroup(accessoriesLayout.createParallelGroup()
+            .addComponent(accList)
             .addComponent(accNameLabel)
             .addComponent(this.accName))
     );
@@ -1369,12 +1387,18 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     accessoriesLayout.linkSize(SwingConstants.VERTICAL,
         accNameLabel, this.accName
     );
+    
+    layout.linkSize(SwingConstants.HORIZONTAL,
+        standardEquipPanel, accessoriesPanel
+    );
 
     layout.setHorizontalGroup(layout.createParallelGroup()
+        .addComponent(standardEquipPanel)
         .addComponent(accessoriesPanel)
     );
 
     layout.setVerticalGroup(layout.createSequentialGroup()
+        .addComponent(standardEquipPanel)
         .addComponent(accessoriesPanel)
     );
   }
