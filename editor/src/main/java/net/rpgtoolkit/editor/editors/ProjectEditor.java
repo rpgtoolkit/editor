@@ -140,7 +140,7 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
    */
   @Override
   public boolean save() {
-    return project.save();
+    return project.saveBinary();
   }
   
   /**

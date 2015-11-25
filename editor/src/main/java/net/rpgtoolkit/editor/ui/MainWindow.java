@@ -26,9 +26,9 @@ import javax.swing.JTextArea;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import net.rpgtoolkit.common.CorruptAssetException;
 import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
+import net.rpgtoolkit.common.assets.AssetException;
 import net.rpgtoolkit.common.assets.AssetHandle;
 import net.rpgtoolkit.common.assets.AssetManager;
 import net.rpgtoolkit.common.assets.BasicType;
@@ -42,6 +42,8 @@ import net.rpgtoolkit.common.assets.TileSet;
 import net.rpgtoolkit.common.assets.files.FileAssetHandleResolver;
 import net.rpgtoolkit.common.assets.serialization.JsonBoardSerializer;
 import net.rpgtoolkit.common.assets.serialization.JsonSMoveSerializer;
+import net.rpgtoolkit.common.assets.serialization.legacy.LegacyAnimatedTileSerializer;
+import net.rpgtoolkit.common.assets.serialization.legacy.LegacyItemSerializer;
 import net.rpgtoolkit.editor.editors.AnimationEditor;
 import net.rpgtoolkit.editor.editors.BoardEditor;
 import net.rpgtoolkit.editor.editors.CharacterEditor;
@@ -347,6 +349,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
   private void registerSerializers() {
     AssetManager assetManager = AssetManager.getInstance();
+    assetManager.registerSerializer(new LegacyAnimatedTileSerializer());
+    assetManager.registerSerializer(new LegacyItemSerializer());
     assetManager.registerSerializer(new JsonSMoveSerializer());
     assetManager.registerSerializer(new JsonBoardSerializer());
   }
@@ -500,7 +504,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
       desktopPane.add(boardEditor);
       selectToolkitWindow(boardEditor);
-    } catch (IOException | CorruptAssetException ex) {
+    } catch (IOException | AssetException ex) {
       Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
@@ -555,7 +559,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       }
       desktopPane.add(sMoveEditor);
       this.selectToolkitWindow(sMoveEditor);
-    } catch (IOException | CorruptAssetException ex) {
+    } catch (IOException | AssetException ex) {
       Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
