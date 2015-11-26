@@ -152,12 +152,11 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
   @Override
   public boolean saveAs(File file) {
     project.setFile(file);
-    
     return save();
   }
 
   public void gracefulClose() {
-
+    
   }
 
   public void setWindowParent(MainWindow parent) {
@@ -239,7 +238,7 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
     // Configure Class scope components
     this.projectName = new JTextField(this.project.getGameTitle());
     this.enableJoystick = new JCheckBox();
-    this.enableJoystick.setEnabled(this.project.getJoystickStatus());
+    this.enableJoystick.setSelected(this.project.getJoystickStatus());
     this.cursorMoveSound = new JTextField(this.project.getCursorMoveSound());
     this.cursorSelectSound = new JTextField(this.project.getCursorSelectSound());
     this.cursorCancelSound = new JTextField(this.project.getCursorCancelSound());

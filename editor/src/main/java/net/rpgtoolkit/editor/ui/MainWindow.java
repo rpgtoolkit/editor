@@ -63,6 +63,7 @@ import net.rpgtoolkit.editor.editors.board.NewBoardDialog;
 import net.rpgtoolkit.editor.ui.resources.Icons;
 import net.rpgtoolkit.editor.editors.board.ProgramBrush;
 import net.rpgtoolkit.common.utilities.PropertiesSingleton;
+import net.rpgtoolkit.editor.utilities.FileTools;
 
 /**
  * Currently opening TileSets, tiles, programs, boards, animations, characters etc.
@@ -396,6 +397,10 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       this.menuBar.enableMenus(true);
       this.toolBar.toggleButtonStates(true);
     }
+  }
+  
+  public void createNewProject() {
+    File projectPath = FileTools.doChoosePath();
   }
 
   public void primeFileChooser() {

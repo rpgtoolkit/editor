@@ -14,6 +14,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 import net.rpgtoolkit.editor.ui.actions.ExitAction;
+import net.rpgtoolkit.editor.ui.actions.NewProjectAction;
 import net.rpgtoolkit.editor.ui.actions.OpenFileAction;
 import net.rpgtoolkit.editor.ui.actions.OpenProjectAction;
 import net.rpgtoolkit.editor.ui.actions.SaveAction;
@@ -146,11 +147,13 @@ public final class FileMenu extends JMenu implements ActionListener {
 
   private void configureNewProjectMenuItem() {
     newProjectMenuItem = new JMenuItem("New Project");
+    newProjectMenuItem.setAction(new NewProjectAction());
+    newProjectMenuItem.setText("New Project");
     newProjectMenuItem.setIcon(Icons.getSmallIcon("new-project"));
     newProjectMenuItem.setAccelerator(
             KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
     newProjectMenuItem.setMnemonic(KeyEvent.VK_N);
-    newProjectMenuItem.setEnabled(false);
+    newProjectMenuItem.setEnabled(true);
   }
 
   private void configureNewBoardMenuItem() {
