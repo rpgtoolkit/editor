@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -41,6 +42,7 @@ import net.rpgtoolkit.common.assets.Tile;
 import net.rpgtoolkit.common.assets.TileSet;
 import net.rpgtoolkit.common.assets.files.FileAssetHandleResolver;
 import net.rpgtoolkit.common.assets.serialization.JsonBoardSerializer;
+import net.rpgtoolkit.common.assets.serialization.JsonProjectSerializer;
 import net.rpgtoolkit.common.assets.serialization.JsonSMoveSerializer;
 import net.rpgtoolkit.common.assets.serialization.legacy.LegacyAnimatedTileSerializer;
 import net.rpgtoolkit.common.assets.serialization.legacy.LegacyItemSerializer;
@@ -352,8 +354,9 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     AssetManager assetManager = AssetManager.getInstance();
     assetManager.registerSerializer(new LegacyAnimatedTileSerializer());
     assetManager.registerSerializer(new LegacyItemSerializer());
-    assetManager.registerSerializer(new JsonSMoveSerializer());
     assetManager.registerSerializer(new JsonBoardSerializer());
+    assetManager.registerSerializer(new JsonProjectSerializer());
+    assetManager.registerSerializer(new JsonSMoveSerializer());
   }
 
   public void openProject() {
@@ -372,35 +375,50 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       String fileName = this.fileChooser.getSelectedFile().getName().
               substring(0, this.fileChooser.getSelectedFile().
                       getName().lastIndexOf('.'));
-
       System.setProperty("project.path",
               this.fileChooser.getCurrentDirectory().getParent()
-              + File.separator 
-                      + PropertiesSingleton.getProperty("toolkit.directory.game") 
-                      + File.separator
+              + File.separator
+              + PropertiesSingleton.getProperty("toolkit.directory.game")
+              + File.separator
               + fileName + File.separator);
 
       this.activeProject = new Project(this.fileChooser.getSelectedFile(),
               System.getProperty("project.path"));
-
-      ProjectEditor projectEditor = new ProjectEditor(this.activeProject);
-      this.desktopPane.add(projectEditor, BorderLayout.CENTER);
-
-      projectEditor.addInternalFrameListener(this);
-      projectEditor.setWindowParent(this);
-      projectEditor.toFront();
-
-      this.selectToolkitWindow(projectEditor);
-      this.setTitle(this.getTitle() + " - "
-              + this.activeProject.getGameTitle());
-
-      this.menuBar.enableMenus(true);
-      this.toolBar.toggleButtonStates(true);
+      setupProject();
     }
   }
-  
+
   public void createNewProject() {
-    File projectPath = FileTools.doChoosePath();
+    String projectName = JOptionPane.showInputDialog(this,
+            "Project Name:",
+            "Create Project",
+            JOptionPane.QUESTION_MESSAGE);
+
+    if (projectName != null) {
+      boolean result = FileTools.createDirectoryStructure(
+              PropertiesSingleton.getProjectsDirectory(), projectName);
+
+      if (result) {
+        Project project = new Project(PropertiesSingleton.getProjectsDirectory() + File.separator
+                + PropertiesSingleton.getProperty("toolkit.directory.main"), projectName);
+
+        try {
+          // Write out new project file.
+          AssetManager.getInstance().serialize(AssetManager.getInstance().getHandle(project));
+          System.setProperty("project.path",
+                  PropertiesSingleton.getProperty("toolkit.directory.projects")
+                  + File.separator
+                  + PropertiesSingleton.getProperty("toolkit.directory.game")
+                  + File.separator
+                  + projectName + File.separator);
+
+          activeProject = project;
+          setupProject();
+        } catch (IOException | AssetException ex) {
+          Logger.getLogger(Board.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+    }
   }
 
   public void primeFileChooser() {
@@ -497,7 +515,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
                   new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
           board = (Board) handle.getAsset();
         }
-        
+
         boardEditor = new BoardEditor(board);
       } else {
         boardEditor = new BoardEditor();
@@ -583,6 +601,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         return PropertiesSingleton.getProperty("toolkit.directory.character");
       case "Program":
         return PropertiesSingleton.getProperty("toolkit.directory.program");
+      case "Project":
+        return PropertiesSingleton.getProperty("toolkit.directory.main");
       case "StatusEffect":
         return PropertiesSingleton.getProperty("toolkit.directory.statuseffect");
       case "SpecialMove":
@@ -608,6 +628,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         return "Characters";
       case "Program":
         return "Programs";
+      case "Project":
+        return "Projects";
       case "StatusEffect":
         return "Status Effects";
       case "Tileset":
@@ -633,6 +655,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         return new String[]{"tem"};
       case "Program":
         return new String[]{"prg"};
+      case "Project":
+        return new String[]{"gam", "gam.json"};
       case "StatusEffect":
         return new String[]{"ste"};
       case "Tileset":
@@ -645,9 +669,27 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   }
 
   /**
-   * Browse for a file of the given type, starting in the subdirectory for that type, and return its
-   * location relative to the subdirectory for that type. Filters by extensions relevant to that
-   * type. This is a shortcut method for browseLocationBySubdir().
+   * Browse for aSystem.setProperty("project.path",
+   * this.fileChooser.getCurrentDirectory().getParent() + File.separator +
+   * PropertiesSingleton.getProperty("toolkit.directory.game") + File.separator + fileName +
+   * File.separator);
+   *
+   * this.activeProject = new Project(this.fileChooser.getSelectedFile(),
+   * System.getProperty("project.path"));
+   *
+   * ProjectEditor projectEditor = new ProjectEditor(this.activeProject);
+   * this.desktopPane.add(projectEditor, BorderLayout.CENTER);
+   *
+   * projectEditor.addInternalFrameListener(this); projectEditor.setWindowParent(this);
+   * projectEditor.toFront();
+   *
+   * this.selectToolkitWindow(projectEditor); this.setTitle(this.getTitle() + " - " +
+   * this.activeProject.getGameTitle());
+   *
+   * this.menuBar.enableMenus(true); this.toolBar.toggleButtonStates(true); file of the given type,
+   * starting in the subdirectory for that type, and return its location relative to the
+   * subdirectory for that type. Filters by extensions relevant to that type. This is a shortcut
+   * method for browseLocationBySubdir().
    *
    * @param type a BasicType class
    * @return the location of the file the user selects, relative to the subdirectory corresponding
@@ -821,6 +863,22 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       BoardEditor editor = (BoardEditor) desktopPane.getSelectedFrame();
       editor.getBoardView().repaint();
     }
+  }
+
+  private void setupProject() {
+    ProjectEditor projectEditor = new ProjectEditor(this.activeProject);
+    this.desktopPane.add(projectEditor, BorderLayout.CENTER);
+
+    projectEditor.addInternalFrameListener(this);
+    projectEditor.setWindowParent(this);
+    projectEditor.toFront();
+
+    this.selectToolkitWindow(projectEditor);
+    this.setTitle(this.getTitle() + " - "
+            + this.activeProject.getGameTitle());
+
+    this.menuBar.enableMenus(true);
+    this.toolBar.toggleButtonStates(true);
   }
 
   private void selectToolkitWindow(ToolkitEditorWindow window) {

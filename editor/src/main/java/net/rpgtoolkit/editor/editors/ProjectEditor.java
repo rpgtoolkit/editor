@@ -40,7 +40,7 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
 
   private JFileChooser openProject;
   private Background testObject;
-  private Project project; // Project file we are altering
+  private final Project project; // Project file we are altering
 
   // Tabs required by the menu
   private JPanel projectSettingsPanel;
@@ -114,7 +114,7 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
   public ProjectEditor() {
     super("New Project", true, true, true, true);
 
-    this.project = new Project();
+    this.project = new Project("", "");
     this.setVisible(true);
   }
 
@@ -140,7 +140,7 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
    */
   @Override
   public boolean save() {
-    return project.saveBinary();
+    return project.save();
   }
   
   /**

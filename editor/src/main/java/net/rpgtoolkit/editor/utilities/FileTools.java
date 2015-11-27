@@ -19,18 +19,18 @@ import net.rpgtoolkit.editor.ui.SingleRootFileSystemView;
  */
 public final class FileTools {
 
-  public static boolean createDirectoryStructure(String path, String project) {
+  public static boolean createDirectoryStructure(String path, String projectName) {
     boolean result = true;
 
     result &= createDirectory(path + File.separator + PropertiesSingleton.getProperty("toolkit.directory.main"));
     result &= createDirectory(path + File.separator
-            + PropertiesSingleton.getProperty("toolkit.directory.game") + File.separator + project);
+            + PropertiesSingleton.getProperty("toolkit.directory.game") + File.separator + projectName);
 
-    String gameDirectory = PropertiesSingleton.getProperty("toolkit.directory.game") + File.separator + project;
+    String gameDirectory = PropertiesSingleton.getProperty("toolkit.directory.game") + File.separator + projectName;
     for (String directory : PropertiesSingleton.getDirectories()) {
       result &= createDirectory(path + File.separator + gameDirectory + File.separator + directory);
     }
-
+    
     return result;
   }
 

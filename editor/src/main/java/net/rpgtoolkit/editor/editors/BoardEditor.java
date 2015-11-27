@@ -263,7 +263,6 @@ public class BoardEditor extends ToolkitEditorWindow {
   @Override
   public boolean saveAs(File file) {
     board.setFile(file);
-    
     return save();
   }
 
