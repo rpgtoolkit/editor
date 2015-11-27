@@ -94,7 +94,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   private final LayerPanel layerPanel;
 
   private JFileChooser fileChooser;
-  private final String workingDir = System.getProperty("user.dir");
+  private final String workingDir = PropertiesSingleton.getProjectsDirectory();
 
   private final JScrollPane debugScrollPane;
   private final JTextArea debugLog;
@@ -361,7 +361,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
   public void openProject() {
     this.fileChooser.resetChoosableFileFilters();
-    FileNameExtensionFilter filter = new FileNameExtensionFilter("Toolkit Project", "gam");
+    FileNameExtensionFilter filter = new FileNameExtensionFilter(
+            "Toolkit Project", new String[]{"gam", "json"});
     this.fileChooser.setFileFilter(filter);
 
     File mainFolder = new File(this.workingDir + "/"
@@ -382,8 +383,20 @@ public class MainWindow extends JFrame implements InternalFrameListener {
               + File.separator
               + fileName + File.separator);
 
-      this.activeProject = new Project(this.fileChooser.getSelectedFile(),
+      if (fileChooser.getSelectedFile().getName().endsWith(".gam")) {
+        activeProject = new Project(this.fileChooser.getSelectedFile(),
               System.getProperty("project.path"));
+        activeProject.openBinary();
+      } else {
+        try {
+        AssetHandle handle = AssetManager.getInstance().deserialize(
+                new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
+        activeProject = (Project) handle.getAsset();
+        } catch (IOException | AssetException ex) {
+          Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+      
       setupProject();
     }
   }
