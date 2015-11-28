@@ -42,6 +42,7 @@ public abstract class AbstractBoardView extends JPanel implements
   // Constants
   private static final int ZOOM_NORMALSIZE = 5;
   private static final Color DEFAULT_GRID_COLOR = Color.BLACK;
+  private static final Color DEFAULT_START_POSITION_COLOR = Color.CYAN;
   private static final Color DEFAULT_BACKGROUND_COLOR = new Color(64, 64, 64);
   private static final double[] zoomLevels
           = {
@@ -77,13 +78,16 @@ public abstract class AbstractBoardView extends JPanel implements
    */
   protected BoardEditor boardEditor;
 
-  // Grid properties
+  // Grid properties.
   /**
    * A boolean value that indicates whether the grid is visible or not.
    */
   private boolean antialiasGrid;
   private Color gridColor;
   private int gridOpacity;
+  
+  // Start position properties.
+  private Color startPositionColor;
 
   /**
    * Default constructor.
@@ -122,6 +126,15 @@ public abstract class AbstractBoardView extends JPanel implements
    */
   public Color getDefaultGridColor() {
     return DEFAULT_GRID_COLOR;
+  }
+  
+  /**
+   * Gets the default color for the start position.
+   *
+   * @return The color.
+   */
+  public Color getDefaultStartPositionColor() {
+    return DEFAULT_START_POSITION_COLOR;
   }
 
   /**
@@ -680,6 +693,8 @@ public abstract class AbstractBoardView extends JPanel implements
     antialiasGrid = true;
     gridColor = DEFAULT_GRID_COLOR;
     gridOpacity = 100;
+    
+    startPositionColor = DEFAULT_START_POSITION_COLOR;
 
     if (!layers.isEmpty()) {
       currentSelectedLayer = layers.get(0);

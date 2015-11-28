@@ -259,11 +259,11 @@ public final class BoardView2D extends AbstractBoardView {
   protected void paintStartPostion(Graphics2D g) {
       int x = board.getStartingPositionX();
       int y = board.getStartingPositionY();
-      int length = 20;
+      int length = 15;
       
-      g.setColor(getGridColor());
-      g.drawLine(100 - length, 100, 100 + length, 100);
-      g.drawLine(100, 100 - length, 100, 100 + length);
+      g.setColor(getDefaultStartPositionColor());
+      g.drawLine(x - length, y, x + length, y);
+      g.drawLine(x, y - length, x, y + length);
   }
 
   /**
