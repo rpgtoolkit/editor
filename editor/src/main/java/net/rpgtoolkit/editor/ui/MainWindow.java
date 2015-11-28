@@ -883,7 +883,6 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     this.desktopPane.add(projectEditor, BorderLayout.CENTER);
 
     projectEditor.addInternalFrameListener(this);
-    projectEditor.setWindowParent(this);
     projectEditor.toFront();
 
     this.selectToolkitWindow(projectEditor);
