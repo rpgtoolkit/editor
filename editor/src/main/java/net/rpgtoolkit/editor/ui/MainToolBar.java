@@ -203,6 +203,7 @@ public class MainToolBar extends JToolBar {
     add(selectionButton);
     add(bucketButton);
     add(eraserButton);
+    addSeparator();
     add(vectorButton);
     add(programButton);
     add(spriteButton);
