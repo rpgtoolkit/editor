@@ -375,7 +375,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     if (this.fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
       String fileName = this.fileChooser.getSelectedFile().getName().
               substring(0, this.fileChooser.getSelectedFile().
-                      getName().lastIndexOf('.'));
+                      getName().indexOf('.'));
       System.setProperty("project.path",
               this.fileChooser.getCurrentDirectory().getParent()
               + File.separator
