@@ -419,7 +419,9 @@ public class MainWindow extends JFrame implements InternalFrameListener {
           // Write out new project file.
           AssetManager.getInstance().serialize(AssetManager.getInstance().getHandle(project));
           System.setProperty("project.path",
-                  PropertiesSingleton.getProperty("toolkit.directory.projects")
+                  System.getProperty("user.home")
+                  + File.separator
+                  + PropertiesSingleton.getProperty("toolkit.directory.projects")
                   + File.separator
                   + PropertiesSingleton.getProperty("toolkit.directory.game")
                   + File.separator
