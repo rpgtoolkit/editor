@@ -43,9 +43,9 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import net.rpgtoolkit.common.CorruptAssetException;
 import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
+import net.rpgtoolkit.common.assets.AssetException;
 import net.rpgtoolkit.common.assets.AssetHandle;
 import net.rpgtoolkit.common.assets.AssetManager;
 import net.rpgtoolkit.common.assets.Player;
@@ -69,7 +69,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
   private final Player player; // Player file we are altering
 
-  private static final String sep = File.separator;
+  private static final String SEPARATOR = File.separator;
   private final MainWindow mainWindow = MainWindow.getInstance();
 
   // Tabs required by the menu
@@ -732,7 +732,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
             //update image if the location is valid
             File f = mainWindow.getPath(
                 mainWindow.getTypeSubdirectory(Animation.class)
-                + sep + text);
+                + SEPARATOR + text);
             if (f.canRead()) {
               selectedAnim = new Animation(f);
 //                            out.println("new animation!");
@@ -1034,7 +1034,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
     //check/uncheck uses specials now that the listeners exist
     this.usesSpecials.setSelected(true);
-    if (this.player.getHasSpecialMoves() == false) {
+    if (this.player.getHasSpecialMoves() == 0) {
       this.usesSpecials.doClick();
     }
 
@@ -1508,16 +1508,16 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
   }
 
   private SpecialMove loadSpecialMove(String loc) {
-    if (Paths.getExtension("/" + loc).contains("spc")) {
+    if (Paths.extension("/" + loc).contains("spc")) {
       File f = mainWindow.getPath(
           mainWindow.getTypeSubdirectory(SpecialMove.class)
-          + sep + loc);
+          + SEPARATOR + loc);
       if (f.canRead()) {
         try {
           AssetHandle handle = AssetManager.getInstance().deserialize(
               new AssetDescriptor(f.toURI()));
           return (SpecialMove) handle.getAsset();
-        } catch (IOException | CorruptAssetException ex) {
+        } catch (IOException | AssetException ex) {
           Logger.getLogger(CharacterEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
       }

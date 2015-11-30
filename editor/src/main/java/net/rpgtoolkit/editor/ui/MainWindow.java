@@ -385,18 +385,18 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
       if (fileChooser.getSelectedFile().getName().endsWith(".gam")) {
         activeProject = new Project(this.fileChooser.getSelectedFile(),
-              System.getProperty("project.path"));
+                System.getProperty("project.path"));
         activeProject.openBinary();
       } else {
         try {
-        AssetHandle handle = AssetManager.getInstance().deserialize(
-                new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
-        activeProject = (Project) handle.getAsset();
+          AssetHandle handle = AssetManager.getInstance().deserialize(
+                  new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
+          activeProject = (Project) handle.getAsset();
         } catch (IOException | AssetException ex) {
           Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
       }
-      
+
       setupProject();
     }
   }
@@ -629,6 +629,10 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     }
   }
 
+  public String getImageSubdirectory() {
+    return PropertiesSingleton.getProperty("toolkit.directory.bitmap");
+  }
+
   public String getTypeFilterDescription(Class<? extends BasicType> type) {
     switch (type.getSimpleName()) {
       case "Animation":
@@ -656,6 +660,10 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     }
   }
 
+  public String getImageFilterDescription() {
+    return "Supported Files";
+  }
+
   public String[] getTypeExtensions(Class<? extends BasicType> type) {
     switch (type.getSimpleName()) {
       case "Animation":
@@ -681,6 +689,10 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       default:
         return this.getTKFileExtensions();
     }
+  }
+
+  public String[] getImageExtensions() {
+    return new String[]{"png", "gif", "jpg", "jpeg", "bmp"};
   }
 
   /**

@@ -15,7 +15,23 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
+import javax.swing.GroupLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSlider;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
+import javax.swing.Timer;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.DocumentEvent;
@@ -24,9 +40,9 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import net.rpgtoolkit.common.CorruptAssetException;
 import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
+import net.rpgtoolkit.common.assets.AssetException;
 import net.rpgtoolkit.common.assets.AssetHandle;
 import net.rpgtoolkit.common.assets.AssetManager;
 import net.rpgtoolkit.common.assets.Enemy;
@@ -1188,7 +1204,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
   }
 
   private SpecialMove loadSpecialMove(String loc) {
-    if(Paths.getExtension("/"+loc).contains("spc")) {
+    if(Paths.extension("/"+loc).contains("spc")) {
       File f = mainWindow.getPath(
           mainWindow.getTypeSubdirectory(SpecialMove.class)
               + sep + loc);
@@ -1198,7 +1214,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
           AssetHandle handle = AssetManager.getInstance().deserialize(
               new AssetDescriptor(f.toURI()));
           return (SpecialMove)handle.getAsset();
-        } catch(IOException | CorruptAssetException ex) {
+        } catch(IOException | AssetException ex) {
           Logger.getLogger(CharacterEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
       }
