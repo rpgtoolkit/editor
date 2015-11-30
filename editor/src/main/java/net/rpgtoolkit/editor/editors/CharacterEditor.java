@@ -163,7 +163,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
    */
   @Override
   public boolean save() {
-    return this.player.save();
+    return this.player.saveBinary();
   }
 
   /**

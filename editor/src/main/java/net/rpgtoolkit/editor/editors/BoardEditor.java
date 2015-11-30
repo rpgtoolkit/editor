@@ -245,7 +245,7 @@ public class BoardEditor extends ToolkitEditorWindow {
       
       if (file != null) {
         success = board.saveAs(file);
-        setTitle("Editing Board - " + board.toString());
+        setTitle("Editing - " + file.getName());
       }
     } else {
       success = board.save();
@@ -263,7 +263,6 @@ public class BoardEditor extends ToolkitEditorWindow {
   @Override
   public boolean saveAs(File file) {
     board.setFile(file);
-    
     return save();
   }
 

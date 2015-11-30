@@ -101,7 +101,13 @@ public class BoardMouseAdapter extends MouseAdapter {
    */
   private void doMouseButton1Pressed(AbstractBrush brush, int x, int y) {
     Rectangle bucketSelection = null;
-    Point point = editor.getBoardView().getTileCoordinates(x, y);
+    
+    Point point;
+    if (!(brush instanceof StartPositionBrush)) {
+      point = editor.getBoardView().getTileCoordinates(x, y);
+    } else {
+      point = new Point(x, y);
+    }
 
     if (brush instanceof SelectionBrush) {
       origin = point;

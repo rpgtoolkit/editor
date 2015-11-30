@@ -22,6 +22,7 @@ import net.rpgtoolkit.editor.ui.actions.RunAction;
 import net.rpgtoolkit.editor.ui.actions.SaveAction;
 import net.rpgtoolkit.editor.ui.actions.SelectionAction;
 import net.rpgtoolkit.editor.ui.actions.SpriteAction;
+import net.rpgtoolkit.editor.ui.actions.StartPositionAction;
 import net.rpgtoolkit.editor.ui.actions.StopAction;
 import net.rpgtoolkit.editor.ui.actions.VectorAction;
 import net.rpgtoolkit.editor.ui.actions.ZoomInAction;
@@ -56,10 +57,12 @@ public class MainToolBar extends JToolBar {
   private final JToggleButton selectionButton;
   private final JToggleButton bucketButton;
   private final JToggleButton eraserButton;
+  
   private final JToggleButton vectorButton;
   private final JToggleButton programButton;
   private final JToggleButton spriteButton;
   private final JToggleButton lightButton;
+  private final JToggleButton startPositionButton;
 
   private final EditorButton zoomInButton;
   private final EditorButton zoomOutButton;
@@ -151,6 +154,11 @@ public class MainToolBar extends JToolBar {
     lightButton.setFocusable(false);
     lightButton.setAction(new LightAction());
     lightButton.setIcon(Icons.getSmallIcon("flashlight-shine"));
+    
+    startPositionButton = new JToggleButton();
+    startPositionButton.setFocusable(false);
+    startPositionButton.setAction(new StartPositionAction());
+    startPositionButton.setIcon(Icons.getSmallIcon("flag-checker"));
 
     zoomInButton = new EditorButton();
     zoomInButton.setAction(new ZoomInAction());
@@ -207,6 +215,7 @@ public class MainToolBar extends JToolBar {
     add(programButton);
     add(spriteButton);
     add(lightButton);
+    add(startPositionButton);
     addSeparator();
     add(zoomInButton);
     add(zoomOutButton);
@@ -328,6 +337,7 @@ public class MainToolBar extends JToolBar {
     programButton.setEnabled(enable);
     spriteButton.setEnabled(enable);
     lightButton.setEnabled(enable);
+    startPositionButton.setEnabled(enable);
     zoomInButton.setEnabled(enable);
     zoomOutButton.setEnabled(enable);
     runButton.setEnabled(enable);

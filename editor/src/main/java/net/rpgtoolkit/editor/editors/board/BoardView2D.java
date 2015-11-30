@@ -109,6 +109,7 @@ public final class BoardView2D extends AbstractBoardView {
 
     paintLayers(g);
     paintSprites(g);
+    paintStartPostion(g);
 
     // Reset an opcaity changes in the layers.
     g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP,
@@ -238,6 +239,7 @@ public final class BoardView2D extends AbstractBoardView {
    *
    * @param g
    */
+  @Override
   protected void paintSprites(Graphics2D g) {
     ArrayList<BoardLayerView> layers = getLayerArrayList();
 
@@ -246,6 +248,22 @@ public final class BoardView2D extends AbstractBoardView {
         layer.drawSprites(g);
       }
     }
+  }
+  
+  /**
+   * 
+   * 
+   * @param g 
+   */
+  @Override
+  protected void paintStartPostion(Graphics2D g) {
+      int x = board.getStartingPositionX();
+      int y = board.getStartingPositionY();
+      int length = 15;
+      
+      g.setColor(getDefaultStartPositionColor());
+      g.drawLine(x - length, y, x + length, y);
+      g.drawLine(x, y - length, x, y + length);
   }
 
   /**

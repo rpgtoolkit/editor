@@ -9,6 +9,7 @@ package net.rpgtoolkit.editor.utilities;
 import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import net.rpgtoolkit.common.utilities.PropertiesSingleton;
 import net.rpgtoolkit.editor.ui.MainWindow;
 import net.rpgtoolkit.editor.ui.SingleRootFileSystemView;
 
@@ -17,6 +18,42 @@ import net.rpgtoolkit.editor.ui.SingleRootFileSystemView;
  * @author Joshua Michael Daly
  */
 public final class FileTools {
+
+  public static boolean createDirectoryStructure(String path, String projectName) {
+    boolean result = true;
+
+    result &= createDirectory(path + File.separator + PropertiesSingleton.getProperty("toolkit.directory.main"));
+    result &= createDirectory(path + File.separator
+            + PropertiesSingleton.getProperty("toolkit.directory.game") + File.separator + projectName);
+
+    String gameDirectory = PropertiesSingleton.getProperty("toolkit.directory.game") + File.separator + projectName;
+    for (String directory : PropertiesSingleton.getDirectories()) {
+      result &= createDirectory(path + File.separator + gameDirectory + File.separator + directory);
+    }
+    
+    return result;
+  }
+
+  private static boolean createDirectory(String path) {
+    File directory = new File(path);
+
+    if (!directory.exists()) {
+      return directory.mkdirs();
+    } else {
+      return true;
+    }
+  }
+
+  public static File doChoosePath() {
+    JFileChooser fileChooser = new JFileChooser(System.getProperty("user.home"));
+    fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+    if (fileChooser.showOpenDialog(MainWindow.getInstance()) == JFileChooser.APPROVE_OPTION) {
+      return fileChooser.getCurrentDirectory();
+    }
+
+    return null;
+  }
 
   public static File doChooseFile(String extension, String directory, String type) {
     if (MainWindow.getInstance().getActiveProject() != null) {
