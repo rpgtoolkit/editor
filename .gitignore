@@ -14,7 +14,7 @@
 #game/
 #/dist/
 /nbproject/private/
-/nbproject/
+*/nbproject/
 /manifest.mf
 /build.xml
 /build/
