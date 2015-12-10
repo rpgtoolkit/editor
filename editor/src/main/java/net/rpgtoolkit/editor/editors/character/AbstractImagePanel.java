@@ -32,6 +32,14 @@ public abstract class AbstractImagePanel extends JPanel implements MouseListener
     setToolTipText("Double click to select an image.");
   }
 
+  public Dimension getDimension() {
+    return dimension;
+  }
+
+  public void setDimension(Dimension dimension) {
+    this.dimension = dimension;
+  }
+
   @Override
   public Dimension getPreferredSize() {
     return dimension;

@@ -7,6 +7,7 @@
 package net.rpgtoolkit.editor.editors;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -234,17 +235,14 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     this.levelsPanel = new JPanel();
 
     this.createStatsPanel();
-    //this.createGraphicsPanel();
-    this.createSpecialMovesPanel();
-    this.createEquipmentPanel();
+    this.createGraphicsPanel();
+    //this.createSpecialMovesPanel();
+    //this.createEquipmentPanel();
     
-    // TODO: Decide what do with the LevelsPanel.
-    //
-
     tabPane.addTab("Stats and Portrait", this.statsPanel);
-    //tabPane.addTab("Graphics", this.graphicsPanel);
-    tabPane.addTab("Special Moves", this.specialMovesPanel);
-    tabPane.addTab("Equippable Items", this.equipmentPanel);
+    tabPane.addTab("Graphics", this.graphicsPanel);
+    //tabPane.addTab("Special Moves", this.specialMovesPanel);
+    //tabPane.addTab("Equippable Items", this.equipmentPanel);
     
     // TODO: Decide what do with the LevelsPanel.
     //this.createLevelsPanel();
@@ -588,19 +586,17 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     // Configure function Scope Components
     JScrollPane animListScroller = new JScrollPane(this.animList);
 
-    JLabel animLabel = new JLabel("Animation");
     final ImageIcon playIcon = Icons.getSmallIcon("run");
     final ImageIcon stopIcon = Icons.getSmallIcon("stop");
     final JToggleButton play = new JToggleButton(playIcon);
     final JLabel animDisplay = new JLabel();
 
-    JLabel dummy = new JLabel();
-    final JButton animFindButton = new JButton("Browse");
-    animFindButton.setEnabled(false);
+    final JButton browseButton = new JButton("Browse");
+    browseButton.setEnabled(false);
 
-    JButton animAddButton = new JButton("Add");
-    final JButton animRemoveButton = new JButton("Remove");
-    animRemoveButton.setEnabled(false);
+    JButton addButton = new JButton("Add");
+    final JButton removeButton = new JButton("Remove");
+    removeButton.setEnabled(false);
 
     // Configure listeners run animation.
     final ActionListener animate = new ActionListener() {
@@ -608,52 +604,44 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
       @Override
       public void actionPerformed(ActionEvent e) {
-        //switch to the next frame, looping after the last frame
         if (frame < selectedAnim.getFrameCount() - 1) {
           frame++;
         } else {
           frame = 0;
         }
-        animDisplay.setIcon(new ImageIcon(
-                selectedAnim.getFrame(frame).getFrameImage()
+        
+        animDisplay.setIcon(new ImageIcon(selectedAnim.getFrame(frame).getFrameImage()
         ));
       }
     };
 
-    //change selection
     this.animList.addListSelectionListener(new ListSelectionListener() {
       @Override
       public void valueChanged(ListSelectionEvent e) {
         if (e.getValueIsAdjusting() == false) {
           if (animList.getSelectedIndex() == -1) {
             animDisplay.setIcon(null);
-            animFindButton.setEnabled(false);
-            animRemoveButton.setEnabled(false);
+            browseButton.setEnabled(false);
+            removeButton.setEnabled(false);
           } else {
-            //switch animation info
             if (play.isSelected()) {
               play.doClick();
-            } //press stop
+            }
+            
             String location;
             if (animList.getSelectedIndex() < standardNames.size()) {
-              location = player.getStandardGraphics().get(
-                      animList.getSelectedIndex());
-              //out.println("new selection: standard " + animList.getSelectedIndex());
+              location = player.getStandardGraphics().get(animList.getSelectedIndex());
             } else {
-              location = player.getCustomGraphics().get(
-                      animList.getSelectedIndex() - standardNames.size());
-              //out.println("new selection: custom " + (animList.getSelectedIndex() - standardNames.size()));
+              location = player.getCustomGraphics().get(animList.getSelectedIndex() - standardNames.size());
             }
-            //clear animation and images
+            
             selectedAnim = null;
             animDisplay.setIcon(null);
             animTimer = null;
-            //out.println("anim cleared");
-            //out.println("setting location to " + location);
-            animLoc.setText(location); //handles switching to new valid animations
+            animLoc.setText(location);
 
-            animFindButton.setEnabled(true);
-            animRemoveButton.setEnabled(true);
+            browseButton.setEnabled(true);
+            removeButton.setEnabled(true);
           }
         }
       }
@@ -663,20 +651,15 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
       @Override
       public void insertUpdate(DocumentEvent e) {
-//                out.println("insert!");
         String text = animLoc.getText();
-//                out.println(text);
         updateAnimation(text);
       }
 
       @Override
       public void removeUpdate(DocumentEvent e) {
-        //out.println("remove!");
         String text = animLoc.getText();
-        //out.println(text);
         updateAnimation(text);
         if (text.isEmpty()) {
-          //out.println("clearing anim");
           selectedAnim = null;
           animDisplay.setIcon(null);
           animTimer = null;
@@ -685,8 +668,6 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
       private void updateAnimation(String text) {
         int index = animList.getSelectedIndex();
-//                out.println("update animation index: " + index);
-//                out.println(text);
         if (index >= 0 && index < standardNames.size() + customNames.size()) {
           boolean custom = false;
           if (index >= standardNames.size()) {
@@ -699,14 +680,12 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
             player.getStandardGraphics().set(index, text);
           }
           if (text.endsWith(".anm")) {
-            //update image if the location is valid
-            File f = mainWindow.getPath(
+            File file = mainWindow.getPath(
                     mainWindow.getTypeSubdirectory(Animation.class)
                     + File.separator + text);
-            if (f.canRead()) {
-              selectedAnim = new Animation(f);
-//                            out.println("new animation!");
-              //switch animation images
+            if (file.canRead()) {
+              selectedAnim = new Animation(file);
+
               if (selectedAnim != null && selectedAnim.getFrameCount() > 0) {
                 animDisplay.setIcon(new ImageIcon(
                         selectedAnim.getFrame(0).getFrameImage()));
@@ -722,8 +701,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
       }
     });
 
-    //play button
-    ActionListener playStop = new ActionListener() {
+    ActionListener playButton = new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (play.isSelected()) {
@@ -736,28 +714,28 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
             animTimer.stop();
             play.setIcon(playIcon);
           }
+          
           if (selectedAnim != null && selectedAnim.getFrameCount() > 0) {
-            animDisplay.setIcon(new ImageIcon(
-                    selectedAnim.getFrame(0).getFrameImage()));
+            animDisplay.setIcon(new ImageIcon(selectedAnim.getFrame(0).getFrameImage()));
           }
         }
       }
     };
-    play.addActionListener(playStop);
+    play.addActionListener(playButton);
 
-    //browse button
-    animFindButton.addActionListener(new ActionListener() {
+    browseButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         int index = animList.getSelectedIndex();
         if (index < 0) {
           return;
         }
+        
         String loc = mainWindow.browseByTypeRelative(Animation.class);
         if (loc != null) {
           if (play.isSelected()) {
             play.doClick();
-          } //press stop before we change it
+          }
           animLoc.setText(loc);
           if (index < standardNames.size()) {
             player.getStandardGraphics().set(index, loc);
@@ -765,76 +743,69 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
             int customIndex = index - standardNames.size();
             player.getCustomGraphics().set(customIndex, loc);
           }
-          //changing animation will be handled by animLoc
         }
       }
     });
 
-    //add button
-    animAddButton.addActionListener(new ActionListener() {
+    addButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         int index = animList.getSelectedIndex();
         if (index < standardNames.size()) {
-          index = standardNames.size(); //insert at start of custom graphics
+          index = standardNames.size();
         } else if (index > standardNames.size() + customNames.size()) {
-          index = standardNames.size() + customNames.size(); //insert at end
+          index = standardNames.size() + customNames.size();
         } else {
-          index++; //insert after current slot
+          index++;
         }
-        //add custom graphic
+        
         String name = (String) JOptionPane.showInputDialog(
                 graphicsPanel,
                 "Enter the handle for the new sprite:",
                 "Add Enemy Graphic",
                 JOptionPane.PLAIN_MESSAGE);
+        
         if (name == null || name.isEmpty()) {
           return;
         }
+        
         int customIndex = index - standardNames.size();
         customNames.add(customIndex, name);
         player.getCustomGraphics().add(customIndex, "");
         enemyGraphics.add(index, name);
-        //select the new graphic
+
         animList.setSelectedIndex(index);
         animList.ensureIndexIsVisible(index);
-        //changing animation will be handled by animList and animLoc
       }
     });
 
-    //remove button
-    animRemoveButton.addActionListener(new ActionListener() {
+    removeButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         int index = animList.getSelectedIndex();
-        out.println(index);
-        out.println(standardNames.size());
-        out.println(customNames.size());
         if (index >= 0) {
           if (index < standardNames.size()) {
             if (selectedAnim != null) {
-              //clear standard graphic file location, but don't delete
               if (play.isSelected()) {
                 play.doClick();
-              } //press stop before we change it
+              }
+              
               animLoc.setText("");
               player.getStandardGraphics().set(index, "");
-              //clear animation will be handled by animLoc
             }
           } else if (index < standardNames.size() + customNames.size()) {
-            //delete custom graphic
             int customIndex = index - standardNames.size();
             customNames.remove(customIndex);
             player.getCustomGraphics().remove(customIndex);
             enemyGraphics.remove(index);
-            //move back on the list by 1
+            
             if (index > 0) {
               if (index == enemyGraphics.size()) {
                 index--;
               }
+              
               animList.setSelectedIndex(index);
               animList.ensureIndexIsVisible(index);
-              //changing animation will be handled by animList
             }
           }
         }
@@ -845,6 +816,9 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     JPanel spritePanel = new JPanel();
     spritePanel.setBorder(BorderFactory.createTitledBorder(
             this.defaultEtchedBorder, "Sprite List"));
+    
+    ProfilePanel profilePanel = new ProfilePanel();
+    profilePanel.setDimension(new Dimension(0, 400));
 
     // Create Layout for Top Level Panel
     GroupLayout layout = Gui.createGroupLayout(this.graphicsPanel);
@@ -853,38 +827,15 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     GroupLayout spriteLayout = Gui.createGroupLayout(spritePanel);
 
     // Configure the SPRITE PANEL layout
-    spriteLayout.setHorizontalGroup(spriteLayout.createSequentialGroup()
+    spriteLayout.setHorizontalGroup(spriteLayout.createParallelGroup()
+            .addComponent(profilePanel)
             .addComponent(animListScroller)
-            .addGroup(spriteLayout.createParallelGroup()
-                    .addComponent(animLabel)
-                    .addComponent(this.animLoc)
-                    .addGroup(spriteLayout.createSequentialGroup()
-                            .addComponent(play)
-                            .addComponent(animDisplay)))
-            .addGroup(spriteLayout.createParallelGroup()
-                    .addComponent(dummy)
-                    .addComponent(animFindButton)
-                    .addComponent(animAddButton)
-                    .addComponent(animRemoveButton))
     );
 
-    spriteLayout.setVerticalGroup(spriteLayout.createParallelGroup()
+    spriteLayout.setVerticalGroup(spriteLayout.createSequentialGroup()
+            .addComponent(profilePanel)
             .addComponent(animListScroller)
-            .addGroup(spriteLayout.createSequentialGroup()
-                    .addComponent(animLabel)
-                    .addComponent(this.animLoc)
-                    .addGroup(spriteLayout.createParallelGroup()
-                            .addComponent(play)
-                            .addComponent(animDisplay)))
-            .addGroup(spriteLayout.createSequentialGroup()
-                    .addComponent(dummy)
-                    .addComponent(animFindButton)
-                    .addComponent(animAddButton)
-                    .addComponent(animRemoveButton))
     );
-
-    spriteLayout.linkSize(SwingConstants.VERTICAL, this.animLoc, animLabel,
-            dummy, animFindButton, animAddButton, animRemoveButton);
 
     // Configure the GRAPHICS PANEL layout
     layout.setHorizontalGroup(layout.createParallelGroup()
