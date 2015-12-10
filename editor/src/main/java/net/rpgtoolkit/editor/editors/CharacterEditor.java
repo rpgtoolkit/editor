@@ -6,7 +6,7 @@
  */
 package net.rpgtoolkit.editor.editors;
 
-import java.awt.Dimension;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -53,6 +53,8 @@ import net.rpgtoolkit.common.assets.PlayerSpecialMove;
 import net.rpgtoolkit.common.assets.Program;
 import net.rpgtoolkit.common.assets.SpecialMove;
 import net.rpgtoolkit.common.io.Paths;
+import net.rpgtoolkit.common.utilities.PropertiesSingleton;
+import net.rpgtoolkit.editor.editors.character.ProfilePanel;
 import net.rpgtoolkit.editor.ui.Gui;
 import net.rpgtoolkit.editor.ui.IntegerField;
 import net.rpgtoolkit.editor.ui.MainWindow;
@@ -69,7 +71,6 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
   private final Player player; // Player file we are altering
 
-  private static final String SEPARATOR = File.separator;
   private final MainWindow mainWindow = MainWindow.getInstance();
 
   // Tabs required by the menu
@@ -80,10 +81,9 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
   private JPanel levelsPanel;
 
   private final Border defaultEtchedBorder = BorderFactory.
-      createEtchedBorder(EtchedBorder.LOWERED);
+          createEtchedBorder(EtchedBorder.LOWERED);
 
   //STATS SETTINGS
-  private JLabel portraitDisplay;
   private JTextField playerName;
   private IntegerField experience;
   private IntegerField hitPoints;
@@ -102,6 +102,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
   private JTextField fightPowerVar;
   private JTextField defencePowerVar;
   private JTextField levelVar;
+  private ProfilePanel profilePanel;
 
   // GRAPHICS SETTINGS
   private JList animList;
@@ -138,31 +139,26 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
   private IntegerField maxspIncrease;
   private JTextField levelUpProgram;
 
-  /*
-   * *************************************************************************
-   * Public Constructors
-   * *************************************************************************
-   */
   public CharacterEditor(Player character) {
-    super("Editing Player Character - " + character.getName(),
-        true, true, true, true);
-
-    out.println("CharacterEditor begin");
+    super("Editing Player Character - " + character.getName(), true, true, true, true);
     this.player = character;
 
-    this.setSize(800, 530);
-    this.constructWindow();
-    this.setVisible(true);
-    out.println("CharacterEditor end");
+    constructWindow();
+    setVisible(true);
+    pack();
   }
 
-  /*
-   * *************************************************************************
-   * Public Methods
-   * *************************************************************************
-   */
   @Override
   public boolean save() {
+    // Get the relative portrait path.
+    if (profilePanel.getFile() != null) {
+      String remove = System.getProperty("project.path")
+              + PropertiesSingleton.getProperty("toolkit.directory.bitmap")
+              + File.separator;
+      String path = profilePanel.getFile().getAbsolutePath().replace(remove, "");
+      player.setProfilePicture(path);
+    }
+
     return this.player.saveBinary();
   }
 
@@ -222,16 +218,10 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
   }
 
-  /*
-   * *************************************************************************
-   * Private Methods
-   * *************************************************************************
-   */
   /**
    * Builds the Swing interface
    */
   private void constructWindow() {
-    out.println("constructWindow() begin");
     this.addInternalFrameListener(this);
 
     // Builds the components needed to display the Enemy status.
@@ -244,25 +234,27 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     this.levelsPanel = new JPanel();
 
     this.createStatsPanel();
-    this.createGraphicsPanel();
+    //this.createGraphicsPanel();
     this.createSpecialMovesPanel();
     this.createEquipmentPanel();
-    this.createLevelsPanel();
+    
+    // TODO: Decide what do with the LevelsPanel.
+    //
 
     tabPane.addTab("Stats and Portrait", this.statsPanel);
-    tabPane.addTab("Graphics", this.graphicsPanel);
+    //tabPane.addTab("Graphics", this.graphicsPanel);
     tabPane.addTab("Special Moves", this.specialMovesPanel);
     tabPane.addTab("Equippable Items", this.equipmentPanel);
-    tabPane.addTab("Levels", this.levelsPanel);
+    
+    // TODO: Decide what do with the LevelsPanel.
+    //this.createLevelsPanel();
+    //tabPane.addTab("Levels", this.levelsPanel);
 
     this.add(tabPane);
-    out.println("constructWindow() end");
   }
 
   private void createStatsPanel() {
     // Configure Class scope components
-    this.portraitDisplay = new JLabel();
-    this.portraitDisplay.setMaximumSize(new Dimension(64, 64));
     this.playerName = new JTextField(this.player.getName());
     this.experience = new IntegerField(this.player.getInitialExperience());
     this.hitPoints = new IntegerField(this.player.getInitialHP());
@@ -282,31 +274,24 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     this.defencePowerVar = new JTextField(this.player.getDpVariableName());
     this.levelVar = new JTextField(this.player.getLvlVariableName());
 
-    // Configure function Scope Components
-    String portrait = this.player.getProfilePicture();
-    if (portrait.isEmpty() == false) {
-      this.portraitDisplay.setIcon(Gui.ImageToIcon(
-          Gui.loadImage(portrait), 64, 64));
-    }
-    JLabel playerNameLabel = new JLabel("Character Name");
-    JLabel experienceLabel = new JLabel("Starting Experience");
-    JLabel hitPointsLabel = new JLabel("Starting Health");
-    JLabel maxHitPointsLabel = new JLabel("Starting Max Health");
-    JLabel specialPointsLabel = new JLabel("Starting Special Move Power");
-    JLabel maxSpecialPointsLabel = new JLabel("Starting Max Special Move Power");
-    JLabel fightPowerLabel = new JLabel("Starting Fighting Power");
-    JLabel defencePowerLabel = new JLabel("Starting Defence Power");
-    JLabel levelLabel = new JLabel("Starting Level");
-    JLabel playerNameVarLabel = new JLabel("Character Name Variable");
-    JLabel experienceVarLabel = new JLabel("Experience Variable");
-    JLabel hitPointsVarLabel = new JLabel("Health Variable");
-    JLabel maxHitPointsVarLabel = new JLabel("Max Health Variable");
-    JLabel specialPointsVarLabel = new JLabel("Special Move Power Variable");
-    JLabel maxSpecialPointsVarLabel = new JLabel("Max Special Move Power Variable");
-    JLabel fightPowerVarLabel = new JLabel("Fighting Power Variable");
-    JLabel defencePowerVarLabel = new JLabel("Defence Power Variable");
-    JLabel levelVarLabel = new JLabel("Level Variable");
-    JButton portraitFindButton = new JButton("Select Portrait");
+    JLabel playerNameLabel = new JLabel("Name");
+    JLabel experienceLabel = new JLabel("Experience");
+    JLabel hitPointsLabel = new JLabel("Health");
+    JLabel maxHitPointsLabel = new JLabel("Max Health");
+    JLabel specialPointsLabel = new JLabel("Special Power");
+    JLabel maxSpecialPointsLabel = new JLabel("Max Special Power");
+    JLabel fightPowerLabel = new JLabel("Fighting Power");
+    JLabel defencePowerLabel = new JLabel("Defence Power");
+    JLabel levelLabel = new JLabel("Level");
+    JLabel playerNameVarLabel = new JLabel("Name");
+    JLabel experienceVarLabel = new JLabel("Experience");
+    JLabel hitPointsVarLabel = new JLabel("Health");
+    JLabel maxHitPointsVarLabel = new JLabel("Max Health");
+    JLabel specialPointsVarLabel = new JLabel("Special Power");
+    JLabel maxSpecialPointsVarLabel = new JLabel("Max Special Power");
+    JLabel fightPowerVarLabel = new JLabel("Fighting Power");
+    JLabel defencePowerVarLabel = new JLabel("Defence Power");
+    JLabel levelVarLabel = new JLabel("Level");
     JButton defaultNameBtn = new JButton("Default");
     JButton defaultExperienceBtn = new JButton("Default");
     JButton defaultHitPointsBtn = new JButton("Default");
@@ -317,281 +302,269 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     JButton defaultDefencePowerBtn = new JButton("Default");
     JButton defaultLevelBtn = new JButton("Default");
 
-    // Configure listeners
-    portraitFindButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        String loc = mainWindow.getRelativePath(
-            mainWindow.browseLocationBySubdir(
-                mainWindow.getImageSubdirectory(),
-                mainWindow.getImageFilterDescription(),
-                mainWindow.getImageExtensions()
-            ),
-            mainWindow.getPath(mainWindow.getImageSubdirectory())
-        );
-        if (loc != null) {
-          player.setProfilePicture(loc);
-          portraitDisplay.setIcon(Gui.ImageToIcon(
-              Gui.loadImage(loc), 64, 64));
-        }
-      }
-    });
     defaultNameBtn.addActionListener(
-        varDefaultListener(this.playerNameVar, "name", '$'));
+            varDefaultListener(this.playerNameVar, "name", '$'));
     defaultExperienceBtn.addActionListener(
-        varDefaultListener(this.experienceVar, "experience", '!'));
+            varDefaultListener(this.experienceVar, "experience", '!'));
     defaultHitPointsBtn.addActionListener(
-        varDefaultListener(this.hitPointsVar, "health", '!'));
+            varDefaultListener(this.hitPointsVar, "health", '!'));
     defaultMaxHitPointsBtn.addActionListener(
-        varDefaultListener(this.maxHitPointsVar, "maxhealth", '!'));
+            varDefaultListener(this.maxHitPointsVar, "maxhealth", '!'));
     defaultSpecialPointsBtn.addActionListener(
-        varDefaultListener(this.specialPointsVar, "smpower", '!'));
+            varDefaultListener(this.specialPointsVar, "smpower", '!'));
     defaultMaxSpecialPointsBtn.addActionListener(
-        varDefaultListener(this.maxSpecialPointsVar, "maxsm", '!'));
+            varDefaultListener(this.maxSpecialPointsVar, "maxsm", '!'));
     defaultFightPowerBtn.addActionListener(
-        varDefaultListener(this.fightPowerVar, "fight", '!'));
+            varDefaultListener(this.fightPowerVar, "fight", '!'));
     defaultDefencePowerBtn.addActionListener(
-        varDefaultListener(this.defencePowerVar, "defence", '!'));
+            varDefaultListener(this.defencePowerVar, "defence", '!'));
     defaultLevelBtn.addActionListener(
-        varDefaultListener(this.levelVar, "level", '!'));
+            varDefaultListener(this.levelVar, "level", '!'));
 
     // Configure the necessary Panels
     JPanel statsEditPanel = new JPanel();
     statsEditPanel.setBorder(BorderFactory.createTitledBorder(
-        this.defaultEtchedBorder, "Stats"));
+            this.defaultEtchedBorder, "Starting Stats"));
     JPanel variablesPanel = new JPanel();
     variablesPanel.setBorder(BorderFactory.createTitledBorder(
-        this.defaultEtchedBorder, "Variables"));
+            this.defaultEtchedBorder, "Controlling Variables"));
 
     // Create Layout for top level panel
     GroupLayout layout = Gui.createGroupLayout(this.statsPanel);
 
     // Create Layouts for second level panels
     GroupLayout statsLayout = Gui.createGroupLayout(statsEditPanel);
-
     GroupLayout variablesLayout = Gui.createGroupLayout(variablesPanel);
 
     // Configure the STATS EDIT PANEL layout
     statsLayout.setHorizontalGroup(statsLayout.createParallelGroup()
-        .addGroup(statsLayout.createSequentialGroup()
-            .addComponent(playerNameLabel)
-            .addComponent(this.playerName))
-        .addGroup(statsLayout.createSequentialGroup()
-            .addComponent(experienceLabel)
-            .addComponent(this.experience))
-        .addGroup(statsLayout.createSequentialGroup()
-            .addComponent(hitPointsLabel)
-            .addComponent(this.hitPoints))
-        .addGroup(statsLayout.createSequentialGroup()
-            .addComponent(maxHitPointsLabel)
-            .addComponent(this.maxHitPoints))
-        .addGroup(statsLayout.createSequentialGroup()
-            .addComponent(specialPointsLabel)
-            .addComponent(this.specialPoints))
-        .addGroup(statsLayout.createSequentialGroup()
-            .addComponent(maxSpecialPointsLabel)
-            .addComponent(this.maxSpecialPoints))
-        .addGroup(statsLayout.createSequentialGroup()
-            .addComponent(fightPowerLabel)
-            .addComponent(this.fightPower))
-        .addGroup(statsLayout.createSequentialGroup()
-            .addComponent(defencePowerLabel)
-            .addComponent(this.defencePower))
-        .addGroup(statsLayout.createSequentialGroup()
-            .addComponent(levelLabel)
-            .addComponent(this.level))
+            .addGroup(statsLayout.createSequentialGroup()
+                    .addComponent(playerNameLabel)
+                    .addComponent(this.playerName))
+            .addGroup(statsLayout.createSequentialGroup()
+                    .addComponent(experienceLabel)
+                    .addComponent(this.experience))
+            .addGroup(statsLayout.createSequentialGroup()
+                    .addComponent(hitPointsLabel)
+                    .addComponent(this.hitPoints))
+            .addGroup(statsLayout.createSequentialGroup()
+                    .addComponent(maxHitPointsLabel)
+                    .addComponent(this.maxHitPoints))
+            .addGroup(statsLayout.createSequentialGroup()
+                    .addComponent(specialPointsLabel)
+                    .addComponent(this.specialPoints))
+            .addGroup(statsLayout.createSequentialGroup()
+                    .addComponent(maxSpecialPointsLabel)
+                    .addComponent(this.maxSpecialPoints))
+            .addGroup(statsLayout.createSequentialGroup()
+                    .addComponent(fightPowerLabel)
+                    .addComponent(this.fightPower))
+            .addGroup(statsLayout.createSequentialGroup()
+                    .addComponent(defencePowerLabel)
+                    .addComponent(this.defencePower))
+            .addGroup(statsLayout.createSequentialGroup()
+                    .addComponent(levelLabel)
+                    .addComponent(this.level))
     );
 
     statsLayout.linkSize(SwingConstants.HORIZONTAL,
-        playerNameLabel,
-        experienceLabel,
-        hitPointsLabel,
-        maxHitPointsLabel,
-        specialPointsLabel,
-        maxSpecialPointsLabel,
-        fightPowerLabel,
-        defencePowerLabel,
-        levelLabel);
+            playerNameLabel,
+            experienceLabel,
+            hitPointsLabel,
+            maxHitPointsLabel,
+            specialPointsLabel,
+            maxSpecialPointsLabel,
+            fightPowerLabel,
+            defencePowerLabel,
+            levelLabel);
     statsLayout.linkSize(SwingConstants.VERTICAL,
-        playerNameLabel,
-        experienceLabel,
-        hitPointsLabel,
-        maxHitPointsLabel,
-        specialPointsLabel,
-        maxSpecialPointsLabel,
-        fightPowerLabel,
-        defencePowerLabel,
-        levelLabel,
-        this.playerName,
-        this.experience,
-        this.hitPoints,
-        this.maxHitPoints,
-        this.specialPoints,
-        this.maxSpecialPoints,
-        this.fightPower,
-        this.defencePower,
-        this.level);
+            playerNameLabel,
+            experienceLabel,
+            hitPointsLabel,
+            maxHitPointsLabel,
+            specialPointsLabel,
+            maxSpecialPointsLabel,
+            fightPowerLabel,
+            defencePowerLabel,
+            levelLabel,
+            this.playerName,
+            this.experience,
+            this.hitPoints,
+            this.maxHitPoints,
+            this.specialPoints,
+            this.maxSpecialPoints,
+            this.fightPower,
+            this.defencePower,
+            this.level);
 
     statsLayout.setVerticalGroup(statsLayout.createSequentialGroup()
-        .addGroup(statsLayout.createParallelGroup()
-            .addComponent(playerNameLabel)
-            .addComponent(this.playerName, Gui.JTF_HEIGHT,
-                Gui.JTF_HEIGHT, Gui.JTF_HEIGHT))
-        .addGroup(statsLayout.createParallelGroup()
-            .addComponent(experienceLabel)
-            .addComponent(this.experience))
-        .addGroup(statsLayout.createParallelGroup()
-            .addComponent(hitPointsLabel)
-            .addComponent(this.hitPoints))
-        .addGroup(statsLayout.createParallelGroup()
-            .addComponent(maxHitPointsLabel)
-            .addComponent(this.maxHitPoints))
-        .addGroup(statsLayout.createParallelGroup()
-            .addComponent(specialPointsLabel)
-            .addComponent(this.specialPoints))
-        .addGroup(statsLayout.createParallelGroup()
-            .addComponent(maxSpecialPointsLabel)
-            .addComponent(this.maxSpecialPoints))
-        .addGroup(statsLayout.createParallelGroup()
-            .addComponent(fightPowerLabel)
-            .addComponent(this.fightPower))
-        .addGroup(statsLayout.createParallelGroup()
-            .addComponent(defencePowerLabel)
-            .addComponent(this.defencePower))
-        .addGroup(statsLayout.createParallelGroup()
-            .addComponent(levelLabel)
-            .addComponent(this.level))
+            .addGroup(statsLayout.createParallelGroup()
+                    .addComponent(playerNameLabel)
+                    .addComponent(this.playerName, Gui.JTF_HEIGHT,
+                            Gui.JTF_HEIGHT, Gui.JTF_HEIGHT))
+            .addGroup(statsLayout.createParallelGroup()
+                    .addComponent(experienceLabel)
+                    .addComponent(this.experience))
+            .addGroup(statsLayout.createParallelGroup()
+                    .addComponent(hitPointsLabel)
+                    .addComponent(this.hitPoints))
+            .addGroup(statsLayout.createParallelGroup()
+                    .addComponent(maxHitPointsLabel)
+                    .addComponent(this.maxHitPoints))
+            .addGroup(statsLayout.createParallelGroup()
+                    .addComponent(specialPointsLabel)
+                    .addComponent(this.specialPoints))
+            .addGroup(statsLayout.createParallelGroup()
+                    .addComponent(maxSpecialPointsLabel)
+                    .addComponent(this.maxSpecialPoints))
+            .addGroup(statsLayout.createParallelGroup()
+                    .addComponent(fightPowerLabel)
+                    .addComponent(this.fightPower))
+            .addGroup(statsLayout.createParallelGroup()
+                    .addComponent(defencePowerLabel)
+                    .addComponent(this.defencePower))
+            .addGroup(statsLayout.createParallelGroup()
+                    .addComponent(levelLabel)
+                    .addComponent(this.level))
     );
 
     // Configure the VARIABLES PANEL layout
     variablesLayout.setHorizontalGroup(variablesLayout.createParallelGroup()
-        .addGroup(variablesLayout.createSequentialGroup()
-            .addComponent(playerNameVarLabel)
-            .addComponent(this.playerNameVar)
-            .addComponent(defaultNameBtn))
-        .addGroup(variablesLayout.createSequentialGroup()
-            .addComponent(experienceVarLabel)
-            .addComponent(this.experienceVar)
-            .addComponent(defaultExperienceBtn))
-        .addGroup(variablesLayout.createSequentialGroup()
-            .addComponent(hitPointsVarLabel)
-            .addComponent(this.hitPointsVar)
-            .addComponent(defaultHitPointsBtn))
-        .addGroup(variablesLayout.createSequentialGroup()
-            .addComponent(maxHitPointsVarLabel)
-            .addComponent(this.maxHitPointsVar)
-            .addComponent(defaultMaxHitPointsBtn))
-        .addGroup(variablesLayout.createSequentialGroup()
-            .addComponent(specialPointsVarLabel)
-            .addComponent(this.specialPointsVar)
-            .addComponent(defaultSpecialPointsBtn))
-        .addGroup(variablesLayout.createSequentialGroup()
-            .addComponent(maxSpecialPointsVarLabel)
-            .addComponent(this.maxSpecialPointsVar)
-            .addComponent(defaultMaxSpecialPointsBtn))
-        .addGroup(variablesLayout.createSequentialGroup()
-            .addComponent(fightPowerVarLabel)
-            .addComponent(this.fightPowerVar)
-            .addComponent(defaultFightPowerBtn))
-        .addGroup(variablesLayout.createSequentialGroup()
-            .addComponent(defencePowerVarLabel)
-            .addComponent(this.defencePowerVar)
-            .addComponent(defaultDefencePowerBtn))
-        .addGroup(variablesLayout.createSequentialGroup()
-            .addComponent(levelVarLabel)
-            .addComponent(this.levelVar)
-            .addComponent(defaultLevelBtn))
+            .addGroup(variablesLayout.createSequentialGroup()
+                    .addComponent(playerNameVarLabel)
+                    .addComponent(this.playerNameVar)
+                    .addComponent(defaultNameBtn))
+            .addGroup(variablesLayout.createSequentialGroup()
+                    .addComponent(experienceVarLabel)
+                    .addComponent(this.experienceVar)
+                    .addComponent(defaultExperienceBtn))
+            .addGroup(variablesLayout.createSequentialGroup()
+                    .addComponent(hitPointsVarLabel)
+                    .addComponent(this.hitPointsVar)
+                    .addComponent(defaultHitPointsBtn))
+            .addGroup(variablesLayout.createSequentialGroup()
+                    .addComponent(maxHitPointsVarLabel)
+                    .addComponent(this.maxHitPointsVar)
+                    .addComponent(defaultMaxHitPointsBtn))
+            .addGroup(variablesLayout.createSequentialGroup()
+                    .addComponent(specialPointsVarLabel)
+                    .addComponent(this.specialPointsVar)
+                    .addComponent(defaultSpecialPointsBtn))
+            .addGroup(variablesLayout.createSequentialGroup()
+                    .addComponent(maxSpecialPointsVarLabel)
+                    .addComponent(this.maxSpecialPointsVar)
+                    .addComponent(defaultMaxSpecialPointsBtn))
+            .addGroup(variablesLayout.createSequentialGroup()
+                    .addComponent(fightPowerVarLabel)
+                    .addComponent(this.fightPowerVar)
+                    .addComponent(defaultFightPowerBtn))
+            .addGroup(variablesLayout.createSequentialGroup()
+                    .addComponent(defencePowerVarLabel)
+                    .addComponent(this.defencePowerVar)
+                    .addComponent(defaultDefencePowerBtn))
+            .addGroup(variablesLayout.createSequentialGroup()
+                    .addComponent(levelVarLabel)
+                    .addComponent(this.levelVar)
+                    .addComponent(defaultLevelBtn))
     );
 
     variablesLayout.linkSize(SwingConstants.HORIZONTAL,
-        playerNameVarLabel,
-        experienceVarLabel,
-        hitPointsVarLabel,
-        maxHitPointsVarLabel,
-        specialPointsVarLabel,
-        maxSpecialPointsVarLabel,
-        fightPowerVarLabel,
-        defencePowerVarLabel,
-        levelVarLabel);
+            playerNameVarLabel,
+            experienceVarLabel,
+            hitPointsVarLabel,
+            maxHitPointsVarLabel,
+            specialPointsVarLabel,
+            maxSpecialPointsVarLabel,
+            fightPowerVarLabel,
+            defencePowerVarLabel,
+            levelVarLabel);
     variablesLayout.linkSize(SwingConstants.VERTICAL,
-        playerNameVarLabel,
-        experienceVarLabel,
-        hitPointsVarLabel,
-        maxHitPointsVarLabel,
-        specialPointsVarLabel,
-        maxSpecialPointsVarLabel,
-        fightPowerVarLabel,
-        defencePowerVarLabel,
-        levelVarLabel,
-        this.playerNameVar,
-        this.experienceVar,
-        this.hitPointsVar,
-        this.maxHitPointsVar,
-        this.specialPointsVar,
-        this.maxSpecialPointsVar,
-        this.fightPowerVar,
-        this.defencePowerVar,
-        this.levelVar);
+            playerNameVarLabel,
+            experienceVarLabel,
+            hitPointsVarLabel,
+            maxHitPointsVarLabel,
+            specialPointsVarLabel,
+            maxSpecialPointsVarLabel,
+            fightPowerVarLabel,
+            defencePowerVarLabel,
+            levelVarLabel,
+            this.playerNameVar,
+            this.experienceVar,
+            this.hitPointsVar,
+            this.maxHitPointsVar,
+            this.specialPointsVar,
+            this.maxSpecialPointsVar,
+            this.fightPowerVar,
+            this.defencePowerVar,
+            this.levelVar);
 
     variablesLayout.setVerticalGroup(variablesLayout.createSequentialGroup()
-        .addGroup(variablesLayout.createParallelGroup()
-            .addComponent(playerNameVarLabel)
-            .addComponent(this.playerNameVar, Gui.JTF_HEIGHT,
-                Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
-            .addComponent(defaultNameBtn))
-        .addGroup(variablesLayout.createParallelGroup()
-            .addComponent(experienceVarLabel)
-            .addComponent(this.experienceVar)
-            .addComponent(defaultExperienceBtn))
-        .addGroup(variablesLayout.createParallelGroup()
-            .addComponent(hitPointsVarLabel)
-            .addComponent(this.hitPointsVar)
-            .addComponent(defaultHitPointsBtn))
-        .addGroup(variablesLayout.createParallelGroup()
-            .addComponent(maxHitPointsVarLabel)
-            .addComponent(this.maxHitPointsVar)
-            .addComponent(defaultMaxHitPointsBtn))
-        .addGroup(variablesLayout.createParallelGroup()
-            .addComponent(specialPointsVarLabel)
-            .addComponent(this.specialPointsVar)
-            .addComponent(defaultSpecialPointsBtn))
-        .addGroup(variablesLayout.createParallelGroup()
-            .addComponent(maxSpecialPointsVarLabel)
-            .addComponent(this.maxSpecialPointsVar)
-            .addComponent(defaultMaxSpecialPointsBtn))
-        .addGroup(variablesLayout.createParallelGroup()
-            .addComponent(fightPowerVarLabel)
-            .addComponent(this.fightPowerVar)
-            .addComponent(defaultFightPowerBtn))
-        .addGroup(variablesLayout.createParallelGroup()
-            .addComponent(defencePowerVarLabel)
-            .addComponent(this.defencePowerVar)
-            .addComponent(defaultDefencePowerBtn))
-        .addGroup(variablesLayout.createParallelGroup()
-            .addComponent(levelVarLabel)
-            .addComponent(this.levelVar)
-            .addComponent(defaultLevelBtn))
+            .addGroup(variablesLayout.createParallelGroup()
+                    .addComponent(playerNameVarLabel)
+                    .addComponent(this.playerNameVar, Gui.JTF_HEIGHT,
+                            Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
+                    .addComponent(defaultNameBtn))
+            .addGroup(variablesLayout.createParallelGroup()
+                    .addComponent(experienceVarLabel)
+                    .addComponent(this.experienceVar)
+                    .addComponent(defaultExperienceBtn))
+            .addGroup(variablesLayout.createParallelGroup()
+                    .addComponent(hitPointsVarLabel)
+                    .addComponent(this.hitPointsVar)
+                    .addComponent(defaultHitPointsBtn))
+            .addGroup(variablesLayout.createParallelGroup()
+                    .addComponent(maxHitPointsVarLabel)
+                    .addComponent(this.maxHitPointsVar)
+                    .addComponent(defaultMaxHitPointsBtn))
+            .addGroup(variablesLayout.createParallelGroup()
+                    .addComponent(specialPointsVarLabel)
+                    .addComponent(this.specialPointsVar)
+                    .addComponent(defaultSpecialPointsBtn))
+            .addGroup(variablesLayout.createParallelGroup()
+                    .addComponent(maxSpecialPointsVarLabel)
+                    .addComponent(this.maxSpecialPointsVar)
+                    .addComponent(defaultMaxSpecialPointsBtn))
+            .addGroup(variablesLayout.createParallelGroup()
+                    .addComponent(fightPowerVarLabel)
+                    .addComponent(this.fightPowerVar)
+                    .addComponent(defaultFightPowerBtn))
+            .addGroup(variablesLayout.createParallelGroup()
+                    .addComponent(defencePowerVarLabel)
+                    .addComponent(this.defencePowerVar)
+                    .addComponent(defaultDefencePowerBtn))
+            .addGroup(variablesLayout.createParallelGroup()
+                    .addComponent(levelVarLabel)
+                    .addComponent(this.levelVar)
+                    .addComponent(defaultLevelBtn))
     );
+
+    JPanel configPanel = new JPanel(new BorderLayout());
+    configPanel.add(statsEditPanel, BorderLayout.NORTH);
+    configPanel.add(variablesPanel, BorderLayout.SOUTH);
+
+    profilePanel = new ProfilePanel();
+    if (!player.getProfilePicture().isEmpty()) {
+      profilePanel.openImage(new File(
+              System.getProperty("project.path")
+              + PropertiesSingleton.getProperty("toolkit.directory.bitmap")
+              + File.separator
+              + this.player.getProfilePicture()));
+    }
 
     // Configure STATS PANEL layout
-    layout.setHorizontalGroup(layout.createParallelGroup()
-        .addGroup(layout.createSequentialGroup()
-            .addComponent(this.portraitDisplay)
-            .addComponent(portraitFindButton))
-        .addGroup(layout.createSequentialGroup()
-            .addComponent(statsEditPanel, 380, 380, 380)
-            .addComponent(variablesPanel))
+    layout.setHorizontalGroup(
+            layout.createSequentialGroup()
+            .addComponent(profilePanel)
+            .addComponent(configPanel)
     );
 
-    layout.linkSize(SwingConstants.HORIZONTAL, statsEditPanel, variablesPanel);
+    layout.linkSize(SwingConstants.VERTICAL, profilePanel, configPanel);
 
-    layout.setVerticalGroup(layout.createSequentialGroup()
-        .addGroup(layout.createParallelGroup()
-            .addComponent(this.portraitDisplay)
-            .addComponent(portraitFindButton))
-        .addGroup(layout.createParallelGroup()
-            .addComponent(statsEditPanel)
-            .addComponent(variablesPanel))
+    layout.setVerticalGroup(
+            layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(profilePanel)
+                    .addComponent(configPanel))
     );
   }
 
@@ -599,19 +572,17 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     // Configure Class scope components
     final DefaultListModel enemyGraphics = new DefaultListModel();
     final ArrayList<String> standardNames = this.player.getStandardGraphics();
+
     for (String standardName : standardNames) {
       enemyGraphics.addElement(standardName);
     }
+
     final ArrayList<String> customNames = this.player.getCustomGraphics();
     for (String customName : customNames) {
       enemyGraphics.addElement(customName);
     }
-//        out.println("standardNames="+standardNames.toString());
-//        out.println("customNames="+customNames.toString());
-//        out.println("customGraphics="+this.enemy.getCustomizedGraphics()); //TODO: This often adds extra blank ones
-//        out.println("enemyGraphics="+enemyGraphics.toString());
-    this.animList = Gui.createVerticalJList(enemyGraphics);
 
+    this.animList = Gui.createVerticalJList(enemyGraphics);
     this.animLoc = new JTextField();
 
     // Configure function Scope Components
@@ -626,13 +597,12 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     JLabel dummy = new JLabel();
     final JButton animFindButton = new JButton("Browse");
     animFindButton.setEnabled(false);
+
     JButton animAddButton = new JButton("Add");
     final JButton animRemoveButton = new JButton("Remove");
     animRemoveButton.setEnabled(false);
 
-    // Configure listeners
-
-    //run animation
+    // Configure listeners run animation.
     final ActionListener animate = new ActionListener() {
       private int frame = 0;
 
@@ -645,7 +615,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
           frame = 0;
         }
         animDisplay.setIcon(new ImageIcon(
-            selectedAnim.getFrame(frame).getFrameImage()
+                selectedAnim.getFrame(frame).getFrameImage()
         ));
       }
     };
@@ -667,11 +637,11 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
             String location;
             if (animList.getSelectedIndex() < standardNames.size()) {
               location = player.getStandardGraphics().get(
-                  animList.getSelectedIndex());
+                      animList.getSelectedIndex());
               //out.println("new selection: standard " + animList.getSelectedIndex());
             } else {
               location = player.getCustomGraphics().get(
-                  animList.getSelectedIndex() - standardNames.size());
+                      animList.getSelectedIndex() - standardNames.size());
               //out.println("new selection: custom " + (animList.getSelectedIndex() - standardNames.size()));
             }
             //clear animation and images
@@ -724,22 +694,22 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
           }
           if (custom == true) {
             player.getCustomGraphics().set(
-                index - standardNames.size(), text);
+                    index - standardNames.size(), text);
           } else {
             player.getStandardGraphics().set(index, text);
           }
           if (text.endsWith(".anm")) {
             //update image if the location is valid
             File f = mainWindow.getPath(
-                mainWindow.getTypeSubdirectory(Animation.class)
-                + SEPARATOR + text);
+                    mainWindow.getTypeSubdirectory(Animation.class)
+                    + File.separator + text);
             if (f.canRead()) {
               selectedAnim = new Animation(f);
 //                            out.println("new animation!");
               //switch animation images
               if (selectedAnim != null && selectedAnim.getFrameCount() > 0) {
                 animDisplay.setIcon(new ImageIcon(
-                    selectedAnim.getFrame(0).getFrameImage()));
+                        selectedAnim.getFrame(0).getFrameImage()));
                 animTimer = new Timer((int) (selectedAnim.getFrameDelay() * 1000), animate);
               }
             }
@@ -768,7 +738,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
           }
           if (selectedAnim != null && selectedAnim.getFrameCount() > 0) {
             animDisplay.setIcon(new ImageIcon(
-                selectedAnim.getFrame(0).getFrameImage()));
+                    selectedAnim.getFrame(0).getFrameImage()));
           }
         }
       }
@@ -814,10 +784,10 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
         }
         //add custom graphic
         String name = (String) JOptionPane.showInputDialog(
-            graphicsPanel,
-            "Enter the handle for the new sprite:",
-            "Add Enemy Graphic",
-            JOptionPane.PLAIN_MESSAGE);
+                graphicsPanel,
+                "Enter the handle for the new sprite:",
+                "Add Enemy Graphic",
+                JOptionPane.PLAIN_MESSAGE);
         if (name == null || name.isEmpty()) {
           return;
         }
@@ -874,7 +844,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     // Configure the necessary Panels
     JPanel spritePanel = new JPanel();
     spritePanel.setBorder(BorderFactory.createTitledBorder(
-        this.defaultEtchedBorder, "Sprite List"));
+            this.defaultEtchedBorder, "Sprite List"));
 
     // Create Layout for Top Level Panel
     GroupLayout layout = Gui.createGroupLayout(this.graphicsPanel);
@@ -884,51 +854,52 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
     // Configure the SPRITE PANEL layout
     spriteLayout.setHorizontalGroup(spriteLayout.createSequentialGroup()
-        .addComponent(animListScroller)
-        .addGroup(spriteLayout.createParallelGroup()
-            .addComponent(animLabel)
-            .addComponent(this.animLoc)
-            .addGroup(spriteLayout.createSequentialGroup()
-                .addComponent(play)
-                .addComponent(animDisplay)))
-        .addGroup(spriteLayout.createParallelGroup()
-            .addComponent(dummy)
-            .addComponent(animFindButton)
-            .addComponent(animAddButton)
-            .addComponent(animRemoveButton))
+            .addComponent(animListScroller)
+            .addGroup(spriteLayout.createParallelGroup()
+                    .addComponent(animLabel)
+                    .addComponent(this.animLoc)
+                    .addGroup(spriteLayout.createSequentialGroup()
+                            .addComponent(play)
+                            .addComponent(animDisplay)))
+            .addGroup(spriteLayout.createParallelGroup()
+                    .addComponent(dummy)
+                    .addComponent(animFindButton)
+                    .addComponent(animAddButton)
+                    .addComponent(animRemoveButton))
     );
 
     spriteLayout.setVerticalGroup(spriteLayout.createParallelGroup()
-        .addComponent(animListScroller)
-        .addGroup(spriteLayout.createSequentialGroup()
-            .addComponent(animLabel)
-            .addComponent(this.animLoc)
-            .addGroup(spriteLayout.createParallelGroup()
-                .addComponent(play)
-                .addComponent(animDisplay)))
-        .addGroup(spriteLayout.createSequentialGroup()
-            .addComponent(dummy)
-            .addComponent(animFindButton)
-            .addComponent(animAddButton)
-            .addComponent(animRemoveButton))
+            .addComponent(animListScroller)
+            .addGroup(spriteLayout.createSequentialGroup()
+                    .addComponent(animLabel)
+                    .addComponent(this.animLoc)
+                    .addGroup(spriteLayout.createParallelGroup()
+                            .addComponent(play)
+                            .addComponent(animDisplay)))
+            .addGroup(spriteLayout.createSequentialGroup()
+                    .addComponent(dummy)
+                    .addComponent(animFindButton)
+                    .addComponent(animAddButton)
+                    .addComponent(animRemoveButton))
     );
 
     spriteLayout.linkSize(SwingConstants.VERTICAL, this.animLoc, animLabel,
-        dummy, animFindButton, animAddButton, animRemoveButton);
+            dummy, animFindButton, animAddButton, animRemoveButton);
 
     // Configure the GRAPHICS PANEL layout
     layout.setHorizontalGroup(layout.createParallelGroup()
-        .addComponent(spritePanel)
+            .addComponent(spritePanel)
     );
 
     layout.setVerticalGroup(layout.createSequentialGroup()
-        .addComponent(spritePanel)
+            .addComponent(spritePanel)
     );
   }
 
   private void createSpecialMovesPanel() {
     // Configure components
     this.usesSpecials = new JCheckBox("Does this character use Special Moves?");
+
     //set usesSpecials later, after listeners can disable things in response
     final JLabel specialsNameLabel = new JLabel("In-game name of special moves");
     this.specialsName = new JTextField(this.player.getSpecialMovesName());
@@ -940,14 +911,18 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
       String number = Integer.toString(specialMoves.size() + 1) + ": ";
       specialMoves.addElement(number + text);
     }
+
     this.sMoveList = Gui.createVerticalJList(specialMoves);
 
     final JLabel sMoveExpMinLabel = new JLabel("Experience is at least");
     this.sMoveExpMin = new WholeNumberField(0);
+
     final JLabel sMoveLvMinLabel = new JLabel("Level is at least");
     this.sMoveLvMin = new WholeNumberField(0);
+
     final JLabel sMoveVarNameLabel = new JLabel("Or variable");
     this.sMoveVarName = new JTextField();
+
     final JLabel sMoveVarValLabel = new JLabel("equals");
     this.sMoveVarVal = new JTextField();
 
@@ -961,9 +936,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
     final JButton sMoveAlwaysButton = new JButton("The Player Can Always Use This Move");
 
-    // Configure listeners
-        
-    //uses specials
+    // Configure listeners uses specials
     this.usesSpecials.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -971,14 +944,15 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
         specialsNameLabel.setEnabled(usesSpecials.isSelected());
         specialsName.setEnabled(usesSpecials.isSelected());
         sMoveAddButton.setEnabled(usesSpecials.isSelected());
-        if (usesSpecials.isSelected() == true
-            && sMoveList.getSelectedIndex() != -1) {
+
+        if (usesSpecials.isSelected() == true && sMoveList.getSelectedIndex() != -1) {
           sMoveFindButton.setEnabled(true);
           sMoveRemoveButton.setEnabled(true);
         } else {
           sMoveFindButton.setEnabled(false);
           sMoveRemoveButton.setEnabled(false);
         }
+
         sMoveExpMinLabel.setEnabled(usesSpecials.isSelected());
         sMoveExpMin.setEnabled(usesSpecials.isSelected());
         sMoveLvMinLabel.setEnabled(usesSpecials.isSelected());
@@ -1047,11 +1021,9 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
           String loc = browseSpecialMove();
           if (loc != null) {
             SpecialMove sMove = loadSpecialMove(loc);
-            PlayerSpecialMove pMove
-                = new PlayerSpecialMove(sMove.getName(), 0, 0, "", "");
+            PlayerSpecialMove pMove = new PlayerSpecialMove(sMove.getName(), 0, 0, "", "");
             sMoves.set(index, pMove);
-            specialMoves.set(index, Integer.toString(index + 1)
-                + ": " + getSpecialMoveText(loc));
+            specialMoves.set(index, Integer.toString(index + 1) + ": " + getSpecialMoveText(loc));
             sMoveExpMin.setValue(pMove.getMinExperience());
             sMoveLvMin.setValue(pMove.getMinLevel());
             sMoveVarName.setText(pMove.getConditionVariable());
@@ -1068,12 +1040,14 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
         //insert after current slot
         int index = sMoveList.getSelectedIndex() + 1;
         String loc = browseSpecialMove();
+
         if (loc != null) {
           SpecialMove move = loadSpecialMove(loc);
           sMoves.add(index, new PlayerSpecialMove(move.getName(), 0, 0, "", ""));
           specialMoves.add(index, Integer.toString(index + 1)
-              + ": " + getSpecialMoveText(loc));
+                  + ": " + getSpecialMoveText(loc));
         }
+
         //select the added move
         sMoveList.setSelectedIndex(index);
         sMoveList.ensureIndexIsVisible(index);
@@ -1082,7 +1056,6 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
     //remove button
     sMoveRemoveButton.addActionListener(new ActionListener() {
-
       @Override
       public void actionPerformed(ActionEvent e) {
         int index = sMoveList.getSelectedIndex();
@@ -1124,7 +1097,6 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
       @Override
       public void propertyChange(PropertyChangeEvent evt) {
-        out.println(sMoveExpMin.getValue());
         int index = sMoveList.getSelectedIndex();
         if (index != -1) {
           sMoves.get(index).setMinExperience(sMoveExpMin.getValue());
@@ -1136,7 +1108,6 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
       @Override
       public void propertyChange(PropertyChangeEvent evt) {
-        out.println(sMoveLvMin.getValue());
         int index = sMoveList.getSelectedIndex();
         if (index != -1) {
           sMoves.get(index).setMinLevel(sMoveLvMin.getValue());
@@ -1206,13 +1177,15 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     // Configure the necessary Panels
     JPanel settingsPanel = new JPanel();
     settingsPanel.setBorder(BorderFactory.createTitledBorder(
-        this.defaultEtchedBorder, "Settings"));
+            this.defaultEtchedBorder, "Settings"));
+
     JPanel sMovePanel = new JPanel();
     sMovePanel.setBorder(BorderFactory.createTitledBorder(
-        this.defaultEtchedBorder, "Special Moves the Player Can Use"));
+            this.defaultEtchedBorder, "Special Moves the Player Can Use"));
+
     JPanel conditionsPanel = new JPanel();
     conditionsPanel.setBorder(BorderFactory.createTitledBorder(
-        this.defaultEtchedBorder, "The Player Can Use This Special Move If"));
+            this.defaultEtchedBorder, "The Player Can Use This Special Move If"));
 
     // Create Layout for Top Level Panel
     GroupLayout layout = Gui.createGroupLayout(this.specialMovesPanel);
@@ -1224,85 +1197,85 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
     // Configure the SETTINGS PANEL layout
     settingsLayout.setHorizontalGroup(settingsLayout.createParallelGroup()
-        .addComponent(this.usesSpecials)
-        .addGroup(settingsLayout.createSequentialGroup()
-            .addComponent(specialsNameLabel)
-            .addComponent(this.specialsName))
+            .addComponent(this.usesSpecials)
+            .addGroup(settingsLayout.createSequentialGroup()
+                    .addComponent(specialsNameLabel)
+                    .addComponent(this.specialsName))
     );
 
     settingsLayout.setVerticalGroup(settingsLayout.createSequentialGroup()
-        .addComponent(this.usesSpecials)
-        .addGroup(settingsLayout.createParallelGroup()
-            .addComponent(specialsNameLabel)
-            .addComponent(this.specialsName))
+            .addComponent(this.usesSpecials)
+            .addGroup(settingsLayout.createParallelGroup()
+                    .addComponent(specialsNameLabel)
+                    .addComponent(this.specialsName))
     );
 
     settingsLayout.linkSize(SwingConstants.VERTICAL, specialsNameLabel, this.specialsName);
 
     // Configure the SMOVE PANEL layout
     sMoveLayout.setHorizontalGroup(sMoveLayout.createSequentialGroup()
-        .addComponent(sMoveListScroller)
-        .addGroup(sMoveLayout.createParallelGroup()
-            .addComponent(sMoveFindButton)
-            .addComponent(sMoveAddButton)
-            .addComponent(sMoveRemoveButton))
+            .addComponent(sMoveListScroller)
+            .addGroup(sMoveLayout.createParallelGroup()
+                    .addComponent(sMoveFindButton)
+                    .addComponent(sMoveAddButton)
+                    .addComponent(sMoveRemoveButton))
     );
 
     sMoveLayout.setVerticalGroup(sMoveLayout.createParallelGroup()
-        .addComponent(sMoveListScroller)
-        .addGroup(sMoveLayout.createSequentialGroup()
-            .addComponent(sMoveFindButton)
-            .addComponent(sMoveAddButton)
-            .addComponent(sMoveRemoveButton))
+            .addComponent(sMoveListScroller)
+            .addGroup(sMoveLayout.createSequentialGroup()
+                    .addComponent(sMoveFindButton)
+                    .addComponent(sMoveAddButton)
+                    .addComponent(sMoveRemoveButton))
     );
 
     // Configure the CONDITIONS PANEL layout
     conditionsLayout.setHorizontalGroup(conditionsLayout.createParallelGroup()
-        .addGroup(conditionsLayout.createSequentialGroup()
-            .addComponent(sMoveExpMinLabel)
-            .addComponent(this.sMoveExpMin)
-        ).addGroup(conditionsLayout.createSequentialGroup()
-            .addComponent(sMoveLvMinLabel)
-            .addComponent(this.sMoveLvMin)
-        ).addGroup(conditionsLayout.createSequentialGroup()
-            .addComponent(sMoveVarNameLabel)
-            .addComponent(this.sMoveVarName)
-            .addComponent(sMoveVarValLabel)
-            .addComponent(this.sMoveVarVal))
-        .addComponent(sMoveAlwaysButton)
+            .addGroup(conditionsLayout.createSequentialGroup()
+                    .addComponent(sMoveExpMinLabel)
+                    .addComponent(this.sMoveExpMin)
+            ).addGroup(conditionsLayout.createSequentialGroup()
+                    .addComponent(sMoveLvMinLabel)
+                    .addComponent(this.sMoveLvMin)
+            ).addGroup(conditionsLayout.createSequentialGroup()
+                    .addComponent(sMoveVarNameLabel)
+                    .addComponent(this.sMoveVarName)
+                    .addComponent(sMoveVarValLabel)
+                    .addComponent(this.sMoveVarVal))
+            .addComponent(sMoveAlwaysButton)
     );
 
     conditionsLayout.setVerticalGroup(conditionsLayout.createSequentialGroup()
-        .addGroup(conditionsLayout.createParallelGroup()
-            .addComponent(sMoveExpMinLabel)
-            .addComponent(this.sMoveExpMin)
-        ).addGroup(conditionsLayout.createParallelGroup()
-            .addComponent(sMoveLvMinLabel)
-            .addComponent(this.sMoveLvMin)
-        ).addGroup(conditionsLayout.createParallelGroup()
-            .addComponent(sMoveVarNameLabel)
-            .addComponent(this.sMoveVarName)
-            .addComponent(sMoveVarValLabel)
-            .addComponent(this.sMoveVarVal))
-        .addComponent(sMoveAlwaysButton)
+            .addGroup(conditionsLayout.createParallelGroup()
+                    .addComponent(sMoveExpMinLabel)
+                    .addComponent(this.sMoveExpMin)
+            ).addGroup(conditionsLayout.createParallelGroup()
+                    .addComponent(sMoveLvMinLabel)
+                    .addComponent(this.sMoveLvMin)
+            ).addGroup(conditionsLayout.createParallelGroup()
+                    .addComponent(sMoveVarNameLabel)
+                    .addComponent(this.sMoveVarName)
+                    .addComponent(sMoveVarValLabel)
+                    .addComponent(this.sMoveVarVal))
+            .addComponent(sMoveAlwaysButton)
     );
 
     conditionsLayout.linkSize(SwingConstants.HORIZONTAL, sMoveExpMinLabel, sMoveLvMinLabel);
     conditionsLayout.linkSize(SwingConstants.VERTICAL,
-        sMoveExpMinLabel, sMoveLvMinLabel, sMoveVarNameLabel, sMoveVarValLabel,
-        this.sMoveExpMin, this.sMoveLvMin, this.sMoveVarName, this.sMoveVarVal);
+            sMoveExpMinLabel, sMoveLvMinLabel, sMoveVarNameLabel, sMoveVarValLabel,
+            this.sMoveExpMin, this.sMoveLvMin, this.sMoveVarName, this.sMoveVarVal);
 
     // Configure the Top Level Panel layout
     layout.setHorizontalGroup(layout.createParallelGroup()
-        .addComponent(settingsPanel)
-        .addComponent(sMovePanel)
-        .addComponent(conditionsPanel)
+            .addComponent(settingsPanel)
+            .addComponent(sMovePanel)
+            .addComponent(conditionsPanel)
     );
 
     layout.setVerticalGroup(layout.createSequentialGroup()
-        .addComponent(settingsPanel)
-        .addComponent(sMovePanel)
-        .addComponent(conditionsPanel)
+            .addComponent(settingsPanel)
+            .addComponent(sMovePanel)
+            .addComponent(conditionsPanel)
     );
   }
 
@@ -1313,7 +1286,8 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     this.equipHandR = new JCheckBox("Right Hand");
     this.equipBody = new JCheckBox("Body Armour");
     this.equipLegs = new JCheckBox("Legs");
-    //start at 1 for head (not sure what slot 0 is)
+
+    // Start at 1 for head (not sure what slot 0 is)
     boolean[] armorSlots = this.player.getArmourTypes();
     this.equipHead.setSelected(armorSlots[1]);
     this.equipNeck.setSelected(armorSlots[2]);
@@ -1327,6 +1301,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     for (String n : accNames) {
       accessories.addElement(n);
     }
+
     this.accList = Gui.createVerticalJList(accessories);
     final JLabel accNameLabel = new JLabel("Slot Name");
     this.accName = new JTextField();
@@ -1336,13 +1311,11 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
     JPanel standardEquipPanel = new JPanel();
     standardEquipPanel.setBorder(BorderFactory.createTitledBorder(
-        this.defaultEtchedBorder, "Standard Equipment Can Be Equipped On"));
+            this.defaultEtchedBorder, "Standard Equipment Can Be Equipped On"));
 
     JPanel accessoriesPanel = new JPanel();
     accessoriesPanel.setBorder(BorderFactory.createTitledBorder(
-        this.defaultEtchedBorder, "Additional Accessory Slots"));
-
-    // Configure listeners
+            this.defaultEtchedBorder, "Additional Accessory Slots"));
 
     // Configure Layouts
     GroupLayout layout = Gui.createGroupLayout(this.equipmentPanel);
@@ -1351,55 +1324,47 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     GroupLayout accessoriesLayout = Gui.createGroupLayout(accessoriesPanel);
 
     standardEquipLayout.setHorizontalGroup(standardEquipLayout.createParallelGroup()
-        .addComponent(this.equipHead)
-        .addComponent(this.equipNeck)
-        .addComponent(this.equipHandL)
-        .addComponent(this.equipHandR)
-        .addComponent(this.equipBody)
-        .addComponent(this.equipLegs)
-    );
+            .addComponent(this.equipHead)
+            .addComponent(this.equipNeck)
+            .addComponent(this.equipHandL)
+            .addComponent(this.equipHandR)
+            .addComponent(this.equipBody)
+            .addComponent(this.equipLegs));
 
     standardEquipLayout.setVerticalGroup(standardEquipLayout.createSequentialGroup()
-        .addComponent(this.equipHead)
-        .addComponent(this.equipNeck)
-        .addComponent(this.equipHandL)
-        .addComponent(this.equipHandR)
-        .addComponent(this.equipBody)
-        .addComponent(this.equipLegs)
-    );
+            .addComponent(this.equipHead)
+            .addComponent(this.equipNeck)
+            .addComponent(this.equipHandL)
+            .addComponent(this.equipHandR)
+            .addComponent(this.equipBody)
+            .addComponent(this.equipLegs));
 
     accessoriesLayout.setHorizontalGroup(accessoriesLayout.createParallelGroup()
-        .addComponent(standardEquipPanel)
-        .addGroup(accessoriesLayout.createSequentialGroup()
-            .addComponent(accList)
-            .addComponent(accNameLabel)
-            .addComponent(this.accName))
-    );
+            .addComponent(standardEquipPanel)
+            .addGroup(accessoriesLayout.createSequentialGroup()
+                    .addComponent(accList)
+                    .addComponent(accNameLabel)
+                    .addComponent(this.accName)));
 
     accessoriesLayout.setVerticalGroup(accessoriesLayout.createSequentialGroup()
-        .addComponent(standardEquipPanel)
-        .addGroup(accessoriesLayout.createParallelGroup()
-            .addComponent(accList)
-            .addComponent(accNameLabel)
-            .addComponent(this.accName))
-    );
+            .addComponent(standardEquipPanel)
+            .addGroup(accessoriesLayout.createParallelGroup()
+                    .addComponent(accList)
+                    .addComponent(accNameLabel)
+                    .addComponent(this.accName)));
 
-    accessoriesLayout.linkSize(SwingConstants.VERTICAL,
-        accNameLabel, this.accName
-    );
-    
-    layout.linkSize(SwingConstants.HORIZONTAL,
-        standardEquipPanel, accessoriesPanel
-    );
+    accessoriesLayout.linkSize(SwingConstants.VERTICAL, accNameLabel, this.accName);
+
+    //layout.linkSize(SwingConstants.HORIZONTAL, standardEquipPanel, accessoriesPanel);
 
     layout.setHorizontalGroup(layout.createParallelGroup()
-        .addComponent(standardEquipPanel)
-        .addComponent(accessoriesPanel)
+            .addComponent(standardEquipPanel)
+            .addComponent(accessoriesPanel)
     );
 
     layout.setVerticalGroup(layout.createSequentialGroup()
-        .addComponent(standardEquipPanel)
-        .addComponent(accessoriesPanel)
+            .addComponent(standardEquipPanel)
+            .addComponent(accessoriesPanel)
     );
   }
 
@@ -1416,7 +1381,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
     JPanel rewardsSubPanel = new JPanel();
     rewardsSubPanel.setBorder(BorderFactory.createTitledBorder(
-        this.defaultEtchedBorder, "Rewards for Defeating Enemy"));
+            this.defaultEtchedBorder, "Rewards for Defeating Enemy"));
 
     // Configure listeners
     levelUpProgramFindButton.addActionListener(new ActionListener() {
@@ -1435,58 +1400,58 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     GroupLayout rewardsPanelLayout = Gui.createGroupLayout(rewardsSubPanel);
 
     rewardsPanelLayout.setHorizontalGroup(rewardsPanelLayout.createParallelGroup()
-        .addGroup(rewardsPanelLayout.createSequentialGroup()
-            .addComponent(experienceAwardedLabel)
-            .addComponent(this.initialExpReq))
-        .addGroup(rewardsPanelLayout.createSequentialGroup()
-            .addComponent(goldAwardedLabel)
-            .addComponent(this.expReqIncrease))
-        .addComponent(levelUpProgramLavel)
-        .addGroup(rewardsPanelLayout.createSequentialGroup()
-            .addComponent(this.levelUpProgram)
-            .addComponent(levelUpProgramFindButton))
+            .addGroup(rewardsPanelLayout.createSequentialGroup()
+                    .addComponent(experienceAwardedLabel)
+                    .addComponent(this.initialExpReq))
+            .addGroup(rewardsPanelLayout.createSequentialGroup()
+                    .addComponent(goldAwardedLabel)
+                    .addComponent(this.expReqIncrease))
+            .addComponent(levelUpProgramLavel)
+            .addGroup(rewardsPanelLayout.createSequentialGroup()
+                    .addComponent(this.levelUpProgram)
+                    .addComponent(levelUpProgramFindButton))
     );
 
     rewardsPanelLayout.setVerticalGroup(rewardsPanelLayout.createSequentialGroup()
-        .addGroup(rewardsPanelLayout.createParallelGroup()
-            .addComponent(experienceAwardedLabel)
-            .addComponent(this.initialExpReq))
-        .addGroup(rewardsPanelLayout.createParallelGroup()
-            .addComponent(goldAwardedLabel)
-            .addComponent(this.expReqIncrease))
-        .addComponent(levelUpProgramLavel)
-        .addGroup(rewardsPanelLayout.createParallelGroup()
-            .addComponent(this.levelUpProgram)
-            .addComponent(levelUpProgramFindButton))
+            .addGroup(rewardsPanelLayout.createParallelGroup()
+                    .addComponent(experienceAwardedLabel)
+                    .addComponent(this.initialExpReq))
+            .addGroup(rewardsPanelLayout.createParallelGroup()
+                    .addComponent(goldAwardedLabel)
+                    .addComponent(this.expReqIncrease))
+            .addComponent(levelUpProgramLavel)
+            .addGroup(rewardsPanelLayout.createParallelGroup()
+                    .addComponent(this.levelUpProgram)
+                    .addComponent(levelUpProgramFindButton))
     );
 
     rewardsPanelLayout.linkSize(SwingConstants.HORIZONTAL,
-        experienceAwardedLabel,
-        goldAwardedLabel
+            experienceAwardedLabel,
+            goldAwardedLabel
     );
     rewardsPanelLayout.linkSize(SwingConstants.VERTICAL,
-        experienceAwardedLabel, this.initialExpReq,
-        goldAwardedLabel, this.expReqIncrease, levelUpProgramLavel,
-        this.levelUpProgram, levelUpProgramFindButton
+            experienceAwardedLabel, this.initialExpReq,
+            goldAwardedLabel, this.expReqIncrease, levelUpProgramLavel,
+            this.levelUpProgram, levelUpProgramFindButton
     );
 
     layout.setHorizontalGroup(layout.createParallelGroup()
-        .addComponent(rewardsSubPanel)
+            .addComponent(rewardsSubPanel)
     );
 
     layout.setVerticalGroup(layout.createSequentialGroup()
-        .addComponent(rewardsSubPanel)
+            .addComponent(rewardsSubPanel)
     );
   }
 
   private ActionListener varDefaultListener(
-      final JTextField varField, final String varKey, final char type) {
+          final JTextField varField, final String varKey, final char type) {
     return new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         varField.setText(
-            playerName.getText().replace(" ", "_")
-            + "[" + varKey + "]" + type
+                playerName.getText().replace(" ", "_")
+                + "[" + varKey + "]" + type
         );
       }
     };
@@ -1510,12 +1475,12 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
   private SpecialMove loadSpecialMove(String loc) {
     if (Paths.extension("/" + loc).contains("spc")) {
       File f = mainWindow.getPath(
-          mainWindow.getTypeSubdirectory(SpecialMove.class)
-          + SEPARATOR + loc);
+              mainWindow.getTypeSubdirectory(SpecialMove.class)
+              + File.separator + loc);
       if (f.canRead()) {
         try {
           AssetHandle handle = AssetManager.getInstance().deserialize(
-              new AssetDescriptor(f.toURI()));
+                  new AssetDescriptor(f.toURI()));
           return (SpecialMove) handle.getAsset();
         } catch (IOException | AssetException ex) {
           Logger.getLogger(CharacterEditor.class.getName()).log(Level.SEVERE, null, ex);

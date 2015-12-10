@@ -556,26 +556,24 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     desktopPane.add(enemyEditor);
 
     this.selectToolkitWindow(enemyEditor);
-  }
+  } 
 
   /**
    * Creates a character editor window for modifying the specified character file.
    */
   public void openCharacter() {
-    System.out.println("openCharacter()");
     Player player = new Player(fileChooser.getSelectedFile());
-    CharacterEditor chEditor = new CharacterEditor(player);
-    desktopPane.add(chEditor);
+    CharacterEditor characterEditor = new CharacterEditor(player);
+    desktopPane.add(characterEditor);
 
-    this.selectToolkitWindow(chEditor);
+    this.selectToolkitWindow(characterEditor);
   }
 
   /**
    * Creates a TileSet editor window for modifying the specified TileSet.
    */
   public void openTile() {
-    TileEditor testTileEditor = new TileEditor(
-            fileChooser.getSelectedFile());
+    TileEditor testTileEditor = new TileEditor(fileChooser.getSelectedFile());
     desktopPane.add(testTileEditor);
   }
 
