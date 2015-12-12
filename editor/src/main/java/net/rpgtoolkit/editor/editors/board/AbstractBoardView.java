@@ -19,8 +19,8 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import javax.swing.JPanel;
 
-import net.rpgtoolkit.common.assets.BoardChangeListener;
-import net.rpgtoolkit.common.assets.BoardChangedEvent;
+import net.rpgtoolkit.common.assets.listeners.BoardChangeListener;
+import net.rpgtoolkit.common.assets.events.BoardChangedEvent;
 import net.rpgtoolkit.common.assets.BoardLayer;
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.assets.TilePixelOutOfRangeException;

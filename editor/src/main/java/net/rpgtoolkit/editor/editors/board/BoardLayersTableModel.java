@@ -7,8 +7,8 @@
 package net.rpgtoolkit.editor.editors.board;
 
 import javax.swing.table.AbstractTableModel;
-import net.rpgtoolkit.common.assets.BoardChangeListener;
-import net.rpgtoolkit.common.assets.BoardChangedEvent;
+import net.rpgtoolkit.common.assets.listeners.BoardChangeListener;
+import net.rpgtoolkit.common.assets.events.BoardChangedEvent;
 
 /**
  * We want to update the board model here, not the view. After updating the model will fire an event
@@ -20,7 +20,7 @@ public class BoardLayersTableModel extends AbstractTableModel implements BoardCh
 
   private AbstractBoardView boardView;
 
-  private static final String[] columnNames = {
+  private static final String[] COLUMNS = {
     "Locked", "Show", "Layer Name"
   };
 
@@ -65,7 +65,7 @@ public class BoardLayersTableModel extends AbstractTableModel implements BoardCh
    */
   @Override
   public String getColumnName(int column) {
-    return BoardLayersTableModel.columnNames[column];
+    return COLUMNS[column];
   }
 
   /**
@@ -89,7 +89,7 @@ public class BoardLayersTableModel extends AbstractTableModel implements BoardCh
    */
   @Override
   public int getColumnCount() {
-    return BoardLayersTableModel.columnNames.length;
+    return COLUMNS.length;
   }
 
   /**
@@ -125,15 +125,16 @@ public class BoardLayersTableModel extends AbstractTableModel implements BoardCh
             - rowIndex - 1);
 
     if (layerView != null) {
-      if (columnIndex == 0) {
-        return null;
+      switch (columnIndex) {
+        case 0:
+          return null;
         //return layerView.isLocked();
-      } else if (columnIndex == 1) {
-        return layerView.isVisible();
-      } else if (columnIndex == 2) {
-        return layerView.getLayer().getName();
-      } else {
-        return null;
+        case 1:
+          return layerView.isVisible();
+        case 2:
+          return layerView.getLayer().getName();
+        default:
+          return null;
       }
     } else {
       return null;
@@ -164,22 +165,28 @@ public class BoardLayersTableModel extends AbstractTableModel implements BoardCh
    */
   @Override
   public void setValueAt(Object value, int rowIndex, int columnIndex) {
-        // The layerView locking and visibility is solely view related so we 
+    // The layerView locking and visibility is solely view related so we 
     // don't have to worry about the model there, but the name is 
     // linked to the model board in the background.
     BoardLayerView layerView = boardView.getLayer(getRowCount()
             - rowIndex - 1);
 
     if (layerView != null) {
-      if (columnIndex == 0) {
+      switch (columnIndex) {
         //layer.setLocked((Boolean)value);
-      } else if (columnIndex == 1) {
-        layerView.setVisibility((Boolean) value);
-      } else if (columnIndex == 2) {
-                // View need to do this using the board models layerTitles
-        // the model will then need to update the view, not the other
-        // way around.
-        layerView.getLayer().setName(value.toString());
+        case 0:
+          break;
+        case 1:
+          layerView.setVisibility((Boolean) value);
+          break;
+        case 2:
+          // View need to do this using the board models layerTitles
+          // the model will then need to update the view, not the other
+          // way around.
+          layerView.getLayer().setName(value.toString());
+          break;
+        default:
+          break;
       }
 
       fireTableCellUpdated(rowIndex, columnIndex);
