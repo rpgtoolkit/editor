@@ -21,7 +21,7 @@ import net.rpgtoolkit.common.assets.Animation;
  * @author Joshua Michael Daly
  */
 public class AnimatedPanel extends AbstractImagePanel {
-  public static final int ANIMATION_HEIGHT = 500;
+  public static final int ANIMATION_HEIGHT = 450;
   
   private Animation animation;
   private BufferedImage frame;
@@ -117,6 +117,7 @@ public class AnimatedPanel extends AbstractImagePanel {
     }
     
     frame = animation.getFrame(0).getFrameImage();
+    repaint();
   }
 
 }

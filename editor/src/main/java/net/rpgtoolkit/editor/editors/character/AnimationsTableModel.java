@@ -8,12 +8,20 @@ package net.rpgtoolkit.editor.editors.character;
 
 import javax.swing.table.AbstractTableModel;
 import net.rpgtoolkit.common.assets.Player;
+import net.rpgtoolkit.common.assets.events.PlayerChangedEvent;
+import net.rpgtoolkit.common.assets.listeners.PlayerChangeListener;
 
 /**
  *
  * @author Joshua Michael Daly
  */
-public class AnimationsTableModel extends AbstractTableModel {
+public class AnimationsTableModel extends AbstractTableModel implements PlayerChangeListener {
+
+  public static final String[] STANDARD_GRAPHICS = {
+    "South (Front View)", "North (Back View)", "East (Right View)", "West (Left View)",
+    "North-West", "North-East", "South-West", "South-East",
+    "Attack", "Defend", "Special Move", "Die", "Rest"
+  };
 
   private final Player player;
 
@@ -21,14 +29,28 @@ public class AnimationsTableModel extends AbstractTableModel {
     "Name", "Active Animation", "Idle Animation"
   };
 
-  private static final String[] STANDARD_GRAPHICS = {
-    "South (Front View)", "North (Back View)", "East (Right View)", "West (Left View)",
-    "North-West", "North-East", "South-West", "South-East",
-    "Attack", "Defend", "Special Move", "Die", "Rest"
-  };
-
   public AnimationsTableModel(Player player) {
     this.player = player;
+  }
+
+  /**
+   *
+   *
+   * @param column
+   * @return
+   */
+  @Override
+  public Class getColumnClass(int column) {
+    switch (column) {
+      case 0:
+        return String.class;
+      case 1:
+        return String.class;
+      case 2:
+        return String.class;
+    }
+
+    return null;
   }
 
   /**
@@ -77,6 +99,60 @@ public class AnimationsTableModel extends AbstractTableModel {
           return "NOT SUPPORTED";
       }
     }
+  }
+
+  /**
+   *
+   *
+   * @param value
+   * @param rowIndex
+   * @param columnIndex
+   */
+  @Override
+  public void setValueAt(Object value, int rowIndex, int columnIndex) {
+    switch (columnIndex) {
+      case 0:
+        int customIndex = rowIndex - STANDARD_GRAPHICS.length;
+        player.getCustomGraphicNames().set(customIndex, (String) value);
+        break;
+      case 1:
+        break;
+      case 2:
+        break;
+    }
+
+    fireTableCellUpdated(rowIndex, columnIndex);
+  }
+
+  /**
+   *
+   *
+   * @param rowIndex
+   * @param columnIndex
+   * @return
+   */
+  @Override
+  public boolean isCellEditable(int rowIndex, int columnIndex) {
+    return rowIndex > STANDARD_GRAPHICS.length && columnIndex == 0;
+  }
+
+  @Override
+  public void playerChanged(PlayerChangedEvent e) {
+  }
+
+  @Override
+  public void playerAnimationAdded(PlayerChangedEvent e) {
+    fireTableDataChanged();
+  }
+
+  @Override
+  public void playerAnimationUpdated(PlayerChangedEvent e) {
+    fireTableDataChanged();
+  }
+
+  @Override
+  public void playerAnimationRemoved(PlayerChangedEvent e) {
+    fireTableDataChanged();
   }
 
 }

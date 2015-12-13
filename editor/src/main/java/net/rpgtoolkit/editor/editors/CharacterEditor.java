@@ -24,6 +24,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -55,6 +56,7 @@ import net.rpgtoolkit.common.utilities.PropertiesSingleton;
 import net.rpgtoolkit.editor.editors.character.AnimationsTableModel;
 import net.rpgtoolkit.editor.ui.AnimatedPanel;
 import net.rpgtoolkit.editor.editors.character.ProfilePanel;
+import net.rpgtoolkit.editor.ui.DoubleField;
 import net.rpgtoolkit.editor.ui.Gui;
 import net.rpgtoolkit.editor.ui.IntegerField;
 import net.rpgtoolkit.editor.ui.MainWindow;
@@ -66,6 +68,7 @@ import net.rpgtoolkit.editor.ui.resources.Icons;
  * Player Character Editor
  *
  * @author Joel Moore
+ * @author Joshua Michael Daly
  */
 public class CharacterEditor extends ToolkitEditorWindow implements InternalFrameListener {
 
@@ -105,9 +108,12 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
   private ProfilePanel profilePanel;
 
   // GRAPHICS SETTINGS
+  private AnimatedPanel animatedPanel;
   private JTable animationsTable;
-  private JTextField animationLocation;
+  private AnimationsTableModel animationsTableModel;
   private Animation selectedAnim;
+  private DoubleField idleTimeoutField;
+  private DoubleField stepRateField;
 
   // SPECIAL MOVES SETTINGS
   private JCheckBox usesSpecials;
@@ -158,6 +164,30 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
       player.setProfilePicture(path);
     }
 
+    // Update all player variables from stats panel.
+    player.setName(playerName.getText());
+    player.setInitialExperience(experience.getValue());
+    player.setInitialHP(hitPoints.getValue());
+    player.setInitialMaxHP(maxHitPoints.getValue());
+    player.setInitialMP(specialPoints.getValue());
+    player.setInitialMaxMP(maxSpecialPoints.getValue());
+    player.setInitialFP(fightPower.getValue());
+    player.setInitialDP(defencePower.getValue());
+    player.setInitialLevel(level.getValue());
+    player.setNameVariableName(playerNameVar.getText());
+    player.setExpVariableName(experienceVar.getText());
+    player.setHpVariableName(hitPointsVar.getText());
+    player.setMaxMPVariableName(hitPointsVar.getText());
+    player.setMpVariableName(specialPointsVar.getText());
+    player.setMaxHPVariableName(maxSpecialPointsVar.getText());
+    player.setFpVariableName(fightPowerVar.getText());
+    player.setDpVariableName(defencePowerVar.getText());
+    player.setLvlVariableName(levelVar.getText());
+
+    // Update all player variables from graphics panel.
+    player.setIdleTimeBeforeStanding(idleTimeoutField.getValue());
+    player.setFrameRate(stepRateField.getValue());
+
     return this.player.saveBinary();
   }
 
@@ -175,7 +205,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
   }
 
   public void gracefulClose() {
-
+    player.removePlayerChangeListener(animationsTableModel);
   }
 
   public void setWindowParent(MainWindow parent) {
@@ -565,27 +595,16 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
   private void createAnimationsPanel() {
     // Configure Class scope components
-    final AnimationsTableModel animationsTableModel = new AnimationsTableModel(player);
-    final ArrayList<String> standardNames = player.getStandardGraphics();
-
-    for (String standardName : standardNames) {
-      //characterGraphics.addElement(standardName);
-    }
-
-    final ArrayList<String> customNames = player.getCustomGraphics();
-    for (String customName : customNames) {
-      //characterGraphics.addElement(customName);
-    }
+    animationsTableModel = new AnimationsTableModel(player);
 
     animationsTable = new JTable(animationsTableModel);
     animationsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-    animationLocation = new JTextField();
+    player.addPlayerChangeListener(animationsTableModel);
 
     // Configure function Scope Components
     JScrollPane animListScroller = new JScrollPane(animationsTable);
 
-    final AnimatedPanel animatedPanel = new AnimatedPanel();
+    animatedPanel = new AnimatedPanel();
 
     JButton addButton = new JButton();
     addButton.setIcon(Icons.getSmallIcon("new"));
@@ -602,169 +621,116 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
       @Override
       public void valueChanged(ListSelectionEvent e) {
         if (!e.getValueIsAdjusting()) {
-          if (animationsTable.getSelectedRow() == -1) {
+          int row = animationsTable.getSelectedRow();
+          if (row == -1) {
             animatedPanel.setAnimation(selectedAnim);
             browseButton.setEnabled(false);
             removeButton.setEnabled(false);
           } else {
-            String location;
-            if (animationsTable.getSelectedRow() < standardNames.size()) {
-              location = player.getStandardGraphics().get(animationsTable.getSelectedRow());
+            String path;
+            if (row < AnimationsTableModel.STANDARD_GRAPHICS.length) {
+              path = player.getStandardGraphics().get(row);
             } else {
-              location = player.getCustomGraphics().get(
-                      animationsTable.getSelectedRow() - standardNames.size());
+              path = player.getCustomGraphics().get(row - AnimationsTableModel.STANDARD_GRAPHICS.length);
             }
 
-            selectedAnim = null;
-            animatedPanel.setAnimation(selectedAnim);
-            animationLocation.setText(location);
+            updateAnimation(path);
 
             browseButton.setEnabled(true);
-            removeButton.setEnabled(true);
-          }
-        }
-      }
-    });
 
-    this.animationLocation.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-        String text = animationLocation.getText();
-        updateAnimation(text);
-      }
-
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-        String text = animationLocation.getText();
-        updateAnimation(text);
-        if (text.isEmpty()) {
-          selectedAnim = null;
-          animatedPanel.setAnimation(null);
-        }
-      }
-
-      private void updateAnimation(String text) {
-        int index = animationsTable.getSelectedRow();
-        if (index >= 0 && index < standardNames.size() + customNames.size()) {
-          boolean custom = false;
-          if (index >= standardNames.size()) {
-            custom = true;
-          }
-
-          if (custom == true) {
-            player.getCustomGraphics().set(
-                    index - standardNames.size(), text);
-          } else {
-            player.getStandardGraphics().set(index, text);
-          }
-
-          if (text.endsWith(".anm")) {
-            File file = mainWindow.getPath(
-                    mainWindow.getTypeSubdirectory(Animation.class)
-                    + File.separator + text);
-            if (file.canRead()) {
-              selectedAnim = new Animation(file);
-
-              if (selectedAnim != null && selectedAnim.getFrameCount() > 0) {
-                animatedPanel.setAnimation(selectedAnim);
-              }
+            if (row < AnimationsTableModel.STANDARD_GRAPHICS.length) {
+              removeButton.setEnabled(false); // Cannot remove default graphics.
+            } else {
+              removeButton.setEnabled(true);
             }
           }
         }
-      }
-
-      @Override
-      public void changedUpdate(DocumentEvent e) {
       }
     });
 
     browseButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        int index = animationsTable.getSelectedRow();
-        if (index < 0) {
+        int row = animationsTable.getSelectedRow();
+        if (row < 0) {
           return;
         }
 
         String loc = mainWindow.browseByTypeRelative(Animation.class);
         if (loc != null) {
-          animationLocation.setText(loc);
-          if (index < standardNames.size()) {
-            player.getStandardGraphics().set(index, loc);
-          } else if (index < standardNames.size() + customNames.size()) {
-            int customIndex = index - standardNames.size();
-            player.getCustomGraphics().set(customIndex, loc);
+          if (row < AnimationsTableModel.STANDARD_GRAPHICS.length) {
+            player.updateStandardGraphics(row, loc);
+          } else if (row < AnimationsTableModel.STANDARD_GRAPHICS.length
+                  + player.getCustomGraphicNames().size()) {
+            int customIndex = row - AnimationsTableModel.STANDARD_GRAPHICS.length;
+            player.updateCustomGraphics(customIndex, loc);
+            updateAnimation(loc);
           }
         }
       }
     });
 
-//    addButton.addActionListener(new ActionListener() {
-//      @Override
-//      public void actionPerformed(ActionEvent e) {
-//        int index = animationsTable.getSelectedIndex();
-//        if (index < standardNames.size()) {
-//          index = standardNames.size();
-//        } else if (index > standardNames.size() + customNames.size()) {
-//          index = standardNames.size() + customNames.size();
-//        } else {
-//          index++;
-//        }
-//
-//        String name = (String) JOptionPane.showInputDialog(
-//                animationsPanel,
-//                "Enter the handle for the new sprite:",
-//                "Add Enemy Graphic",
-//                JOptionPane.PLAIN_MESSAGE);
-//
-//        if (name == null || name.isEmpty()) {
-//          return;
-//        }
-//
-//        int customIndex = index - standardNames.size();
-//        customNames.add(customIndex, name);
-//        player.getCustomGraphics().add(customIndex, "");
-//        animationsTableModel.add(index, name);
-//
-//        animationsTable.setSelectedIndex(index);
-//        animationsTable.ensureIndexIsVisible(index);
-//      }
-//    });
+    addButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        String name = (String) JOptionPane.showInputDialog(
+                animationsPanel,
+                "Enter the handle for the new sprite:",
+                "Add Enemy Graphic",
+                JOptionPane.PLAIN_MESSAGE);
 
-//    removeButton.addActionListener(new ActionListener() {
-//      @Override
-//      public void actionPerformed(ActionEvent e) {
-//        int index = animationsTable.getSelectedIndex();
-//        if (index >= 0) {
-//          if (index < standardNames.size()) {
-//            if (selectedAnim != null) {
-//              animationLocation.setText("");
-//              player.getStandardGraphics().set(index, "");
-//            }
-//          } else if (index < standardNames.size() + customNames.size()) {
-//            int customIndex = index - standardNames.size();
-//            customNames.remove(customIndex);
-//            player.getCustomGraphics().remove(customIndex);
-//            animationsTableModel.remove(index);
-//
-//            if (index > 0) {
-//              if (index == animationsTableModel.size()) {
-//                index--;
-//              }
-//
-//              animationsTable.setSelectedIndex(index);
-//              animationsTable.ensureIndexIsVisible(index);
-//            }
-//          }
-//        }
-//      }
-//    });
+        if (name == null || name.isEmpty()) {
+          return;
+        }
+
+        player.getCustomGraphicNames().add(name);
+        player.addCustomGraphics("");
+
+        animationsTable.scrollRectToVisible(animationsTable.getCellRect(
+                animationsTable.getRowCount() - 1, 0, true));
+      }
+    });
+
+    removeButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        int row = animationsTable.getSelectedRow();
+        if (row >= 0) {
+          if (row < AnimationsTableModel.STANDARD_GRAPHICS.length) {
+            if (selectedAnim != null) {
+              player.getStandardGraphics().set(row, "");
+            }
+          } else if (row < AnimationsTableModel.STANDARD_GRAPHICS.length
+                  + player.getCustomGraphicNames().size()) {
+            int customIndex = row - AnimationsTableModel.STANDARD_GRAPHICS.length;
+            player.getCustomGraphicNames().remove(customIndex);
+            player.removeCustomGraphics(customIndex);
+
+            if (row > 0) {
+              if (row == animationsTableModel.getRowCount()) {
+                row--;
+              }
+
+              animationsTable.scrollRectToVisible(animationsTable.getCellRect(row, 0, true));
+            }
+          }
+        }
+      }
+    });
 
     // Configure the necessary Panels
     JPanel configurationPanel = new JPanel();
     configurationPanel.add(addButton);
     configurationPanel.add(browseButton);
     configurationPanel.add(removeButton);
+
+    configurationPanel.add(new JLabel("Idle Timeout: "));
+    idleTimeoutField = new DoubleField(player.getIdleTimeBeforeStanding());
+    configurationPanel.add(idleTimeoutField);
+
+    configurationPanel.add(new JLabel("Step Rate: "));
+    stepRateField = new DoubleField(player.getFrameRate());
+    configurationPanel.add(stepRateField);
 
     // Fix the size of this panel to stop the JTable growing beyond the Window.
     JPanel southPanel = new JPanel(new BorderLayout()) {
@@ -915,9 +881,9 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
     //check/uncheck uses specials now that the listeners exist
     this.usesSpecials.setSelected(true);
-    //if (this.player.getHasSpecialMoves() == false) {
-    //  this.usesSpecials.doClick();
-    //}
+    if (this.player.getHasSpecialMoves() == false) {
+      this.usesSpecials.doClick();
+    }
 
     //browse button
     sMoveFindButton.addActionListener(new ActionListener() {
@@ -1394,4 +1360,23 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     }
     return null;
   }
+
+  private void updateAnimation(String path) {
+    if (!path.isEmpty()) {
+      File file = mainWindow.getPath(
+              mainWindow.getTypeSubdirectory(Animation.class)
+              + File.separator + path);
+      if (file.canRead()) {
+        selectedAnim = new Animation(file);
+
+        if (selectedAnim != null && selectedAnim.getFrameCount() > 0) {
+          animatedPanel.setAnimation(selectedAnim);
+        }
+      }
+    } else {
+      selectedAnim = null;
+      animatedPanel.setAnimation(selectedAnim);
+    }
+  }
+
 }

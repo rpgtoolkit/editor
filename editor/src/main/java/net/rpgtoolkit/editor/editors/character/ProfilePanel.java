@@ -48,9 +48,14 @@ public class ProfilePanel extends AbstractImagePanel {
               mainWindow.getImageExtensions()
       );
 
-      bufferedImages.remove();
-      addImage(imageFile);
-      repaint();
+      if (imageFile != null) {
+        if (bufferedImages.size() > 0) {
+          bufferedImages.remove();
+        }
+        
+        addImage(imageFile);
+        repaint();
+      }
     }
   }
 
