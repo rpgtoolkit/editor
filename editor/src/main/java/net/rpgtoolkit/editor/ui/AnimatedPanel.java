@@ -15,6 +15,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import javax.swing.Timer;
 import net.rpgtoolkit.common.assets.Animation;
+import net.rpgtoolkit.editor.utilities.TransparentDrawer;
 
 /**
  *
@@ -92,8 +93,7 @@ public class AnimatedPanel extends AbstractImagePanel {
 
   @Override
   public void paint(Graphics g) {
-    g.setColor(Color.LIGHT_GRAY);
-    g.fillRect(0, 0, getWidth(), getHeight());
+    TransparentDrawer.drawTransparentBackground(g, getWidth(), getHeight());
 
     if (frame != null) {
       int x = (getWidth() - frame.getWidth(null)) / 2;

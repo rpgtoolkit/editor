@@ -25,6 +25,7 @@ import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.assets.TilePixelOutOfRangeException;
 import net.rpgtoolkit.editor.editors.BoardEditor;
 import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.utilities.TransparentDrawer;
 
 /**
  * A concrete class for drawing 2D RPG-Toolkit Boards, this is the view component. It defines the
@@ -103,9 +104,8 @@ public final class BoardView2D extends AbstractBoardView {
   protected void paintBoard() throws TilePixelOutOfRangeException {
     Graphics2D g = bufferedImage.createGraphics();
 
-    // Draw background colour first.
-    g.setColor(getDefaultBackgroudColor());
-    g.fillRect(0, 0, (board.getWidth() * 32), (board.getHeight() * 32));
+    // Draw background first.
+    TransparentDrawer.drawTransparentBackground(g, (board.getWidth() * 32), (board.getHeight() * 32));
 
     paintLayers(g);
     paintSprites(g);

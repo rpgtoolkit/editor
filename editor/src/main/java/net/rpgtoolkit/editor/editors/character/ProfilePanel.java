@@ -11,8 +11,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.utilities.TransparentDrawer;
 
 /**
  *
@@ -27,11 +29,13 @@ public class ProfilePanel extends AbstractImagePanel {
 
   @Override
   public void paint(Graphics g) {
-    g.setColor(Color.LIGHT_GRAY);
-    g.fillRect(0, 0, getWidth(), getHeight());
+    TransparentDrawer.drawTransparentBackground(g, getWidth(), getHeight());
 
     if (bufferedImages.size() > 0) {
-      g.drawImage(bufferedImages.getFirst(), 0, 0, getWidth(), getHeight(), null);
+      BufferedImage image = bufferedImages.getFirst();
+      int x = (getWidth() - image.getWidth(null)) / 2;
+      int y = (getHeight() - image.getHeight(null)) / 2;
+      g.drawImage(image, x, y, image.getWidth(), image.getHeight(), null);
     }
 
     g.setColor(Color.LIGHT_GRAY);
