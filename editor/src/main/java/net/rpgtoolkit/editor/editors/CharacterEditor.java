@@ -83,8 +83,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
   private JPanel equipmentPanel;
   private JPanel levelsPanel;
 
-  private final Border defaultEtchedBorder = BorderFactory.
-          createEtchedBorder(EtchedBorder.LOWERED);
+  private final Border defaultEtchedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
 
   //STATS SETTINGS
   private JTextField playerName;
@@ -253,9 +252,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
   private void constructWindow() {
     this.addInternalFrameListener(this);
 
-    // Builds the components needed to display the Enemy status.
     JTabbedPane tabPane = new JTabbedPane();
-
     this.statsPanel = new JPanel();
     this.animationsPanel = new JPanel();
     this.specialMovesPanel = new JPanel();
@@ -362,6 +359,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     GroupLayout variablesLayout = Gui.createGroupLayout(variablesPanel);
 
     // Configure the STATS EDIT PANEL layout
+    // <editor-fold defaultstate="collapsed" desc="group layouts">
     statsLayout.setHorizontalGroup(statsLayout.createParallelGroup()
             .addGroup(statsLayout.createSequentialGroup()
                     .addComponent(playerNameLabel)
@@ -562,6 +560,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                     .addComponent(this.levelVar)
                     .addComponent(defaultLevelBtn))
     );
+    // </editor-fold>
 
     JPanel configPanel = new JPanel(new BorderLayout());
     configPanel.add(statsEditPanel, BorderLayout.NORTH);
@@ -602,11 +601,11 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     player.addPlayerChangeListener(animationsTableModel);
 
     // Configure function Scope Components
-    JScrollPane animListScroller = new JScrollPane(animationsTable);
+    JScrollPane animationScrollPane = new JScrollPane(animationsTable);
 
     animatedPanel = new AnimatedPanel();
 
-    JButton addButton = new JButton();
+    final JButton addButton = new JButton();
     addButton.setIcon(Icons.getSmallIcon("new"));
 
     final JButton browseButton = new JButton();
@@ -655,17 +654,40 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
         if (row < 0) {
           return;
         }
-
-        String loc = mainWindow.browseByTypeRelative(Animation.class);
-        if (loc != null) {
-          if (row < AnimationsTableModel.STANDARD_GRAPHICS.length) {
-            player.updateStandardGraphics(row, loc);
-          } else if (row < AnimationsTableModel.STANDARD_GRAPHICS.length
-                  + player.getCustomGraphicNames().size()) {
-            int customIndex = row - AnimationsTableModel.STANDARD_GRAPHICS.length;
-            player.updateCustomGraphics(customIndex, loc);
-            updateAnimation(loc);
-          }
+        
+        if (row < player.getStandingGraphics().size()) {
+            Object[] options = {"Active Animation", "Idle Animation", "Cancel"};
+            int result = JOptionPane.showOptionDialog(
+                    mainWindow,
+                    "Select Animation type to update.",
+                    "Update Animation",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    options,
+                    options[0]
+            );
+            
+            if (result != 2) { // Cancel
+                String path = mainWindow.browseByTypeRelative(Animation.class);
+                if (path != null) {
+                    switch (result) { // Active Animation
+                        case 0:
+                            player.updateStandardGraphics(row, path);
+                            break;
+                        case 1: // Idle Animation
+                            player.updateStandingGraphics(row, path);
+                            break;
+                    }
+                }
+            }
+        } else {
+            String path = mainWindow.browseByTypeRelative(Animation.class);
+            if (path != null) {
+                int customIndex = row - AnimationsTableModel.STANDARD_GRAPHICS.length;
+                player.updateCustomGraphics(customIndex, path);
+                updateAnimation(path);
+            }
         }
       }
     });
@@ -748,10 +770,11 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
       @Override
       public Dimension getMinimumSize() {
-        return new Dimension(getParent().getWidth() - 25, 200);
+        return new Dimension(getParent().getWidth() - 25,
+                200);
       }
     };
-    southPanel.add(animListScroller, BorderLayout.CENTER);
+    southPanel.add(animationScrollPane, BorderLayout.CENTER);
     southPanel.add(configurationPanel, BorderLayout.SOUTH);
 
     // Create Layout for Top Level Panel
