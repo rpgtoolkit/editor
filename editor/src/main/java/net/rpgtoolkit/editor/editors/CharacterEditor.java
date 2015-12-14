@@ -145,7 +145,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
   public CharacterEditor(Player character) {
     super("Editing Player Character - " + character.getName(), true, true, true, true);
-    this.player = character;
+    player = character;
 
     constructWindow();
     setVisible(true);
@@ -187,7 +187,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     player.setIdleTimeBeforeStanding(idleTimeoutField.getValue());
     player.setFrameRate(stepRateField.getValue());
 
-    return this.player.saveBinary();
+    return player.saveBinary();
   }
 
   /**
@@ -250,51 +250,52 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
    * Builds the Swing interface
    */
   private void constructWindow() {
-    this.addInternalFrameListener(this);
+    addInternalFrameListener(this);
 
     JTabbedPane tabPane = new JTabbedPane();
-    this.statsPanel = new JPanel();
-    this.animationsPanel = new JPanel();
-    this.specialMovesPanel = new JPanel();
-    this.equipmentPanel = new JPanel();
-    this.levelsPanel = new JPanel();
+    statsPanel = new JPanel();
+    animationsPanel = new JPanel();
+    specialMovesPanel = new JPanel();
+    equipmentPanel = new JPanel();
+    levelsPanel = new JPanel();
 
-    this.createStatsPanel();
-    this.createAnimationsPanel();
+    createStatsPanel();
+    createAnimationsPanel();
     //this.createSpecialMovesPanel();
     //this.createEquipmentPanel();
 
-    tabPane.addTab("Stats and Portrait", this.statsPanel);
-    tabPane.addTab("Animations", this.animationsPanel);
-    //tabPane.addTab("Special Moves", this.specialMovesPanel);
-    //tabPane.addTab("Equippable Items", this.equipmentPanel);
+    tabPane.addTab("Stats and Portrait", statsPanel);
+    tabPane.addTab("Animations", animationsPanel);
+    //tabPane.addTab("Special Moves", specialMovesPanel);
+    //tabPane.addTab("Equippable Items", equipmentPanel);
 
     // TODO: Decide what do with the LevelsPanel.
     //this.createLevelsPanel();
-    //tabPane.addTab("Levels", this.levelsPanel);
-    this.add(tabPane);
+    //tabPane.addTab("Levels", levelsPanel);
+    
+    add(tabPane);
   }
 
   private void createStatsPanel() {
     // Configure Class scope components
-    this.playerName = new JTextField(this.player.getName());
-    this.experience = new IntegerField(this.player.getInitialExperience());
-    this.hitPoints = new IntegerField(this.player.getInitialHP());
-    this.maxHitPoints = new IntegerField(this.player.getInitialMaxHP());
-    this.specialPoints = new IntegerField(this.player.getInitialMP());
-    this.maxSpecialPoints = new IntegerField(this.player.getInitialMaxMP());
-    this.fightPower = new IntegerField(this.player.getInitialFP());
-    this.defencePower = new IntegerField(this.player.getInitialDP());
-    this.level = new IntegerField(this.player.getInitialLevel());
-    this.playerNameVar = new JTextField(this.player.getNameVariableName());
-    this.experienceVar = new JTextField(this.player.getExpVariableName());
-    this.hitPointsVar = new JTextField(this.player.getHpVariableName());
-    this.maxHitPointsVar = new JTextField(this.player.getMaxHPVariableName());
-    this.specialPointsVar = new JTextField(this.player.getMpVariableName());
-    this.maxSpecialPointsVar = new JTextField(this.player.getMaxMPVariableName());
-    this.fightPowerVar = new JTextField(this.player.getFpVariableName());
-    this.defencePowerVar = new JTextField(this.player.getDpVariableName());
-    this.levelVar = new JTextField(this.player.getLvlVariableName());
+    playerName = new JTextField(player.getName());
+    experience = new IntegerField(player.getInitialExperience());
+    hitPoints = new IntegerField(player.getInitialHP());
+    maxHitPoints = new IntegerField(player.getInitialMaxHP());
+    specialPoints = new IntegerField(player.getInitialMP());
+    maxSpecialPoints = new IntegerField(player.getInitialMaxMP());
+    fightPower = new IntegerField(player.getInitialFP());
+    defencePower = new IntegerField(player.getInitialDP());
+    level = new IntegerField(player.getInitialLevel());
+    playerNameVar = new JTextField(player.getNameVariableName());
+    experienceVar = new JTextField(player.getExpVariableName());
+    hitPointsVar = new JTextField(player.getHpVariableName());
+    maxHitPointsVar = new JTextField(player.getMaxHPVariableName());
+    specialPointsVar = new JTextField(player.getMpVariableName());
+    maxSpecialPointsVar = new JTextField(player.getMaxMPVariableName());
+    fightPowerVar = new JTextField(player.getFpVariableName());
+    defencePowerVar = new JTextField(player.getDpVariableName());
+    levelVar = new JTextField(player.getLvlVariableName());
 
     JLabel playerNameLabel = new JLabel("Name");
     JLabel experienceLabel = new JLabel("Experience");
@@ -325,34 +326,34 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     JButton defaultLevelBtn = new JButton("Default");
 
     defaultNameBtn.addActionListener(
-            varDefaultListener(this.playerNameVar, "name", '$'));
+            varDefaultListener(playerNameVar, "name", '$'));
     defaultExperienceBtn.addActionListener(
-            varDefaultListener(this.experienceVar, "experience", '!'));
+            varDefaultListener(experienceVar, "experience", '!'));
     defaultHitPointsBtn.addActionListener(
-            varDefaultListener(this.hitPointsVar, "health", '!'));
+            varDefaultListener(hitPointsVar, "health", '!'));
     defaultMaxHitPointsBtn.addActionListener(
-            varDefaultListener(this.maxHitPointsVar, "maxhealth", '!'));
+            varDefaultListener(maxHitPointsVar, "maxhealth", '!'));
     defaultSpecialPointsBtn.addActionListener(
-            varDefaultListener(this.specialPointsVar, "smpower", '!'));
+            varDefaultListener(specialPointsVar, "smpower", '!'));
     defaultMaxSpecialPointsBtn.addActionListener(
-            varDefaultListener(this.maxSpecialPointsVar, "maxsm", '!'));
+            varDefaultListener(maxSpecialPointsVar, "maxsm", '!'));
     defaultFightPowerBtn.addActionListener(
-            varDefaultListener(this.fightPowerVar, "fight", '!'));
+            varDefaultListener(fightPowerVar, "fight", '!'));
     defaultDefencePowerBtn.addActionListener(
-            varDefaultListener(this.defencePowerVar, "defence", '!'));
+            varDefaultListener(defencePowerVar, "defence", '!'));
     defaultLevelBtn.addActionListener(
-            varDefaultListener(this.levelVar, "level", '!'));
+            varDefaultListener(levelVar, "level", '!'));
 
     // Configure the necessary Panels
     JPanel statsEditPanel = new JPanel();
     statsEditPanel.setBorder(BorderFactory.createTitledBorder(
-            this.defaultEtchedBorder, "Starting Stats"));
+            defaultEtchedBorder, "Starting Stats"));
     JPanel variablesPanel = new JPanel();
     variablesPanel.setBorder(BorderFactory.createTitledBorder(
-            this.defaultEtchedBorder, "Controlling Variables"));
+            defaultEtchedBorder, "Controlling Variables"));
 
     // Create Layout for top level panel
-    GroupLayout layout = Gui.createGroupLayout(this.statsPanel);
+    GroupLayout layout = Gui.createGroupLayout(statsPanel);
 
     // Create Layouts for second level panels
     GroupLayout statsLayout = Gui.createGroupLayout(statsEditPanel);
@@ -572,7 +573,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
               System.getProperty("project.path")
               + PropertiesSingleton.getProperty("toolkit.directory.bitmap")
               + File.separator
-              + this.player.getProfilePicture()));
+              + player.getProfilePicture()));
     }
 
     // Configure STATS PANEL layout
