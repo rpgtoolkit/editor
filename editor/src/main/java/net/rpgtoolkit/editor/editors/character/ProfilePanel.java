@@ -8,7 +8,6 @@ package net.rpgtoolkit.editor.editors.character;
 
 import net.rpgtoolkit.editor.ui.AbstractImagePanel;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -23,7 +22,7 @@ import net.rpgtoolkit.editor.utilities.TransparentDrawer;
 public class ProfilePanel extends AbstractImagePanel {
 
   public ProfilePanel() {
-    super(new Dimension(280, 0));
+    //super(new Dimension(280, 0));
     setToolTipText("Double click to select an image.");
   }
 

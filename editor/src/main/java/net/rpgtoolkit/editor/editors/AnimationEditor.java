@@ -6,63 +6,89 @@
  */
 package net.rpgtoolkit.editor.editors;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.ArrayList;
-import javax.swing.*;
+import java.util.LinkedList;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
-import net.rpgtoolkit.common.assets.Tile;
 import net.rpgtoolkit.common.assets.Animation;
-
-import net.rpgtoolkit.editor.ui.MainWindow;
-import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
+import net.rpgtoolkit.common.assets.events.AnimationChangedEvent;
+import net.rpgtoolkit.common.assets.listeners.AnimationChangeListener;
+import net.rpgtoolkit.common.utilities.PropertiesSingleton;
+import net.rpgtoolkit.editor.editors.animation.AddTimelineFrame;
+import net.rpgtoolkit.editor.editors.animation.TimelineFrame;
+import net.rpgtoolkit.editor.ui.AnimatedPanel;
+import net.rpgtoolkit.editor.ui.DoubleField;
 import net.rpgtoolkit.editor.ui.Gui;
+
+import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
+import net.rpgtoolkit.editor.ui.IntegerField;
+import net.rpgtoolkit.editor.ui.MainWindow;
 
 /**
  *
  * @author Geoff Wilson
  * @author Joshua Michael Daly
  */
-public class AnimationEditor extends ToolkitEditorWindow {
+public class AnimationEditor extends ToolkitEditorWindow implements AnimationChangeListener {
 
   private final Animation animation;
-  private JPanel timeLinePanel;
-  private JPanel framePanel;
+  private AnimatedPanel animatedPanel;
+  private JScrollPane timelineScrollPane;
+  private JPanel timelinePanel;
   private JPanel controlPanel;
 
-  private final Border defaultEtchedBorder = BorderFactory.
-          createEtchedBorder(EtchedBorder.LOWERED);
+  private final Border defaultEtchedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
 
   // CONTROL PANEL
-  private JTextField frameWidth;
-  private JTextField frameHeight;
-  private JTextField frameTime;
-  private JTextField frameFile;
-  private JTextField frameSound;
+  private IntegerField frameWidth;
+  private IntegerField frameHeight;
+  private JButton applyButton;
+  private DoubleField frameRate;
+  private JComboBox frameSound;
 
-  /*
-   * *************************************************************************
-   * Public Constructors
-   * *************************************************************************
-   */
   public AnimationEditor(Animation theAnimation) {
     super("Editing Animation", true, true, true, true);
-    this.animation = theAnimation;
+    animation = theAnimation;
+    animation.addAnimationChangeListener(this);
 
-    this.configureInterface();
+    configureInterface();
+    setSize(800, 600);
+    setVisible(true);
   }
 
-  /*
-   * *************************************************************************
-   * Public Methods
-   * *************************************************************************
-   */
   @Override
   public boolean save() {
-    return this.animation.save();
+    boolean success = false;
+    
+    if (animation.getFile() == null) {
+      File file = MainWindow.getInstance().saveByType(Animation.class);
+      
+      if (file != null) {
+        success = animation.saveAs(file);
+        setTitle("Editing - " + file.getName());
+      }
+    } else {
+      success = animation.saveBinary();
+    }
+    
+    return success;
   }
 
   /**
@@ -79,194 +105,157 @@ public class AnimationEditor extends ToolkitEditorWindow {
   }
 
   public void gracefulClose() {
-
+    animation.removeAnimationChangeListener(this);
   }
 
-  public void setWindowParent(MainWindow parent) {
-
+  @Override
+  public void animationChanged(AnimationChangedEvent e) {
+    updateInterface();
   }
 
-  /*
-   * *************************************************************************
-   * Private Methods
-   * *************************************************************************
-   */
+  @Override
+  public void animationFrameAdded(AnimationChangedEvent e) {
+    updateInterface();
+  }
+
+  @Override
+  public void animationFrameRemoved(AnimationChangedEvent e) {
+    updateInterface();
+  }
+
+  private void updateInterface() {
+    timelinePanel.removeAll();
+    configureTimeline();
+    revalidate();
+    repaint();
+  }
+
   private void configureInterface() {
-    this.setSize(800, 600);
-    this.setVisible(true);
+    animatedPanel = new AnimatedPanel();
+    animatedPanel.setAnimation(animation);
 
-    GroupLayout layout = new GroupLayout(this.getContentPane());
-    this.getContentPane().setLayout(layout);
-    layout.setAutoCreateGaps(true);
-    layout.setAutoCreateContainerGaps(true);
+    timelinePanel = new JPanel();
+    timelinePanel.setBackground(Color.LIGHT_GRAY);
+    timelinePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    configureTimeline();
 
-    this.framePanel = new JPanel();
-    //this.framePanel.setBackground(new Color(255,0,255));
+    controlPanel = new JPanel();
+    controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.PAGE_AXIS));
+    configureControlPanel();
 
-    this.timeLinePanel = new JPanel();
-    this.timeLinePanel.setBorder(BorderFactory.createTitledBorder(
-            this.defaultEtchedBorder, "Timeline"));
-    this.configureTimeLine();
+    timelineScrollPane = new JScrollPane(timelinePanel);
+    timelineScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-    this.controlPanel = new JPanel();
-    this.configureControlPanel();
+    JPanel wrappingPanel = new JPanel(new FlowLayout());
+    wrappingPanel.add(controlPanel);
 
-    layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-            .addGroup(layout.createSequentialGroup()
-                    .addComponent(this.framePanel)
-                    .addComponent(this.controlPanel, 150, 150, 150))
-            .addComponent(this.timeLinePanel)
-    );
+    JPanel westContainer = new JPanel(new BorderLayout());
+    westContainer.add(animatedPanel, BorderLayout.CENTER);
+    westContainer.add(timelineScrollPane, BorderLayout.SOUTH);
 
-    layout.setVerticalGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup()
-                    .addComponent(this.framePanel)
-                    .addComponent(this.controlPanel))
-            .addComponent(this.timeLinePanel, 75, 75, 75)
-    );
+    JPanel eastContainer = new JPanel(new BorderLayout());
+    eastContainer.add(westContainer, BorderLayout.CENTER);
+    eastContainer.add(wrappingPanel, BorderLayout.EAST);
 
+    setContentPane(eastContainer);
   }
 
   private void configureControlPanel() {
-    this.frameWidth = new JTextField(Long.toString(this.animation.getAnimationWidth()));
-    this.frameHeight = new JTextField(Long.toString(this.animation.getAnimationHeight()));
-    this.frameTime = new JTextField(Double.toString(this.animation.getFrameDelay()));
-    this.frameFile = new JTextField(this.animation.getFrame(0).getFrameName());
-    this.frameSound = new JTextField(this.animation.getFrame(0).getFrameSound());
+    
+    File directory = new File(System.getProperty("project.path") 
+            + PropertiesSingleton.getProperty("toolkit.directory.media") 
+            + File.separator);
+    String[] exts = new String[] {"wav"};
+    frameSound = Gui.getFileListJComboBox(directory, exts, true);
+    frameSound.setSelectedItem(animation.getSoundEffect());
+    frameSound.addActionListener(new ActionListener() {
 
-    JLabel widthLabel = new JLabel("x");
-    JLabel heightLabel = new JLabel("y");
-    JLabel timeLabel = new JLabel("Frame Time");
-    JLabel nameLabel = new JLabel("Frame File");
-    JLabel soundLabel = new JLabel("Frame Sound");
-    JButton nameBrowseButton = new JButton("...");
-    JButton soundBrowseButton = new JButton("...");
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        animation.setSoundEffect((String)frameSound.getSelectedItem());
+      }
 
-    JPanel sizePanel = new JPanel();
-    sizePanel.setBorder(BorderFactory.createTitledBorder(this.defaultEtchedBorder, "Size"));
-    JPanel delayPanel = new JPanel();
-    delayPanel.setBorder(BorderFactory.createTitledBorder(this.defaultEtchedBorder, "Time"));
-    JPanel colorPanel = new JPanel();
-    colorPanel.setBorder(BorderFactory.createTitledBorder(this.defaultEtchedBorder, "Color"));
+    });
+    
+    frameWidth = new IntegerField(animation.getAnimationWidth());
+    frameWidth.setColumns(15);
+    
+    frameHeight = new IntegerField(animation.getAnimationHeight());
+    frameHeight.setColumns(15);
+
+    applyButton = new JButton("Apply");
+    applyButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        animation.setAnimationWidth(frameWidth.getValue());
+        animation.setAnimationHeight(frameHeight.getValue());
+        animation.setFramRate(frameRate.getValue());
+      }
+    });
+
+    frameRate = new DoubleField(animation.getFrameRate());
+    frameRate.setColumns(15);
+
+    JLabel widthLabel = new JLabel("X: ");
+    JLabel heightLabel = new JLabel("Y: ");
+
     JPanel miscPanel = new JPanel();
-    miscPanel.setBorder(BorderFactory.createTitledBorder(this.defaultEtchedBorder, "Details"));
+    miscPanel.setBorder(BorderFactory.createTitledBorder(defaultEtchedBorder, "Sound Effect"));
+    
+    JPanel sizePanel = new JPanel();
+    sizePanel.setLayout(new BoxLayout(sizePanel, BoxLayout.PAGE_AXIS));
+    sizePanel.setBorder(BorderFactory.createTitledBorder(defaultEtchedBorder, "Animation Dimensions"));
+    
+    JPanel delayPanel = new JPanel();
+    delayPanel.setBorder(BorderFactory.createTitledBorder(defaultEtchedBorder, "Frame Rate (ms)"));
 
-    GroupLayout layout = Gui.createGroupLayout(this.controlPanel);
+    miscPanel.add(frameSound, BorderLayout.CENTER);
+    
+    JPanel widthPanel = new JPanel(new FlowLayout());
+    widthPanel.add(widthLabel);
+    widthPanel.add(frameWidth);
+    
+    JPanel heightPanel = new JPanel(new FlowLayout());
+    heightPanel.add(heightLabel);
+    heightPanel.add(frameHeight);
+    
+    JPanel applyPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    applyPanel.add(applyButton);
+    
+    sizePanel.add(widthPanel);
+    sizePanel.add(heightPanel);
+    
+    delayPanel.add(frameRate);
 
-    GroupLayout sizeLayout = Gui.createGroupLayout(sizePanel);
-
-    GroupLayout delayLayout = Gui.createGroupLayout(delayPanel);
-
-    GroupLayout miscLayout = Gui.createGroupLayout(miscPanel);
-
-    miscLayout.setHorizontalGroup(miscLayout.createParallelGroup()
-            .addComponent(nameLabel)
-            .addGroup(miscLayout.createSequentialGroup()
-                    .addComponent(this.frameFile)
-                    .addComponent(nameBrowseButton))
-            .addComponent(soundLabel)
-            .addGroup(miscLayout.createSequentialGroup()
-                    .addComponent(this.frameSound)
-                    .addComponent(soundBrowseButton))
-    );
-
-    miscLayout.linkSize(this.frameFile, this.frameSound);
-
-    miscLayout.setVerticalGroup(miscLayout.createSequentialGroup()
-            .addComponent(nameLabel)
-            .addGroup(miscLayout.createParallelGroup()
-                    .addComponent(this.frameFile, Gui.JTF_HEIGHT,
-                            Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
-                    .addComponent(nameBrowseButton))
-            .addComponent(soundLabel)
-            .addGroup(miscLayout.createParallelGroup()
-                    .addComponent(this.frameSound)
-                    .addComponent(soundBrowseButton))
-    );
-
-    delayLayout.setHorizontalGroup(delayLayout.createParallelGroup()
-            .addComponent(timeLabel)
-            .addComponent(this.frameTime)
-    );
-
-    delayLayout.setVerticalGroup(delayLayout.createSequentialGroup()
-            .addComponent(timeLabel)
-            .addComponent(this.frameTime, Gui.JTF_HEIGHT,
-                    Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
-    );
-
-    sizeLayout.setHorizontalGroup(sizeLayout.createParallelGroup()
-            .addGroup(sizeLayout.createSequentialGroup()
-                    .addComponent(widthLabel)
-                    .addComponent(this.frameWidth))
-            .addGroup(sizeLayout.createSequentialGroup()
-                    .addComponent(heightLabel)
-                    .addComponent(this.frameHeight))
-    );
-
-    sizeLayout.linkSize(SwingConstants.VERTICAL, this.frameWidth,
-            this.frameHeight);
-
-    sizeLayout.setVerticalGroup(sizeLayout.createSequentialGroup()
-            .addGroup(sizeLayout.createParallelGroup()
-                    .addComponent(widthLabel)
-                    .addComponent(this.frameWidth, Gui.JTF_HEIGHT,
-                            Gui.JTF_HEIGHT, Gui.JTF_HEIGHT))
-            .addGroup(sizeLayout.createParallelGroup()
-                    .addComponent(heightLabel)
-                    .addComponent(this.frameHeight))
-    );
-
-    layout.setHorizontalGroup(layout.createParallelGroup()
-            .addComponent(sizePanel)
-            .addComponent(delayPanel)
-            .addComponent(colorPanel)
-            .addComponent(miscPanel)
-    );
-
-    layout.setVerticalGroup(layout.createSequentialGroup()
-            .addComponent(sizePanel)
-            .addComponent(delayPanel)
-            .addComponent(colorPanel)
-            .addComponent(miscPanel)
-    );
+    controlPanel.add(miscPanel);
+    controlPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+    controlPanel.add(sizePanel);
+    controlPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+    controlPanel.add(delayPanel);
+    controlPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+    controlPanel.add(applyPanel);
   }
 
-  private void configureTimeLine() {
-    long frameCount = this.animation.getFrameCount();
-    ArrayList<JLabel> frames = new ArrayList<>();
+  private void configureTimeline() {
+    long frameCount = animation.getFrameCount();
+    LinkedList<TimelineFrame> timelineFrames = new LinkedList<>();
 
     for (int i = 0; i < frameCount; i++) {
-      JLabel tempButton = new JLabel();
-
-      if (!this.animation.getFrame(i).getFrameName().equals("")) {
-
-        BufferedImage bi = new BufferedImage(
-                (int) this.animation.getAnimationWidth(),
-                (int) this.animation.getAnimationHeight(),
+      if (!animation.getFrame(i).getFrameName().equals("")) {
+        BufferedImage bufferedImage = new BufferedImage(
+                (int) animation.getAnimationWidth(),
+                (int) animation.getAnimationHeight(),
                 BufferedImage.TYPE_4BYTE_ABGR);
-        Graphics2D g = bi.createGraphics();
+        Graphics2D g = bufferedImage.createGraphics();
 
-        Tile aTile = this.animation.getFrame(i).getFrameTile();
-        // Draw the tile
-
-        BufferedImage test = aTile.getTileAsImage();
-
-        tempButton.setIcon(new ImageIcon(aTile.getTileAsImage()));
-        tempButton.paint(g);
-
-        if (i == 0) {
-          tempButton.setBorder(BorderFactory.createLineBorder(Color.RED));
-        } else {
-          tempButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        }
-
-        this.timeLinePanel.add(tempButton);
+        timelineFrames.add(new TimelineFrame(animation, i));
       }
     }
 
-    for (JLabel button : frames) {
-      this.timeLinePanel.add(button);
+    for (TimelineFrame frame : timelineFrames) {
+      timelinePanel.add(frame);
     }
+
+    timelinePanel.add(new AddTimelineFrame(animation));
   }
 }

@@ -28,6 +28,7 @@ public final class FileMenu extends JMenu implements ActionListener {
 
   private JMenu newMenu;
   private JMenuItem newProjectMenuItem;
+  private JMenuItem newAnimationMenuItem;
   private JMenuItem newBoardMenuItem;
 
   private JMenu openMenu;
@@ -98,6 +99,8 @@ public final class FileMenu extends JMenu implements ActionListener {
   public void actionPerformed(ActionEvent e) {
     if (e.getSource() == newProjectMenuItem) {
 
+    } else if (e.getSource() == newAnimationMenuItem) {
+      MainWindow.getInstance().createNewAnimation();
     } else if (e.getSource() == newBoardMenuItem) {
       MainWindow.getInstance().createNewBoard();
     }
@@ -107,8 +110,9 @@ public final class FileMenu extends JMenu implements ActionListener {
    * Enable all the menu items after a project has been opened.
    */
   public void doEnableItems() {
-    newBoardMenuItem.setEnabled(true);
     openFileMenuItem.setEnabled(true);
+    newAnimationMenuItem.setEnabled(true);
+    newBoardMenuItem.setEnabled(true);
   }
 
   /**
@@ -128,11 +132,13 @@ public final class FileMenu extends JMenu implements ActionListener {
    */
   private void configureNewSubMenu() {
     configureNewProjectMenuItem();
+    configureNewAnimationMenuItem();
     configureNewBoardMenuItem();
 
     newMenu = new JMenu("New");
     newMenu.setEnabled(true);
     newMenu.add(newProjectMenuItem);
+    newMenu.add(newAnimationMenuItem);
     newMenu.add(newBoardMenuItem);
   }
 
@@ -154,6 +160,12 @@ public final class FileMenu extends JMenu implements ActionListener {
             KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
     newProjectMenuItem.setMnemonic(KeyEvent.VK_N);
     newProjectMenuItem.setEnabled(true);
+  }
+  
+  private void configureNewAnimationMenuItem() {
+    newAnimationMenuItem = new JMenuItem("New Animation");
+    newAnimationMenuItem.setEnabled(false);
+    newAnimationMenuItem.addActionListener(this);
   }
 
   private void configureNewBoardMenuItem() {

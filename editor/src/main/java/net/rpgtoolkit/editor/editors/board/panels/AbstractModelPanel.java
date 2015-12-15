@@ -93,14 +93,4 @@ public abstract class AbstractModelPanel extends JPanel {
     return spinner;
   }
 
-  protected JComboBox getFileListJComboBox(File rootDirectory, String[] extensions,
-          boolean recursive) {
-    JComboBox comboBox = new JComboBox();
-    comboBox.addPopupMenuListener(new PopupListFilesListener(
-            rootDirectory, extensions, recursive, comboBox));
-    comboBox.setPrototypeDisplayValue("*****************");
-    comboBox.insertItemAt("", 0);
-    return comboBox;
-  }
-
 }

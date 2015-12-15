@@ -21,6 +21,7 @@ import net.rpgtoolkit.editor.editors.board.BoardLayerView;
 import net.rpgtoolkit.editor.editors.board.BoardSpriteDialog;
 import net.rpgtoolkit.editor.ui.MainWindow;
 import net.rpgtoolkit.common.utilities.PropertiesSingleton;
+import net.rpgtoolkit.editor.ui.Gui;
 
 /**
  *
@@ -71,7 +72,7 @@ public class BoardSpritePanel extends AbstractModelPanel {
             + PropertiesSingleton.getProperty("toolkit.directory.item") 
             + File.separator);
     String[] exts = new String[]{"itm"};
-    fileComboBox = getFileListJComboBox(directory, exts, true);
+    fileComboBox = Gui.getFileListJComboBox(directory, exts, true);
     fileComboBox.setSelectedItem(boardSprite.getFileName());
     fileComboBox.addActionListener(new ActionListener() {
 
@@ -88,7 +89,7 @@ public class BoardSpritePanel extends AbstractModelPanel {
             + PropertiesSingleton.getProperty("toolkit.directory.program") 
             + File.separator);
     exts = new String[]{"prg"};
-    activationComboBox = getFileListJComboBox(directory, exts, true);
+    activationComboBox = Gui.getFileListJComboBox(directory, exts, true);
     activationComboBox.setSelectedItem(boardSprite.getFileName());
     activationComboBox.addActionListener(new ActionListener() {
 
@@ -101,7 +102,7 @@ public class BoardSpritePanel extends AbstractModelPanel {
     ///
     /// multiTaskingTextField
     ///
-    multiTaskingComboBox = getFileListJComboBox(directory, exts, true);
+    multiTaskingComboBox = Gui.getFileListJComboBox(directory, exts, true);
     multiTaskingComboBox.setSelectedItem(boardSprite.getFileName());
     multiTaskingComboBox.addActionListener(new ActionListener() {
 

@@ -486,6 +486,16 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       this.openSpecialMove();
     }
   }
+  
+  public void createNewAnimation() {
+    AnimationEditor animationEditor = new AnimationEditor(new Animation());
+    animationEditor.addInternalFrameListener(this);
+    animationEditor.setVisible(true);
+    animationEditor.toFront();
+    
+    desktopPane.add(animationEditor);
+    selectToolkitWindow(animationEditor);
+  }
 
   /**
    * Creates an animation editor window for modifying the specified animation file.

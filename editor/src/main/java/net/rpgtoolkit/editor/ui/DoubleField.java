@@ -7,7 +7,6 @@
 package net.rpgtoolkit.editor.ui;
 
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import javax.swing.JFormattedTextField;
 import javax.swing.text.NumberFormatter;
 

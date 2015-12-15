@@ -27,7 +27,8 @@ public class IntegerField extends JFormattedTextField {
    */
   public IntegerField(Object value) {
     super(getIntegerFormatter());
-    this.setValue(value);
+    setValue(value);
+    setColumns(4);
   }
 
   public static NumberFormatter getIntegerFormatter() {

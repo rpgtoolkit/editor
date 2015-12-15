@@ -26,8 +26,7 @@ public abstract class AbstractImagePanel extends JPanel implements MouseListener
   protected Dimension dimension;
   protected LinkedList<BufferedImage> bufferedImages;
 
-  public AbstractImagePanel(Dimension newDimension) {
-    dimension = newDimension;
+  public AbstractImagePanel() {
     bufferedImages = new LinkedList<>();
     addMouseListener(this);
   }
@@ -38,21 +37,6 @@ public abstract class AbstractImagePanel extends JPanel implements MouseListener
 
   public void setDimension(Dimension dimension) {
     this.dimension = dimension;
-  }
-
-  @Override
-  public Dimension getPreferredSize() {
-    return dimension;
-  }
-
-  @Override
-  public Dimension getMaximumSize() {
-    return dimension;
-  }
-  
-  @Override
-  public Dimension getMinimumSize() {
-    return dimension;
   }
 
   public LinkedList<BufferedImage> getBufferedImages() {

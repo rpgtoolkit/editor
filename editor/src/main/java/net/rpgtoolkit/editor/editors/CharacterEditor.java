@@ -54,6 +54,7 @@ import net.rpgtoolkit.common.assets.SpecialMove;
 import net.rpgtoolkit.common.io.Paths;
 import net.rpgtoolkit.common.utilities.PropertiesSingleton;
 import net.rpgtoolkit.editor.editors.character.AnimationsTableModel;
+import net.rpgtoolkit.editor.editors.character.AnimationsTablePanel;
 import net.rpgtoolkit.editor.ui.AnimatedPanel;
 import net.rpgtoolkit.editor.editors.character.ProfilePanel;
 import net.rpgtoolkit.editor.ui.DoubleField;
@@ -273,7 +274,9 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     //this.createLevelsPanel();
     //tabPane.addTab("Levels", levelsPanel);
     
-    add(tabPane);
+    JScrollPane scrollPane = new JScrollPane(tabPane);
+    
+    add(scrollPane);
   }
 
   private void createStatsPanel() {
@@ -755,25 +758,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     configurationPanel.add(stepRateField);
 
     // Fix the size of this panel to stop the JTable growing beyond the Window.
-    JPanel southPanel = new JPanel(new BorderLayout()) {
-      @Override
-      public Dimension getPreferredSize() {
-        return new Dimension(getParent().getWidth() - 25,
-                this.getParent().getHeight() - AnimatedPanel.HEIGHT);
-      }
-
-      @Override
-      public Dimension getMaximumSize() {
-        return new Dimension(getParent().getWidth() - 25,
-                this.getParent().getHeight() - AnimatedPanel.HEIGHT);
-      }
-
-      @Override
-      public Dimension getMinimumSize() {
-        return new Dimension(getParent().getWidth() - 25,
-                200);
-      }
-    };
+    AnimationsTablePanel southPanel = new AnimationsTablePanel(profilePanel, animatedPanel);
     southPanel.add(animationScrollPane, BorderLayout.CENTER);
     southPanel.add(configurationPanel, BorderLayout.SOUTH);
 

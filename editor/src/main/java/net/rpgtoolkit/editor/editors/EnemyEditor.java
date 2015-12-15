@@ -564,7 +564,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
               if (selectedAnim != null && selectedAnim.getFrameCount() > 0) {
                 animDisplay.setIcon(new ImageIcon(
                         selectedAnim.getFrame(0).getFrameImage()));
-                animTimer = new Timer((int) (selectedAnim.getFrameDelay() * 1000), animate);
+                animTimer = new Timer((int) (selectedAnim.getFrameRate() * 1000), animate);
               }
             }
           }

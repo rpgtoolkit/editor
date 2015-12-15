@@ -7,25 +7,27 @@
 package net.rpgtoolkit.editor.ui;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import javax.swing.Timer;
 import net.rpgtoolkit.common.assets.Animation;
+import net.rpgtoolkit.common.assets.events.AnimationChangedEvent;
+import net.rpgtoolkit.common.assets.listeners.AnimationChangeListener;
+import net.rpgtoolkit.common.utilities.PropertiesSingleton;
 import net.rpgtoolkit.editor.utilities.TransparentDrawer;
 
 /**
  *
  * @author Joshua Michael Daly
  */
-public class AnimatedPanel extends AbstractImagePanel {
-  public static final int ANIMATION_HEIGHT = 450;
-  
+public class AnimatedPanel extends AbstractImagePanel implements AnimationChangeListener {
+
   private Animation animation;
-  private BufferedImage frame;
+  private BufferedImage frameImage;
   private Timer timer;
 
   private final ActionListener animate = new ActionListener() {
@@ -41,41 +43,29 @@ public class AnimatedPanel extends AbstractImagePanel {
         timer = null;
       }
 
-      frame = animation.getFrame(index).getFrameImage();
+      frameImage = animation.getFrame(index).getFrameImage();
       repaint();
     }
   };
 
   public AnimatedPanel() {
-    super(new Dimension(0, ANIMATION_HEIGHT));
-  }
-  
-  @Override
-  public Dimension getPreferredSize() {
-    return new Dimension(getParent().getWidth() - 25, ANIMATION_HEIGHT);
-  }
-
-  @Override
-  public Dimension getMaximumSize() {
-    return new Dimension(getParent().getWidth() - 25, ANIMATION_HEIGHT);
-  }
-  
-  @Override
-  public Dimension getMinimumSize() {
-    return new Dimension(getParent().getWidth() - 25, ANIMATION_HEIGHT);
   }
 
   public void setAnimation(Animation animation) {
+    if (this.animation != null) {
+      this.animation.removeAnimationChangeListener(this);
+    }
+
     this.animation = animation;
+    this.animation.addAnimationChangeListener(this);
 
     if (animation == null) {
       timer = null;
-      frame = null;
+      frameImage = null;
+      repaint();
     } else if (animation.getFrameCount() > 0) {
-      frame = animation.getFrame(0).getFrameImage();
+      frameImage = animation.getFrame(0).getFrameImage();
     }
-
-    repaint();
   }
 
   @Override
@@ -92,13 +82,36 @@ public class AnimatedPanel extends AbstractImagePanel {
   }
 
   @Override
+  public void animationChanged(AnimationChangedEvent e) {
+    updateAnimation();
+  }
+
+  @Override
+  public void animationFrameAdded(AnimationChangedEvent e) {
+    updateAnimation();
+  }
+
+  @Override
+  public void animationFrameRemoved(AnimationChangedEvent e) {
+    updateAnimation();
+  }
+
+  @Override
   public void paint(Graphics g) {
     TransparentDrawer.drawTransparentBackground(g, getWidth(), getHeight());
 
-    if (frame != null) {
-      int x = (getWidth() - frame.getWidth(null)) / 2;
-      int y = (getHeight() - frame.getHeight(null)) / 2;
-      g.drawImage(frame, x, y, frame.getWidth(), frame.getHeight(), null);
+    if (frameImage != null) {
+      int width = (int) animation.getAnimationWidth();
+      int height = (int) animation.getAnimationHeight();
+
+      if (frameImage.getWidth() > width || frameImage.getHeight() > height) {
+        makeSubImage();
+      }
+
+      int x = (getWidth() - (int) animation.getAnimationWidth()) / 2;
+      int y = (getHeight() - (int) animation.getAnimationHeight()) / 2;
+
+      g.drawImage(frameImage, x, y, null);
     }
 
     g.setColor(Color.LIGHT_GRAY);
@@ -106,8 +119,16 @@ public class AnimatedPanel extends AbstractImagePanel {
   }
 
   public void animate() {
-    timer = new Timer((int) (animation.getFrameDelay() * 1000), animate);
+    timer = new Timer((int) (animation.getFrameRate() * 1000), animate);
     timer.start();
+
+    if (!animation.getSoundEffect().isEmpty()) {
+      String path
+              = System.getProperty("project.path")
+              + PropertiesSingleton.getProperty("toolkit.directory.media")
+              + File.separator
+              + animation.getSoundEffect();
+    }
   }
 
   public void stop() {
@@ -116,8 +137,26 @@ public class AnimatedPanel extends AbstractImagePanel {
       timer = null;
     }
     
-    frame = animation.getFrame(0).getFrameImage();
+    frameImage = animation.getFrame(0).getFrameImage();
     repaint();
+  }
+
+  private void updateAnimation() {
+    if (animation.getFrameCount() > 0) {
+      frameImage = animation.getFrame(0).getFrameImage();
+      repaint();
+    } else {
+      frameImage = null;
+    }
+  }
+
+  private void makeSubImage() {
+    int width = (int) animation.getAnimationWidth();
+    int height = (int) animation.getAnimationHeight();
+
+    if (frameImage.getWidth() > width || frameImage.getHeight() > height) {
+      frameImage = frameImage.getSubimage(0, 0, width, height);
+    }
   }
 
 }
