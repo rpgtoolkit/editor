@@ -42,6 +42,10 @@ public class AnimationEditor extends ToolkitEditorWindow implements AnimationCha
     super("Editing Animation", true, true, true, true);
     animation = theAnimation;
     animation.addAnimationChangeListener(this);
+    
+    if (animation.getFile() != null) {
+      setTitle("Editing - " + animation.getFile().getName());
+    }
 
     configureInterface();
     setSize(800, 600);
@@ -60,7 +64,7 @@ public class AnimationEditor extends ToolkitEditorWindow implements AnimationCha
         setTitle("Editing - " + file.getName());
       }
     } else {
-      success = animation.saveBinary();
+      success = animation.save();
     }
     
     return success;

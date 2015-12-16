@@ -52,25 +52,12 @@ public class BoardEditor extends ToolkitEditorWindow {
   public BoardEditor() {
 
   }
-
-  /**
-   * This constructor is used when opening an existing board, it does not make the window visible.
-   *
-   * @param file The board file that to open.
-   * @throws java.io.FileNotFoundException
-   */
-  public BoardEditor(File file) throws FileNotFoundException {
-    super("Board Viewer", true, true, true, true);
-    boardMouseAdapter = new BoardMouseAdapter(this);
-    board = new Board(file);
-    init(board, file.getAbsolutePath());
-  }
   
   public BoardEditor(Board board) {
     super("Board Viewer", true, true, true, true);
     boardMouseAdapter = new BoardMouseAdapter(this);
     this.board = board;
-    init(board, board.getDescriptor().getURI().getPath());
+    init(board, board.getFile().getName());
   }
 
   /**

@@ -41,6 +41,7 @@ import net.rpgtoolkit.common.assets.SpecialMove;
 import net.rpgtoolkit.common.assets.Tile;
 import net.rpgtoolkit.common.assets.TileSet;
 import net.rpgtoolkit.common.assets.files.FileAssetHandleResolver;
+import net.rpgtoolkit.common.assets.serialization.JsonAnimationSerializer;
 import net.rpgtoolkit.common.assets.serialization.JsonBoardSerializer;
 import net.rpgtoolkit.common.assets.serialization.JsonProjectSerializer;
 import net.rpgtoolkit.common.assets.serialization.JsonSMoveSerializer;
@@ -76,7 +77,7 @@ import net.rpgtoolkit.editor.utilities.FileTools;
 public class MainWindow extends JFrame implements InternalFrameListener {
 
   // Singleton.
-  private static final MainWindow instance = new MainWindow();
+  private static final MainWindow INSTANCE = new MainWindow();
 
   public static final int TILE_SIZE = 32;
 
@@ -183,7 +184,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   }
 
   public static MainWindow getInstance() {
-    return instance;
+    return INSTANCE;
   }
 
   public JDesktopPane getDesktopPane() {
@@ -279,6 +280,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     if (e.getInternalFrame() instanceof AnimationEditor) {
       AnimationEditor editor = (AnimationEditor) e.getInternalFrame();
       propertiesPanel.setModel(editor.getAnimation());
+      lowerTabbedPane.setSelectedComponent(propertiesPanel);
     } else if (e.getInternalFrame() instanceof BoardEditor) {
       BoardEditor editor = (BoardEditor) e.getInternalFrame();
 
@@ -313,6 +315,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     if (e.getInternalFrame() instanceof AnimationEditor) {
       AnimationEditor editor = (AnimationEditor) e.getInternalFrame();
       propertiesPanel.setModel(editor.getAnimation());
+      lowerTabbedPane.setSelectedComponent(propertiesPanel);
     } else if (e.getInternalFrame() instanceof BoardEditor) {
       BoardEditor editor = (BoardEditor) e.getInternalFrame();
       this.layerPanel.setBoardView(editor.getBoardView());
@@ -330,7 +333,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     if (e.getInternalFrame() instanceof AnimationEditor) {
       AnimationEditor editor = (AnimationEditor) e.getInternalFrame();
       propertiesPanel.setModel(editor.getAnimation());
-      
+
       if (propertiesPanel.getModel() == editor.getAnimation()) {
         this.propertiesPanel.setModel(null);
       }
@@ -367,6 +370,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     AssetManager assetManager = AssetManager.getInstance();
     assetManager.registerSerializer(new LegacyAnimatedTileSerializer());
     assetManager.registerSerializer(new LegacyItemSerializer());
+    assetManager.registerSerializer(new JsonAnimationSerializer());
     assetManager.registerSerializer(new JsonBoardSerializer());
     assetManager.registerSerializer(new JsonProjectSerializer());
     assetManager.registerSerializer(new JsonSMoveSerializer());
@@ -483,7 +487,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   public void checkFileExtension(File file) {
     String fileName = file.getName().toLowerCase();
 
-    if (fileName.endsWith(".anm")) {
+    if (fileName.endsWith(".anm") || fileName.endsWith(".anm.json")) {
       this.openAnimation();
     } else if (fileName.endsWith(".brd") || fileName.endsWith(".brd.json")) {
       this.openBoard();
@@ -499,13 +503,13 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       this.openSpecialMove();
     }
   }
-  
+
   public void createNewAnimation() {
     AnimationEditor animationEditor = new AnimationEditor(new Animation());
     animationEditor.addInternalFrameListener(this);
     animationEditor.setVisible(true);
     animationEditor.toFront();
-    
+
     desktopPane.add(animationEditor);
     selectToolkitWindow(animationEditor);
   }
@@ -514,12 +518,30 @@ public class MainWindow extends JFrame implements InternalFrameListener {
    * Creates an animation editor window for modifying the specified animation file.
    */
   public void openAnimation() {
-    Animation animation = new Animation(fileChooser.getSelectedFile());
-    AnimationEditor animationEditor = new AnimationEditor(animation);
-    animationEditor.addInternalFrameListener(this);
-    desktopPane.add(animationEditor);
+    try {
+      AnimationEditor animationEditor;
+      File selectedFile = fileChooser.getSelectedFile();
 
-    this.selectToolkitWindow(animationEditor);
+      if (selectedFile.canRead()) {
+        Animation animation;
+
+        if (selectedFile.getName().endsWith(".anm")) {
+          animation = new Animation(selectedFile);
+          animation.openBinary();
+        } else {
+          AssetHandle handle = AssetManager.getInstance().deserialize(
+                  new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
+          animation = (Animation) handle.getAsset();
+        }
+        
+        animationEditor = new AnimationEditor(animation);
+        animationEditor.addInternalFrameListener(this);
+        desktopPane.add(animationEditor);
+        selectToolkitWindow(animationEditor);
+      }
+    } catch (IOException | AssetException ex) {
+      Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+    }    
   }
 
   public void createNewBoard() {
@@ -580,7 +602,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     desktopPane.add(enemyEditor);
 
     this.selectToolkitWindow(enemyEditor);
-  } 
+  }
 
   /**
    * Creates a character editor window for modifying the specified character file.
@@ -689,21 +711,21 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   public String[] getTypeExtensions(Class<? extends BasicType> type) {
     switch (type.getSimpleName()) {
       case "Animation":
-        return new String[]{"anm"};
+        return new String[]{"anm", "anm.json"};
       case "Board":
         return new String[]{"brd", "brd.json"};
       case "Enemy":
-        return new String[]{"ene"};
+        return new String[]{"ene", "ene.json"};
       case "Item":
-        return new String[]{"itm"};
+        return new String[]{"itm", "itm.json"};
       case "Player":
-        return new String[]{"tem"};
+        return new String[]{"tem", "tem.json"};
       case "Program":
         return new String[]{"prg"};
       case "Project":
         return new String[]{"gam", "gam.json"};
       case "StatusEffect":
-        return new String[]{"ste"};
+        return new String[]{"ste", "ste.json"};
       case "Tileset":
         return new String[]{"tst"};
       case "SpecialMove":
