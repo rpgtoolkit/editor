@@ -28,7 +28,7 @@ import net.rpgtoolkit.editor.ui.Gui;
  *
  * @author Joshua Michael Daly
  */
-public class BoardSpritePanel extends AbstractModelPanel {
+public class BoardSpritePanel extends BoardModelPanel {
 
   private final JComboBox fileComboBox;
   private final JLabel fileLabel;

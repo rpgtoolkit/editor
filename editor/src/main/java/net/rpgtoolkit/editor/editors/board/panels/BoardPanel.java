@@ -1,5 +1,6 @@
 package net.rpgtoolkit.editor.editors.board.panels;
 
+import net.rpgtoolkit.editor.ui.AbstractModelPanel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;

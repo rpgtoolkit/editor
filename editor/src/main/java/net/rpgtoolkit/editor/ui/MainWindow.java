@@ -276,7 +276,10 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
   @Override
   public void internalFrameOpened(InternalFrameEvent e) {
-    if (e.getInternalFrame() instanceof BoardEditor) {
+    if (e.getInternalFrame() instanceof AnimationEditor) {
+      AnimationEditor editor = (AnimationEditor) e.getInternalFrame();
+      propertiesPanel.setModel(editor.getAnimation());
+    } else if (e.getInternalFrame() instanceof BoardEditor) {
       BoardEditor editor = (BoardEditor) e.getInternalFrame();
 
       upperTabbedPane.setSelectedComponent(tileSetPanel);
@@ -307,7 +310,10 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
   @Override
   public void internalFrameActivated(InternalFrameEvent e) {
-    if (e.getInternalFrame() instanceof BoardEditor) {
+    if (e.getInternalFrame() instanceof AnimationEditor) {
+      AnimationEditor editor = (AnimationEditor) e.getInternalFrame();
+      propertiesPanel.setModel(editor.getAnimation());
+    } else if (e.getInternalFrame() instanceof BoardEditor) {
       BoardEditor editor = (BoardEditor) e.getInternalFrame();
       this.layerPanel.setBoardView(editor.getBoardView());
 
@@ -321,7 +327,14 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
   @Override
   public void internalFrameDeactivated(InternalFrameEvent e) {
-    if (e.getInternalFrame() instanceof BoardEditor) {
+    if (e.getInternalFrame() instanceof AnimationEditor) {
+      AnimationEditor editor = (AnimationEditor) e.getInternalFrame();
+      propertiesPanel.setModel(editor.getAnimation());
+      
+      if (propertiesPanel.getModel() == editor.getAnimation()) {
+        this.propertiesPanel.setModel(null);
+      }
+    } else if (e.getInternalFrame() instanceof BoardEditor) {
       BoardEditor editor = (BoardEditor) e.getInternalFrame();
 
       if (this.layerPanel.getBoardView().equals(editor.getBoardView())) {
@@ -503,6 +516,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   public void openAnimation() {
     Animation animation = new Animation(fileChooser.getSelectedFile());
     AnimationEditor animationEditor = new AnimationEditor(animation);
+    animationEditor.addInternalFrameListener(this);
     desktopPane.add(animationEditor);
 
     this.selectToolkitWindow(animationEditor);

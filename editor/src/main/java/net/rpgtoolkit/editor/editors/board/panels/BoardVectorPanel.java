@@ -27,7 +27,7 @@ import net.rpgtoolkit.common.assets.BoardVector;
  *
  * @author Joshua Michael Daly
  */
-public class BoardVectorPanel extends AbstractModelPanel {
+public class BoardVectorPanel extends BoardModelPanel {
 
   private final JSpinner layerSpinner;
   private final JLabel layerLabel;
