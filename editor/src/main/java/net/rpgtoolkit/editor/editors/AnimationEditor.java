@@ -48,7 +48,7 @@ public class AnimationEditor extends ToolkitEditorWindow implements AnimationCha
     }
 
     configureInterface();
-    setSize(800, 600);
+    setSize(400, 400);
     setVisible(true);
   }
 
