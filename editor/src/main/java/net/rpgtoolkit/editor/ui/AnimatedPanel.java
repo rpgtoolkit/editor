@@ -7,6 +7,7 @@
 package net.rpgtoolkit.editor.ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,6 +27,8 @@ import net.rpgtoolkit.editor.utilities.TransparentDrawer;
  */
 public class AnimatedPanel extends AbstractImagePanel implements AnimationChangeListener {
 
+  public static final int DEFAULT_HEIGHT = 300;  
+    
   private Animation animation;
   private BufferedImage frameImage;
   private Timer timer;
@@ -49,6 +52,10 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
   };
 
   public AnimatedPanel() {
+  }
+  
+  public AnimatedPanel(Dimension dimension) {
+      super(dimension);
   }
 
   public void setAnimation(Animation animation) {

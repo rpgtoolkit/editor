@@ -43,7 +43,7 @@ public class AnimationsTablePanel extends JPanel {
   
   private Dimension calculateDimensions() {
     int width = animatedPanel.getWidth();
-    int height = profilePanel.getHeight() - animatedPanel.getHeight();
+    int height = profilePanel.getHeight() - AnimatedPanel.DEFAULT_HEIGHT;
     
     return new Dimension(width, height);
   }

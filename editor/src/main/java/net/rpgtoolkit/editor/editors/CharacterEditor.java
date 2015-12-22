@@ -607,7 +607,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     // Configure function Scope Components
     JScrollPane animationScrollPane = new JScrollPane(animationsTable);
 
-    animatedPanel = new AnimatedPanel();
+    animatedPanel = new AnimatedPanel(new Dimension (0, AnimatedPanel.DEFAULT_HEIGHT));
 
     final JButton addButton = new JButton();
     addButton.setIcon(Icons.getSmallIcon("new"));
