@@ -1374,15 +1374,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
       File file = mainWindow.getPath(
               mainWindow.getTypeSubdirectory(Animation.class)
               + File.separator + path);
-      if (file.canRead()) {
-        selectedAnim = new Animation(file);
-
-        if (selectedAnim != null && selectedAnim.getFrameCount() > 0) {
-          animatedPanel.setAnimation(selectedAnim);
-        }
-      }
-    } else {
-      selectedAnim = null;
+      selectedAnim = MainWindow.getInstance().openAnimation(file);
       animatedPanel.setAnimation(selectedAnim);
     }
   }

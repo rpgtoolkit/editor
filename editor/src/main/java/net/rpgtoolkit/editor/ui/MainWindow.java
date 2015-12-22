@@ -375,6 +375,70 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     assetManager.registerSerializer(new JsonProjectSerializer());
     assetManager.registerSerializer(new JsonSMoveSerializer());
   }
+  
+  /**
+   * Adds a new file format editor to our desktop pane.
+   * 
+   * @param editor 
+   */
+  public void addToolkitEditorWindow(ToolkitEditorWindow editor) {
+      editor.addInternalFrameListener(this);
+      editor.setVisible(true);
+      editor.toFront();
+      desktopPane.add(editor);
+      selectToolkitWindow(editor);
+  }
+  
+  public void primeFileChooser() {
+    if (this.activeProject != null) {
+      File projectPath = new File(System.getProperty("project.path"));
+
+      this.fileChooser = new JFileChooser(
+              new SingleRootFileSystemView(projectPath));
+
+      FileNameExtensionFilter filter = new FileNameExtensionFilter(
+              "Toolkit Files", this.getTKFileExtensions());
+      this.fileChooser.setFileFilter(filter);
+
+      if (projectPath.exists()) {
+        this.fileChooser.setCurrentDirectory(projectPath);
+      }
+    }
+  }
+
+  public void openFile() {
+    this.primeFileChooser();
+
+    if (this.fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+      this.checkFileExtension(this.fileChooser.getSelectedFile());
+    }
+  }
+
+  private String[] getTKFileExtensions() {
+    return new String[]{
+      "brd", "ene", "tem", "itm", "anm", "prg", "tst", "spc", "json"
+    };
+  }
+
+  public void checkFileExtension(File file) {
+    String fileName = file.getName().toLowerCase();
+
+    if (fileName.endsWith(".anm") || fileName.endsWith(".anm.json")) {
+      addToolkitEditorWindow(EditorFactory.getEditor(openAnimation(file)));
+    } else if (fileName.endsWith(".brd") || fileName.endsWith(".brd.json")) {
+      addToolkitEditorWindow(EditorFactory.getEditor(openBoard(file)));
+    } else if (fileName.endsWith(".ene")) {
+      addToolkitEditorWindow(EditorFactory.getEditor(openEnemy(file)));
+    } else if (fileName.endsWith(".tem")) {
+      addToolkitEditorWindow(EditorFactory.getEditor(openCharacter(file)));
+    } else if (fileName.endsWith(".prg")) {
+
+    } else if (fileName.endsWith(".tst")) {
+        openTileset(file);
+    } else if (fileName.endsWith(".spc") || fileName.endsWith(".spc.json")) {
+      addToolkitEditorWindow(EditorFactory.getEditor(openSpecialMove(file)));
+    }
+  }
 
   public void openProject() {
     this.fileChooser.resetChoosableFileFilters();
@@ -453,80 +517,23 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     }
   }
 
-  public void primeFileChooser() {
-    if (this.activeProject != null) {
-      File projectPath = new File(System.getProperty("project.path"));
-
-      this.fileChooser = new JFileChooser(
-              new SingleRootFileSystemView(projectPath));
-
-      FileNameExtensionFilter filter = new FileNameExtensionFilter(
-              "Toolkit Files", this.getTKFileExtensions());
-      this.fileChooser.setFileFilter(filter);
-
-      if (projectPath.exists()) {
-        this.fileChooser.setCurrentDirectory(projectPath);
-      }
-    }
-  }
-
-  public void openFile() {
-    this.primeFileChooser();
-
-    if (this.fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-      this.checkFileExtension(this.fileChooser.getSelectedFile());
-    }
-  }
-
-  private String[] getTKFileExtensions() {
-    return new String[]{
-      "brd", "ene", "tem", "itm", "anm", "prg", "tst", "spc", "json"
-    };
-  }
-
-  public void checkFileExtension(File file) {
-    String fileName = file.getName().toLowerCase();
-
-    if (fileName.endsWith(".anm") || fileName.endsWith(".anm.json")) {
-      this.openAnimation();
-    } else if (fileName.endsWith(".brd") || fileName.endsWith(".brd.json")) {
-      this.openBoard();
-    } else if (fileName.endsWith(".ene")) {
-      this.openEnemy();
-    } else if (fileName.endsWith(".tem")) {
-      this.openCharacter();
-    } else if (fileName.endsWith(".prg")) {
-
-    } else if (fileName.endsWith(".tst")) {
-      this.openTileset();
-    } else if (fileName.endsWith(".spc") || fileName.endsWith(".spc.json")) {
-      this.openSpecialMove();
-    }
-  }
-
   public void createNewAnimation() {
-    AnimationEditor animationEditor = new AnimationEditor(new Animation());
-    animationEditor.addInternalFrameListener(this);
-    animationEditor.setVisible(true);
-    animationEditor.toFront();
-
-    desktopPane.add(animationEditor);
-    selectToolkitWindow(animationEditor);
+      addToolkitEditorWindow(EditorFactory.getEditor(new Animation()));
   }
 
   /**
    * Creates an animation editor window for modifying the specified animation file.
+   * 
+   * @param file
+     * @return 
    */
-  public void openAnimation() {
+  public Animation openAnimation(File file) {
     try {
-      AnimationEditor animationEditor;
-      File selectedFile = fileChooser.getSelectedFile();
-
-      if (selectedFile.canRead()) {
+      if (file.canRead()) {
         Animation animation;
 
-        if (selectedFile.getName().endsWith(".anm")) {
-          animation = new Animation(selectedFile);
+        if (file.getName().endsWith(".anm")) {
+          animation = new Animation(file);
           animation.openBinary();
         } else {
           AssetHandle handle = AssetManager.getInstance().deserialize(
@@ -534,14 +541,13 @@ public class MainWindow extends JFrame implements InternalFrameListener {
           animation = (Animation) handle.getAsset();
         }
         
-        animationEditor = new AnimationEditor(animation);
-        animationEditor.addInternalFrameListener(this);
-        desktopPane.add(animationEditor);
-        selectToolkitWindow(animationEditor);
+        return animation;
       }
     } catch (IOException | AssetException ex) {
       Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-    }    
+    }
+    
+    return null;
   }
 
   public void createNewBoard() {
@@ -550,7 +556,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     dialog.setVisible(true);
 
     if (dialog.getValue() != null) {
-      BoardEditor boardEditor = new BoardEditor("Untitled", dialog.getValue()[0], dialog.getValue()[1]);
+      BoardEditor boardEditor = new BoardEditor(
+              "Untitled", dialog.getValue()[0], dialog.getValue()[1]);
       boardEditor.addInternalFrameListener(this);
       boardEditor.setVisible(true);
       boardEditor.toFront();
@@ -560,90 +567,76 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     }
   }
 
-  public void openBoard() {
+  public Board openBoard(File file) {
     try {
-      BoardEditor boardEditor;
-      File selectedFile = fileChooser.getSelectedFile();
-
-      if (selectedFile.canRead()) {
+      if (file.canRead()) {
         Board board;
 
-        if (selectedFile.getName().endsWith(".brd")) {
-          board = new Board(selectedFile);
+        if (file.getName().endsWith(".brd")) {
+          board = new Board(file);
           board.openBinary();
         } else {
           AssetHandle handle = AssetManager.getInstance().deserialize(
                   new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
           board = (Board) handle.getAsset();
         }
-
-        boardEditor = new BoardEditor(board);
-      } else {
-        boardEditor = new BoardEditor();
+        return board;
       }
-
-      boardEditor.addInternalFrameListener(this);
-      boardEditor.setVisible(true);
-      boardEditor.toFront();
-
-      desktopPane.add(boardEditor);
-      selectToolkitWindow(boardEditor);
     } catch (IOException | AssetException ex) {
       Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
     }
+    
+    return null;
   }
 
   /**
    * Creates an animation editor window for modifying the specified animation file.
+     * @param file
    */
-  public void openEnemy() {
-    Enemy enemy = new Enemy(fileChooser.getSelectedFile());
-    EnemyEditor enemyEditor = new EnemyEditor(enemy);
-    desktopPane.add(enemyEditor);
+  public Enemy openEnemy(File file) {
+    Enemy enemy = new Enemy(file);
 
-    this.selectToolkitWindow(enemyEditor);
+    return enemy;
   }
 
   /**
    * Creates a character editor window for modifying the specified character file.
+     * @param file
    */
-  public void openCharacter() {
-    Player player = new Player(fileChooser.getSelectedFile());
-    CharacterEditor characterEditor = new CharacterEditor(player);
-    desktopPane.add(characterEditor);
-
-    this.selectToolkitWindow(characterEditor);
+  public Player openCharacter(File file) {
+    Player player = new Player(file);
+    
+    return player;
   }
 
   /**
    * Creates a TileSet editor window for modifying the specified TileSet.
+     * @param file
    */
-  public void openTile() {
-    TileEditor testTileEditor = new TileEditor(fileChooser.getSelectedFile());
+  public void openTile(File file) {
+    TileEditor testTileEditor = new TileEditor(file);
     desktopPane.add(testTileEditor);
   }
 
-  public void openTileset() {
-    TileSet tileSet = new TileSet(fileChooser.getSelectedFile());
+  public void openTileset(File file) {
+    TileSet tileSet = new TileSet(file);
     tileSetPanel.addTileSet(tileSet);
   }
 
-  public void openSpecialMove() {
+  public SpecialMove openSpecialMove(File file) {
     try {
-      SpecialMoveEditor sMoveEditor;
-      if (fileChooser.getSelectedFile().canRead()) {
+      if (file.canRead()) {
         AssetHandle handle = AssetManager.getInstance().deserialize(
                 new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
         SpecialMove move = (SpecialMove) handle.getAsset();
-        sMoveEditor = new SpecialMoveEditor(move);
-      } else {
-        sMoveEditor = new SpecialMoveEditor();
+        
+        return move;
       }
-      desktopPane.add(sMoveEditor);
-      this.selectToolkitWindow(sMoveEditor);
     } catch (IOException | AssetException ex) {
       Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
     }
+    
+    return null;
   }
 
   public String getTypeSubdirectory(Class<? extends BasicType> type) {

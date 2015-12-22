@@ -73,6 +73,8 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
     } else if (animation.getFrameCount() > 0) {
       frameImage = animation.getFrame(0).getFrameImage();
     }
+    
+    repaint();
   }
 
   @Override
