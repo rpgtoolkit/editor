@@ -30,6 +30,11 @@ public abstract class AbstractImagePanel extends JPanel implements MouseListener
     bufferedImages = new LinkedList<>();
     addMouseListener(this);
   }
+  
+  public AbstractImagePanel(Dimension dimension) {
+      this();
+      this.dimension = dimension;
+  }
 
   public Dimension getDimension() {
     return dimension;

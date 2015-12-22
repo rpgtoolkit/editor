@@ -97,8 +97,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   private JFileChooser fileChooser;
   private final String workingDir = PropertiesSingleton.getProjectsDirectory();
 
-  private final JScrollPane debugScrollPane;
-  private final JTextArea debugLog;
+//  private final JScrollPane debugScrollPane;
+//  private final JTextArea debugLog;
 
   // Project Related.
   private Project activeProject;
@@ -142,14 +142,14 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     // Application icon.
     this.setIconImage(Icons.getLargeIcon("application").getImage());
 
-    this.debugLog = new JTextArea("Debug Messages:\n\n");
-    this.debugLog.setEditable(false);
-    this.debugLog.setRows(6);
-    this.debugLog.setBackground(Color.WHITE);
-
-    this.debugScrollPane = new JScrollPane(this.debugLog);
-    this.debugScrollPane.setVerticalScrollBarPolicy(
-            JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+//    this.debugLog = new JTextArea("Debug Messages:\n\n");
+//    this.debugLog.setEditable(false);
+//    this.debugLog.setRows(6);
+//    this.debugLog.setBackground(Color.WHITE);
+//
+//    this.debugScrollPane = new JScrollPane(this.debugLog);
+//    this.debugScrollPane.setVerticalScrollBarPolicy(
+//            JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
     this.registerResolvers();
     this.registerSerializers();
@@ -169,7 +169,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
     JPanel parent = new JPanel(new BorderLayout());
     parent.add(this.desktopPane, BorderLayout.CENTER);
-    parent.add(this.debugScrollPane, BorderLayout.SOUTH);
+//    parent.add(this.debugScrollPane, BorderLayout.SOUTH);
 
     this.setLayout(new BorderLayout());
     this.add(this.toolBar, BorderLayout.NORTH);

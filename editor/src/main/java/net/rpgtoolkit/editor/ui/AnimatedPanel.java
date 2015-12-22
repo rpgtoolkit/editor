@@ -54,10 +54,10 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
   public void setAnimation(Animation animation) {
     if (this.animation != null) {
       this.animation.removeAnimationChangeListener(this);
+      this.animation.addAnimationChangeListener(this);
     }
 
     this.animation = animation;
-    this.animation.addAnimationChangeListener(this);
 
     if (animation == null) {
       timer = null;
