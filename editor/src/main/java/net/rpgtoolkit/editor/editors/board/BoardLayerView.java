@@ -353,16 +353,16 @@ public class BoardLayerView {
       }
 
       switch (vector.getTileType()) {
-        case 1:
+        case SOLID:
           g.setColor(Color.WHITE);
           break;
-        case 2:
+        case UNDER:
           g.setColor(Color.GREEN);
           break;
-        case 8:
+        case STAIRS:
           g.setColor(Color.MAGENTA);
           break;
-        case 16:
+        case WAYPOINT:
           g.setColor(Color.RED);
           break;
         default:

@@ -155,6 +155,8 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
   @Override
   public boolean save() {
+    boolean success = false;
+
     // Get the relative portrait path.
     if (profilePanel.getFile() != null) {
       String remove = System.getProperty("project.path")
@@ -188,7 +190,21 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     player.setIdleTimeBeforeStanding(idleTimeoutField.getValue());
     player.setFrameRate(stepRateField.getValue());
 
-    return player.saveBinary();
+    if (player.getDescriptor() == null) {
+      File file = MainWindow.getInstance().saveByType(Player.class);
+      player.setDescriptor(new AssetDescriptor(file.toURI()));
+      this.setTitle("Editing Player - " + file.getName());
+    }
+
+    try {
+      AssetManager.getInstance().serialize(
+              AssetManager.getInstance().getHandle(player));
+      success = true;
+    } catch (IOException | AssetException ex) {
+      Logger.getLogger(CharacterEditor.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+    return success;
   }
 
   /**
@@ -199,8 +215,8 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
    */
   @Override
   public boolean saveAs(File file) {
-    player.setFile(file);
-
+    player.setDescriptor(new AssetDescriptor(file.toURI()));
+    this.setTitle("Editing Player - " + file.getName());
     return save();
   }
 
@@ -273,9 +289,8 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     // TODO: Decide what do with the LevelsPanel.
     //this.createLevelsPanel();
     //tabPane.addTab("Levels", levelsPanel);
-    
     JScrollPane scrollPane = new JScrollPane(tabPane);
-    
+
     add(scrollPane);
   }
 
@@ -607,7 +622,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     // Configure function Scope Components
     JScrollPane animationScrollPane = new JScrollPane(animationsTable);
 
-    animatedPanel = new AnimatedPanel(new Dimension (0, AnimatedPanel.DEFAULT_HEIGHT));
+    animatedPanel = new AnimatedPanel(new Dimension(0, AnimatedPanel.DEFAULT_HEIGHT));
 
     final JButton addButton = new JButton();
     addButton.setIcon(Icons.getSmallIcon("new"));
@@ -657,40 +672,40 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
         if (row < 0) {
           return;
         }
-        
+
         if (row < player.getStandingGraphics().size()) {
-            Object[] options = {"Active Animation", "Idle Animation", "Cancel"};
-            int result = JOptionPane.showOptionDialog(
-                    mainWindow,
-                    "Select Animation type to update.",
-                    "Update Animation",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    options,
-                    options[0]
-            );
-            
-            if (result != 2) { // Cancel
-                String path = mainWindow.browseByTypeRelative(Animation.class);
-                if (path != null) {
-                    switch (result) { // Active Animation
-                        case 0:
-                            player.updateStandardGraphics(row, path);
-                            break;
-                        case 1: // Idle Animation
-                            player.updateStandingGraphics(row, path);
-                            break;
-                    }
-                }
-            }
-        } else {
+          Object[] options = {"Active Animation", "Idle Animation", "Cancel"};
+          int result = JOptionPane.showOptionDialog(
+                  mainWindow,
+                  "Select Animation type to update.",
+                  "Update Animation",
+                  JOptionPane.DEFAULT_OPTION,
+                  JOptionPane.QUESTION_MESSAGE,
+                  null,
+                  options,
+                  options[0]
+          );
+
+          if (result != 2) { // Cancel
             String path = mainWindow.browseByTypeRelative(Animation.class);
             if (path != null) {
-                int customIndex = row - AnimationsTableModel.STANDARD_GRAPHICS.length;
-                player.updateCustomGraphics(customIndex, path);
-                updateAnimation(path);
+              switch (result) { // Active Animation
+                case 0:
+                  player.updateStandardGraphics(row, path);
+                  break;
+                case 1: // Idle Animation
+                  player.updateStandingGraphics(row, path);
+                  break;
+              }
             }
+          }
+        } else {
+          String path = mainWindow.browseByTypeRelative(Animation.class);
+          if (path != null) {
+            int customIndex = row - AnimationsTableModel.STANDARD_GRAPHICS.length;
+            player.updateCustomGraphics(customIndex, path);
+            updateAnimation(path);
+          }
         }
       }
     });

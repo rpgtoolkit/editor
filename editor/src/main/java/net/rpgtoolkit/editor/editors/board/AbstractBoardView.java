@@ -102,7 +102,7 @@ public abstract class AbstractBoardView extends JPanel implements
    * @param boardEditor The parent BoardEditor for this view.
    */
   public AbstractBoardView(BoardEditor boardEditor) {
-    board = new Board();
+    board = new Board(null);
     this.boardEditor = boardEditor;
     init();
   }

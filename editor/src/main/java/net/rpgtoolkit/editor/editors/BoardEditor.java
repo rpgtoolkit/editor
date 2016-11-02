@@ -11,7 +11,7 @@ import net.rpgtoolkit.editor.editors.board.BoardMouseAdapter;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JScrollPane;
@@ -20,6 +20,9 @@ import net.rpgtoolkit.common.assets.Tile;
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.editor.editors.board.AbstractBrush;
 import net.rpgtoolkit.common.Selectable;
+import net.rpgtoolkit.common.assets.AssetDescriptor;
+import net.rpgtoolkit.common.assets.AssetException;
+import net.rpgtoolkit.common.assets.AssetManager;
 import net.rpgtoolkit.editor.ui.MainWindow;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
 
@@ -52,12 +55,12 @@ public class BoardEditor extends ToolkitEditorWindow {
   public BoardEditor() {
 
   }
-  
+
   public BoardEditor(Board board) {
     super("Board Viewer", true, true, true, true);
     boardMouseAdapter = new BoardMouseAdapter(this);
     this.board = board;
-    init(board, board.getFile().getName());
+    init(board, board.getDescriptor().getURI().toString());
   }
 
   /**
@@ -69,7 +72,7 @@ public class BoardEditor extends ToolkitEditorWindow {
   public BoardEditor(String fileName, int width, int height) {
     super("Board Viewer", true, true, true, true);
     boardMouseAdapter = new BoardMouseAdapter(this);
-    board = new Board(width, height);
+    board = new Board(null, width, height);
     board.addLayer();
     init(board, fileName);
   }
@@ -78,7 +81,6 @@ public class BoardEditor extends ToolkitEditorWindow {
    *
    * @return
    */
-  
   public JScrollPane getScrollPane() {
     return scrollPane;
   }
@@ -226,30 +228,34 @@ public class BoardEditor extends ToolkitEditorWindow {
   @Override
   public boolean save() {
     boolean success = false;
-    
-    if (board.getFile() == null) {
+
+    if (board.getDescriptor() == null) {
       File file = MainWindow.getInstance().saveByType(Board.class);
-      
-      if (file != null) {
-        success = board.saveAs(file);
-        setTitle("Editing - " + file.getName());
-      }
-    } else {
-      success = board.save();
+      board.setDescriptor(new AssetDescriptor(file.toURI()));
+      setTitle("Editing - " + file.getName());
     }
-    
+
+    try {
+      AssetManager.getInstance().serialize(
+              AssetManager.getInstance().getHandle(board));
+      success = true;
+    } catch (IOException | AssetException ex) {
+      Logger.getLogger(BoardEditor.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
     return success;
   }
-  
+
   /**
-   * 
-   * 
+   *
+   *
    * @param file
-   * @return 
+   * @return
    */
   @Override
   public boolean saveAs(File file) {
-    board.setFile(file);
+    board.setDescriptor(new AssetDescriptor(file.toURI()));
+    setTitle("Editing - " + file.getName());
     return save();
   }
 
@@ -261,9 +267,9 @@ public class BoardEditor extends ToolkitEditorWindow {
     selection = rectangle;
     boardView.repaint();
   }
-  
+
   /**
-   * 
+   *
    */
   public static void toggleSelectedOnBoardEditor() {
     BoardEditor editor = MainWindow.getInstance().getCurrentBoardEditor();

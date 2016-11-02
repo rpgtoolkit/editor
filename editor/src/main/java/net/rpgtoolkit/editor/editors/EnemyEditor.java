@@ -121,7 +121,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
   public EnemyEditor() {
     super("New Enemy", true, true, true, true);
 
-    this.enemy = new Enemy();
+    this.enemy = new Enemy(null);
     this.setVisible(true);
   }
 
@@ -147,7 +147,23 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
    */
   @Override
   public boolean save() {
-    return this.enemy.save();
+    boolean success = false;
+    
+    if (enemy.getDescriptor() == null) {
+      File file = MainWindow.getInstance().saveByType(Enemy.class);
+      enemy.setDescriptor(new AssetDescriptor(file.toURI()));
+      this.setTitle("Editing Enemy - " + file.getName());
+    }
+
+    try {
+      AssetManager.getInstance().serialize(
+              AssetManager.getInstance().getHandle(enemy));
+      success = true;
+    } catch (IOException | AssetException ex) {
+      Logger.getLogger(EnemyEditor.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    
+    return success;
   }
 
   /**
@@ -158,8 +174,8 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
    */
   @Override
   public boolean saveAs(File file) {
-    enemy.setFile(file);
-
+    enemy.setDescriptor(new AssetDescriptor(file.toURI()));
+    this.setTitle("Editing Enemy - " + file.getName());
     return save();
   }
 
@@ -558,7 +574,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
                     mainWindow.getTypeSubdirectory(Animation.class)
                     + sep + text);
             if (f.canRead()) {
-              selectedAnim = new Animation(f);
+              selectedAnim = new Animation(new AssetDescriptor(f.toURI()));
 //                            out.println("new animation!");
               //switch animation images
               if (selectedAnim != null && selectedAnim.getFrameCount() > 0) {

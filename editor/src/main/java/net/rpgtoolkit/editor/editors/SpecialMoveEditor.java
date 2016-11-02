@@ -9,15 +9,27 @@ package net.rpgtoolkit.editor.editors;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import net.rpgtoolkit.common.assets.Animation;
+import net.rpgtoolkit.common.assets.AssetDescriptor;
+import net.rpgtoolkit.common.assets.AssetException;
+import net.rpgtoolkit.common.assets.AssetManager;
 import net.rpgtoolkit.common.assets.Program;
 import net.rpgtoolkit.common.assets.SpecialMove;
 import net.rpgtoolkit.common.assets.StatusEffect;
@@ -66,7 +78,7 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
   public SpecialMoveEditor() {
     super("New Special Move", true, true, true, true);
 
-    this.move = new SpecialMove();
+    this.move = new SpecialMove(null);
 
     this.setSize(555, 530);
     this.constructWindow();
@@ -95,6 +107,8 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
    */
   @Override
   public boolean save() {
+    boolean success = false;
+    
     try {
       mpCost.commitEdit();
       fightPower.commitEdit();
@@ -102,24 +116,37 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
     } catch (ParseException ex) {
       Logger.getLogger(SpecialMoveEditor.class.getName()).log(Level.SEVERE, null, ex);
     }
+    
+    URI programUri = URI.create(program.getText());
+    URI statusEffectUri = URI.create(statusEffect.getText());
+    URI animationUri = URI.create(animation.getText());
+    
     this.move.setName(moveName.getText());
     this.move.setDescription(description.getText());
-    this.move.setMpCost(mpCost.getValue());
+    this.move.setMovePowerCost(mpCost.getValue());
     this.move.setFightPower(fightPower.getValue());
-    this.move.setRpgcodeProgram(program.getText());
-    this.move.setMpDrainedFromTarget(mpRemovedTarget.getValue());
-    this.move.setAssociatedStatusEffect(statusEffect.getText());
-    this.move.setAssociatedAnimation(animation.getText());
-    this.move.setCanUseInBattle(battleDriven.isSelected());
-    this.move.setCanUseInMenu(boardDriven.isSelected());
-    if (this.move.getFile() == null) {
-      boolean success = this.move.saveAs(
-              mainWindow.saveByType(SpecialMove.class));
-      this.setTitle("Editing Special Move - " + this.move.toString());
-      return success;
-    } else {
-      return this.move.save();
+    this.move.setProgram(new AssetDescriptor(programUri));
+    this.move.setMovePowerDrainedFromTarget(mpRemovedTarget.getValue());
+    this.move.setStatusEffect(new AssetDescriptor(statusEffectUri));
+    this.move.setAnimation(new AssetDescriptor(animationUri));
+    this.move.isUsableInBattle(battleDriven.isSelected());
+    this.move.isUsableInMenu(boardDriven.isSelected());
+    
+    if (this.move.getDescriptor() == null) {
+      File file = MainWindow.getInstance().saveByType(SpecialMove.class);
+      move.setDescriptor(new AssetDescriptor(file.toURI()));
+      this.setTitle("Editing Special Move - " + file.getName());
     }
+
+    try {
+      AssetManager.getInstance().serialize(
+              AssetManager.getInstance().getHandle(move));
+      success = true;
+    } catch (IOException | AssetException ex) {
+      Logger.getLogger(SpecialMoveEditor.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+    return success;
   }
   
   /**
@@ -130,8 +157,8 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
    */
   @Override
   public boolean saveAs(File file) {
-    move.setFile(file);
-    
+    move.setDescriptor(new AssetDescriptor(file.toURI()));
+    this.setTitle("Editing Special Move - " + file.getName());
     return save();
   }
 
@@ -201,16 +228,21 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
     // Configure Class scope components
     this.moveName = new JTextField(this.move.getName());
     this.description = new JTextField(this.move.getDescription());
-    this.mpCost = new IntegerField(this.move.getMpCost());
+    this.mpCost = new IntegerField(this.move.getMovePowerCost());
     this.fightPower = new IntegerField(this.move.getFightPower());
-    this.mpRemovedTarget = new IntegerField(this.move.getMpDrainedFromTarget());
-    this.statusEffect = new JTextField(this.move.getAssociatedStatusEffect());
-    this.animation = new JTextField(this.move.getAssociatedAnimation());
-    this.program = new JTextField(this.move.getRpgcodeProgram());
+    this.mpRemovedTarget = new IntegerField(this.move.getMovePowerDrainedFromTarget());
+    
+    String statusEffectUri = this.move.getStatusEffect().getURI().toString();
+    String animationUri = this.move.getAnimation().getURI().toString();
+    String programUri = this.move.getProgram().getURI().toString();
+    this.statusEffect = new JTextField(statusEffectUri);
+    this.animation = new JTextField(animationUri);
+    this.program = new JTextField(programUri);
+    
     this.battleDriven = new JCheckBox("Battle-Driven (can be used during battle)");
-    this.battleDriven.setSelected(this.move.getCanUseInBattle());
+    this.battleDriven.setSelected(this.move.isUsableInBattle());
     this.boardDriven = new JCheckBox("Board-Driven (can be used outside of battle)");
-    this.boardDriven.setSelected(this.move.getCanUseInMenu());
+    this.boardDriven.setSelected(this.move.isUsableInMenu());
 
     // Configure function scope components
     JLabel moveNameLabel = new JLabel("Name");

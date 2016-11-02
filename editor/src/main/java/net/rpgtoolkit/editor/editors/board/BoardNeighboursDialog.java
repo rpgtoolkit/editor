@@ -16,6 +16,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -24,7 +25,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import net.rpgtoolkit.common.assets.Board;
-import net.rpgtoolkit.common.assets.BoardSprite;
 import net.rpgtoolkit.common.utilities.PropertiesSingleton;
 import net.rpgtoolkit.editor.utilities.FileTools;
 
@@ -112,7 +112,7 @@ public class BoardNeighboursDialog extends JDialog {
   public BoardNeighboursDialog(JFrame parentFrame, String title, boolean isModal, Board board) {
     super(parentFrame, title, isModal);
     this.board = board;
-    ArrayList<String> neighbours = board.getDirectionalLinks();
+    List<String> neighbours = board.getDirectionalLinks();
 
     ///
     /// northNeighbourTextField
