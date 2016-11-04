@@ -33,7 +33,7 @@ public class IntegerField extends JFormattedTextField {
 
   public static NumberFormatter getIntegerFormatter() {
     NumberFormatter intFormatter = new NumberFormatter(NumberFormat.getIntegerInstance());
-    intFormatter.setValueClass(Long.class);
+    intFormatter.setValueClass(Integer.class);
     intFormatter.setCommitsOnValidEdit(true);
     
     return intFormatter;

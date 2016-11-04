@@ -8,6 +8,7 @@ package net.rpgtoolkit.editor.editors;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -15,6 +16,8 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
@@ -47,10 +50,13 @@ import net.rpgtoolkit.common.assets.AssetDescriptor;
 import net.rpgtoolkit.common.assets.AssetException;
 import net.rpgtoolkit.common.assets.AssetHandle;
 import net.rpgtoolkit.common.assets.AssetManager;
+import net.rpgtoolkit.common.assets.BoardVector;
 import net.rpgtoolkit.common.assets.Player;
 import net.rpgtoolkit.common.assets.PlayerSpecialMove;
 import net.rpgtoolkit.common.assets.Program;
 import net.rpgtoolkit.common.assets.SpecialMove;
+import net.rpgtoolkit.common.assets.events.PlayerChangedEvent;
+import net.rpgtoolkit.common.assets.listeners.PlayerChangeListener;
 import net.rpgtoolkit.common.io.Paths;
 import net.rpgtoolkit.common.utilities.PropertiesSingleton;
 import net.rpgtoolkit.editor.editors.character.AnimationsTableModel;
@@ -71,9 +77,36 @@ import net.rpgtoolkit.editor.ui.resources.Icons;
  * @author Joel Moore
  * @author Joshua Michael Daly
  */
-public class CharacterEditor extends ToolkitEditorWindow implements InternalFrameListener {
+public class CharacterEditor extends ToolkitEditorWindow implements InternalFrameListener, PlayerChangeListener {
 
   private final Player player; // Player file we are altering
+
+  private static final List<String> STANDARD_PLACE_HOLDERS
+          = Arrays.asList(
+                  "SOUTH",
+                  "NORTH",
+                  "EAST",
+                  "WEST",
+                  "NORTH_WEST",
+                  "NORTH_EAST",
+                  "SOUTH_WEST",
+                  "SOUTH_EAST",
+                  "ATTACK",
+                  "DEFEND",
+                  "SPECIAL_MOVE",
+                  "DIE",
+                  "REST");
+
+  private static final List<String> STANDING_PLACE_HOLDERS
+          = Arrays.asList(
+                  "SOUTH_IDLE",
+                  "NORTH_IDLE",
+                  "EAST_IDLE",
+                  "WEST_IDLE",
+                  "NORTH_WEST_IDLE",
+                  "NORTH_EAST_IDLE",
+                  "SOUTH_WEST_IDLE",
+                  "SOUTH_EAST_IDLE");
 
   private final MainWindow mainWindow = MainWindow.getInstance();
 
@@ -144,13 +177,22 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
   private IntegerField maxspIncrease;
   private JTextField levelUpProgram;
 
-  public CharacterEditor(Player character) {
-    super("Editing Player Character - " + character.getName(), true, true, true, true);
-    player = character;
+  public CharacterEditor(Player player) {
+    super("Editing Player Character - " + player.getName(), true, true, true, true);
+    this.player = player;
+    this.player.addPlayerChangeListener(this);
+
+    if (player.getDescriptor() == null) {
+      setupNewPlayer();
+    }
 
     constructWindow();
     setVisible(true);
     pack();
+  }
+
+  public Player getPlayer() {
+    return player;
   }
 
   @Override
@@ -221,6 +263,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
   }
 
   public void gracefulClose() {
+    player.removePlayerChangeListener(this);
     player.removePlayerChangeListener(animationsTableModel);
   }
 
@@ -261,6 +304,70 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
   @Override
   public void internalFrameDeactivated(InternalFrameEvent e) {
 
+  }
+  
+  @Override
+  public void playerChanged(PlayerChangedEvent e) {
+    updateAnimation();
+  }
+
+  @Override
+  public void playerAnimationAdded(PlayerChangedEvent e) {
+  }
+
+  @Override
+  public void playerAnimationUpdated(PlayerChangedEvent e) {
+  }
+
+  @Override
+  public void playerAnimationRemoved(PlayerChangedEvent e) {
+  }
+
+  private void setupNewPlayer() {
+    String undefined = "Undefined";
+
+    player.setExpVariableName(undefined);
+    player.setDpVariableName(undefined);
+    player.setFpVariableName(undefined);
+    player.setHpVariableName(undefined);
+    player.setMaxHPVariableName(undefined);
+    player.setNameVariableName(undefined);
+    player.setMpVariableName(undefined);
+    player.setMaxHPVariableName(undefined);
+    player.setLvlVariableName(undefined);
+    player.setSpecialMovesName(undefined);
+    player.setProgramOnLevelUp(undefined);
+
+    // An empty path.
+    player.setProfilePicture("");
+
+    player.setStandardGraphics(new ArrayList<>(STANDARD_PLACE_HOLDERS));
+    player.setStandingGraphics(new ArrayList<>(STANDING_PLACE_HOLDERS));
+
+    BoardVector baseVector = new BoardVector();
+    baseVector.addPoint(0, 0);
+    baseVector.addPoint(30, 0);
+    baseVector.addPoint(30, 20);
+    baseVector.addPoint(0, 20);
+    baseVector.setClosed(true);
+    player.setBaseVector(baseVector);
+
+    BoardVector activationVector = new BoardVector();
+    activationVector.addPoint(0, 0);
+    activationVector.addPoint(30, 0);
+    activationVector.addPoint(30, 20);
+    activationVector.addPoint(0, 20);
+    activationVector.setClosed(true);
+    player.setActivationVector(activationVector);
+
+    player.setBaseVectorOffset(new Point(0, 0));
+    player.setActivationVectorOffset(new Point(0, 0));
+
+    // Prepare the empty ArrayLists
+    player.setSpecialMoveList(new ArrayList<PlayerSpecialMove>());
+    player.setAccessoryNames(new ArrayList<String>());
+    player.setCustomGraphics(new ArrayList<String>());
+    player.setCustomGraphicNames(new ArrayList<String>());
   }
 
   /**
@@ -641,7 +748,8 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
         if (!e.getValueIsAdjusting()) {
           int row = animationsTable.getSelectedRow();
           if (row == -1) {
-            animatedPanel.setAnimation(selectedAnim);
+            updateAnimation();
+
             browseButton.setEnabled(false);
             removeButton.setEnabled(false);
           } else {
@@ -652,7 +760,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
               path = player.getCustomGraphics().get(row - AnimationsTableModel.STANDARD_GRAPHICS.length);
             }
 
-            updateAnimation(path);
+            openAnimation(path);
             browseButton.setEnabled(true);
 
             if (row < AnimationsTableModel.STANDARD_GRAPHICS.length) {
@@ -704,7 +812,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
           if (path != null) {
             int customIndex = row - AnimationsTableModel.STANDARD_GRAPHICS.length;
             player.updateCustomGraphics(customIndex, path);
-            updateAnimation(path);
+            openAnimation(path);
           }
         }
       }
@@ -1384,13 +1492,24 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     return null;
   }
 
-  private void updateAnimation(String path) {
+  private void openAnimation(String path) {
     if (!path.isEmpty()) {
       File file = mainWindow.getPath(
               mainWindow.getTypeSubdirectory(Animation.class)
-              + File.separator + path);
+              + File.separator
+              + path);
       selectedAnim = MainWindow.getInstance().openAnimation(file);
+      updateAnimation();
+    }
+  }
+
+  private void updateAnimation() {
+    if (selectedAnim != null) {
       animatedPanel.setAnimation(selectedAnim);
+      animatedPanel.setBaseVector(player.getBaseVector());
+      animatedPanel.setActivationVector(player.getActivationVector());
+      animatedPanel.setBaseVectorOffset(player.getBaseVectorOffset());
+      animatedPanel.setActivationVectorOffset(player.getActivationVectorOffset());
     }
   }
 

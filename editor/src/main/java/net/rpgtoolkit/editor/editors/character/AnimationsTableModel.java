@@ -90,11 +90,22 @@ public class AnimationsTableModel extends AbstractTableModel implements PlayerCh
           }
       }
     } else { // Custom Graphics.
+      int index;
       switch (columnIndex) {
         case 0:
-          return player.getCustomGraphicNames().get(rowIndex - STANDARD_GRAPHICS.length);
+          index = rowIndex - STANDARD_GRAPHICS.length;
+          if (player.getAccessoryNames().size() > index) {
+            return player.getCustomGraphicNames().get(index);
+          } else {
+            return null;
+          }
         case 1:
-          return player.getCustomGraphics().get(rowIndex - STANDARD_GRAPHICS.length);
+          index = rowIndex - STANDARD_GRAPHICS.length;
+          if (player.getCustomGraphics().size() > index) {
+             return player.getCustomGraphics().get(index);
+          } else {
+            return null;
+          }
         default:
           return "NOT SUPPORTED";
       }

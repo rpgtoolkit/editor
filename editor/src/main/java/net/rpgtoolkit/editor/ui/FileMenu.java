@@ -30,6 +30,7 @@ public final class FileMenu extends JMenu implements ActionListener {
   private JMenuItem newProjectMenuItem;
   private JMenuItem newAnimationMenuItem;
   private JMenuItem newBoardMenuItem;
+  private JMenuItem newCharacterMenuItem;
 
   private JMenu openMenu;
   private JMenuItem openProjectMenuItem;
@@ -103,6 +104,8 @@ public final class FileMenu extends JMenu implements ActionListener {
       MainWindow.getInstance().createNewAnimation();
     } else if (e.getSource() == newBoardMenuItem) {
       MainWindow.getInstance().createNewBoard();
+    } else if (e.getSource() == newCharacterMenuItem) {
+      MainWindow.getInstance().createNewCharacter();
     }
   }
 
@@ -113,6 +116,7 @@ public final class FileMenu extends JMenu implements ActionListener {
     openFileMenuItem.setEnabled(true);
     newAnimationMenuItem.setEnabled(true);
     newBoardMenuItem.setEnabled(true);
+    newCharacterMenuItem.setEnabled(true);
   }
 
   /**
@@ -134,12 +138,14 @@ public final class FileMenu extends JMenu implements ActionListener {
     configureNewProjectMenuItem();
     configureNewAnimationMenuItem();
     configureNewBoardMenuItem();
+    configureNewCharacterMenuItem();
 
     newMenu = new JMenu("New");
     newMenu.setEnabled(true);
     newMenu.add(newProjectMenuItem);
     newMenu.add(newAnimationMenuItem);
     newMenu.add(newBoardMenuItem);
+    newMenu.add(newCharacterMenuItem);
   }
 
   private void configureOpenSubMenu() {
@@ -161,7 +167,7 @@ public final class FileMenu extends JMenu implements ActionListener {
     newProjectMenuItem.setMnemonic(KeyEvent.VK_N);
     newProjectMenuItem.setEnabled(true);
   }
-  
+
   private void configureNewAnimationMenuItem() {
     newAnimationMenuItem = new JMenuItem("New Animation");
     newAnimationMenuItem.setEnabled(false);
@@ -172,6 +178,12 @@ public final class FileMenu extends JMenu implements ActionListener {
     newBoardMenuItem = new JMenuItem("New Board");
     newBoardMenuItem.setEnabled(false);
     newBoardMenuItem.addActionListener(this);
+  }
+
+  private void configureNewCharacterMenuItem() {
+    newCharacterMenuItem = new JMenuItem("New Character");
+    newCharacterMenuItem.setEnabled(false);
+    newCharacterMenuItem.addActionListener(this);
   }
 
   private void configureOpenProjectMenuItem() {
