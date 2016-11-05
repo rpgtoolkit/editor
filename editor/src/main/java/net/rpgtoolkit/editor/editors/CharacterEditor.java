@@ -781,7 +781,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
           return;
         }
 
-        if (row < 8) {
+        if (row < player.getStandingGraphics().size()) {
           Object[] options = {"Active Animation", "Idle Animation", "Cancel"};
           int result = JOptionPane.showOptionDialog(
                   mainWindow,
@@ -812,10 +812,10 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
         } else {
           String path = mainWindow.browseByTypeRelative(Animation.class);
           if (path != null) {
-            if (row < 13) {
+            if (row < player.getStandardGraphics().size()) {
               player.updateStandardGraphics(row, path);
             } else {
-              int customIndex = row - AnimationsTableModel.STANDARD_GRAPHICS.length;
+              int customIndex = row - player.getStandardGraphics().size();
               player.updateCustomGraphics(customIndex, path);
             }
             
