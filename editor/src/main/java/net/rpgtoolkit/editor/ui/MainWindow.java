@@ -545,7 +545,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         Animation animation;
 
         AssetHandle handle = AssetManager.getInstance().deserialize(
-                new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
+                new AssetDescriptor(file.toURI()));
         animation = (Animation) handle.getAsset();
 
         return animation;

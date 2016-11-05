@@ -66,7 +66,7 @@ public class AnimationsTableModel extends AbstractTableModel implements PlayerCh
 
   @Override
   public int getRowCount() {
-    return (player.getStandardGraphics().size() + player.getCustomGraphics().size()) - 1;
+    return (player.getStandardGraphics().size() + player.getCustomGraphics().size());
   }
 
   @Override
@@ -94,7 +94,7 @@ public class AnimationsTableModel extends AbstractTableModel implements PlayerCh
       switch (columnIndex) {
         case 0:
           index = rowIndex - STANDARD_GRAPHICS.length;
-          if (player.getAccessoryNames().size() > index) {
+          if (player.getCustomGraphicNames().size() > index) {
             return player.getCustomGraphicNames().get(index);
           } else {
             return null;

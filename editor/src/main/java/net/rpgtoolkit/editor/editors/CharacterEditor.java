@@ -308,7 +308,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
   
   @Override
   public void playerChanged(PlayerChangedEvent e) {
-    updateAnimation();
+    updateAnimatedPanel();
   }
 
   @Override
@@ -690,7 +690,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
 
     JPanel configPanel = new JPanel(new BorderLayout());
     configPanel.add(statsEditPanel, BorderLayout.NORTH);
-    configPanel.add(variablesPanel, BorderLayout.SOUTH);
+    //configPanel.add(variablesPanel, BorderLayout.SOUTH);
 
     profilePanel = new ProfilePanel();
     if (!player.getProfilePicture().isEmpty()) {
@@ -729,7 +729,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
     // Configure function Scope Components
     JScrollPane animationScrollPane = new JScrollPane(animationsTable);
 
-    animatedPanel = new AnimatedPanel(new Dimension(0, AnimatedPanel.DEFAULT_HEIGHT));
+    animatedPanel = new AnimatedPanel(new Dimension(0, AnimatedPanel.SMALL_HEIGHT));
 
     final JButton addButton = new JButton();
     addButton.setIcon(Icons.getSmallIcon("new"));
@@ -748,7 +748,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
         if (!e.getValueIsAdjusting()) {
           int row = animationsTable.getSelectedRow();
           if (row == -1) {
-            updateAnimation();
+            updateAnimatedPanel();
 
             browseButton.setEnabled(false);
             removeButton.setEnabled(false);
@@ -781,7 +781,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
           return;
         }
 
-        if (row < player.getStandingGraphics().size()) {
+        if (row < 8) {
           Object[] options = {"Active Animation", "Idle Animation", "Cancel"};
           int result = JOptionPane.showOptionDialog(
                   mainWindow,
@@ -794,7 +794,7 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                   options[0]
           );
 
-          if (result != 2) { // Cancel
+          if (result != -1 && result != 2) { // Cancel
             String path = mainWindow.browseByTypeRelative(Animation.class);
             if (path != null) {
               switch (result) { // Active Animation
@@ -805,13 +805,20 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
                   player.updateStandingGraphics(row, path);
                   break;
               }
+              
+              openAnimation(path);
             }
           }
         } else {
           String path = mainWindow.browseByTypeRelative(Animation.class);
           if (path != null) {
-            int customIndex = row - AnimationsTableModel.STANDARD_GRAPHICS.length;
-            player.updateCustomGraphics(customIndex, path);
+            if (row < 13) {
+              player.updateStandardGraphics(row, path);
+            } else {
+              int customIndex = row - AnimationsTableModel.STANDARD_GRAPHICS.length;
+              player.updateCustomGraphics(customIndex, path);
+            }
+            
             openAnimation(path);
           }
         }
@@ -823,8 +830,8 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
       public void actionPerformed(ActionEvent e) {
         String name = (String) JOptionPane.showInputDialog(
                 animationsPanel,
-                "Enter the handle for the new sprite:",
-                "Add Enemy Graphic",
+                "Enter the handle for the new animation:",
+                "Add Animation",
                 JOptionPane.PLAIN_MESSAGE);
 
         if (name == null || name.isEmpty()) {
@@ -863,6 +870,9 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
             }
           }
         }
+        
+        selectedAnim = null;
+        updateAnimatedPanel();
       }
     });
 
@@ -1498,19 +1508,29 @@ public class CharacterEditor extends ToolkitEditorWindow implements InternalFram
               mainWindow.getTypeSubdirectory(Animation.class)
               + File.separator
               + path);
-      selectedAnim = MainWindow.getInstance().openAnimation(file);
-      updateAnimation();
+      if (file.exists()) {
+        selectedAnim = MainWindow.getInstance().openAnimation(file);
+      } else {
+        selectedAnim = null;
+      }
+      
+      updateAnimatedPanel();
     }
   }
 
-  private void updateAnimation() {
+  private void updateAnimatedPanel() {
+    if (animatedPanel == null) {
+      return;
+    }
+    
     if (selectedAnim != null) {
-      animatedPanel.setAnimation(selectedAnim);
       animatedPanel.setBaseVector(player.getBaseVector());
       animatedPanel.setActivationVector(player.getActivationVector());
       animatedPanel.setBaseVectorOffset(player.getBaseVectorOffset());
       animatedPanel.setActivationVectorOffset(player.getActivationVectorOffset());
     }
+    
+    animatedPanel.setAnimation(selectedAnim);
   }
 
 }

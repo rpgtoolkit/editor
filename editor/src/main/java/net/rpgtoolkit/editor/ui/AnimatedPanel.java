@@ -31,6 +31,7 @@ import net.rpgtoolkit.editor.utilities.TransparentDrawer;
 public class AnimatedPanel extends AbstractImagePanel implements AnimationChangeListener {
 
   public static final int DEFAULT_HEIGHT = 300;
+  public static final int SMALL_HEIGHT = 200;
 
   private Animation animation;
   private BufferedImage frameImage;
@@ -71,6 +72,10 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
     activationVectorOffset = new Point(0, 0);
   }
 
+  public Animation getAnimation() {
+    return animation;
+  }
+
   public void setAnimation(Animation animation) {
     if (this.animation != null) {
       this.animation.removeAnimationChangeListener(this);
@@ -82,7 +87,6 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
     if (animation == null) {
       timer = null;
       frameImage = null;
-      repaint();
     } else if (animation.getFrameCount() > 0) {
       frameImage = animation.getFrame(0).getFrameImage();
     }
