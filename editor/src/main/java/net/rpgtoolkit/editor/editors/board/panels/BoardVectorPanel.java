@@ -21,13 +21,14 @@ import javax.swing.event.ChangeListener;
 
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
 import net.rpgtoolkit.common.assets.BoardVector;
+import net.rpgtoolkit.common.assets.TileType;
 
 /**
  *
  *
  * @author Joshua Michael Daly
  */
-public class BoardVectorPanel extends AbstractModelPanel {
+public class BoardVectorPanel extends BoardModelPanel {
 
   private final JSpinner layerSpinner;
   private final JLabel layerLabel;
@@ -122,16 +123,16 @@ public class BoardVectorPanel extends AbstractModelPanel {
     tileTypeComboBox = new JComboBox<>(TILE_TYPES);
 
     switch (((BoardVector) model).getTileType()) {
-      case 1:
+      case SOLID:
         tileTypeComboBox.setSelectedIndex(0);
         break;
-      case 2:
+      case UNDER:
         tileTypeComboBox.setSelectedIndex(1);
         break;
-      case 8:
+      case STAIRS:
         tileTypeComboBox.setSelectedIndex(2);
         break;
-      case 16:
+      case WAYPOINT:
         tileTypeComboBox.setSelectedIndex(3);
     }
 
@@ -141,16 +142,16 @@ public class BoardVectorPanel extends AbstractModelPanel {
       public void actionPerformed(ActionEvent e) {
         switch (tileTypeComboBox.getSelectedIndex()) {
           case 0:
-            ((BoardVector) model).setTileType(1);
+            ((BoardVector) model).setTileType(TileType.SOLID);
             break;
           case 1:
-            ((BoardVector) model).setTileType(2);
+            ((BoardVector) model).setTileType(TileType.UNDER);
             break;
           case 2:
-            ((BoardVector) model).setTileType(8);
+            ((BoardVector) model).setTileType(TileType.STAIRS);
             break;
           case 3:
-            ((BoardVector) model).setTileType(16);
+            ((BoardVector) model).setTileType(TileType.WAYPOINT);
         }
 
         updateCurrentBoardView();

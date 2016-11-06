@@ -19,12 +19,13 @@ import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.BoardProgram;
 import net.rpgtoolkit.common.utilities.PropertiesSingleton;
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
+import net.rpgtoolkit.editor.ui.Gui;
 
 /**
  *
  * @author Joshua Michael Daly
  */
-public class BoardProgramPanel extends AbstractModelPanel {
+public class BoardProgramPanel extends BoardModelPanel {
 
   private final JComboBox programComboBox;
   private final JLabel programLabel;
@@ -62,7 +63,7 @@ public class BoardProgramPanel extends AbstractModelPanel {
             + PropertiesSingleton.getProperty("toolkit.directory.program") 
             + File.separator);
     String[] exts = new String[] {"prg"};
-    programComboBox = getFileListJComboBox(directory, exts, true);
+    programComboBox = Gui.getFileListJComboBox(directory, exts, true);
     programComboBox.setSelectedItem(boardProgram.getFileName());
     programComboBox.addActionListener(new ActionListener() {
 

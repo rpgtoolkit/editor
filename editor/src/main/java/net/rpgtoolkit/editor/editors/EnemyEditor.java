@@ -9,10 +9,29 @@ package net.rpgtoolkit.editor.editors;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import static java.lang.System.out;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import javax.swing.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
+import javax.swing.GroupLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSlider;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
+import javax.swing.Timer;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.DocumentEvent;
@@ -22,15 +41,19 @@ import javax.swing.event.InternalFrameListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import net.rpgtoolkit.common.assets.Animation;
+import net.rpgtoolkit.common.assets.AssetDescriptor;
+import net.rpgtoolkit.common.assets.AssetException;
+import net.rpgtoolkit.common.assets.AssetHandle;
+import net.rpgtoolkit.common.assets.AssetManager;
 import net.rpgtoolkit.common.assets.Enemy;
 import net.rpgtoolkit.common.assets.Program;
 import net.rpgtoolkit.common.assets.SpecialMove;
+import net.rpgtoolkit.common.io.Paths;
 import net.rpgtoolkit.editor.ui.MainWindow;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
 import net.rpgtoolkit.editor.ui.Gui;
 import net.rpgtoolkit.editor.ui.IntegerField;
 import net.rpgtoolkit.editor.ui.WholeNumberField;
-import net.rpgtoolkit.common.utilities.PropertiesSingleton;
 import net.rpgtoolkit.editor.ui.resources.Icons;
 
 /**
@@ -98,7 +121,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
   public EnemyEditor() {
     super("New Enemy", true, true, true, true);
 
-    this.enemy = new Enemy();
+    this.enemy = new Enemy(null);
     this.setVisible(true);
   }
 
@@ -124,7 +147,23 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
    */
   @Override
   public boolean save() {
-    return this.enemy.save();
+    boolean success = false;
+    
+    if (enemy.getDescriptor() == null) {
+      File file = MainWindow.getInstance().saveByType(Enemy.class);
+      enemy.setDescriptor(new AssetDescriptor(file.toURI()));
+      this.setTitle("Editing Enemy - " + file.getName());
+    }
+
+    try {
+      AssetManager.getInstance().serialize(
+              AssetManager.getInstance().getHandle(enemy));
+      success = true;
+    } catch (IOException | AssetException ex) {
+      Logger.getLogger(EnemyEditor.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    
+    return success;
   }
 
   /**
@@ -135,8 +174,8 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
    */
   @Override
   public boolean saveAs(File file) {
-    enemy.setFile(file);
-
+    enemy.setDescriptor(new AssetDescriptor(file.toURI()));
+    this.setTitle("Editing Enemy - " + file.getName());
     return save();
   }
 
@@ -309,6 +348,11 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
             fightPowerLabel,
             defencePowerLabel);
     basicInfoLayout.linkSize(SwingConstants.VERTICAL,
+            enemyNameLabel,
+            maxHitPointsLabel,
+            maxSpecialPointsLabel,
+            fightPowerLabel,
+            defencePowerLabel,
             this.enemyName,
             this.maxHitPoints,
             this.maxSpecialPoints,
@@ -354,6 +398,9 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
             critOnEnemyLabel,
             critOnPlayerLabel);
     fightingConditionsLayout.linkSize(SwingConstants.VERTICAL,
+            runAwayProgramLabel,
+            critOnEnemyLabel,
+            critOnPlayerLabel,
             this.runAwayProgram,
             this.critOnEnemy,
             this.critOnPlayer);
@@ -424,7 +471,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
     final JButton animRemoveButton = new JButton("Remove");
     animRemoveButton.setEnabled(false);
 
-        // Configure listeners
+    // Configure listeners
     //run animation
     final ActionListener animate = new ActionListener() {
       private int frame = 0;
@@ -523,18 +570,17 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
           }
           if (text.endsWith(".anm")) {
             //update image if the location is valid
-            File f = new File(System.getProperty("project.path")
-                    + sep 
-                    + PropertiesSingleton.getProperty("toolkit.directory.misc") 
+            File f = mainWindow.getPath(
+                    mainWindow.getTypeSubdirectory(Animation.class)
                     + sep + text);
             if (f.canRead()) {
-              selectedAnim = new Animation(f);
+              selectedAnim = new Animation(new AssetDescriptor(f.toURI()));
 //                            out.println("new animation!");
               //switch animation images
               if (selectedAnim != null && selectedAnim.getFrameCount() > 0) {
                 animDisplay.setIcon(new ImageIcon(
                         selectedAnim.getFrame(0).getFrameImage()));
-                animTimer = new Timer((int) (selectedAnim.getFrameDelay() * 1000), animate);
+                animTimer = new Timer((int) (selectedAnim.getFrameRate() * 1000), animate);
               }
             }
           }
@@ -1174,14 +1220,19 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
   }
 
   private SpecialMove loadSpecialMove(String loc) {
-    if (loc.endsWith(".spc")) {
-      File f = new File(System.getProperty("project.path")
-              + sep 
-              + PropertiesSingleton.getProperty("toolkit.directory.specialmove")
+    if(Paths.extension("/"+loc).contains("spc")) {
+      File f = mainWindow.getPath(
+          mainWindow.getTypeSubdirectory(SpecialMove.class)
               + sep + loc);
-      if (f.canRead()) {
+      if(f.canRead()) {
 //                out.println("loaded special move from location " + loc + "!");
-        return new SpecialMove(f);
+        try {
+          AssetHandle handle = AssetManager.getInstance().deserialize(
+              new AssetDescriptor(f.toURI()));
+          return (SpecialMove)handle.getAsset();
+        } catch(IOException | AssetException ex) {
+          Logger.getLogger(CharacterEditor.class.getName()).log(Level.SEVERE, null, ex);
+        }
       }
     }
     return null;

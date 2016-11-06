@@ -21,18 +21,16 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import net.rpgtoolkit.common.assets.AbstractAsset;
 import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
 import net.rpgtoolkit.common.assets.AssetException;
 import net.rpgtoolkit.common.assets.AssetHandle;
 import net.rpgtoolkit.common.assets.AssetManager;
-import net.rpgtoolkit.common.assets.BasicType;
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.assets.Enemy;
 import net.rpgtoolkit.common.assets.Player;
@@ -41,22 +39,28 @@ import net.rpgtoolkit.common.assets.SpecialMove;
 import net.rpgtoolkit.common.assets.Tile;
 import net.rpgtoolkit.common.assets.TileSet;
 import net.rpgtoolkit.common.assets.files.FileAssetHandleResolver;
+import net.rpgtoolkit.common.assets.serialization.JsonAnimationSerializer;
+import net.rpgtoolkit.common.assets.serialization.JsonPlayerSerializer;
 import net.rpgtoolkit.common.assets.serialization.JsonBoardSerializer;
 import net.rpgtoolkit.common.assets.serialization.JsonProjectSerializer;
-import net.rpgtoolkit.common.assets.serialization.JsonSMoveSerializer;
+import net.rpgtoolkit.common.assets.serialization.JsonSpecialMoveSerializer;
 import net.rpgtoolkit.common.assets.serialization.legacy.LegacyAnimatedTileSerializer;
+import net.rpgtoolkit.common.assets.serialization.legacy.LegacyBackgroundSerializer;
+import net.rpgtoolkit.common.assets.serialization.legacy.LegacyBoardSerializer;
+import net.rpgtoolkit.common.assets.serialization.legacy.LegacyEnemySerializer;
 import net.rpgtoolkit.common.assets.serialization.legacy.LegacyItemSerializer;
+import net.rpgtoolkit.common.assets.serialization.legacy.LegacyPlayerSerializer;
+import net.rpgtoolkit.common.assets.serialization.legacy.LegacyProjectSerializer;
+import net.rpgtoolkit.common.assets.serialization.legacy.LegacySpecialMoveSerializer;
+import net.rpgtoolkit.common.assets.serialization.legacy.LegacyStatusEffectSerializer;
 import net.rpgtoolkit.editor.editors.AnimationEditor;
 import net.rpgtoolkit.editor.editors.BoardEditor;
-import net.rpgtoolkit.editor.editors.CharacterEditor;
 import net.rpgtoolkit.editor.editors.board.AbstractBrush;
 import net.rpgtoolkit.editor.editors.board.BucketBrush;
 import net.rpgtoolkit.editor.editors.board.CustomBrush;
 import net.rpgtoolkit.editor.editors.board.ShapeBrush;
 import net.rpgtoolkit.editor.editors.board.VectorBrush;
-import net.rpgtoolkit.editor.editors.EnemyEditor;
 import net.rpgtoolkit.editor.editors.ProjectEditor;
-import net.rpgtoolkit.editor.editors.SpecialMoveEditor;
 import net.rpgtoolkit.editor.editors.TileEditor;
 import net.rpgtoolkit.editor.editors.TileSelectionEvent;
 import net.rpgtoolkit.editor.ui.listeners.TileSelectionListener;
@@ -65,6 +69,7 @@ import net.rpgtoolkit.editor.editors.board.NewBoardDialog;
 import net.rpgtoolkit.editor.ui.resources.Icons;
 import net.rpgtoolkit.editor.editors.board.ProgramBrush;
 import net.rpgtoolkit.common.utilities.PropertiesSingleton;
+import net.rpgtoolkit.editor.editors.CharacterEditor;
 import net.rpgtoolkit.editor.utilities.FileTools;
 
 /**
@@ -76,7 +81,7 @@ import net.rpgtoolkit.editor.utilities.FileTools;
 public class MainWindow extends JFrame implements InternalFrameListener {
 
   // Singleton.
-  private static final MainWindow instance = new MainWindow();
+  private static final MainWindow INSTANCE = new MainWindow();
 
   public static final int TILE_SIZE = 32;
 
@@ -95,9 +100,6 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
   private JFileChooser fileChooser;
   private final String workingDir = PropertiesSingleton.getProjectsDirectory();
-
-  private final JScrollPane debugScrollPane;
-  private final JTextArea debugLog;
 
   // Project Related.
   private Project activeProject;
@@ -140,16 +142,6 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
     // Application icon.
     this.setIconImage(Icons.getLargeIcon("application").getImage());
-
-    this.debugLog = new JTextArea("Debug Messages:\n\n");
-    this.debugLog.setEditable(false);
-    this.debugLog.setRows(6);
-    this.debugLog.setBackground(Color.WHITE);
-
-    this.debugScrollPane = new JScrollPane(this.debugLog);
-    this.debugScrollPane.setVerticalScrollBarPolicy(
-            JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-
     this.registerResolvers();
     this.registerSerializers();
 
@@ -168,7 +160,6 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
     JPanel parent = new JPanel(new BorderLayout());
     parent.add(this.desktopPane, BorderLayout.CENTER);
-    parent.add(this.debugScrollPane, BorderLayout.SOUTH);
 
     this.setLayout(new BorderLayout());
     this.add(this.toolBar, BorderLayout.NORTH);
@@ -183,7 +174,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   }
 
   public static MainWindow getInstance() {
-    return instance;
+    return INSTANCE;
   }
 
   public JDesktopPane getDesktopPane() {
@@ -276,12 +267,19 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
   @Override
   public void internalFrameOpened(InternalFrameEvent e) {
-    if (e.getInternalFrame() instanceof BoardEditor) {
+    if (e.getInternalFrame() instanceof AnimationEditor) {
+      AnimationEditor editor = (AnimationEditor) e.getInternalFrame();
+      propertiesPanel.setModel(editor.getAnimation());
+      lowerTabbedPane.setSelectedComponent(propertiesPanel);
+    } else if (e.getInternalFrame() instanceof BoardEditor) {
       BoardEditor editor = (BoardEditor) e.getInternalFrame();
-
       upperTabbedPane.setSelectedComponent(tileSetPanel);
       lowerTabbedPane.setSelectedComponent(layerPanel);
       propertiesPanel.setModel(editor.getBoard());
+    } else if (e.getInternalFrame() instanceof CharacterEditor) {
+      CharacterEditor editor = (CharacterEditor) e.getInternalFrame();
+      propertiesPanel.setModel(editor.getPlayer());
+      lowerTabbedPane.setSelectedComponent(propertiesPanel);
     }
   }
 
@@ -307,7 +305,11 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
   @Override
   public void internalFrameActivated(InternalFrameEvent e) {
-    if (e.getInternalFrame() instanceof BoardEditor) {
+    if (e.getInternalFrame() instanceof AnimationEditor) {
+      AnimationEditor editor = (AnimationEditor) e.getInternalFrame();
+      propertiesPanel.setModel(editor.getAnimation());
+      lowerTabbedPane.setSelectedComponent(propertiesPanel);
+    } else if (e.getInternalFrame() instanceof BoardEditor) {
       BoardEditor editor = (BoardEditor) e.getInternalFrame();
       this.layerPanel.setBoardView(editor.getBoardView());
 
@@ -316,12 +318,22 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       } else {
         this.propertiesPanel.setModel(editor.getBoard());
       }
+    } else if (e.getInternalFrame() instanceof CharacterEditor) {
+      CharacterEditor editor = (CharacterEditor) e.getInternalFrame();
+      propertiesPanel.setModel(editor.getPlayer());
+      lowerTabbedPane.setSelectedComponent(propertiesPanel);
     }
   }
 
   @Override
   public void internalFrameDeactivated(InternalFrameEvent e) {
-    if (e.getInternalFrame() instanceof BoardEditor) {
+    if (e.getInternalFrame() instanceof AnimationEditor) {
+      AnimationEditor editor = (AnimationEditor) e.getInternalFrame();
+
+      if (propertiesPanel.getModel() == editor.getAnimation()) {
+        this.propertiesPanel.setModel(null);
+      }
+    } else if (e.getInternalFrame() instanceof BoardEditor) {
       BoardEditor editor = (BoardEditor) e.getInternalFrame();
 
       if (this.layerPanel.getBoardView().equals(editor.getBoardView())) {
@@ -343,6 +355,12 @@ public class MainWindow extends JFrame implements InternalFrameListener {
           brush.finish();
         }
       }
+    } else if (e.getInternalFrame() instanceof CharacterEditor) {
+      CharacterEditor editor = (CharacterEditor) e.getInternalFrame();
+
+      if (propertiesPanel.getModel() == editor.getPlayer()) {
+        this.propertiesPanel.setModel(null);
+      }
     }
   }
 
@@ -352,88 +370,37 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
   private void registerSerializers() {
     AssetManager assetManager = AssetManager.getInstance();
+
+    // Legacy.
     assetManager.registerSerializer(new LegacyAnimatedTileSerializer());
+    assetManager.registerSerializer(new LegacyBackgroundSerializer());
+    assetManager.registerSerializer(new LegacyBoardSerializer());
+    assetManager.registerSerializer(new LegacyEnemySerializer());
     assetManager.registerSerializer(new LegacyItemSerializer());
+    assetManager.registerSerializer(new LegacyPlayerSerializer());
+    assetManager.registerSerializer(new LegacyProjectSerializer());
+    assetManager.registerSerializer(new LegacySpecialMoveSerializer());
+    assetManager.registerSerializer(new LegacyStatusEffectSerializer());
+
+    // JSON.
+    assetManager.registerSerializer(new JsonAnimationSerializer());
+    assetManager.registerSerializer(new JsonPlayerSerializer());
     assetManager.registerSerializer(new JsonBoardSerializer());
     assetManager.registerSerializer(new JsonProjectSerializer());
-    assetManager.registerSerializer(new JsonSMoveSerializer());
+    assetManager.registerSerializer(new JsonSpecialMoveSerializer());
   }
 
-  public void openProject() {
-    this.fileChooser.resetChoosableFileFilters();
-    FileNameExtensionFilter filter = new FileNameExtensionFilter(
-            "Toolkit Project", new String[]{"gam", "json"});
-    this.fileChooser.setFileFilter(filter);
-
-    File mainFolder = new File(this.workingDir + "/"
-            + PropertiesSingleton.getProperty("toolkit.directory.main"));
-
-    if (mainFolder.exists()) {
-      this.fileChooser.setCurrentDirectory(mainFolder);
-    }
-
-    if (this.fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-      String fileName = this.fileChooser.getSelectedFile().getName().
-              substring(0, this.fileChooser.getSelectedFile().
-                      getName().indexOf('.'));
-      System.setProperty("project.path",
-              this.fileChooser.getCurrentDirectory().getParent()
-              + File.separator
-              + PropertiesSingleton.getProperty("toolkit.directory.game")
-              + File.separator
-              + fileName + File.separator);
-
-      if (fileChooser.getSelectedFile().getName().endsWith(".gam")) {
-        activeProject = new Project(this.fileChooser.getSelectedFile(),
-              System.getProperty("project.path"));
-        activeProject.openBinary();
-      } else {
-        try {
-        AssetHandle handle = AssetManager.getInstance().deserialize(
-                new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
-        activeProject = (Project) handle.getAsset();
-        } catch (IOException | AssetException ex) {
-          Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-        }
-      }
-      
-      setupProject();
-    }
-  }
-
-  public void createNewProject() {
-    String projectName = JOptionPane.showInputDialog(this,
-            "Project Name:",
-            "Create Project",
-            JOptionPane.QUESTION_MESSAGE);
-
-    if (projectName != null) {
-      boolean result = FileTools.createDirectoryStructure(
-              PropertiesSingleton.getProjectsDirectory(), projectName);
-
-      if (result) {
-        Project project = new Project(PropertiesSingleton.getProjectsDirectory() + File.separator
-                + PropertiesSingleton.getProperty("toolkit.directory.main"), projectName);
-
-        try {
-          // Write out new project file.
-          AssetManager.getInstance().serialize(AssetManager.getInstance().getHandle(project));
-          System.setProperty("project.path",
-                  System.getProperty("user.home")
-                  + File.separator
-                  + PropertiesSingleton.getProperty("toolkit.directory.projects")
-                  + File.separator
-                  + PropertiesSingleton.getProperty("toolkit.directory.game")
-                  + File.separator
-                  + projectName + File.separator);
-
-          activeProject = project;
-          setupProject();
-        } catch (IOException | AssetException ex) {
-          Logger.getLogger(Board.class.getName()).log(Level.SEVERE, null, ex);
-        }
-      }
-    }
+  /**
+   * Adds a new file format editor to our desktop pane.
+   *
+   * @param editor
+   */
+  public void addToolkitEditorWindow(ToolkitEditorWindow editor) {
+    editor.addInternalFrameListener(this);
+    editor.setVisible(true);
+    editor.toFront();
+    desktopPane.add(editor);
+    selectToolkitWindow(editor);
   }
 
   public void primeFileChooser() {
@@ -470,32 +437,124 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   public void checkFileExtension(File file) {
     String fileName = file.getName().toLowerCase();
 
-    if (fileName.endsWith(".anm")) {
-      this.openAnimation();
+    if (fileName.endsWith(".anm") || fileName.endsWith(".anm.json")) {
+      addToolkitEditorWindow(EditorFactory.getEditor(openAnimation(file)));
     } else if (fileName.endsWith(".brd") || fileName.endsWith(".brd.json")) {
-      this.openBoard();
+      addToolkitEditorWindow(EditorFactory.getEditor(openBoard(file)));
     } else if (fileName.endsWith(".ene")) {
-      this.openEnemy();
-    } else if (fileName.endsWith(".tem")) {
-      this.openCharacter();
+      addToolkitEditorWindow(EditorFactory.getEditor(openEnemy(file)));
+    } else if (fileName.endsWith(".tem") || fileName.endsWith(".tem.json")) {
+      addToolkitEditorWindow(EditorFactory.getEditor(openCharacter(file)));
     } else if (fileName.endsWith(".prg")) {
 
     } else if (fileName.endsWith(".tst")) {
-      this.openTileset();
+      openTileset(file);
     } else if (fileName.endsWith(".spc") || fileName.endsWith(".spc.json")) {
-      this.openSpecialMove();
+      addToolkitEditorWindow(EditorFactory.getEditor(openSpecialMove(file)));
     }
+  }
+
+  public void openProject() {
+    this.fileChooser.resetChoosableFileFilters();
+    FileNameExtensionFilter filter = new FileNameExtensionFilter(
+            "Toolkit Project", new String[]{"gam", "json"});
+    this.fileChooser.setFileFilter(filter);
+
+    File mainFolder = new File(this.workingDir + "/"
+            + PropertiesSingleton.getProperty("toolkit.directory.main"));
+
+    if (mainFolder.exists()) {
+      this.fileChooser.setCurrentDirectory(mainFolder);
+    }
+
+    if (this.fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+      String fileName = this.fileChooser.getSelectedFile().getName().
+              substring(0, this.fileChooser.getSelectedFile().
+                      getName().indexOf('.'));
+      System.setProperty("project.path",
+              this.fileChooser.getCurrentDirectory().getParent()
+              + File.separator
+              + PropertiesSingleton.getProperty("toolkit.directory.game")
+              + File.separator
+              + fileName + File.separator);
+
+      try {
+        AssetHandle handle = AssetManager.getInstance().deserialize(
+                new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
+        activeProject = (Project) handle.getAsset();
+      } catch (IOException | AssetException ex) {
+        Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+      }
+
+      setupProject();
+    }
+  }
+
+  public void createNewProject() {
+    String projectName = JOptionPane.showInputDialog(this,
+            "Project Name:",
+            "Create Project",
+            JOptionPane.QUESTION_MESSAGE);
+
+    if (projectName != null) {
+      boolean result = FileTools.createDirectoryStructure(
+              PropertiesSingleton.getProjectsDirectory(), projectName);
+
+      if (result) {
+        Project project = new Project(
+                null,
+                PropertiesSingleton.getProjectsDirectory()
+                + File.separator
+                + PropertiesSingleton.getProperty("toolkit.directory.main"),
+                projectName);
+
+        try {
+          // Write out new project file.
+          AssetManager.getInstance().serialize(AssetManager.getInstance().getHandle(project));
+          System.setProperty("project.path",
+                  System.getProperty("user.home")
+                  + File.separator
+                  + PropertiesSingleton.getProperty("toolkit.directory.projects")
+                  + File.separator
+                  + PropertiesSingleton.getProperty("toolkit.directory.game")
+                  + File.separator
+                  + projectName + File.separator);
+
+          activeProject = project;
+          setupProject();
+        } catch (IOException | AssetException ex) {
+          Logger.getLogger(Board.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+    }
+  }
+
+  public void createNewAnimation() {
+    addToolkitEditorWindow(EditorFactory.getEditor(new Animation(null)));
   }
 
   /**
    * Creates an animation editor window for modifying the specified animation file.
+   *
+   * @param file
+   * @return
    */
-  public void openAnimation() {
-    Animation animation = new Animation(fileChooser.getSelectedFile());
-    AnimationEditor animationEditor = new AnimationEditor(animation);
-    desktopPane.add(animationEditor);
+  public Animation openAnimation(File file) {
+    try {
+      if (file.canRead()) {
+        Animation animation;
 
-    this.selectToolkitWindow(animationEditor);
+        AssetHandle handle = AssetManager.getInstance().deserialize(
+                new AssetDescriptor(file.toURI()));
+        animation = (Animation) handle.getAsset();
+
+        return animation;
+      }
+    } catch (IOException | AssetException ex) {
+      Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+    return null;
   }
 
   public void createNewBoard() {
@@ -504,7 +563,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     dialog.setVisible(true);
 
     if (dialog.getValue() != null) {
-      BoardEditor boardEditor = new BoardEditor("Untitled", dialog.getValue()[0], dialog.getValue()[1]);
+      BoardEditor boardEditor = new BoardEditor(
+              "Untitled", dialog.getValue()[0], dialog.getValue()[1]);
       boardEditor.addInternalFrameListener(this);
       boardEditor.setVisible(true);
       boardEditor.toFront();
@@ -514,95 +574,111 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     }
   }
 
-  public void openBoard() {
+  public Board openBoard(File file) {
     try {
-      BoardEditor boardEditor;
-      File selectedFile = fileChooser.getSelectedFile();
+      if (file.canRead()) {
+        AssetHandle handle = AssetManager.getInstance().deserialize(
+                new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
+        Board board = (Board) handle.getAsset();
 
-      if (selectedFile.canRead()) {
-        Board board;
-
-        if (selectedFile.getName().endsWith(".brd")) {
-          board = new Board(selectedFile);
-          board.openBinary();
-        } else {
-          AssetHandle handle = AssetManager.getInstance().deserialize(
-                  new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
-          board = (Board) handle.getAsset();
-        }
-
-        boardEditor = new BoardEditor(board);
-      } else {
-        boardEditor = new BoardEditor();
+        return board;
       }
-
-      boardEditor.addInternalFrameListener(this);
-      boardEditor.setVisible(true);
-      boardEditor.toFront();
-
-      desktopPane.add(boardEditor);
-      selectToolkitWindow(boardEditor);
     } catch (IOException | AssetException ex) {
       Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
     }
+
+    return null;
   }
 
   /**
    * Creates an animation editor window for modifying the specified animation file.
+   *
+   * @param file
+   * @return
    */
-  public void openEnemy() {
-    Enemy enemy = new Enemy(fileChooser.getSelectedFile());
-    EnemyEditor enemyEditor = new EnemyEditor(enemy);
-    desktopPane.add(enemyEditor);
+  public Enemy openEnemy(File file) {
+    try {
+      if (file.canRead()) {
+        AssetHandle handle = AssetManager.getInstance().deserialize(
+                new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
+        Enemy enemy = (Enemy) handle.getAsset();
 
-    this.selectToolkitWindow(enemyEditor);
+        return enemy;
+      }
+    } catch (IOException | AssetException ex) {
+      Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+    return null;
+  }
+
+  public void createNewCharacter() {
+    Player player = new Player(null);
+    player.setName("Untitled");
+
+    CharacterEditor characterEditor = new CharacterEditor(player);
+    characterEditor.addInternalFrameListener(this);
+    characterEditor.setVisible(true);
+    characterEditor.toFront();
+
+    this.desktopPane.add(characterEditor);
+    this.selectToolkitWindow(characterEditor);
   }
 
   /**
    * Creates a character editor window for modifying the specified character file.
+   *
+   * @param file
+   * @return
    */
-  public void openCharacter() {
-    System.out.println("openCharacter()");
-    Player player = new Player(fileChooser.getSelectedFile());
-    CharacterEditor chEditor = new CharacterEditor(player);
-    desktopPane.add(chEditor);
+  public Player openCharacter(File file) {
+    try {
+      if (file.canRead()) {
+        AssetHandle handle = AssetManager.getInstance().deserialize(
+                new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
+        Player player = (Player) handle.getAsset();
 
-    this.selectToolkitWindow(chEditor);
+        return player;
+      }
+    } catch (IOException | AssetException ex) {
+      Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+    return null;
   }
 
   /**
    * Creates a TileSet editor window for modifying the specified TileSet.
+   *
+   * @param file
    */
-  public void openTile() {
-    TileEditor testTileEditor = new TileEditor(
-            fileChooser.getSelectedFile());
+  public void openTile(File file) {
+    TileEditor testTileEditor = new TileEditor(file);
     desktopPane.add(testTileEditor);
   }
 
-  public void openTileset() {
-    TileSet tileSet = new TileSet(fileChooser.getSelectedFile());
+  public void openTileset(File file) {
+    TileSet tileSet = new TileSet(file);
     tileSetPanel.addTileSet(tileSet);
   }
 
-  public void openSpecialMove() {
+  public SpecialMove openSpecialMove(File file) {
     try {
-      SpecialMoveEditor sMoveEditor;
-      if (fileChooser.getSelectedFile().canRead()) {
+      if (file.canRead()) {
         AssetHandle handle = AssetManager.getInstance().deserialize(
                 new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
         SpecialMove move = (SpecialMove) handle.getAsset();
-        sMoveEditor = new SpecialMoveEditor(move);
-      } else {
-        sMoveEditor = new SpecialMoveEditor();
+
+        return move;
       }
-      desktopPane.add(sMoveEditor);
-      this.selectToolkitWindow(sMoveEditor);
     } catch (IOException | AssetException ex) {
       Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
     }
+
+    return null;
   }
 
-  public String getTypeSubdirectory(Class<? extends BasicType> type) {
+  public String getTypeSubdirectory(Class<? extends AbstractAsset> type) {
     switch (type.getSimpleName()) {
       case "Animation":
         return PropertiesSingleton.getProperty("toolkit.directory.misc");
@@ -629,7 +705,11 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     }
   }
 
-  public String getTypeFilterDescription(Class<? extends BasicType> type) {
+  public String getImageSubdirectory() {
+    return PropertiesSingleton.getProperty("toolkit.directory.bitmap");
+  }
+
+  public String getTypeFilterDescription(Class<? extends AbstractAsset> type) {
     switch (type.getSimpleName()) {
       case "Animation":
         return "Animations";
@@ -656,31 +736,39 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     }
   }
 
-  public String[] getTypeExtensions(Class<? extends BasicType> type) {
+  public String getImageFilterDescription() {
+    return "Supported Files";
+  }
+
+  public String[] getTypeExtensions(Class<? extends AbstractAsset> type) {
     switch (type.getSimpleName()) {
       case "Animation":
-        return new String[]{"anm"};
+        return new String[]{"anm", "json"};
       case "Board":
-        return new String[]{"brd", "brd.json"};
+        return new String[]{"brd", "json"};
       case "Enemy":
-        return new String[]{"ene"};
+        return new String[]{"ene", "json"};
       case "Item":
-        return new String[]{"itm"};
+        return new String[]{"itm", "json"};
       case "Player":
-        return new String[]{"tem"};
+        return new String[]{"tem", "json"};
       case "Program":
         return new String[]{"prg"};
       case "Project":
-        return new String[]{"gam", "gam.json"};
+        return new String[]{"gam", "json"};
       case "StatusEffect":
-        return new String[]{"ste"};
+        return new String[]{"ste", "json"};
       case "Tileset":
         return new String[]{"tst"};
       case "SpecialMove":
-        return new String[]{"spc", "spc.json"};
+        return new String[]{"spc", "json"};
       default:
         return this.getTKFileExtensions();
     }
+  }
+
+  public String[] getImageExtensions() {
+    return new String[]{"png", "gif", "jpg", "jpeg", "bmp"};
   }
 
   /**
@@ -710,7 +798,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
    * @return the location of the file the user selects, relative to the subdirectory corresponding
    * to that type; or null if no file or an invalid file is selected (see browseLocationBySubdir())
    */
-  public String browseByTypeRelative(Class<? extends BasicType> type) {
+  public String browseByTypeRelative(Class<? extends AbstractAsset> type) {
     File path = this.browseByType(type);
     if (path == null) {
       return null;
@@ -728,7 +816,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
    * @return the location of the file the user selects; or null if no file or an invalid file is
    * selected (see browseLocationBySubdir())
    */
-  public File browseByType(Class<? extends BasicType> type) {
+  public File browseByType(Class<? extends AbstractAsset> type) {
     String subdir = this.getTypeSubdirectory(type);
     String desc = getTypeFilterDescription(type);
     String[] exts = getTypeExtensions(type);
@@ -745,7 +833,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
    * @return the location of the file the user selects, relative to the subdirectory corresponding
    * to that type; or null if no file or an invalid file is selected (see saveLocationBySubdir())
    */
-  public String saveByTypeRelative(Class<? extends BasicType> type) {
+  public String saveByTypeRelative(Class<? extends AbstractAsset> type) {
     File path = this.saveByType(type);
     if (path == null) {
       return null;
@@ -759,12 +847,12 @@ public class MainWindow extends JFrame implements InternalFrameListener {
    * location. The file may not exist yet if the user types it in. Filters by extensions relevant to
    * that type. This is a shortcut method for saveLocationBySubdir().
    *
-   * @param type a BasicType class
+   * @param type a AbstractAsset class
    * @return the location of the file the user selects; or null if no file or an invalid file is
    * selected (see saveLocationBySubdir())
    */
-  public File saveByType(Class<? extends BasicType> type) {
-    String subdir = this.getTypeSubdirectory(type);
+  public File saveByType(Class<? extends AbstractAsset> type) {
+    String subdir = getTypeSubdirectory(type);
     String desc = getTypeFilterDescription(type);
     String[] exts = getTypeExtensions(type);
     return this.saveLocationBySubdir(subdir, desc, exts);

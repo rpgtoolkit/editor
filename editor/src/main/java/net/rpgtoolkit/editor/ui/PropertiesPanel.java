@@ -6,7 +6,6 @@
  */
 package net.rpgtoolkit.editor.ui;
 
-import net.rpgtoolkit.editor.editors.board.panels.AbstractModelPanel;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
