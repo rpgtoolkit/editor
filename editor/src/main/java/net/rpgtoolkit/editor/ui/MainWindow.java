@@ -42,6 +42,7 @@ import net.rpgtoolkit.common.assets.files.FileAssetHandleResolver;
 import net.rpgtoolkit.common.assets.serialization.JsonAnimationSerializer;
 import net.rpgtoolkit.common.assets.serialization.JsonPlayerSerializer;
 import net.rpgtoolkit.common.assets.serialization.JsonBoardSerializer;
+import net.rpgtoolkit.common.assets.serialization.JsonEnemySerializer;
 import net.rpgtoolkit.common.assets.serialization.JsonProjectSerializer;
 import net.rpgtoolkit.common.assets.serialization.JsonSpecialMoveSerializer;
 import net.rpgtoolkit.common.assets.serialization.legacy.LegacyAnimatedTileSerializer;
@@ -70,6 +71,7 @@ import net.rpgtoolkit.editor.ui.resources.Icons;
 import net.rpgtoolkit.editor.editors.board.ProgramBrush;
 import net.rpgtoolkit.common.utilities.PropertiesSingleton;
 import net.rpgtoolkit.editor.editors.CharacterEditor;
+import net.rpgtoolkit.editor.editors.EnemyEditor;
 import net.rpgtoolkit.editor.utilities.FileTools;
 
 /**
@@ -388,6 +390,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     assetManager.registerSerializer(new JsonBoardSerializer());
     assetManager.registerSerializer(new JsonProjectSerializer());
     assetManager.registerSerializer(new JsonSpecialMoveSerializer());
+    assetManager.registerSerializer(new JsonEnemySerializer());
   }
 
   /**
@@ -441,7 +444,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       addToolkitEditorWindow(EditorFactory.getEditor(openAnimation(file)));
     } else if (fileName.endsWith(".brd") || fileName.endsWith(".brd.json")) {
       addToolkitEditorWindow(EditorFactory.getEditor(openBoard(file)));
-    } else if (fileName.endsWith(".ene")) {
+    } else if (fileName.endsWith(".ene") || fileName.endsWith(".ene.json")) {
       addToolkitEditorWindow(EditorFactory.getEditor(openEnemy(file)));
     } else if (fileName.endsWith(".tem") || fileName.endsWith(".tem.json")) {
       addToolkitEditorWindow(EditorFactory.getEditor(openCharacter(file)));
@@ -588,6 +591,19 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     }
 
     return null;
+  }
+  
+  public void createNewEnemy() {
+    Enemy enemy = new Enemy(null);
+    enemy.setName("Untitled");
+
+    EnemyEditor enemyEditor = new EnemyEditor(enemy);
+    enemyEditor.addInternalFrameListener(this);
+    enemyEditor.setVisible(true);
+    enemyEditor.toFront();
+
+    this.desktopPane.add(enemyEditor);
+    this.selectToolkitWindow(enemyEditor);
   }
 
   /**

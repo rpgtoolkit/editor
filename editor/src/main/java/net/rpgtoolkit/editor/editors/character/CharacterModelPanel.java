@@ -7,7 +7,6 @@
 package net.rpgtoolkit.editor.editors.character;
 
 import java.awt.Point;
-import java.awt.Rectangle;
 import javax.swing.GroupLayout;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;

@@ -31,6 +31,7 @@ public final class FileMenu extends JMenu implements ActionListener {
   private JMenuItem newAnimationMenuItem;
   private JMenuItem newBoardMenuItem;
   private JMenuItem newCharacterMenuItem;
+  private JMenuItem newEnemyMenuItem;
 
   private JMenu openMenu;
   private JMenuItem openProjectMenuItem;
@@ -106,6 +107,8 @@ public final class FileMenu extends JMenu implements ActionListener {
       MainWindow.getInstance().createNewBoard();
     } else if (e.getSource() == newCharacterMenuItem) {
       MainWindow.getInstance().createNewCharacter();
+    } else if (e.getSource() == newEnemyMenuItem) {
+      MainWindow.getInstance().createNewEnemy();
     }
   }
 
@@ -117,6 +120,7 @@ public final class FileMenu extends JMenu implements ActionListener {
     newAnimationMenuItem.setEnabled(true);
     newBoardMenuItem.setEnabled(true);
     newCharacterMenuItem.setEnabled(true);
+    newEnemyMenuItem.setEnabled(true);
   }
 
   /**
@@ -139,6 +143,7 @@ public final class FileMenu extends JMenu implements ActionListener {
     configureNewAnimationMenuItem();
     configureNewBoardMenuItem();
     configureNewCharacterMenuItem();
+    configureNewEnemyMenuItem();
 
     newMenu = new JMenu("New");
     newMenu.setEnabled(true);
@@ -146,6 +151,7 @@ public final class FileMenu extends JMenu implements ActionListener {
     newMenu.add(newAnimationMenuItem);
     newMenu.add(newBoardMenuItem);
     newMenu.add(newCharacterMenuItem);
+    newMenu.add(newEnemyMenuItem);
   }
 
   private void configureOpenSubMenu() {
@@ -184,6 +190,12 @@ public final class FileMenu extends JMenu implements ActionListener {
     newCharacterMenuItem = new JMenuItem("New Character");
     newCharacterMenuItem.setEnabled(false);
     newCharacterMenuItem.addActionListener(this);
+  }
+  
+  private void configureNewEnemyMenuItem() {
+    newEnemyMenuItem = new JMenuItem("New Enemy");
+    newEnemyMenuItem.setEnabled(false);
+    newEnemyMenuItem.addActionListener(this);
   }
 
   private void configureOpenProjectMenuItem() {

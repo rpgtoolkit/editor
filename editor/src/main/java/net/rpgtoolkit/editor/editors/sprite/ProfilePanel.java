@@ -4,7 +4,7 @@
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of
  * the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package net.rpgtoolkit.editor.editors.character;
+package net.rpgtoolkit.editor.editors.sprite;
 
 import net.rpgtoolkit.editor.ui.AbstractImagePanel;
 import java.awt.Color;
@@ -23,7 +23,7 @@ import net.rpgtoolkit.editor.utilities.TransparentDrawer;
 public class ProfilePanel extends AbstractImagePanel {
 
   public ProfilePanel() {
-    super(new Dimension(280, 0));
+    super(new Dimension(250, 500));
     setToolTipText("Double click to select an image.");
   }
   

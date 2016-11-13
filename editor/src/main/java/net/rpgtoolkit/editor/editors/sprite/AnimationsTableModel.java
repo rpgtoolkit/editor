@@ -4,18 +4,18 @@
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of
  * the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package net.rpgtoolkit.editor.editors.character;
+package net.rpgtoolkit.editor.editors.sprite;
 
 import javax.swing.table.AbstractTableModel;
-import net.rpgtoolkit.common.assets.Player;
-import net.rpgtoolkit.common.assets.events.PlayerChangedEvent;
-import net.rpgtoolkit.common.assets.listeners.PlayerChangeListener;
+import net.rpgtoolkit.common.assets.AbstractSprite;
+import net.rpgtoolkit.common.assets.events.SpriteChangedEvent;
+import net.rpgtoolkit.common.assets.listeners.SpriteChangeListener;
 
 /**
  *
  * @author Joshua Michael Daly
  */
-public class AnimationsTableModel extends AbstractTableModel implements PlayerChangeListener {
+public class AnimationsTableModel extends AbstractTableModel implements SpriteChangeListener {
 
   public static final String[] STANDARD_GRAPHICS = {
     "South (Front View)", "North (Back View)", "East (Right View)", "West (Left View)",
@@ -23,14 +23,14 @@ public class AnimationsTableModel extends AbstractTableModel implements PlayerCh
     "Attack", "Defend", "Special Move", "Die", "Rest"
   };
 
-  private final Player player;
+  private final AbstractSprite sprite;
 
   private static final String[] COLUMNS = {
     "Name", "Active Animation", "Idle Animation"
   };
 
-  public AnimationsTableModel(Player player) {
-    this.player = player;
+  public AnimationsTableModel(AbstractSprite sprite) {
+    this.sprite = sprite;
   }
 
   /**
@@ -66,7 +66,7 @@ public class AnimationsTableModel extends AbstractTableModel implements PlayerCh
 
   @Override
   public int getRowCount() {
-    return (player.getStandardGraphics().size() + player.getCustomGraphics().size());
+    return (sprite.getStandardGraphics().size() + sprite.getCustomGraphics().size());
   }
 
   @Override
@@ -81,10 +81,10 @@ public class AnimationsTableModel extends AbstractTableModel implements PlayerCh
         case 0:
           return STANDARD_GRAPHICS[rowIndex];
         case 1:
-          return player.getStandardGraphics().get(rowIndex);
+          return sprite.getStandardGraphics().get(rowIndex);
         default:
           if (rowIndex < 8) {
-            return player.getStandingGraphics().get(rowIndex);
+            return sprite.getStandingGraphics().get(rowIndex);
           } else {
             return "NOT SUPPORTED";
           }
@@ -94,15 +94,15 @@ public class AnimationsTableModel extends AbstractTableModel implements PlayerCh
       switch (columnIndex) {
         case 0:
           index = rowIndex - STANDARD_GRAPHICS.length;
-          if (player.getCustomGraphicNames().size() > index) {
-            return player.getCustomGraphicNames().get(index);
+          if (sprite.getCustomGraphicsNames().size() > index) {
+            return sprite.getCustomGraphicsNames().get(index);
           } else {
             return null;
           }
         case 1:
           index = rowIndex - STANDARD_GRAPHICS.length;
-          if (player.getCustomGraphics().size() > index) {
-             return player.getCustomGraphics().get(index);
+          if (sprite.getCustomGraphics().size() > index) {
+             return sprite.getCustomGraphics().get(index);
           } else {
             return null;
           }
@@ -124,7 +124,7 @@ public class AnimationsTableModel extends AbstractTableModel implements PlayerCh
     switch (columnIndex) {
       case 0:
         int customIndex = rowIndex - STANDARD_GRAPHICS.length;
-        player.getCustomGraphicNames().set(customIndex, (String) value);
+        sprite.getCustomGraphicsNames().set(customIndex, (String) value);
         break;
       case 1:
         break;
@@ -148,21 +148,21 @@ public class AnimationsTableModel extends AbstractTableModel implements PlayerCh
   }
 
   @Override
-  public void playerChanged(PlayerChangedEvent e) {
+  public void spriteChanged(SpriteChangedEvent e) {
   }
 
   @Override
-  public void playerAnimationAdded(PlayerChangedEvent e) {
+  public void spriteAnimationAdded(SpriteChangedEvent e) {
     fireTableDataChanged();
   }
 
   @Override
-  public void playerAnimationUpdated(PlayerChangedEvent e) {
+  public void spriteAnimationUpdated(SpriteChangedEvent e) {
     fireTableDataChanged();
   }
 
   @Override
-  public void playerAnimationRemoved(PlayerChangedEvent e) {
+  public void spriteAnimationRemoved(SpriteChangedEvent e) {
     fireTableDataChanged();
   }
 

@@ -4,7 +4,7 @@
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of
  * the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package net.rpgtoolkit.editor.editors.character;
+package net.rpgtoolkit.editor.editors.sprite;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -43,7 +43,7 @@ public class AnimationsTablePanel extends JPanel {
   
   private Dimension calculateDimensions() {
     int width = animatedPanel.getWidth();
-    int height = profilePanel.getHeight() - AnimatedPanel.SMALL_HEIGHT;
+    int height = profilePanel.getHeight() - AnimatedPanel.DEFAULT_HEIGHT;
     
     return new Dimension(width, height);
   }
