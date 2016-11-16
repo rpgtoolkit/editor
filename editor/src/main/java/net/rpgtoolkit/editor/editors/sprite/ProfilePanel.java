@@ -32,7 +32,7 @@ public class ProfilePanel extends AbstractImagePanel {
     setToolTipText("Double click to select an image.");
 
     defaultImage = Icons.getIcon("image", Icons.Size.LARGE).getImage();
-    scaledDimension = new Dimension(defaultImage.getWidth(null), defaultImage.getHeight(null));
+    scaledDimension = null;
   }
 
   @Override
@@ -52,6 +52,11 @@ public class ProfilePanel extends AbstractImagePanel {
 
   @Override
   public void paint(Graphics g) {
+    if (scaledDimension == null) {
+      // First call to paint.
+      calculateScaledDimension();
+    }
+    
     TransparentDrawer.drawTransparentBackground(g, getWidth(), getHeight());
 
     Image image;
@@ -85,13 +90,20 @@ public class ProfilePanel extends AbstractImagePanel {
         }
 
         addImage(imageFile);
-        calculateScaledDimension(bufferedImages.getFirst());
+        calculateScaledDimension();
         repaint();
       }
     }
   }
 
-  private void calculateScaledDimension(Image image) {
+  private void calculateScaledDimension() {
+    Image image;
+    if (bufferedImages.isEmpty()) {
+      image = defaultImage;
+    } else {
+      image = bufferedImages.getFirst();
+    }
+    
     int originalWidth = image.getWidth(this);
     int originalHeight = image.getHeight(this);
     int boundWidth = getWidth();
