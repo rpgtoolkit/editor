@@ -71,7 +71,7 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
   private WholeNumberField maxSpecialPoints;
   private WholeNumberField fightPower;
   private WholeNumberField defencePower;
-  private JCheckBox canRunAway;
+  private JCheckBox canRunAway; //NOTE: actions set up in old Joel Moore commits
   private JTextField runAwayProgram;
   private WholeNumberField critOnEnemy;
   private WholeNumberField critOnPlayer;
@@ -124,6 +124,19 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
   @Override
   public boolean save() {
     boolean success = false;
+    
+    //Update all enemy variables from the stats panel
+    enemy.setName(enemyName.getText());
+    enemy.setMaxHitPoints(maxHitPoints.getValue());
+    enemy.setMaxMagicPoints(maxSpecialPoints.getValue());
+    enemy.setFightPower(fightPower.getValue());
+    enemy.setDefencePower(defencePower.getValue());
+    enemy.setExperienceAwarded(experienceAwarded.getValue());
+    enemy.setGoldAwarded(goldAwarded.getValue());
+    
+    // Update all enemy variables from graphics panel.
+    enemy.setIdleTimeBeforeStanding(idleTimeoutField.getValue());
+    enemy.setFrameRate(stepRateField.getValue());
     
     if (enemy.getDescriptor() == null) {
       File file = MainWindow.getInstance().saveByType(Enemy.class);
@@ -227,7 +240,7 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
     this.tacticsPanel = new JPanel();
     this.rewardsPanel = new JPanel();
 
-    this.createBasicSettingsPanel();
+    this.createStatsPanel();
     this.createGraphicsPanel();
     this.createSpecialMovesPanel();
     this.createTacticsPanel();
@@ -242,7 +255,7 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
     build();
   }
 
-  private void createBasicSettingsPanel() {
+  private void createStatsPanel() {
     List<Component> labels = new ArrayList<>();
     labels.add(new JLabel("Name"));
     labels.add(new JLabel("Health"));
