@@ -6,77 +6,64 @@
  */
 package net.rpgtoolkit.editor.editors;
 
+import java.awt.Component;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import static java.lang.System.out;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
-import javax.swing.Timer;
-import javax.swing.border.Border;
-import javax.swing.border.EtchedBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
 import net.rpgtoolkit.common.assets.AssetException;
 import net.rpgtoolkit.common.assets.AssetHandle;
 import net.rpgtoolkit.common.assets.AssetManager;
+import net.rpgtoolkit.common.assets.BoardVector;
 import net.rpgtoolkit.common.assets.Enemy;
 import net.rpgtoolkit.common.assets.Program;
 import net.rpgtoolkit.common.assets.SpecialMove;
 import net.rpgtoolkit.common.io.Paths;
+import net.rpgtoolkit.editor.editors.sprite.AbstractSpriteEditor;
 import net.rpgtoolkit.editor.ui.MainWindow;
-import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
 import net.rpgtoolkit.editor.ui.Gui;
 import net.rpgtoolkit.editor.ui.IntegerField;
 import net.rpgtoolkit.editor.ui.WholeNumberField;
-import net.rpgtoolkit.editor.ui.resources.Icons;
 
 /**
  * Enemy editor
  *
  * @author Joel Moore
+ * @author Joshua Michael Daly
  */
-public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameListener {
+public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameListener {
 
-  private final Enemy enemy; // Enemy file we are altering
+  private final Enemy enemy;
 
-  private static final String sep = File.separator;
   private final MainWindow mainWindow = MainWindow.getInstance();
 
   // Tabs required by the menu
-  private JPanel basicSettingsPanel;
-  private JPanel graphicsPanel;
   private JPanel specialMovesPanel;
   private JPanel tacticsPanel;
   private JPanel rewardsPanel;
-
-  private final Border defaultEtchedBorder = BorderFactory.
-          createEtchedBorder(EtchedBorder.LOWERED);
 
   //BASIC SETTINGS
   private JTextField enemyName;
@@ -88,12 +75,6 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
   private JTextField runAwayProgram;
   private WholeNumberField critOnEnemy;
   private WholeNumberField critOnPlayer;
-
-  // GRAPHICS SETTINGS
-  private JList animList;
-  private JTextField animLoc;
-  private Animation selectedAnim;
-  private Timer animTimer;
 
   // SPECIAL MOVES SETTINGS
   private JList sMoveList;
@@ -115,15 +96,6 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
    * Public Constructors
    * *************************************************************************
    */
-  /**
-   * Create a new blank Enemy
-   */
-  public EnemyEditor() {
-    super("New Enemy", true, true, true, true);
-
-    this.enemy = new Enemy(null);
-    this.setVisible(true);
-  }
 
   /**
    * Opens an existing enemy
@@ -131,13 +103,17 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
    * @param theEnemy Enemy to edit
    */
   public EnemyEditor(Enemy theEnemy) {
-    super("Editing Enemy - " + theEnemy.toString(), true, true, true, true);
+    super("Editing Enemy - " + theEnemy.toString(), theEnemy);
 
     this.enemy = theEnemy;
+    
+    if (this.enemy.getDescriptor() == null) {
+      setupNewEnemy();
+    }
 
-    this.setSize(555, 530);
     this.constructWindow();
     this.setVisible(true);
+    pack();
   }
 
   /*
@@ -227,17 +203,26 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
    * Private Methods
    * *************************************************************************
    */
+  private void setupNewEnemy() {
+    enemy.setStandardGraphics(new ArrayList<>(STANDARD_PLACE_HOLDERS));
+    enemy.setStandingGraphics(new ArrayList<>(STANDING_PLACE_HOLDERS));
+    
+    BoardVector baseVector = new BoardVector();
+    enemy.setBaseVector(baseVector);
+    
+    BoardVector activationVector = new BoardVector();
+    enemy.setActivationVector(activationVector);
+    
+    enemy.setBaseVectorOffset(new Point(0, 0));
+    enemy.setActivationVectorOffset(new Point(0, 0));
+  }
+  
   /**
    * Builds the Swing interface
    */
   private void constructWindow() {
     this.addInternalFrameListener(this);
-
-    // Builds the components needed to display the Enemy status.
-    JTabbedPane tabPane = new JTabbedPane();
-
-    this.basicSettingsPanel = new JPanel();
-    this.graphicsPanel = new JPanel();
+    
     this.specialMovesPanel = new JPanel();
     this.tacticsPanel = new JPanel();
     this.rewardsPanel = new JPanel();
@@ -247,525 +232,67 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
     this.createSpecialMovesPanel();
     this.createTacticsPanel();
     this.createRewardsPanel();
-
-    tabPane.addTab("Basic Settings", this.basicSettingsPanel);
-    tabPane.addTab("Graphics", this.graphicsPanel);
-    tabPane.addTab("Special Moves", this.specialMovesPanel);
-    tabPane.addTab("Tactics", this.tacticsPanel);
-    tabPane.addTab("Rewards", this.rewardsPanel);
-
-    this.add(tabPane);
+    
+    // <editor-fold defaultstate="collapsed" desc="disabled until tk 4.1.0">
+    //tabPane.addTab("Special Moves", this.specialMovesPanel);
+    //tabPane.addTab("Tactics", this.tacticsPanel);
+    //tabPane.addTab("Rewards", this.rewardsPanel);
+    // </editor-fold>
+   
+    build();
   }
 
   private void createBasicSettingsPanel() {
+    List<Component> labels = new ArrayList<>();
+    labels.add(new JLabel("Name"));
+    labels.add(new JLabel("Health"));
+    labels.add(new JLabel("Special Power"));
+    labels.add(new JLabel("Fighting Power"));
+    labels.add(new JLabel("Defence Power"));
+    labels.add(new JLabel("Experience Reward"));
+    labels.add(new JLabel("Gold Reward"));
+    
     // Configure Class scope components
-    this.enemyName = new JTextField(this.enemy.getName());
-    this.maxHitPoints = new WholeNumberField(this.enemy.getMaxHitPoints());
-    this.maxSpecialPoints = new WholeNumberField(this.enemy.getMaxMagicPoints());
-    this.fightPower = new WholeNumberField(this.enemy.getFightPower());
-    this.defencePower = new WholeNumberField(this.enemy.getDefencePower());
-    this.canRunAway = new JCheckBox("Player can run from this enemy");
-    this.canRunAway.setSelected(this.enemy.canRunAway());
-    this.runAwayProgram = new JTextField(this.enemy.getRunAwayProgram());
-    this.runAwayProgram.setEnabled(this.canRunAway.isSelected());
-    this.critOnEnemy = new WholeNumberField(this.enemy.getSneakChance());
-    this.critOnPlayer = new WholeNumberField(this.enemy.getSurpriseChance());
-
-    // Configure function Scope Components
-    JLabel enemyNameLabel = new JLabel("Name");
-    JLabel maxHitPointsLabel = new JLabel("Max Health Points");
-    JLabel maxSpecialPointsLabel = new JLabel("Special Move Power");
-    JLabel fightPowerLabel = new JLabel("Fighting Power");
-    JLabel defencePowerLabel = new JLabel("Defence Power");
-    final JLabel runAwayProgramLabel = new JLabel("Program to run when player runs away");
-    final JButton runAwayProgramButton = new JButton("Browse");
-    runAwayProgramLabel.setEnabled(this.canRunAway.isSelected());
-    runAwayProgramButton.setEnabled(this.canRunAway.isSelected());
-    JLabel critOnEnemyLabel = new JLabel("Chances of a critical hit on the enemy: (1 in)");
-    JLabel critOnPlayerLabel = new JLabel("Chances of a critical hit on the player: (1 in)");
-
-        // Configure listeners
-    //can run away checkbox disable run away program
-    this.canRunAway.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        runAwayProgramLabel.setEnabled(canRunAway.isSelected());
-        runAwayProgram.setEnabled(canRunAway.isSelected());
-        runAwayProgramButton.setEnabled(canRunAway.isSelected());
-      }
-    });
-
-    //browse run away button
-    runAwayProgramButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        String loc = mainWindow.browseByTypeRelative(Program.class);
-        if (loc != null) {
-          runAwayProgram.setText(loc);
-        }
-      }
-    });
-
-    // Configure the necessary Panels
-    JPanel basicInfoPanel = new JPanel();
-    basicInfoPanel.setBorder(BorderFactory.createTitledBorder(
-            this.defaultEtchedBorder, "Basic Information"));
-    JPanel fightingConditionsPanel = new JPanel();
-    fightingConditionsPanel.setBorder(BorderFactory.createTitledBorder(
-            this.defaultEtchedBorder, "Fighting Conditions"));
-
-    // Create Layout for top level panel
-    GroupLayout layout = Gui.createGroupLayout(this.basicSettingsPanel);
-
-    // Create Layouts for second level panels
-    GroupLayout basicInfoLayout = Gui.createGroupLayout(basicInfoPanel);
-
-    GroupLayout fightingConditionsLayout = Gui.createGroupLayout(fightingConditionsPanel);
-
-    // Configure the BASIC INFO PANEL layout
-    basicInfoLayout.setHorizontalGroup(basicInfoLayout.createParallelGroup()
-            .addGroup(basicInfoLayout.createSequentialGroup()
-                    .addComponent(enemyNameLabel)
-                    .addComponent(this.enemyName))
-            .addGroup(basicInfoLayout.createSequentialGroup()
-                    .addComponent(maxHitPointsLabel)
-                    .addComponent(this.maxHitPoints))
-            .addGroup(basicInfoLayout.createSequentialGroup()
-                    .addComponent(maxSpecialPointsLabel)
-                    .addComponent(this.maxSpecialPoints))
-            .addGroup(basicInfoLayout.createSequentialGroup()
-                    .addComponent(fightPowerLabel)
-                    .addComponent(this.fightPower))
-            .addGroup(basicInfoLayout.createSequentialGroup()
-                    .addComponent(defencePowerLabel)
-                    .addComponent(this.defencePower))
-    );
-
-    basicInfoLayout.linkSize(SwingConstants.HORIZONTAL,
-            enemyNameLabel,
-            maxHitPointsLabel,
-            maxSpecialPointsLabel,
-            fightPowerLabel,
-            defencePowerLabel);
-    basicInfoLayout.linkSize(SwingConstants.VERTICAL,
-            enemyNameLabel,
-            maxHitPointsLabel,
-            maxSpecialPointsLabel,
-            fightPowerLabel,
-            defencePowerLabel,
-            this.enemyName,
-            this.maxHitPoints,
-            this.maxSpecialPoints,
-            this.fightPower,
-            this.defencePower);
-
-    basicInfoLayout.setVerticalGroup(basicInfoLayout.createSequentialGroup()
-            .addGroup(basicInfoLayout.createParallelGroup()
-                    .addComponent(enemyNameLabel)
-                    .addComponent(this.enemyName, Gui.JTF_HEIGHT,
-                            Gui.JTF_HEIGHT, Gui.JTF_HEIGHT))
-            .addGroup(basicInfoLayout.createParallelGroup()
-                    .addComponent(maxHitPointsLabel)
-                    .addComponent(this.maxHitPoints))
-            .addGroup(basicInfoLayout.createParallelGroup()
-                    .addComponent(maxSpecialPointsLabel)
-                    .addComponent(this.maxSpecialPoints))
-            .addGroup(basicInfoLayout.createParallelGroup()
-                    .addComponent(fightPowerLabel)
-                    .addComponent(this.fightPower))
-            .addGroup(basicInfoLayout.createParallelGroup()
-                    .addComponent(defencePowerLabel)
-                    .addComponent(this.defencePower))
-    );
-
-    // Configure the FIGHTING CONDITIONS PANEL layout
-    fightingConditionsLayout.setHorizontalGroup(fightingConditionsLayout.createParallelGroup()
-            .addComponent(this.canRunAway)
-            .addGroup(fightingConditionsLayout.createSequentialGroup()
-                    .addComponent(runAwayProgramLabel)
-                    .addComponent(this.runAwayProgram)
-                    .addComponent(runAwayProgramButton))
-            .addGroup(fightingConditionsLayout.createSequentialGroup()
-                    .addComponent(critOnEnemyLabel)
-                    .addComponent(this.critOnEnemy))
-            .addGroup(fightingConditionsLayout.createSequentialGroup()
-                    .addComponent(critOnPlayerLabel)
-                    .addComponent(this.critOnPlayer))
-    );
-
-    fightingConditionsLayout.linkSize(SwingConstants.HORIZONTAL,
-            runAwayProgramLabel,
-            critOnEnemyLabel,
-            critOnPlayerLabel);
-    fightingConditionsLayout.linkSize(SwingConstants.VERTICAL,
-            runAwayProgramLabel,
-            critOnEnemyLabel,
-            critOnPlayerLabel,
-            this.runAwayProgram,
-            this.critOnEnemy,
-            this.critOnPlayer);
-
-    fightingConditionsLayout.setVerticalGroup(fightingConditionsLayout.createSequentialGroup()
-            .addComponent(this.canRunAway)
-            .addGroup(fightingConditionsLayout.createParallelGroup()
-                    .addComponent(runAwayProgramLabel)
-                    .addComponent(this.runAwayProgram, Gui.JTF_HEIGHT,
-                            Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
-                    .addComponent(runAwayProgramButton))
-            .addGroup(fightingConditionsLayout.createParallelGroup()
-                    .addComponent(critOnEnemyLabel)
-                    .addComponent(this.critOnEnemy))
-            .addGroup(fightingConditionsLayout.createParallelGroup()
-                    .addComponent(critOnPlayerLabel)
-                    .addComponent(this.critOnPlayer))
-    );
-
-    // Configure BASIC SETTINGS PANEL layout
-    layout.setHorizontalGroup(layout.createParallelGroup()
-            .addComponent(basicInfoPanel, 515, 515, 515)
-            .addComponent(fightingConditionsPanel)
-    );
-
-    layout.linkSize(SwingConstants.HORIZONTAL, basicInfoPanel, fightingConditionsPanel);
-
-    layout.setVerticalGroup(layout.createSequentialGroup()
-            .addComponent(basicInfoPanel)
-            .addComponent(fightingConditionsPanel)
-    );
+    enemyName = new JTextField(enemy.getName());
+    enemyName.setColumns(DEFAULT_INPUT_COLUMNS);
+    
+    maxHitPoints = new WholeNumberField(enemy.getMaxHitPoints());
+    maxHitPoints.setColumns(DEFAULT_INPUT_COLUMNS);
+    
+    maxSpecialPoints = new WholeNumberField(enemy.getMaxMagicPoints());
+    maxSpecialPoints.setColumns(DEFAULT_INPUT_COLUMNS);
+    
+    fightPower = new WholeNumberField(enemy.getFightPower());
+    fightPower.setColumns(DEFAULT_INPUT_COLUMNS);
+    
+    defencePower = new WholeNumberField(enemy.getDefencePower());
+    defencePower.setColumns(DEFAULT_INPUT_COLUMNS);
+    
+    experienceAwarded = new IntegerField((int)enemy.getExperienceAwarded());
+    experienceAwarded.setColumns(DEFAULT_INPUT_COLUMNS);
+    
+    goldAwarded = new IntegerField((int)enemy.getGoldAwarded());
+    goldAwarded.setColumns(DEFAULT_INPUT_COLUMNS);
+    
+    List<Component> inputs = new ArrayList<>();
+    inputs.add(enemyName);
+    inputs.add(maxHitPoints);
+    inputs.add(maxSpecialPoints);
+    inputs.add(fightPower);
+    inputs.add(defencePower);
+    inputs.add(experienceAwarded);
+    inputs.add(goldAwarded);
+    
+    profileImagePath = "";
+    
+    buildStatsPanel(labels, inputs);
   }
 
   private void createGraphicsPanel() {
-    // Configure Class scope components
-    final DefaultListModel enemyGraphics = new DefaultListModel();
-    final ArrayList<String> standardNames = this.enemy.getStandardGraphicsNames();
-    for (String standardName : standardNames) {
-      enemyGraphics.addElement(standardName);
-    }
-    final ArrayList<String> customNames = this.enemy.getCustomizedGraphicsNames();
-    for (String customName : customNames) {
-      enemyGraphics.addElement(customName);
-    }
-//        out.println("standardNames="+standardNames.toString());
-//        out.println("customNames="+customNames.toString());
-//        out.println("customGraphics="+this.enemy.getCustomizedGraphics()); //TODO: This often adds extra blank ones
-//        out.println("enemyGraphics="+enemyGraphics.toString());
-    this.animList = Gui.createVerticalJList(enemyGraphics);
-
-    this.animLoc = new JTextField();
-
-    // Configure function Scope Components
-    JScrollPane animListScroller = new JScrollPane(this.animList);
-
-    JLabel animLabel = new JLabel("Animation");
-
-    final ImageIcon playIcon = Icons.getSmallIcon("run");
-    final ImageIcon stopIcon = Icons.getSmallIcon("stop");
-
-    final JToggleButton play = new JToggleButton(playIcon);
-    final JLabel animDisplay = new JLabel();
-
-    JLabel dummy = new JLabel();
-    final JButton animFindButton = new JButton("Browse");
-    animFindButton.setEnabled(false);
-    JButton animAddButton = new JButton("Add");
-    final JButton animRemoveButton = new JButton("Remove");
-    animRemoveButton.setEnabled(false);
-
-    // Configure listeners
-    //run animation
-    final ActionListener animate = new ActionListener() {
-      private int frame = 0;
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        //switch to the next frame, looping after the last frame
-        if (frame < selectedAnim.getFrameCount() - 1) {
-          frame++;
-        } else {
-          frame = 0;
-        }
-        animDisplay.setIcon(new ImageIcon(
-                selectedAnim.getFrame(frame).getFrameImage()
-        ));
-      }
-    };
-
-    //change selection
-    this.animList.addListSelectionListener(new ListSelectionListener() {
-      @Override
-      public void valueChanged(ListSelectionEvent e) {
-        if (e.getValueIsAdjusting() == false) {
-          if (animList.getSelectedIndex() == -1) {
-            animDisplay.setIcon(null);
-            animFindButton.setEnabled(false);
-            animRemoveButton.setEnabled(false);
-          } else {
-            //switch animation info
-            if (play.isSelected()) {
-              play.doClick();
-            } //press stop
-            String location;
-            if (animList.getSelectedIndex() < standardNames.size()) {
-              location = enemy.getStandardGraphics().get(
-                      animList.getSelectedIndex());
-              //out.println("new selection: standard " + animList.getSelectedIndex());
-            } else {
-              location = enemy.getCustomizedGraphics().get(
-                      animList.getSelectedIndex() - standardNames.size());
-              //out.println("new selection: custom " + (animList.getSelectedIndex() - standardNames.size()));
-            }
-            //clear animation and images
-            selectedAnim = null;
-            animDisplay.setIcon(null);
-            animTimer = null;
-                        //out.println("anim cleared");
-            //out.println("setting location to " + location);
-            animLoc.setText(location); //handles switching to new valid animations
-
-            animFindButton.setEnabled(true);
-            animRemoveButton.setEnabled(true);
-          }
-        }
-      }
-    });
-
-    this.animLoc.getDocument().addDocumentListener(new DocumentListener() {
-
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-//                out.println("insert!");
-        String text = animLoc.getText();
-//                out.println(text);
-        updateAnimation(text);
-      }
-
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-        //out.println("remove!");
-        String text = animLoc.getText();
-        //out.println(text);
-        updateAnimation(text);
-        if (text.isEmpty()) {
-          //out.println("clearing anim");
-          selectedAnim = null;
-          animDisplay.setIcon(null);
-          animTimer = null;
-        }
-      }
-
-      private void updateAnimation(String text) {
-        int index = animList.getSelectedIndex();
-//                out.println("update animation index: " + index);
-//                out.println(text);
-        if (index >= 0 && index < standardNames.size() + customNames.size()) {
-          boolean custom = false;
-          if (index >= standardNames.size()) {
-            custom = true;
-          }
-          if (custom == true) {
-            enemy.getCustomizedGraphics().set(
-                    index - standardNames.size(), text);
-          } else {
-            enemy.getStandardGraphics().set(index, text);
-          }
-          if (text.endsWith(".anm")) {
-            //update image if the location is valid
-            File f = mainWindow.getPath(
-                    mainWindow.getTypeSubdirectory(Animation.class)
-                    + sep + text);
-            if (f.canRead()) {
-              selectedAnim = new Animation(new AssetDescriptor(f.toURI()));
-//                            out.println("new animation!");
-              //switch animation images
-              if (selectedAnim != null && selectedAnim.getFrameCount() > 0) {
-                animDisplay.setIcon(new ImageIcon(
-                        selectedAnim.getFrame(0).getFrameImage()));
-                animTimer = new Timer((int) (selectedAnim.getFrameRate() * 1000), animate);
-              }
-            }
-          }
-        }
-      }
-
-      @Override
-      public void changedUpdate(DocumentEvent e) {
-      }
-    });
-
-    //play button
-    ActionListener playStop = new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (play.isSelected()) {
-          if (animTimer != null) {
-            animTimer.start();
-            play.setIcon(stopIcon);
-          }
-        } else {
-          if (animTimer != null) {
-            animTimer.stop();
-            play.setIcon(playIcon);
-          }
-          if (selectedAnim != null && selectedAnim.getFrameCount() > 0) {
-            animDisplay.setIcon(new ImageIcon(
-                    selectedAnim.getFrame(0).getFrameImage()));
-          }
-        }
-      }
-    };
-    play.addActionListener(playStop);
-
-    //browse button
-    animFindButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        int index = animList.getSelectedIndex();
-        if (index < 0) {
-          return;
-        }
-        String loc = mainWindow.browseByTypeRelative(Animation.class);
-        if (loc != null) {
-          if (play.isSelected()) {
-            play.doClick();
-          } //press stop before we change it
-          animLoc.setText(loc);
-          if (index < standardNames.size()) {
-            enemy.getStandardGraphics().set(index, loc);
-          } else if (index < standardNames.size() + customNames.size()) {
-            int customIndex = index - standardNames.size();
-            enemy.getCustomizedGraphics().set(customIndex, loc);
-          }
-          //changing animation will be handled by animLoc
-        }
-      }
-    });
-
-    //add button
-    animAddButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        int index = animList.getSelectedIndex();
-        if (index < standardNames.size()) {
-          index = standardNames.size(); //insert at start of custom graphics
-        } else if (index > standardNames.size() + customNames.size()) {
-          index = standardNames.size() + customNames.size(); //insert at end
-        } else {
-          index++; //insert after current slot
-        }
-        //add custom graphic
-        String name = (String) JOptionPane.showInputDialog(
-                graphicsPanel,
-                "Enter the handle for the new sprite:",
-                "Add Enemy Graphic",
-                JOptionPane.PLAIN_MESSAGE);
-        if (name == null || name.isEmpty()) {
-          return;
-        }
-        int customIndex = index - standardNames.size();
-        customNames.add(customIndex, name);
-        enemy.getCustomizedGraphics().add(customIndex, "");
-        enemyGraphics.add(index, name);
-        //select the new graphic
-        animList.setSelectedIndex(index);
-        animList.ensureIndexIsVisible(index);
-        //changing animation will be handled by animList and animLoc
-      }
-    });
-
-    //remove button
-    animRemoveButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        int index = animList.getSelectedIndex();
-        out.println(index);
-        out.println(standardNames.size());
-        out.println(customNames.size());
-        if (index >= 0) {
-          if (index < standardNames.size()) {
-            if (selectedAnim != null) {
-              //clear standard graphic file location, but don't delete
-              if (play.isSelected()) {
-                play.doClick();
-              } //press stop before we change it
-              animLoc.setText("");
-              enemy.getStandardGraphics().set(index, "");
-              //clear animation will be handled by animLoc
-            }
-          } else if (index < standardNames.size() + customNames.size()) {
-            //delete custom graphic
-            int customIndex = index - standardNames.size();
-            customNames.remove(customIndex);
-            enemy.getCustomizedGraphics().remove(customIndex);
-            enemyGraphics.remove(index);
-            //move back on the list by 1
-            if (index > 0) {
-              if (index == enemyGraphics.size()) {
-                index--;
-              }
-              animList.setSelectedIndex(index);
-              animList.ensureIndexIsVisible(index);
-              //changing animation will be handled by animList
-            }
-          }
-        }
-      }
-    });
-
-    // Configure the necessary Panels
-    JPanel spritePanel = new JPanel();
-    spritePanel.setBorder(BorderFactory.createTitledBorder(
-            this.defaultEtchedBorder, "Sprite List"));
-
-    // Create Layout for Top Level Panel
-    GroupLayout layout = Gui.createGroupLayout(this.graphicsPanel);
-
-    // Configure Layouts for Second Level Panels
-    GroupLayout spriteLayout = Gui.createGroupLayout(spritePanel);
-
-    // Configure the SPRITE PANEL layout
-    spriteLayout.setHorizontalGroup(spriteLayout.createSequentialGroup()
-            .addComponent(animListScroller)
-            .addGroup(spriteLayout.createParallelGroup()
-                    .addComponent(animLabel)
-                    .addComponent(this.animLoc)
-                    .addGroup(spriteLayout.createSequentialGroup()
-                            .addComponent(play)
-                            .addComponent(animDisplay)))
-            .addGroup(spriteLayout.createParallelGroup()
-                    .addComponent(dummy)
-                    .addComponent(animFindButton)
-                    .addComponent(animAddButton)
-                    .addComponent(animRemoveButton))
-    );
-
-    spriteLayout.setVerticalGroup(spriteLayout.createParallelGroup()
-            .addComponent(animListScroller)
-            .addGroup(spriteLayout.createSequentialGroup()
-                    .addComponent(animLabel)
-                    .addComponent(this.animLoc)
-                    .addGroup(spriteLayout.createParallelGroup()
-                            .addComponent(play)
-                            .addComponent(animDisplay)))
-            .addGroup(spriteLayout.createSequentialGroup()
-                    .addComponent(dummy)
-                    .addComponent(animFindButton)
-                    .addComponent(animAddButton)
-                    .addComponent(animRemoveButton))
-    );
-
-    spriteLayout.linkSize(SwingConstants.VERTICAL, this.animLoc, animLabel,
-            dummy, animFindButton, animAddButton, animRemoveButton);
-
-    // Configure the GRAPHICS PANEL layout
-    layout.setHorizontalGroup(layout.createParallelGroup()
-            .addComponent(spritePanel)
-    );
-
-    layout.setVerticalGroup(layout.createSequentialGroup()
-            .addComponent(spritePanel)
-    );
+    buildAnimationsPanel();
   }
 
+  // <editor-fold defaultstate="collapsed" desc="disabled until tk 4.1.0">
   private void createSpecialMovesPanel() {
     // Configure Class scope components
     final DefaultListModel specialMoves = new DefaultListModel();
@@ -786,9 +313,7 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
       String text = getSpecialMoveText(loc);
       weaknesses.addElement(text);
     }
-//        out.println("specialMoves="+sMoveLocs.toString());
-//        out.println("strengths="+strengthLocs.toString());
-//        out.println("weaknesses="+weaknessLocs.toString());
+
     this.sMoveList = Gui.createVerticalJList(specialMoves);
     this.strengthList = Gui.createVerticalJList(strengths);
     this.weaknessList = Gui.createVerticalJList(weaknesses);
@@ -1130,10 +655,10 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
 
   private void createRewardsPanel() {
     JLabel experienceAwardedLabel = new JLabel("Experience Gained");
-    this.experienceAwarded = new IntegerField(this.enemy.getExperienceAwarded());
+    this.experienceAwarded = new IntegerField((int)this.enemy.getExperienceAwarded());
 
     JLabel goldAwardedLabel = new JLabel("GP Earned");
-    this.goldAwarded = new IntegerField(this.enemy.getGoldAwarded());
+    this.goldAwarded = new IntegerField((int)this.enemy.getGoldAwarded());
 
     JLabel victoryProgramLabel = new JLabel("Program to run upon defeating enemy");
     this.victoryProgram = new JTextField(this.enemy.getBeatEnemyProgram());
@@ -1223,9 +748,8 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
     if(Paths.extension("/"+loc).contains("spc")) {
       File f = mainWindow.getPath(
           mainWindow.getTypeSubdirectory(SpecialMove.class)
-              + sep + loc);
+              + File.separator + loc);
       if(f.canRead()) {
-//                out.println("loaded special move from location " + loc + "!");
         try {
           AssetHandle handle = AssetManager.getInstance().deserialize(
               new AssetDescriptor(f.toURI()));
@@ -1237,4 +761,6 @@ public class EnemyEditor extends ToolkitEditorWindow implements InternalFrameLis
     }
     return null;
   }
+  // </editor-fold>
+  
 }
