@@ -11,11 +11,14 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyVetoException;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -72,7 +75,10 @@ import net.rpgtoolkit.editor.editors.board.ProgramBrush;
 import net.rpgtoolkit.common.utilities.PropertiesSingleton;
 import net.rpgtoolkit.editor.editors.CharacterEditor;
 import net.rpgtoolkit.editor.editors.EnemyEditor;
+import net.rpgtoolkit.editor.editors.tileset.NewTilesetDialog;
 import net.rpgtoolkit.editor.utilities.FileTools;
+import net.rpgtoolkit.editor.utilities.TileSetRipper;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * Currently opening TileSets, tiles, programs, boards, animations, characters etc.
@@ -592,7 +598,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
     return null;
   }
-  
+
   public void createNewEnemy() {
     Enemy enemy = new Enemy(null);
     enemy.setName("Untitled");
@@ -673,9 +679,47 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     desktopPane.add(testTileEditor);
   }
 
+  public void createNewTileset() {
+    NewTilesetDialog dialog = new NewTilesetDialog();
+    dialog.setLocationRelativeTo(this);
+    dialog.setVisible(true);
+
+    if (dialog.getValue() != null) {
+      int width = dialog.getValue()[0];
+      int height = dialog.getValue()[1];
+
+      fileChooser.resetChoosableFileFilters();
+      FileNameExtensionFilter filter = new FileNameExtensionFilter(
+              "Image Files", getImageExtensions());
+      fileChooser.setFileFilter(filter);
+
+      if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+        File file = fileChooser.getSelectedFile();
+        
+        try (FileInputStream fis = new FileInputStream(file)) {
+          BufferedImage source = ImageIO.read(fis);
+          
+          TileSet tileSet = TileSetRipper.rip(source, width, height);
+          
+          String fileName = System.getProperty("project.path") + PropertiesSingleton.getProperty("toolkit.directory.tileset");
+          fileName += File.separator + FilenameUtils.removeExtension(file.getName()) + ".tst";
+          
+          File tileSetFile = new File(fileName);
+          tileSet.saveAs(tileSetFile);
+          
+          openTileset(tileSetFile);
+        } catch (IOException ex) {
+          Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+    }
+  }
+
   public void openTileset(File file) {
     TileSet tileSet = new TileSet(file);
     tileSetPanel.addTileSet(tileSet);
+    
+    upperTabbedPane.setSelectedComponent(tileSetPanel);
   }
 
   public SpecialMove openSpecialMove(File file) {

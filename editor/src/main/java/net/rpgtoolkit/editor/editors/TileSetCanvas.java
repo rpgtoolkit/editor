@@ -52,7 +52,7 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
 
     this.tileset = tileset;
     int width = 320;
-    int height = 32 * ((tileset.getTileCount()- 1)  / TILES_PER_ROW);
+    int height = 32 * (int)(Math.ceil(tileset.getTileCount() / (double)TILES_PER_ROW));
     
     if (height == 0) {
       height = 32;

@@ -32,6 +32,7 @@ public final class FileMenu extends JMenu implements ActionListener {
   private JMenuItem newBoardMenuItem;
   private JMenuItem newCharacterMenuItem;
   private JMenuItem newEnemyMenuItem;
+  private JMenuItem newTilesetMenuItem;
 
   private JMenu openMenu;
   private JMenuItem openProjectMenuItem;
@@ -109,6 +110,8 @@ public final class FileMenu extends JMenu implements ActionListener {
       MainWindow.getInstance().createNewCharacter();
     } else if (e.getSource() == newEnemyMenuItem) {
       MainWindow.getInstance().createNewEnemy();
+    } else if (e.getSource() == newTilesetMenuItem) {
+      MainWindow.getInstance().createNewTileset();
     }
   }
 
@@ -121,6 +124,7 @@ public final class FileMenu extends JMenu implements ActionListener {
     newBoardMenuItem.setEnabled(true);
     newCharacterMenuItem.setEnabled(true);
     newEnemyMenuItem.setEnabled(true);
+    newTilesetMenuItem.setEnabled(true);
   }
 
   /**
@@ -144,6 +148,7 @@ public final class FileMenu extends JMenu implements ActionListener {
     configureNewBoardMenuItem();
     configureNewCharacterMenuItem();
     configureNewEnemyMenuItem();
+    configureNewTilesetMenuItem();
 
     newMenu = new JMenu("New");
     newMenu.setEnabled(true);
@@ -152,6 +157,7 @@ public final class FileMenu extends JMenu implements ActionListener {
     newMenu.add(newBoardMenuItem);
     newMenu.add(newCharacterMenuItem);
     newMenu.add(newEnemyMenuItem);
+    newMenu.add(newTilesetMenuItem);
   }
 
   private void configureOpenSubMenu() {
@@ -196,6 +202,12 @@ public final class FileMenu extends JMenu implements ActionListener {
     newEnemyMenuItem = new JMenuItem("New Enemy");
     newEnemyMenuItem.setEnabled(false);
     newEnemyMenuItem.addActionListener(this);
+  }
+  
+  private void configureNewTilesetMenuItem() {
+    newTilesetMenuItem = new JMenuItem("New Tileset");
+    newTilesetMenuItem.setEnabled(false);
+    newTilesetMenuItem.addActionListener(this);
   }
 
   private void configureOpenProjectMenuItem() {
