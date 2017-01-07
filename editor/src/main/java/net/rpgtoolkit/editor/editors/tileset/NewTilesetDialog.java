@@ -73,9 +73,9 @@ public class NewTilesetDialog extends JDialog  {
     });
 
     JPanel gridPanel = new JPanel(new GridLayout(0, 2));
-    gridPanel.add(new JLabel("Width", SwingConstants.CENTER));
+    gridPanel.add(new JLabel("Tile Width", SwingConstants.CENTER));
     gridPanel.add(widthSpinner);
-    gridPanel.add(new JLabel("Height", SwingConstants.CENTER));
+    gridPanel.add(new JLabel("Tile Height", SwingConstants.CENTER));
     gridPanel.add(heightSpinner);
     gridPanel.add(okButton);
     gridPanel.add(cancelButton);
