@@ -36,9 +36,12 @@ import net.rpgtoolkit.common.assets.AssetHandle;
 import net.rpgtoolkit.common.assets.AssetManager;
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.assets.Enemy;
+import net.rpgtoolkit.common.assets.Item;
 import net.rpgtoolkit.common.assets.Player;
+import net.rpgtoolkit.common.assets.Program;
 import net.rpgtoolkit.common.assets.Project;
 import net.rpgtoolkit.common.assets.SpecialMove;
+import net.rpgtoolkit.common.assets.StatusEffect;
 import net.rpgtoolkit.common.assets.Tile;
 import net.rpgtoolkit.common.assets.TileSet;
 import net.rpgtoolkit.common.assets.files.FileAssetHandleResolver;
@@ -57,6 +60,7 @@ import net.rpgtoolkit.common.assets.serialization.legacy.LegacyPlayerSerializer;
 import net.rpgtoolkit.common.assets.serialization.legacy.LegacyProjectSerializer;
 import net.rpgtoolkit.common.assets.serialization.legacy.LegacySpecialMoveSerializer;
 import net.rpgtoolkit.common.assets.serialization.legacy.LegacyStatusEffectSerializer;
+import net.rpgtoolkit.common.assets.serialization.legacy.LegacyTileSetSerializer;
 import net.rpgtoolkit.editor.editors.AnimationEditor;
 import net.rpgtoolkit.editor.editors.BoardEditor;
 import net.rpgtoolkit.editor.editors.board.AbstractBrush;
@@ -65,7 +69,6 @@ import net.rpgtoolkit.editor.editors.board.CustomBrush;
 import net.rpgtoolkit.editor.editors.board.ShapeBrush;
 import net.rpgtoolkit.editor.editors.board.VectorBrush;
 import net.rpgtoolkit.editor.editors.ProjectEditor;
-import net.rpgtoolkit.editor.editors.TileEditor;
 import net.rpgtoolkit.editor.editors.TileSelectionEvent;
 import net.rpgtoolkit.editor.ui.listeners.TileSelectionListener;
 import net.rpgtoolkit.editor.editors.TileRegionSelectionEvent;
@@ -73,12 +76,12 @@ import net.rpgtoolkit.editor.editors.board.NewBoardDialog;
 import net.rpgtoolkit.editor.ui.resources.Icons;
 import net.rpgtoolkit.editor.editors.board.ProgramBrush;
 import net.rpgtoolkit.common.utilities.PropertiesSingleton;
+import net.rpgtoolkit.common.utilities.TileSetCache;
 import net.rpgtoolkit.editor.editors.CharacterEditor;
 import net.rpgtoolkit.editor.editors.EnemyEditor;
 import net.rpgtoolkit.editor.editors.tileset.NewTilesetDialog;
 import net.rpgtoolkit.editor.utilities.FileTools;
 import net.rpgtoolkit.editor.utilities.TileSetRipper;
-import org.apache.commons.io.FilenameUtils;
 
 /**
  * Currently opening TileSets, tiles, programs, boards, animations, characters etc.
@@ -389,6 +392,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     assetManager.registerSerializer(new LegacyProjectSerializer());
     assetManager.registerSerializer(new LegacySpecialMoveSerializer());
     assetManager.registerSerializer(new LegacyStatusEffectSerializer());
+    assetManager.registerSerializer(new LegacyTileSetSerializer());
 
     // JSON.
     assetManager.registerSerializer(new JsonAnimationSerializer());
@@ -669,24 +673,14 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     return null;
   }
 
-  /**
-   * Creates a TileSet editor window for modifying the specified TileSet.
-   *
-   * @param file
-   */
-  public void openTile(File file) {
-    TileEditor testTileEditor = new TileEditor(file);
-    desktopPane.add(testTileEditor);
-  }
-
   public void createNewTileset() {
     NewTilesetDialog dialog = new NewTilesetDialog();
     dialog.setLocationRelativeTo(this);
     dialog.setVisible(true);
 
     if (dialog.getValue() != null) {
-      int width = dialog.getValue()[0];
-      int height = dialog.getValue()[1];
+      int tileWidth = dialog.getValue()[0];
+      int tileHeight = dialog.getValue()[1];
 
       fileChooser.resetChoosableFileFilters();
       FileNameExtensionFilter filter = new FileNameExtensionFilter(
@@ -695,20 +689,21 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
       if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
         File file = fileChooser.getSelectedFile();
-        
+
         try (FileInputStream fis = new FileInputStream(file)) {
           BufferedImage source = ImageIO.read(fis);
+
+          TileSet tileSet = TileSetRipper.rip(source, tileWidth, tileHeight);
+
+          File tileSetFile = MainWindow.getInstance().saveByType(TileSet.class);
+          tileSet.setDescriptor(new AssetDescriptor(tileSetFile.toURI()));
+          tileSet.setName(tileSetFile.getName());
           
-          TileSet tileSet = TileSetRipper.rip(source, width, height);
-          
-          String fileName = System.getProperty("project.path") + PropertiesSingleton.getProperty("toolkit.directory.tileset");
-          fileName += File.separator + FilenameUtils.removeExtension(file.getName()) + ".tst";
-          
-          File tileSetFile = new File(fileName);
-          tileSet.saveAs(tileSetFile);
+          AssetManager.getInstance().serialize(
+                  AssetManager.getInstance().getHandle(tileSet));
           
           openTileset(tileSetFile);
-        } catch (IOException ex) {
+        } catch (IOException | AssetException ex) {
           Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
       }
@@ -716,9 +711,11 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   }
 
   public void openTileset(File file) {
-    TileSet tileSet = new TileSet(file);
+    TileSetCache tileSetCache = TileSetCache.getInstance();
+    TileSet tileSet = tileSetCache.addTileSet(file.getName());
+
     tileSetPanel.addTileSet(tileSet);
-    
+
     upperTabbedPane.setSelectedComponent(tileSetPanel);
   }
 
@@ -739,29 +736,28 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   }
 
   public String getTypeSubdirectory(Class<? extends AbstractAsset> type) {
-    switch (type.getSimpleName()) {
-      case "Animation":
-        return PropertiesSingleton.getProperty("toolkit.directory.misc");
-      case "Board":
-        return PropertiesSingleton.getProperty("toolkit.directory.board");
-      case "Enemy":
-        return PropertiesSingleton.getProperty("toolkit.directory.enemy");
-      case "Item":
-        return PropertiesSingleton.getProperty("toolkit.directory.item");
-      case "Player":
-        return PropertiesSingleton.getProperty("toolkit.directory.character");
-      case "Program":
-        return PropertiesSingleton.getProperty("toolkit.directory.program");
-      case "Project":
-        return PropertiesSingleton.getProperty("toolkit.directory.main");
-      case "StatusEffect":
-        return PropertiesSingleton.getProperty("toolkit.directory.statuseffect");
-      case "SpecialMove":
-        return PropertiesSingleton.getProperty("toolkit.directory.specialmove");
-      case "Tileset":
-        return PropertiesSingleton.getProperty("toolkit.directory.tileset");
-      default:
-        return "";
+    if (type == Animation.class) {
+      return PropertiesSingleton.getProperty("toolkit.directory.misc");
+    } else if (type == Board.class) {
+      return PropertiesSingleton.getProperty("toolkit.directory.board");
+    } else if (type == Enemy.class) {
+      return PropertiesSingleton.getProperty("toolkit.directory.enemy");
+    } else if (type == Item.class) {
+      return PropertiesSingleton.getProperty("toolkit.directory.item");
+    } else if (type == Player.class) {
+      return PropertiesSingleton.getProperty("toolkit.directory.character");
+    } else if (type == Program.class) {
+      return PropertiesSingleton.getProperty("toolkit.directory.program");
+    } else if (type == Project.class) {
+      return PropertiesSingleton.getProperty("toolkit.directory.main");
+    } else if (type == StatusEffect.class) {
+      return PropertiesSingleton.getProperty("toolkit.directory.statuseffect");
+    } else if (type == SpecialMove.class) {
+      return PropertiesSingleton.getProperty("toolkit.directory.specialmove");
+    } else if (type == TileSet.class) {
+      return PropertiesSingleton.getProperty("toolkit.directory.tileset");
+    } else {
+      return "";
     }
   }
 
@@ -770,29 +766,28 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   }
 
   public String getTypeFilterDescription(Class<? extends AbstractAsset> type) {
-    switch (type.getSimpleName()) {
-      case "Animation":
-        return "Animations";
-      case "Board":
-        return PropertiesSingleton.getProperty("toolkit.directory.board");
-      case "Enemy":
-        return "Enemies";
-      case "Item":
-        return "Items";
-      case "Player":
-        return "Characters";
-      case "Program":
-        return "Programs";
-      case "Project":
-        return "Projects";
-      case "StatusEffect":
-        return "Status Effects";
-      case "Tileset":
-        return "Tilesets";
-      case "SpecialMove":
-        return "Special Moves";
-      default:
-        return "Toolkit Files";
+    if (type == Animation.class) {
+      return "Animations";
+    } else if (type == Board.class) {
+      return PropertiesSingleton.getProperty("toolkit.directory.board");
+    } else if (type == Enemy.class) {
+      return "Enemies";
+    } else if (type == Item.class) {
+      return "Items";
+    } else if (type == Player.class) {
+      return "Characters";
+    } else if (type == Program.class) {
+      return "Programs";
+    } else if (type == Project.class) {
+      return "Projects";
+    } else if (type == StatusEffect.class) {
+      return "Status Effects";
+    } else if (type == TileSet.class) {
+      return "Tilesets";
+    } else if (type == SpecialMove.class) {
+      return "Special Moves";
+    } else {
+      return "Toolkit Files";
     }
   }
 
@@ -801,29 +796,28 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   }
 
   public String[] getTypeExtensions(Class<? extends AbstractAsset> type) {
-    switch (type.getSimpleName()) {
-      case "Animation":
-        return new String[]{"anm", "json"};
-      case "Board":
-        return new String[]{"brd", "json"};
-      case "Enemy":
-        return new String[]{"ene", "json"};
-      case "Item":
-        return new String[]{"itm", "json"};
-      case "Player":
-        return new String[]{"tem", "json"};
-      case "Program":
-        return new String[]{"prg"};
-      case "Project":
-        return new String[]{"gam", "json"};
-      case "StatusEffect":
-        return new String[]{"ste", "json"};
-      case "Tileset":
-        return new String[]{"tst"};
-      case "SpecialMove":
-        return new String[]{"spc", "json"};
-      default:
-        return this.getTKFileExtensions();
+    if (type == Animation.class) {
+      return new String[]{"anm", "json"};
+    } else if (type == Board.class) {
+      return new String[]{"brd", "json"};
+    } else if (type == Enemy.class) {
+      return new String[]{"ene", "json"};
+    } else if (type == Item.class) {
+      return new String[]{"itm", "json"};
+    } else if (type == Player.class) {
+      return new String[]{"tem", "json"};
+    } else if (type == Program.class) {
+      return new String[]{"prg"};
+    } else if (type == Project.class) {
+      return new String[]{"gam", "json"};
+    } else if (type == StatusEffect.class) {
+      return new String[]{"ste", "json"};
+    } else if (type == TileSet.class) {
+      return new String[]{"tst"};
+    } else if (type == SpecialMove.class) {
+      return new String[]{"spc", "json"};
+    } else {
+      return this.getTKFileExtensions();
     }
   }
 

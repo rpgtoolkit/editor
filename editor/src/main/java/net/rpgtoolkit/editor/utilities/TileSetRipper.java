@@ -18,7 +18,7 @@ import net.rpgtoolkit.common.assets.TileSet;
 public class TileSetRipper {
 
   public static TileSet rip(BufferedImage source, int tileWidth, int tileHeight) {
-    TileSet tileSet = new TileSet();
+    TileSet tileSet = new TileSet(null);
 
     int sourceWidth = source.getWidth();
     int sourceHeight = source.getHeight();
