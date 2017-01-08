@@ -711,8 +711,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   }
 
   public void openTileset(File file) {
-    TileSetCache tileSetCache = TileSetCache.getInstance();
-    TileSet tileSet = tileSetCache.addTileSet(file.getName());
+    TileSet tileSet = TileSetCache.addTileSet(file.getName());
 
     tileSetPanel.addTileSet(tileSet);
 
