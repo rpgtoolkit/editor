@@ -33,6 +33,7 @@ public final class FileMenu extends JMenu implements ActionListener {
   private JMenuItem newBoardMenuItem;
   private JMenuItem newCharacterMenuItem;
   private JMenuItem newEnemyMenuItem;
+  private JMenuItem newItemMenuItem;
   private JMenuItem newTilesetMenuItem;
 
   private JMenu openMenu;
@@ -111,6 +112,8 @@ public final class FileMenu extends JMenu implements ActionListener {
       MainWindow.getInstance().createNewCharacter();
     } else if (e.getSource() == newEnemyMenuItem) {
       MainWindow.getInstance().createNewEnemy();
+    } else if (e.getSource() == newItemMenuItem) {
+      MainWindow.getInstance().createNewItem();
     } else if (e.getSource() == newTilesetMenuItem) {
       MainWindow.getInstance().createNewTileset();
     }
@@ -125,6 +128,7 @@ public final class FileMenu extends JMenu implements ActionListener {
     newBoardMenuItem.setEnabled(true);
     newCharacterMenuItem.setEnabled(true);
     newEnemyMenuItem.setEnabled(true);
+    newItemMenuItem.setEnabled(true);
     newTilesetMenuItem.setEnabled(true);
   }
 
@@ -149,6 +153,7 @@ public final class FileMenu extends JMenu implements ActionListener {
     configureNewBoardMenuItem();
     configureNewCharacterMenuItem();
     configureNewEnemyMenuItem();
+    configureNewItemMenuItem();
     configureNewTilesetMenuItem();
 
     newMenu = new JMenu("New");
@@ -158,6 +163,7 @@ public final class FileMenu extends JMenu implements ActionListener {
     newMenu.add(newBoardMenuItem);
     newMenu.add(newCharacterMenuItem);
     newMenu.add(newEnemyMenuItem);
+    newMenu.add(newItemMenuItem);
     newMenu.add(newTilesetMenuItem);
   }
 
@@ -203,6 +209,12 @@ public final class FileMenu extends JMenu implements ActionListener {
     newEnemyMenuItem = new JMenuItem("New Enemy");
     newEnemyMenuItem.setEnabled(false);
     newEnemyMenuItem.addActionListener(this);
+  }
+  
+  private void configureNewItemMenuItem() {
+    newItemMenuItem = new JMenuItem("New Item");
+    newItemMenuItem.setEnabled(false);
+    newItemMenuItem.addActionListener(this);
   }
   
   private void configureNewTilesetMenuItem() {

@@ -32,7 +32,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
@@ -47,7 +46,6 @@ import net.rpgtoolkit.common.assets.Player;
 import net.rpgtoolkit.common.assets.PlayerSpecialMove;
 import net.rpgtoolkit.common.assets.Program;
 import net.rpgtoolkit.common.assets.SpecialMove;
-import net.rpgtoolkit.common.assets.events.SpriteChangedEvent;
 import net.rpgtoolkit.common.io.Paths;
 import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.editors.sprite.AbstractSpriteEditor;
@@ -189,67 +187,6 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
     player.setDescriptor(new AssetDescriptor(file.toURI()));
     this.setTitle("Editing Player - " + file.getName());
     return save();
-  }
-
-  public void gracefulClose() {
-    player.removeSpriteChangeListener(this);
-    player.removeSpriteChangeListener(animationsTableModel);
-  }
-
-  public void setWindowParent(MainWindow parent) {
-
-  }
-
-  @Override
-  public void internalFrameOpened(InternalFrameEvent e) {
-
-  }
-
-  @Override
-  public void internalFrameClosing(InternalFrameEvent e) {
-
-  }
-
-  @Override
-  public void internalFrameClosed(InternalFrameEvent e) {
-    this.gracefulClose();
-  }
-
-  @Override
-  public void internalFrameIconified(InternalFrameEvent e) {
-
-  }
-
-  @Override
-  public void internalFrameDeiconified(InternalFrameEvent e) {
-
-  }
-
-  @Override
-  public void internalFrameActivated(InternalFrameEvent e) {
-
-  }
-
-  @Override
-  public void internalFrameDeactivated(InternalFrameEvent e) {
-
-  }
-  
-  @Override
-  public void spriteChanged(SpriteChangedEvent e) {
-    updateAnimatedPanel();
-  }
-
-  @Override
-  public void spriteAnimationAdded(SpriteChangedEvent e) {
-  }
-
-  @Override
-  public void spriteAnimationUpdated(SpriteChangedEvent e) {
-  }
-
-  @Override
-  public void spriteAnimationRemoved(SpriteChangedEvent e) {
   }
 
   private void setupNewPlayer() {
