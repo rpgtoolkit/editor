@@ -49,6 +49,7 @@ import net.rpgtoolkit.common.assets.serialization.JsonAnimationSerializer;
 import net.rpgtoolkit.common.assets.serialization.JsonPlayerSerializer;
 import net.rpgtoolkit.common.assets.serialization.JsonBoardSerializer;
 import net.rpgtoolkit.common.assets.serialization.JsonEnemySerializer;
+import net.rpgtoolkit.common.assets.serialization.JsonItemSerializer;
 import net.rpgtoolkit.common.assets.serialization.JsonProjectSerializer;
 import net.rpgtoolkit.common.assets.serialization.JsonSpecialMoveSerializer;
 import net.rpgtoolkit.common.assets.serialization.legacy.LegacyAnimatedTileSerializer;
@@ -79,6 +80,7 @@ import net.rpgtoolkit.common.utilities.PropertiesSingleton;
 import net.rpgtoolkit.common.utilities.TileSetCache;
 import net.rpgtoolkit.editor.editors.CharacterEditor;
 import net.rpgtoolkit.editor.editors.EnemyEditor;
+import net.rpgtoolkit.editor.editors.ItemEditor;
 import net.rpgtoolkit.editor.editors.tileset.NewTilesetDialog;
 import net.rpgtoolkit.editor.utilities.FileTools;
 import net.rpgtoolkit.editor.utilities.TileSetRipper;
@@ -333,6 +335,10 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       CharacterEditor editor = (CharacterEditor) e.getInternalFrame();
       propertiesPanel.setModel(editor.getPlayer());
       lowerTabbedPane.setSelectedComponent(propertiesPanel);
+    } else if (e.getInternalFrame() instanceof ItemEditor) {
+      ItemEditor editor = (ItemEditor) e.getInternalFrame();
+      propertiesPanel.setModel(editor.getItem());
+      lowerTabbedPane.setSelectedComponent(propertiesPanel);
     }
   }
 
@@ -401,6 +407,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     assetManager.registerSerializer(new JsonProjectSerializer());
     assetManager.registerSerializer(new JsonSpecialMoveSerializer());
     assetManager.registerSerializer(new JsonEnemySerializer());
+    assetManager.registerSerializer(new JsonItemSerializer());
   }
 
   /**
@@ -456,11 +463,11 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       addToolkitEditorWindow(EditorFactory.getEditor(openBoard(file)));
     } else if (fileName.endsWith(".ene") || fileName.endsWith(".ene.json")) {
       addToolkitEditorWindow(EditorFactory.getEditor(openEnemy(file)));
+    } else if (fileName.endsWith(".item") || fileName.endsWith("itm.json")) {
+      addToolkitEditorWindow(EditorFactory.getEditor(openItem(file)));
     } else if (fileName.endsWith(".tem") || fileName.endsWith(".tem.json")) {
       addToolkitEditorWindow(EditorFactory.getEditor(openCharacter(file)));
-    } else if (fileName.endsWith(".prg")) {
-
-    } else if (fileName.endsWith(".tst")) {
+    } else if (fileName.endsWith(".tst") || fileName.endsWith("tst.json")) {
       openTileset(file);
     } else if (fileName.endsWith(".spc") || fileName.endsWith(".spc.json")) {
       addToolkitEditorWindow(EditorFactory.getEditor(openSpecialMove(file)));
@@ -630,6 +637,35 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         Enemy enemy = (Enemy) handle.getAsset();
 
         return enemy;
+      }
+    } catch (IOException | AssetException ex) {
+      Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+    return null;
+  }
+  
+  public void createNewItem() {
+    Item item = new Item(null);
+    item.setName("Untitled");
+    
+    ItemEditor itemEditor = new ItemEditor(item);
+    itemEditor.addInternalFrameListener(this);
+    itemEditor.setVisible(true);
+    itemEditor.toFront();
+    
+    desktopPane.add(itemEditor);
+    selectToolkitWindow(itemEditor);
+  }
+  
+  public Item openItem(File file) {
+    try {
+      if (file.canRead()) {
+        AssetHandle handle = AssetManager.getInstance().deserialize(
+                new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
+        Item item = (Item) handle.getAsset();
+
+        return item;
       }
     } catch (IOException | AssetException ex) {
       Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);

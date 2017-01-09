@@ -24,8 +24,12 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.AbstractSprite;
+import net.rpgtoolkit.common.assets.events.SpriteChangedEvent;
+import net.rpgtoolkit.common.assets.listeners.SpriteChangeListener;
 import net.rpgtoolkit.common.utilities.PropertiesSingleton;
 import net.rpgtoolkit.editor.editors.sprite.listener.AddAnimationActionListener;
 import net.rpgtoolkit.editor.editors.sprite.listener.AnimationListSelectionListener;
@@ -42,7 +46,7 @@ import net.rpgtoolkit.editor.ui.resources.Icons;
  *
  * @author Joshua Michael Daly
  */
-public abstract class AbstractSpriteEditor extends ToolkitEditorWindow {
+public abstract class AbstractSpriteEditor extends ToolkitEditorWindow implements InternalFrameListener, SpriteChangeListener {
 
   public static final int DEFAULT_INPUT_COLUMNS = 12;
 
@@ -193,6 +197,60 @@ public abstract class AbstractSpriteEditor extends ToolkitEditorWindow {
   public void setStepRateField(DoubleField stepRateField) {
     this.stepRateField = stepRateField;
   }
+  
+    @Override
+  public void internalFrameOpened(InternalFrameEvent e) {
+
+  }
+
+  @Override
+  public void internalFrameClosing(InternalFrameEvent e) {
+
+  }
+
+  @Override
+  public void internalFrameClosed(InternalFrameEvent e) {
+    sprite.removeSpriteChangeListener(this);
+    sprite.removeSpriteChangeListener(animationsTableModel);
+  }
+
+  @Override
+  public void internalFrameIconified(InternalFrameEvent e) {
+
+  }
+
+  @Override
+  public void internalFrameDeiconified(InternalFrameEvent e) {
+
+  }
+
+  @Override
+  public void internalFrameActivated(InternalFrameEvent e) {
+
+  }
+
+  @Override
+  public void internalFrameDeactivated(InternalFrameEvent e) {
+
+  }
+  
+  @Override
+  public void spriteChanged(SpriteChangedEvent e) {
+    updateAnimatedPanel();
+  }
+
+  @Override
+  public void spriteAnimationAdded(SpriteChangedEvent e) {
+  }
+
+  @Override
+  public void spriteAnimationUpdated(SpriteChangedEvent e) {
+  }
+
+  @Override
+  public void spriteAnimationRemoved(SpriteChangedEvent e) {
+  }
+
   
   public void updateAnimatedPanel() {
     if (animatedPanel == null) {

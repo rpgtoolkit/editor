@@ -16,7 +16,9 @@ import net.rpgtoolkit.common.assets.BoardLight;
 import net.rpgtoolkit.common.assets.BoardProgram;
 import net.rpgtoolkit.common.assets.BoardSprite;
 import net.rpgtoolkit.common.assets.BoardVector;
+import net.rpgtoolkit.common.assets.Item;
 import net.rpgtoolkit.common.assets.Player;
+import net.rpgtoolkit.editor.editors.ItemModelPanel;
 import net.rpgtoolkit.editor.editors.animation.AnimationModelPanel;
 import net.rpgtoolkit.editor.editors.character.CharacterModelPanel;
 
@@ -46,6 +48,8 @@ public final class ModelPanelFactory {
       return new AnimationModelPanel((Animation) model);
     } else if (model instanceof Player) {
       return new CharacterModelPanel((Player) model);
+    } else if (model instanceof Item) {
+      return new ItemModelPanel((Item) model);
     }
 
     return null;

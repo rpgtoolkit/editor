@@ -4,22 +4,22 @@
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of
  * the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package net.rpgtoolkit.editor.editors.character;
+package net.rpgtoolkit.editor.editors;
 
-import net.rpgtoolkit.common.assets.Player;
+import net.rpgtoolkit.common.assets.Item;
 import net.rpgtoolkit.editor.editors.sprite.AbstractSpriteModelPanel;
 
 /**
  *
  * @author Joshua Michael Daly
  */
-public class CharacterModelPanel extends AbstractSpriteModelPanel {
+public class ItemModelPanel extends AbstractSpriteModelPanel {
+  
+  private Item item;
 
-  private final Player player;
-
-  public CharacterModelPanel(Player model) {
+  public ItemModelPanel(Item model) {
     super(model);
-    player = model;
+    item = model;
   }
 
 }
