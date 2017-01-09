@@ -462,7 +462,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       addToolkitEditorWindow(EditorFactory.getEditor(openBoard(file)));
     } else if (fileName.endsWith(".ene") || fileName.endsWith(".ene.json")) {
       addToolkitEditorWindow(EditorFactory.getEditor(openEnemy(file)));
-    } else if (fileName.endsWith(".item") || fileName.endsWith("itm.json")) {
+    } else if (fileName.endsWith(".itm") || fileName.endsWith("itm.json")) {
       addToolkitEditorWindow(EditorFactory.getEditor(openItem(file)));
     } else if (fileName.endsWith(".tem") || fileName.endsWith(".tem.json")) {
       addToolkitEditorWindow(EditorFactory.getEditor(openCharacter(file)));
