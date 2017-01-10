@@ -52,4 +52,5 @@ public class WholeNumberField extends JFormattedTextField {
             return (Long)super.getValue();
         }
     }
+    
 }

@@ -1,10 +1,11 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of
- * the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package net.rpgtoolkit.editor.ui;
+package net.rpgtoolkit.editor.utilities;
 
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -23,6 +24,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
+import net.rpgtoolkit.editor.ui.MainWindow;
 import net.rpgtoolkit.editor.ui.listeners.PopupListFilesListener;
 
 /**

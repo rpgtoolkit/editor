@@ -1,8 +1,9 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of
- * the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.editor.editors;
 
@@ -36,7 +37,7 @@ import net.rpgtoolkit.common.assets.AssetException;
 import net.rpgtoolkit.common.assets.AssetManager;
 import net.rpgtoolkit.common.assets.Project;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
-import net.rpgtoolkit.editor.ui.Gui;
+import net.rpgtoolkit.editor.utilities.Gui;
 import net.rpgtoolkit.editor.ui.MainWindow;
 
 /**
@@ -1170,4 +1171,5 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
             .addComponent(miscPanel)
     );
   }
+  
 }

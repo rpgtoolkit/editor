@@ -33,3 +33,4 @@ out/
 /deps/target/
 /editor/nbactions.xml
 **/nb-configuration.xml
+/target/

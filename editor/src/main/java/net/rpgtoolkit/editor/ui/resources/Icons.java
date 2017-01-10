@@ -1,18 +1,14 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of
- * the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.editor.ui.resources;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 
 import javax.swing.ImageIcon;
 
@@ -28,20 +24,20 @@ public final class Icons {
     LARGE
   };
 
-  private static final Map<Integer, ImageIcon> cache;
+  private static final Map<Integer, ImageIcon> CACHE;
 
   static {
-    cache = new HashMap<>();
+    CACHE = new HashMap<>();
   }
 
   public static final ImageIcon getIcon(String name, Size size) {
     int key = 0;
     key ^= name.hashCode();
     key ^= size.hashCode() * 31;
-    if (!cache.containsKey(key)) {
-      cache.put(key, getImageIcon(name, size));
+    if (!CACHE.containsKey(key)) {
+      CACHE.put(key, getImageIcon(name, size));
     }
-    return cache.get(key);
+    return CACHE.get(key);
   }
 
   public static final ImageIcon getIcon(String name) {

@@ -1,8 +1,9 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of
- * the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.editor.editors.board;
 
@@ -44,7 +45,7 @@ public abstract class AbstractBoardView extends JPanel implements
   private static final Color DEFAULT_GRID_COLOR = Color.BLACK;
   private static final Color DEFAULT_START_POSITION_COLOR = Color.CYAN;
   private static final Color DEFAULT_BACKGROUND_COLOR = new Color(64, 64, 64);
-  private static final double[] zoomLevels
+  private static final double[] ZOOM_LEVELS
           = {
             0.0625, 0.125, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0
           };
@@ -266,9 +267,9 @@ public abstract class AbstractBoardView extends JPanel implements
    * @param index The zoom level to use, the index is used to access the zoom level in an array.
    */
   public void setZoomLevel(int index) {
-    if (index >= 0 && index < zoomLevels.length) {
+    if (index >= 0 && index < ZOOM_LEVELS.length) {
       zoomLevel = index;
-      setZoom(zoomLevels[index]);
+      setZoom(ZOOM_LEVELS[index]);
     }
   }
 
@@ -473,12 +474,12 @@ public abstract class AbstractBoardView extends JPanel implements
    * @return Is the zoom level less than the maximum zoom level?
    */
   public boolean zoomIn() {
-    if (zoomLevel < zoomLevels.length - 1) {
+    if (zoomLevel < ZOOM_LEVELS.length - 1) {
       setZoomLevel(zoomLevel + 1);
       rescale();
     }
 
-    return zoomLevel < zoomLevels.length - 1;
+    return zoomLevel < ZOOM_LEVELS.length - 1;
   }
 
   /**
@@ -724,4 +725,5 @@ public abstract class AbstractBoardView extends JPanel implements
       addLayerView(layerView);
     }
   }
+  
 }

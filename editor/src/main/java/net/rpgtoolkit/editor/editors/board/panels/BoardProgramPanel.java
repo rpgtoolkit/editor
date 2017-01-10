@@ -1,8 +1,9 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of
- * the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.editor.editors.board.panels;
 
@@ -19,7 +20,7 @@ import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.BoardProgram;
 import net.rpgtoolkit.common.utilities.PropertiesSingleton;
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
-import net.rpgtoolkit.editor.ui.Gui;
+import net.rpgtoolkit.editor.utilities.Gui;
 
 /**
  *
@@ -178,4 +179,5 @@ public class BoardProgramPanel extends BoardModelPanel {
   
     layout.setVerticalGroup(verticalGroup);
   }
+  
 }

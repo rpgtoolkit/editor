@@ -1,8 +1,9 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of
- * the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.editor.editors.board;
 
@@ -49,12 +50,18 @@ public class BoardMouseAdapter extends MouseAdapter {
       int x = (int) (e.getX() / editor.getBoardView().getZoom());
       int y = (int) (e.getY() / editor.getBoardView().getZoom());
 
-      if (button == MouseEvent.BUTTON1) {
-        doMouseButton1Pressed(brush, x, y);
-      } else if (button == MouseEvent.BUTTON2) {
-        doMouseButton2Pressed(brush, x, y);
-      } else if (button == MouseEvent.BUTTON3) {
-        doMouseButton3Pressed(brush, x, y);
+      switch (button) {
+        case MouseEvent.BUTTON1:
+          doMouseButton1Pressed(brush, x, y);
+          break;
+        case MouseEvent.BUTTON2:
+          doMouseButton2Pressed(brush, x, y);
+          break;
+        case MouseEvent.BUTTON3:
+          doMouseButton3Pressed(brush, x, y);
+          break;
+        default:
+          break;
       }
     }
   }
@@ -299,4 +306,5 @@ public class BoardMouseAdapter extends MouseAdapter {
       editor.setSelectedObject(null);
     }
   }
+  
 }
