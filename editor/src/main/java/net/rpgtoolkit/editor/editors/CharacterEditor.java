@@ -49,7 +49,7 @@ import net.rpgtoolkit.common.assets.Program;
 import net.rpgtoolkit.common.assets.SpecialMove;
 import net.rpgtoolkit.common.assets.events.SpriteChangedEvent;
 import net.rpgtoolkit.common.io.Paths;
-import net.rpgtoolkit.common.utilities.PropertiesSingleton;
+import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.editors.sprite.AbstractSpriteEditor;
 import net.rpgtoolkit.editor.utilities.Gui;
 import net.rpgtoolkit.editor.ui.IntegerField;
@@ -140,7 +140,7 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
     // Get the relative portrait path.
     if (profilePanel.getFile() != null) {
       String remove = System.getProperty("project.path")
-              + PropertiesSingleton.getProperty("toolkit.directory.bitmap")
+              + CoreProperties.getProperty("toolkit.directory.bitmap")
               + File.separator;
       String path = profilePanel.getFile().getAbsolutePath().replace(remove, "");
       player.setProfilePicture(path);

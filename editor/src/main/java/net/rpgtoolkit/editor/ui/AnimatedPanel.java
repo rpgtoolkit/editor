@@ -21,7 +21,7 @@ import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.BoardVector;
 import net.rpgtoolkit.common.assets.events.AnimationChangedEvent;
 import net.rpgtoolkit.common.assets.listeners.AnimationChangeListener;
-import net.rpgtoolkit.common.utilities.PropertiesSingleton;
+import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.utilities.TransparentDrawer;
 
 /**
@@ -197,7 +197,7 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
     if (!animation.getSoundEffect().isEmpty()) {
       String path
               = System.getProperty("project.path")
-              + PropertiesSingleton.getProperty("toolkit.directory.media")
+              + CoreProperties.getProperty("toolkit.directory.media")
               + File.separator
               + animation.getSoundEffect();
     }

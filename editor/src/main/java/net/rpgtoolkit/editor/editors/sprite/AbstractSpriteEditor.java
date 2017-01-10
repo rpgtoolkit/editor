@@ -27,7 +27,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.AbstractSprite;
-import net.rpgtoolkit.common.utilities.PropertiesSingleton;
+import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.editors.sprite.listener.AddAnimationActionListener;
 import net.rpgtoolkit.editor.editors.sprite.listener.AnimationListSelectionListener;
 import net.rpgtoolkit.editor.editors.sprite.listener.BrowseAnimationActionListener;
@@ -279,7 +279,7 @@ public abstract class AbstractSpriteEditor extends ToolkitEditorWindow {
     if (!profileImagePath.isEmpty()) {
       profilePanel.addImage(new File(
               System.getProperty("project.path")
-              + PropertiesSingleton.getProperty("toolkit.directory.bitmap")
+              + CoreProperties.getProperty("toolkit.directory.bitmap")
               + File.separator
               + profileImagePath));
     }

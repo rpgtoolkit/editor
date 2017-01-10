@@ -16,7 +16,7 @@ import java.io.File;
 import javax.swing.JPanel;
 import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.AnimationFrame;
-import net.rpgtoolkit.common.utilities.PropertiesSingleton;
+import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.ui.MainWindow;
 import net.rpgtoolkit.editor.utilities.TransparentDrawer;
 
@@ -92,7 +92,7 @@ public class TimelineFrame extends JPanel implements MouseListener {
 
       if (imageFile != null) {
         String remove = System.getProperty("project.path")
-                + PropertiesSingleton.getProperty("toolkit.directory.bitmap")
+                + CoreProperties.getProperty("toolkit.directory.bitmap")
                 + File.separator;
         String path = imageFile.getAbsolutePath().replace(remove, "");
 

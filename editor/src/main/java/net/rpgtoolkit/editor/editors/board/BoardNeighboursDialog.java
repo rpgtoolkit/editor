@@ -26,7 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import net.rpgtoolkit.common.assets.Board;
-import net.rpgtoolkit.common.utilities.PropertiesSingleton;
+import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.utilities.FileTools;
 
 /**
@@ -148,7 +148,7 @@ public class BoardNeighboursDialog extends JDialog {
       @Override
       public void actionPerformed(ActionEvent e) {
         File file = FileTools.doChooseFile("brd",
-                PropertiesSingleton.getProperty("toolkit.directory.board"),
+                CoreProperties.getProperty("toolkit.directory.board"),
                 "Board Files");
 
         if (file != null) {
@@ -166,7 +166,7 @@ public class BoardNeighboursDialog extends JDialog {
       @Override
       public void actionPerformed(ActionEvent e) {
         File file = FileTools.doChooseFile("brd",
-                PropertiesSingleton.getProperty("toolkit.directory.board"),
+                CoreProperties.getProperty("toolkit.directory.board"),
                 "Board Files");
 
         if (file != null) {
@@ -184,7 +184,7 @@ public class BoardNeighboursDialog extends JDialog {
       @Override
       public void actionPerformed(ActionEvent e) {
         File file = FileTools.doChooseFile("brd",
-                PropertiesSingleton.getProperty("toolkit.directory.board"),
+                CoreProperties.getProperty("toolkit.directory.board"),
                 "Board Files");
 
         if (file != null) {
@@ -202,7 +202,7 @@ public class BoardNeighboursDialog extends JDialog {
       @Override
       public void actionPerformed(ActionEvent e) {
         File file = FileTools.doChooseFile("brd",
-                PropertiesSingleton.getProperty("toolkit.directory.board"),
+                CoreProperties.getProperty("toolkit.directory.board"),
                 "Board Files");
 
         if (file != null) {

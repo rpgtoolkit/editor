@@ -21,7 +21,7 @@ import net.rpgtoolkit.common.assets.BoardSprite;
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
 import net.rpgtoolkit.editor.editors.board.BoardSpriteDialog;
 import net.rpgtoolkit.editor.ui.MainWindow;
-import net.rpgtoolkit.common.utilities.PropertiesSingleton;
+import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.utilities.Gui;
 
 /**
@@ -70,7 +70,7 @@ public class BoardSpritePanel extends BoardModelPanel {
     /// fileComboBox
     ///
     File directory = new File(System.getProperty("project.path") 
-            + PropertiesSingleton.getProperty("toolkit.directory.item") 
+            + CoreProperties.getProperty("toolkit.directory.item") 
             + File.separator);
     String[] exts = new String[]{"itm"};
     fileComboBox = Gui.getFileListJComboBox(directory, exts, true);
@@ -87,7 +87,7 @@ public class BoardSpritePanel extends BoardModelPanel {
     /// activationComboBox
     ///
     directory = new File(System.getProperty("project.path") 
-            + PropertiesSingleton.getProperty("toolkit.directory.program") 
+            + CoreProperties.getProperty("toolkit.directory.program") 
             + File.separator);
     exts = new String[]{"prg"};
     activationComboBox = Gui.getFileListJComboBox(directory, exts, true);

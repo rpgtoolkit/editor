@@ -18,7 +18,7 @@ import javax.swing.JSpinner;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.BoardProgram;
-import net.rpgtoolkit.common.utilities.PropertiesSingleton;
+import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
 import net.rpgtoolkit.editor.utilities.Gui;
 
@@ -61,7 +61,7 @@ public class BoardProgramPanel extends BoardModelPanel {
     /// programComboBox
     ///
     File directory = new File(System.getProperty("project.path") 
-            + PropertiesSingleton.getProperty("toolkit.directory.program") 
+            + CoreProperties.getProperty("toolkit.directory.program") 
             + File.separator);
     String[] exts = new String[] {"prg"};
     programComboBox = Gui.getFileListJComboBox(directory, exts, true);

@@ -76,7 +76,7 @@ import net.rpgtoolkit.editor.editors.TileRegionSelectionEvent;
 import net.rpgtoolkit.editor.editors.board.NewBoardDialog;
 import net.rpgtoolkit.editor.ui.resources.Icons;
 import net.rpgtoolkit.editor.editors.board.ProgramBrush;
-import net.rpgtoolkit.common.utilities.PropertiesSingleton;
+import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.common.utilities.TileSetCache;
 import net.rpgtoolkit.editor.editors.CharacterEditor;
 import net.rpgtoolkit.editor.editors.EnemyEditor;
@@ -111,7 +111,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   private final LayerPanel layerPanel;
 
   private JFileChooser fileChooser;
-  private final String workingDir = PropertiesSingleton.getProjectsDirectory();
+  private final String workingDir = CoreProperties.getProjectsDirectory();
 
   // Project Related.
   private Project activeProject;
@@ -443,9 +443,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   }
 
   private String[] getTKFileExtensions() {
-    return new String[]{
-      "brd", "ene", "tem", "itm", "anm", "prg", "tst", "spc", "json"
-    };
+    return CoreProperties.getProperty("toolkit.supported.extensions").split(",");
   }
 
   public void checkFileExtension(File file) {
@@ -475,7 +473,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     this.fileChooser.setFileFilter(filter);
 
     File mainFolder = new File(this.workingDir + "/"
-            + PropertiesSingleton.getProperty("toolkit.directory.main"));
+            + CoreProperties.getProperty("toolkit.directory.main"));
 
     if (mainFolder.exists()) {
       this.fileChooser.setCurrentDirectory(mainFolder);
@@ -488,7 +486,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       System.setProperty("project.path",
               this.fileChooser.getCurrentDirectory().getParent()
               + File.separator
-              + PropertiesSingleton.getProperty("toolkit.directory.game")
+              + CoreProperties.getProperty("toolkit.directory.game")
               + File.separator
               + fileName + File.separator);
 
@@ -511,15 +509,14 @@ public class MainWindow extends JFrame implements InternalFrameListener {
             JOptionPane.QUESTION_MESSAGE);
 
     if (projectName != null) {
-      boolean result = FileTools.createDirectoryStructure(
-              PropertiesSingleton.getProjectsDirectory(), projectName);
+      boolean result = FileTools.createDirectoryStructure(CoreProperties.getProjectsDirectory(), projectName);
 
       if (result) {
         Project project = new Project(
                 null,
-                PropertiesSingleton.getProjectsDirectory()
+                CoreProperties.getProjectsDirectory()
                 + File.separator
-                + PropertiesSingleton.getProperty("toolkit.directory.main"),
+                + CoreProperties.getProperty("toolkit.directory.main"),
                 projectName);
 
         try {
@@ -528,9 +525,9 @@ public class MainWindow extends JFrame implements InternalFrameListener {
           System.setProperty("project.path",
                   System.getProperty("user.home")
                   + File.separator
-                  + PropertiesSingleton.getProperty("toolkit.directory.projects")
+                  + CoreProperties.getProperty("toolkit.directory.projects")
                   + File.separator
-                  + PropertiesSingleton.getProperty("toolkit.directory.game")
+                  + CoreProperties.getProperty("toolkit.directory.game")
                   + File.separator
                   + projectName + File.separator);
 
@@ -737,39 +734,39 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
   public String getTypeSubdirectory(Class<? extends AbstractAsset> type) {
     if (type == Animation.class) {
-      return PropertiesSingleton.getProperty("toolkit.directory.misc");
+      return CoreProperties.getProperty("toolkit.directory.misc");
     } else if (type == Board.class) {
-      return PropertiesSingleton.getProperty("toolkit.directory.board");
+      return CoreProperties.getProperty("toolkit.directory.board");
     } else if (type == Enemy.class) {
-      return PropertiesSingleton.getProperty("toolkit.directory.enemy");
+      return CoreProperties.getProperty("toolkit.directory.enemy");
     } else if (type == Item.class) {
-      return PropertiesSingleton.getProperty("toolkit.directory.item");
+      return CoreProperties.getProperty("toolkit.directory.item");
     } else if (type == Player.class) {
-      return PropertiesSingleton.getProperty("toolkit.directory.character");
+      return CoreProperties.getProperty("toolkit.directory.character");
     } else if (type == Program.class) {
-      return PropertiesSingleton.getProperty("toolkit.directory.program");
+      return CoreProperties.getProperty("toolkit.directory.program");
     } else if (type == Project.class) {
-      return PropertiesSingleton.getProperty("toolkit.directory.main");
+      return CoreProperties.getProperty("toolkit.directory.main");
     } else if (type == StatusEffect.class) {
-      return PropertiesSingleton.getProperty("toolkit.directory.statuseffect");
+      return CoreProperties.getProperty("toolkit.directory.statuseffect");
     } else if (type == SpecialMove.class) {
-      return PropertiesSingleton.getProperty("toolkit.directory.specialmove");
+      return CoreProperties.getProperty("toolkit.directory.specialmove");
     } else if (type == TileSet.class) {
-      return PropertiesSingleton.getProperty("toolkit.directory.tileset");
+      return CoreProperties.getProperty("toolkit.directory.tileset");
     } else {
       return "";
     }
   }
 
   public String getImageSubdirectory() {
-    return PropertiesSingleton.getProperty("toolkit.directory.bitmap");
+    return CoreProperties.getProperty("toolkit.directory.bitmap");
   }
 
   public String getTypeFilterDescription(Class<? extends AbstractAsset> type) {
     if (type == Animation.class) {
       return "Animations";
     } else if (type == Board.class) {
-      return PropertiesSingleton.getProperty("toolkit.directory.board");
+      return CoreProperties.getProperty("toolkit.directory.board");
     } else if (type == Enemy.class) {
       return "Enemies";
     } else if (type == Item.class) {

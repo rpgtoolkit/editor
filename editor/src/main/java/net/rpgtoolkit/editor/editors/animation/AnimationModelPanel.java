@@ -18,7 +18,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.Animation;
-import net.rpgtoolkit.common.utilities.PropertiesSingleton;
+import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.ui.AbstractModelPanel;
 import net.rpgtoolkit.editor.utilities.Gui;
 
@@ -55,7 +55,7 @@ public class AnimationModelPanel extends AbstractModelPanel {
     /// soundEffectComboBox
     ///
     File directory = new File(System.getProperty("project.path") 
-            + PropertiesSingleton.getProperty("toolkit.directory.media") 
+            + CoreProperties.getProperty("toolkit.directory.media") 
             + File.separator);
     String[] exts = new String[] {"wav", "mp3"};
     soundEffectComboBox = Gui.getFileListJComboBox(directory, exts, true);
