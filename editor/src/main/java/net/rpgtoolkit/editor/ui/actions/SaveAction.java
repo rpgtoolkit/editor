@@ -8,6 +8,8 @@
 package net.rpgtoolkit.editor.ui.actions;
 
 import java.awt.event.ActionEvent;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
@@ -28,11 +30,14 @@ public class SaveAction extends AbstractAction {
     
     if (frame != null) {
       if (frame instanceof ToolkitEditorWindow) {
-        ToolkitEditorWindow window = (ToolkitEditorWindow) frame;
-
-        if (!window.save()) {
+        try {
+          ToolkitEditorWindow window = (ToolkitEditorWindow) frame;
+          window.save();
+        } catch (Exception ex) {
+          Logger.getLogger(SaveAction.class.getName()).log(Level.SEVERE, null, ex);
+          
           JOptionPane.showMessageDialog(MainWindow.getInstance(),
-                  "Error saving file please ensure the filename extension are correct.",
+                  "Error saving file!",
                   "Error on Save",
                   JOptionPane.ERROR_MESSAGE);
         }

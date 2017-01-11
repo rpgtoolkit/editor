@@ -108,7 +108,7 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
    * *************************************************************************
    */
   @Override
-  public boolean save() {
+  public boolean save() throws Exception {
     boolean success = false;
     
     try {
@@ -158,7 +158,7 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
    * @return 
    */
   @Override
-  public boolean saveAs(File file) {
+  public boolean saveAs(File file) throws Exception {
     move.setDescriptor(new AssetDescriptor(file.toURI()));
     this.setTitle("Editing Special Move - " + file.getName());
     return save();

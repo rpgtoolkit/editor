@@ -21,8 +21,8 @@ public abstract class ToolkitEditorWindow extends JInternalFrame {
     super(title, resizeable, closeable, maximizable, iconifiable);
   }
 
-  public abstract boolean save();
+  public abstract boolean save() throws Exception;
   
-  public abstract boolean saveAs(File file);
+  public abstract boolean saveAs(File file) throws Exception;
 
 }

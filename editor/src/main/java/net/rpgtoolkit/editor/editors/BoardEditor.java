@@ -226,9 +226,10 @@ public class BoardEditor extends ToolkitEditorWindow {
   /**
    *
    * @return
+   * @throws java.lang.Exception
    */
   @Override
-  public boolean save() {
+  public boolean save() throws Exception {
     boolean success = false;
 
     if (board.getDescriptor() == null) {
@@ -255,7 +256,7 @@ public class BoardEditor extends ToolkitEditorWindow {
    * @return
    */
   @Override
-  public boolean saveAs(File file) {
+  public boolean saveAs(File file) throws Exception {
     board.setDescriptor(new AssetDescriptor(file.toURI()));
     setTitle("Editing - " + file.getName());
     return save();

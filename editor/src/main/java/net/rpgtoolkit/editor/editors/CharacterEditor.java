@@ -133,7 +133,7 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
   }
 
   @Override
-  public boolean save() {
+  public boolean save() throws Exception {
     boolean success = false;
 
     // Get the relative portrait path.
@@ -182,9 +182,10 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
    *
    * @param file
    * @return
+   * @throws java.lang.Exception
    */
   @Override
-  public boolean saveAs(File file) {
+  public boolean saveAs(File file) throws Exception {
     player.setDescriptor(new AssetDescriptor(file.toURI()));
     this.setTitle("Editing Player - " + file.getName());
     return save();

@@ -61,7 +61,7 @@ public class AnimationEditor extends ToolkitEditorWindow implements AnimationCha
   }
 
   @Override
-  public boolean save() {
+  public boolean save() throws Exception {
     boolean success = false;
     
     if (animation.getDescriptor() == null) {
@@ -86,9 +86,10 @@ public class AnimationEditor extends ToolkitEditorWindow implements AnimationCha
    *
    * @param file
    * @return
+   * @throws java.lang.Exception
    */
   @Override
-  public boolean saveAs(File file) {
+  public boolean saveAs(File file) throws Exception {
     animation.setDescriptor(new AssetDescriptor(file.toURI()));
     this.setTitle("Editing Animation - " + file.getName());
     return save();

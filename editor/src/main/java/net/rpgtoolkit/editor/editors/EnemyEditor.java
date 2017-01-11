@@ -123,7 +123,7 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
    * *************************************************************************
    */
   @Override
-  public boolean save() {
+  public boolean save() throws Exception {
     boolean success = false;
     
     //Update all enemy variables from the stats panel
@@ -161,9 +161,10 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
    *
    * @param file
    * @return
+   * @throws java.lang.Exception
    */
   @Override
-  public boolean saveAs(File file) {
+  public boolean saveAs(File file) throws Exception {
     enemy.setDescriptor(new AssetDescriptor(file.toURI()));
     this.setTitle("Editing Enemy - " + file.getName());
     return save();

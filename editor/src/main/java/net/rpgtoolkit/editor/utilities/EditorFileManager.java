@@ -120,25 +120,23 @@ public class EditorFileManager {
 
   public static String[] getTypeExtensions(Class<? extends AbstractAsset> type) {
     if (type == Animation.class) {
-      return new String[]{"json"};
+      return new String[]{CoreProperties.getProperty("toolkit.animation.extension.default")};
     } else if (type == Board.class) {
-      return new String[]{"json"};
+      return new String[]{CoreProperties.getProperty("toolkit.board.extension.default")};
     } else if (type == Enemy.class) {
-      return new String[]{"json"};
+      return new String[]{CoreProperties.getProperty("toolkit.enemy.extension.default")};
     } else if (type == Item.class) {
-      return new String[]{"json"};
+      return new String[]{CoreProperties.getProperty("toolkit.item.extension.default")};
     } else if (type == Player.class) {
-      return new String[]{"json"};
-    } else if (type == Program.class) {
-      return new String[]{"prg"};
+      return new String[]{CoreProperties.getProperty("toolkit.character.extension.default")};
     } else if (type == Project.class) {
-      return new String[]{"json"};
+      return new String[]{CoreProperties.getProperty("toolkit.project.extension.default")};
     } else if (type == StatusEffect.class) {
-      return new String[]{"json"};
+      return new String[]{CoreProperties.getProperty("toolkit.statuseffect.extension.default")};
     } else if (type == TileSet.class) {
-      return new String[]{"tst"};
+      return new String[]{CoreProperties.getProperty("toolkit.animation.tileset.default")};
     } else if (type == SpecialMove.class) {
-      return new String[]{"json"};
+      return new String[]{CoreProperties.getProperty("toolkit.specialmove.extension.default")};
     } else {
       return getTKFileExtensions();
     }
@@ -147,26 +145,12 @@ public class EditorFileManager {
   public static String[] getImageExtensions() {
     return new String[]{"png", "gif", "jpg", "jpeg", "bmp"};
   }
-  
-  public static void primeFileChooser() {
-    if (MainWindow.getInstance().getActiveProject() != null) {
-      File projectPath = new File(System.getProperty("project.path"));
-
-      FILE_CHOOSER = new JFileChooser(new SingleRootFileSystemView(projectPath));
-
-      FileNameExtensionFilter filter = new FileNameExtensionFilter(
-              "Toolkit Files", getTKFileExtensions());
-      FILE_CHOOSER.setFileFilter(filter);
-
-      if (projectPath.exists()) {
-        FILE_CHOOSER.setCurrentDirectory(projectPath);
-      }
-    }
-  }
 
   public static void openFile() {
-    primeFileChooser();
-
+    setFileChooserSubdirAndFilters(
+            System.getProperty("project.path"), 
+            "Toolkit Files", 
+            getTKFileExtensions());
     if (FILE_CHOOSER.showOpenDialog(MainWindow.getInstance()) == JFileChooser.APPROVE_OPTION) {
       MainWindow.getInstance().checkFileExtension(FILE_CHOOSER.getSelectedFile());
     }
@@ -295,8 +279,11 @@ public class EditorFileManager {
           String subdirectory, String description, String... extensions) {
     File path = setFileChooserSubdirAndFilters(subdirectory, description, extensions);
     if (FILE_CHOOSER.showSaveDialog(MainWindow.getInstance()) == JFileChooser.APPROVE_OPTION) {
-      if (validateFileChoice(path, extensions) == true) {
+      if (validateFileChoice(path, extensions)) {
         return FILE_CHOOSER.getSelectedFile();
+      } else {
+        File file = FILE_CHOOSER.getSelectedFile();
+        return new File(file.getAbsolutePath() + extensions[0]);
       }
     }
     return null;
@@ -313,14 +300,17 @@ public class EditorFileManager {
    */
   public static File setFileChooserSubdirAndFilters(
           String subdirectory, String description, String... extensions) {
+    File path = getPath(subdirectory);
+    if (path.exists()) {
+      FILE_CHOOSER.setFileSystemView(new SingleRootFileSystemView(path));
+      FILE_CHOOSER.setCurrentDirectory(path);
+    }
+    
     FILE_CHOOSER.resetChoosableFileFilters();
     FileNameExtensionFilter filter = new FileNameExtensionFilter(
             description, extensions);
     FILE_CHOOSER.setFileFilter(filter);
-    File path = getPath(subdirectory);
-    if (path.exists()) {
-      FILE_CHOOSER.setCurrentDirectory(path);
-    }
+    FILE_CHOOSER.setSelectedFile(new File("Untitled"));
     return path;
   }
 
@@ -337,7 +327,7 @@ public class EditorFileManager {
   public static boolean validateFileChoice(File path, String... extensions) {
     String fileName = FILE_CHOOSER.getSelectedFile().getName().toLowerCase();
     for (String ext : extensions) {
-      if (fileName.endsWith("." + ext)) {
+      if (fileName.endsWith(ext)) {
         return true;
       }
     }

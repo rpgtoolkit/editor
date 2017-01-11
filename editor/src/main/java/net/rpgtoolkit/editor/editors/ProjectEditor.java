@@ -158,7 +158,7 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
    * *************************************************************************
    */
   @Override
-  public boolean save() {
+  public boolean save() throws Exception {
     boolean success = false;
 
     if (project.getDescriptor() == null) {
@@ -185,7 +185,7 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
    * @return
    */
   @Override
-  public boolean saveAs(File file) {
+  public boolean saveAs(File file) throws Exception {
     project.setDescriptor(new AssetDescriptor(file.toURI()));
     this.setTitle("Editing Project - " + file.getName());
     return save();
