@@ -30,7 +30,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -167,49 +166,6 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
     enemy.setDescriptor(new AssetDescriptor(file.toURI()));
     this.setTitle("Editing Enemy - " + file.getName());
     return save();
-  }
-
-  public void gracefulClose() {
-
-  }
-
-  public void setWindowParent(MainWindow parent) {
-
-  }
-
-  @Override
-  public void internalFrameOpened(InternalFrameEvent e) {
-
-  }
-
-  @Override
-  public void internalFrameClosing(InternalFrameEvent e) {
-
-  }
-
-  @Override
-  public void internalFrameClosed(InternalFrameEvent e) {
-    this.gracefulClose();
-  }
-
-  @Override
-  public void internalFrameIconified(InternalFrameEvent e) {
-
-  }
-
-  @Override
-  public void internalFrameDeiconified(InternalFrameEvent e) {
-
-  }
-
-  @Override
-  public void internalFrameActivated(InternalFrameEvent e) {
-
-  }
-
-  @Override
-  public void internalFrameDeactivated(InternalFrameEvent e) {
-
   }
 
   /*
