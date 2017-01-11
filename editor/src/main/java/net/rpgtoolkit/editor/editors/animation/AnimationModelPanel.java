@@ -20,7 +20,7 @@ import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.ui.AbstractModelPanel;
-import net.rpgtoolkit.editor.utilities.Gui;
+import net.rpgtoolkit.editor.utilities.GuiHelper;
 
 /**
  *
@@ -58,7 +58,7 @@ public class AnimationModelPanel extends AbstractModelPanel {
             + CoreProperties.getProperty("toolkit.directory.media") 
             + File.separator);
     String[] exts = new String[] {"wav", "mp3"};
-    soundEffectComboBox = Gui.getFileListJComboBox(directory, exts, true);
+    soundEffectComboBox = GuiHelper.getFileListJComboBox(directory, exts, true);
     soundEffectComboBox.setSelectedItem(animation.getSoundEffect());
     soundEffectComboBox.addActionListener(new ActionListener() {
 

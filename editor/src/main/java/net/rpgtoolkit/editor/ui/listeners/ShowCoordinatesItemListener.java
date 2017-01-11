@@ -10,7 +10,8 @@ package net.rpgtoolkit.editor.ui.listeners;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import javax.swing.JCheckBoxMenuItem;
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.MainWindow;
+import net.rpgtoolkit.editor.editors.BoardEditor;
 
 /**
  *
@@ -21,9 +22,11 @@ public class ShowCoordinatesItemListener implements ItemListener {
   @Override
   public void itemStateChanged(ItemEvent e) {
     JCheckBoxMenuItem showCoordinatesMenuItem = (JCheckBoxMenuItem) e.getItem();
-
-    MainWindow.getInstance().toogleCoordinatesOnBoardEditor(
-            showCoordinatesMenuItem.isSelected());
+    BoardEditor editor = MainWindow.getInstance().getCurrentBoardEditor();
+    if (editor != null) {
+      MainWindow.getInstance().setShowCoordinates(showCoordinatesMenuItem.isSelected());
+      editor.getBoardView().repaint();
+    }
   }
   
 }

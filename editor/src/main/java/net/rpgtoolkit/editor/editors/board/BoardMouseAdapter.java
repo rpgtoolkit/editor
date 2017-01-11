@@ -16,7 +16,7 @@ import net.rpgtoolkit.common.assets.BoardProgram;
 import net.rpgtoolkit.common.assets.BoardSprite;
 import net.rpgtoolkit.common.assets.BoardVector;
 import net.rpgtoolkit.editor.editors.BoardEditor;
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.MainWindow;
 
 /**
  *

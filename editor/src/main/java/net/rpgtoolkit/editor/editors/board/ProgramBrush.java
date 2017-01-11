@@ -11,7 +11,7 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import net.rpgtoolkit.common.assets.BoardProgram;
 import net.rpgtoolkit.common.assets.BoardVector;
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.MainWindow;
 
 /**
  *

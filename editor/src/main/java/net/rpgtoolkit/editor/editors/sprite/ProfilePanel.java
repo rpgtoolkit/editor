@@ -14,7 +14,8 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.MainWindow;
+import net.rpgtoolkit.editor.utilities.EditorFileManager;
 import net.rpgtoolkit.editor.ui.resources.Icons;
 import net.rpgtoolkit.editor.utilities.TransparentDrawer;
 
@@ -79,10 +80,10 @@ public class ProfilePanel extends AbstractImagePanel {
   public void mouseClicked(MouseEvent e) {
     if (e.getClickCount() == 2) {
       MainWindow mainWindow = MainWindow.getInstance();
-      File imageFile = mainWindow.browseLocationBySubdir(
-              mainWindow.getImageSubdirectory(),
-              mainWindow.getImageFilterDescription(),
-              mainWindow.getImageExtensions()
+      File imageFile = EditorFileManager.browseLocationBySubdir(
+              EditorFileManager.getImageSubdirectory(),
+              EditorFileManager.getImageFilterDescription(),
+              EditorFileManager.getImageExtensions()
       );
 
       if (imageFile != null) {

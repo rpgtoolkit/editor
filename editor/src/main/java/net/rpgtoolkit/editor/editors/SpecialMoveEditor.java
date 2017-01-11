@@ -34,9 +34,10 @@ import net.rpgtoolkit.common.assets.AssetManager;
 import net.rpgtoolkit.common.assets.Program;
 import net.rpgtoolkit.common.assets.SpecialMove;
 import net.rpgtoolkit.common.assets.StatusEffect;
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.MainWindow;
+import net.rpgtoolkit.editor.utilities.EditorFileManager;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
-import net.rpgtoolkit.editor.utilities.Gui;
+import net.rpgtoolkit.editor.utilities.GuiHelper;
 import net.rpgtoolkit.editor.ui.IntegerField;
 
 /**
@@ -134,7 +135,7 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
     this.move.isUsableInMenu(boardDriven.isSelected());
     
     if (this.move.getDescriptor() == null) {
-      File file = MainWindow.getInstance().saveByType(SpecialMove.class);
+      File file = EditorFileManager.saveByType(SpecialMove.class);
       move.setDescriptor(new AssetDescriptor(file.toURI()));
       this.setTitle("Editing Special Move - " + file.getName());
     }
@@ -263,7 +264,7 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
     statusEffectButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        String loc = mainWindow.browseByTypeRelative(StatusEffect.class);
+        String loc = EditorFileManager.browseByTypeRelative(StatusEffect.class);
         if (loc != null) {
           statusEffect.setText(loc);
         }
@@ -274,7 +275,7 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
     animationButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        String loc = mainWindow.browseByTypeRelative(Animation.class);
+        String loc = EditorFileManager.browseByTypeRelative(Animation.class);
         if (loc != null) {
           animation.setText(loc);
         }
@@ -285,7 +286,7 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
     programButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        String loc = mainWindow.browseByTypeRelative(Program.class);
+        String loc = EditorFileManager.browseByTypeRelative(Program.class);
         if (loc != null) {
           program.setText(loc);
         }
@@ -298,10 +299,10 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
             this.defaultEtchedBorder, "Special Move Editor"));
 
     // Create Layout for top level panel
-    GroupLayout layout = Gui.createGroupLayout(this.specialMovePanel);
+    GroupLayout layout = GuiHelper.createGroupLayout(this.specialMovePanel);
 
     // Create Layouts for second level panels
-    GroupLayout editorLayout = Gui.createGroupLayout(editorPanel);
+    GroupLayout editorLayout = GuiHelper.createGroupLayout(editorPanel);
 
     // Configure the BASIC INFO PANEL layout
     editorLayout.setHorizontalGroup(editorLayout.createParallelGroup()
@@ -349,8 +350,8 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
     editorLayout.setVerticalGroup(editorLayout.createSequentialGroup()
             .addGroup(editorLayout.createParallelGroup()
                     .addComponent(moveNameLabel)
-                    .addComponent(this.moveName, Gui.JTF_HEIGHT,
-                            Gui.JTF_HEIGHT, Gui.JTF_HEIGHT))
+                    .addComponent(this.moveName, GuiHelper.JTF_HEIGHT,
+                            GuiHelper.JTF_HEIGHT, GuiHelper.JTF_HEIGHT))
             .addGroup(editorLayout.createParallelGroup()
                     .addComponent(descriptionLabel)
                     .addComponent(this.description))

@@ -38,8 +38,9 @@ import net.rpgtoolkit.editor.editors.sprite.listener.BrowseAnimationActionListen
 import net.rpgtoolkit.editor.editors.sprite.listener.RemoveAnimationActionListener;
 import net.rpgtoolkit.editor.ui.AnimatedPanel;
 import net.rpgtoolkit.editor.ui.DoubleField;
-import net.rpgtoolkit.editor.utilities.Gui;
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.utilities.GuiHelper;
+import net.rpgtoolkit.editor.MainWindow;
+import net.rpgtoolkit.editor.utilities.EditorFileManager;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
 import net.rpgtoolkit.editor.ui.resources.Icons;
 
@@ -270,8 +271,8 @@ public abstract class AbstractSpriteEditor extends ToolkitEditorWindow implement
 
   public void openAnimation(String path) {
     if (!path.isEmpty()) {
-      File file = MainWindow.getInstance().getPath(
-              MainWindow.getInstance().getTypeSubdirectory(Animation.class)
+      File file = EditorFileManager.getPath(
+              EditorFileManager.getTypeSubdirectory(Animation.class)
               + File.separator
               + path);
       if (file.exists()) {
@@ -298,10 +299,10 @@ public abstract class AbstractSpriteEditor extends ToolkitEditorWindow implement
             defaultEtchedBorder, "Starting Stats"));
 
     // Create Layout for top level panel
-    GroupLayout layout = Gui.createGroupLayout(statsPanel);
+    GroupLayout layout = GuiHelper.createGroupLayout(statsPanel);
 
     // Create Layouts for second level panels
-    GroupLayout statsLayout = Gui.createGroupLayout(statsEditPanel);
+    GroupLayout statsLayout = GuiHelper.createGroupLayout(statsEditPanel);
 
     GroupLayout.ParallelGroup horizontalParallelGroup = statsLayout.createParallelGroup();
     GroupLayout.SequentialGroup sequentialGroup;
@@ -409,7 +410,7 @@ public abstract class AbstractSpriteEditor extends ToolkitEditorWindow implement
     southPanel.add(configurationPanel, BorderLayout.SOUTH);
 
     // Create Layout for Top Level Panel
-    GroupLayout layout = Gui.createGroupLayout(animationsPanel);
+    GroupLayout layout = GuiHelper.createGroupLayout(animationsPanel);
 
     // Configure the GRAPHICS PANEL layout
     layout.setHorizontalGroup(layout.createParallelGroup()

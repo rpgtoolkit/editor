@@ -12,7 +12,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import net.rpgtoolkit.editor.editors.BoardEditor;
 import net.rpgtoolkit.editor.editors.board.ShapeBrush;
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.MainWindow;
 
 /**
  *

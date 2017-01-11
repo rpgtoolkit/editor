@@ -24,7 +24,8 @@ import net.rpgtoolkit.common.assets.BoardVector;
 import net.rpgtoolkit.common.assets.Item;
 import net.rpgtoolkit.common.assets.listeners.SpriteChangeListener;
 import net.rpgtoolkit.editor.editors.sprite.AbstractSpriteEditor;
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.MainWindow;
+import net.rpgtoolkit.editor.utilities.EditorFileManager;
 
 /**
  *
@@ -64,7 +65,7 @@ public class ItemEditor extends AbstractSpriteEditor implements InternalFrameLis
     item.setDescription(itemDescription.getText());
 
     if (item.getDescriptor() == null) {
-      File file = MainWindow.getInstance().saveByType(Item.class);
+      File file = EditorFileManager.saveByType(Item.class);
       item.setDescriptor(new AssetDescriptor(file.toURI()));
       this.setTitle("Editing Item - " + file.getName());
     }

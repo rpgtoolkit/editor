@@ -10,7 +10,8 @@ package net.rpgtoolkit.editor.ui.listeners;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import javax.swing.JCheckBoxMenuItem;
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.MainWindow;
+import net.rpgtoolkit.editor.editors.BoardEditor;
 
 /**
  *
@@ -21,8 +22,11 @@ public class ShowProgramsItemListener implements ItemListener {
   @Override
   public void itemStateChanged(ItemEvent e) {
     JCheckBoxMenuItem showProgramsMenuItem = (JCheckBoxMenuItem) e.getItem();
-
-    MainWindow.getInstance().toogleProgramsOnBoardEditor(showProgramsMenuItem.isSelected());
+    BoardEditor editor = MainWindow.getInstance().getCurrentBoardEditor();
+    if (editor != null) {
+      MainWindow.getInstance().setShowPrograms(showProgramsMenuItem.isSelected());
+      editor.getBoardView().repaint();
+    }
   }
   
 }

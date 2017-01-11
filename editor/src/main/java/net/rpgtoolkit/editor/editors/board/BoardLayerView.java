@@ -21,7 +21,7 @@ import net.rpgtoolkit.common.assets.BoardSprite;
 import net.rpgtoolkit.common.assets.BoardVector;
 import net.rpgtoolkit.common.assets.Tile;
 import net.rpgtoolkit.common.assets.TilePixelOutOfRangeException;
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.MainWindow;
 
 /**
  *

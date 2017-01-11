@@ -37,8 +37,9 @@ import net.rpgtoolkit.common.assets.AssetException;
 import net.rpgtoolkit.common.assets.AssetManager;
 import net.rpgtoolkit.common.assets.Project;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
-import net.rpgtoolkit.editor.utilities.Gui;
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.utilities.GuiHelper;
+import net.rpgtoolkit.editor.MainWindow;
+import net.rpgtoolkit.editor.utilities.EditorFileManager;
 
 /**
  * Project File editor
@@ -161,7 +162,7 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
     boolean success = false;
 
     if (project.getDescriptor() == null) {
-      File file = MainWindow.getInstance().saveByType(Project.class);
+      File file = EditorFileManager.saveByType(Project.class);
       project.setDescriptor(new AssetDescriptor(file.toURI()));
       this.setTitle("Editing Project - " + file.getName());
     }
@@ -376,11 +377,11 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
     keysPanel.setBorder(BorderFactory.createTitledBorder(
             this.defaultEtchedBorder, "Change Keys"));
 
-    GroupLayout layout = Gui.createGroupLayout(this.projectSettingsPanel);
-    GroupLayout projectInfoLayout = Gui.createGroupLayout(projectInfoPanel);
-    GroupLayout cursorSoundsLayout = Gui.createGroupLayout(cursorSoundsPanel);
-    GroupLayout controlsLayout = Gui.createGroupLayout(controlsPanel);
-    GroupLayout keysLayout = Gui.createGroupLayout(keysPanel);
+    GroupLayout layout = GuiHelper.createGroupLayout(this.projectSettingsPanel);
+    GroupLayout projectInfoLayout = GuiHelper.createGroupLayout(projectInfoPanel);
+    GroupLayout cursorSoundsLayout = GuiHelper.createGroupLayout(cursorSoundsPanel);
+    GroupLayout controlsLayout = GuiHelper.createGroupLayout(controlsPanel);
+    GroupLayout keysLayout = GuiHelper.createGroupLayout(keysPanel);
 
     // Configure the PROJECT INFO PANEL layout
     projectInfoLayout.setHorizontalGroup(projectInfoLayout.createSequentialGroup()
@@ -391,8 +392,8 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
     projectInfoLayout.setVerticalGroup(projectInfoLayout.
             createParallelGroup(GroupLayout.Alignment.CENTER)
             .addComponent(projectNameLabel)
-            .addComponent(this.projectName, Gui.JTF_HEIGHT,
-                    Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
+            .addComponent(this.projectName, GuiHelper.JTF_HEIGHT,
+                    GuiHelper.JTF_HEIGHT, GuiHelper.JTF_HEIGHT)
     );
 
     // Configure the CURSOR SOUNDS PANEL layout
@@ -423,8 +424,8 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
     cursorSoundsLayout.setVerticalGroup(cursorSoundsLayout.createSequentialGroup()
             .addGroup(cursorSoundsLayout.createParallelGroup()
                     .addComponent(cursorMoveSoundLabel)
-                    .addComponent(this.cursorMoveSound, Gui.JTF_HEIGHT,
-                            Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
+                    .addComponent(this.cursorMoveSound, GuiHelper.JTF_HEIGHT,
+                            GuiHelper.JTF_HEIGHT, GuiHelper.JTF_HEIGHT)
                     .addComponent(cursorMoveSoundButton))
             .addGroup(cursorSoundsLayout.createParallelGroup()
                     .addComponent(cursorSelectSoundLabel)
@@ -487,8 +488,8 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
 
     keysLayout.setVerticalGroup(keysLayout.createSequentialGroup()
             .addGroup(keysLayout.createParallelGroup()
-                    .addComponent(this.movementKeys[0], Gui.JTF_HEIGHT,
-                            Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
+                    .addComponent(this.movementKeys[0], GuiHelper.JTF_HEIGHT,
+                            GuiHelper.JTF_HEIGHT, GuiHelper.JTF_HEIGHT)
                     .addComponent(this.movementKeys[1])
                     .addComponent(this.movementKeys[2]))
             .addGroup(keysLayout.createParallelGroup()
@@ -598,9 +599,9 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
     miscPanel.setBorder(BorderFactory.createTitledBorder(
             this.defaultEtchedBorder, "Miscellaneous Settings"));
 
-    GroupLayout layout = Gui.createGroupLayout(this.startupInfoPanel);
-    GroupLayout conditionsLayout = Gui.createGroupLayout(conditionsPanel);
-    GroupLayout miscLayout = Gui.createGroupLayout(miscPanel);
+    GroupLayout layout = GuiHelper.createGroupLayout(this.startupInfoPanel);
+    GroupLayout conditionsLayout = GuiHelper.createGroupLayout(conditionsPanel);
+    GroupLayout miscLayout = GuiHelper.createGroupLayout(miscPanel);
 
     conditionsLayout.setHorizontalGroup(conditionsLayout.createParallelGroup()
             .addGroup(conditionsLayout.createSequentialGroup()
@@ -622,8 +623,8 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
     conditionsLayout.setVerticalGroup(conditionsLayout.createSequentialGroup()
             .addGroup(conditionsLayout.createParallelGroup()
                     .addComponent(initialBoardLabel)
-                    .addComponent(this.initialBoard, Gui.JTF_HEIGHT,
-                            Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
+                    .addComponent(this.initialBoard, GuiHelper.JTF_HEIGHT,
+                            GuiHelper.JTF_HEIGHT, GuiHelper.JTF_HEIGHT)
                     .addComponent(initialBoardButton))
             .addGroup(conditionsLayout.createParallelGroup()
                     .addComponent(initialCharLabel)
@@ -802,9 +803,9 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
             this.defaultEtchedBorder, "Keys"));
 
     // Configure Layouts
-    GroupLayout layout = Gui.createGroupLayout(this.codePanel);
-    GroupLayout programPanelLayout = Gui.createGroupLayout(programPanel);
-    GroupLayout keysPanelLayout = Gui.createGroupLayout(keysPanel);
+    GroupLayout layout = GuiHelper.createGroupLayout(this.codePanel);
+    GroupLayout programPanelLayout = GuiHelper.createGroupLayout(programPanel);
+    GroupLayout keysPanelLayout = GuiHelper.createGroupLayout(keysPanel);
 
     programPanelLayout.setHorizontalGroup(programPanelLayout.createParallelGroup()
             .addGroup(programPanelLayout.createSequentialGroup()
@@ -829,8 +830,8 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
     programPanelLayout.setVerticalGroup(programPanelLayout.createSequentialGroup()
             .addGroup(programPanelLayout.createParallelGroup()
                     .addComponent(runTimeProgramLabel)
-                    .addComponent(this.runTimeProgram, Gui.JTF_HEIGHT,
-                            Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
+                    .addComponent(this.runTimeProgram, GuiHelper.JTF_HEIGHT,
+                            GuiHelper.JTF_HEIGHT, GuiHelper.JTF_HEIGHT)
                     .addComponent(runTimeProgramButton))
             .addGroup(programPanelLayout.createParallelGroup()
                     .addComponent(startupProgramLabel)
@@ -865,8 +866,8 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
     keysPanelLayout.setVerticalGroup(keysPanelLayout.createSequentialGroup()
             .addGroup(keysPanelLayout.createParallelGroup()
                     .addComponent(runTimeKeyLabel)
-                    .addComponent(this.runTimeKey, Gui.JTF_HEIGHT,
-                            Gui.JTF_HEIGHT, Gui.JTF_HEIGHT))
+                    .addComponent(this.runTimeKey, GuiHelper.JTF_HEIGHT,
+                            GuiHelper.JTF_HEIGHT, GuiHelper.JTF_HEIGHT))
             .addGroup(keysPanelLayout.createParallelGroup()
                     .addComponent(menuKeyLabel)
                     .addComponent(this.menuKey))
@@ -907,8 +908,8 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
             this.defaultEtchedBorder, "Configuration"));
 
     // Configure Layouts
-    GroupLayout layout = Gui.createGroupLayout(this.fightingPanel);
-    GroupLayout fightControlPanelLayout = Gui.createGroupLayout(fightControlPanel);
+    GroupLayout layout = GuiHelper.createGroupLayout(this.fightingPanel);
+    GroupLayout fightControlPanelLayout = GuiHelper.createGroupLayout(fightControlPanel);
 
     fightControlPanelLayout.setHorizontalGroup(fightControlPanelLayout.createParallelGroup()
             .addGroup(fightControlPanelLayout.createSequentialGroup()
@@ -1050,13 +1051,13 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
             this.defaultEtchedBorder, "Custom Resolution"));
 
     // Create Layout for Top Level Panel
-    GroupLayout layout = Gui.createGroupLayout(this.graphicsPanel);
+    GroupLayout layout = GuiHelper.createGroupLayout(this.graphicsPanel);
     // Configure Layouts for Second Level Panels
-    GroupLayout colorDepthLayout = Gui.createGroupLayout(colorDepthPanel);
-    GroupLayout resolutionLayout = Gui.createGroupLayout(resolutionPanel);
-    GroupLayout screenLayout = Gui.createGroupLayout(screenPanel);
-    GroupLayout miscLayout = Gui.createGroupLayout(miscPanel);
-    GroupLayout customResLayout = Gui.createGroupLayout(customResolutionPanel);
+    GroupLayout colorDepthLayout = GuiHelper.createGroupLayout(colorDepthPanel);
+    GroupLayout resolutionLayout = GuiHelper.createGroupLayout(resolutionPanel);
+    GroupLayout screenLayout = GuiHelper.createGroupLayout(screenPanel);
+    GroupLayout miscLayout = GuiHelper.createGroupLayout(miscPanel);
+    GroupLayout customResLayout = GuiHelper.createGroupLayout(customResolutionPanel);
 
     colorDepthLayout.setHorizontalGroup(colorDepthLayout.createParallelGroup()
             .addComponent(this.sixteenBit)
@@ -1121,8 +1122,8 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
             .addComponent(customResWarningLabel)
             .addGroup(customResLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
                     .addComponent(customResX)
-                    .addComponent(this.customResWidth, Gui.JTF_HEIGHT,
-                            Gui.JTF_HEIGHT, Gui.JTF_HEIGHT)
+                    .addComponent(this.customResWidth, GuiHelper.JTF_HEIGHT,
+                            GuiHelper.JTF_HEIGHT, GuiHelper.JTF_HEIGHT)
                     .addComponent(customResY)
                     .addComponent(this.customResHeight))
     );

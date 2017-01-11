@@ -9,7 +9,7 @@ package net.rpgtoolkit.editor.editors.board.panels;
 
 import net.rpgtoolkit.editor.editors.BoardEditor;
 import net.rpgtoolkit.editor.ui.AbstractModelPanel;
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.MainWindow;
 
 /**
  *

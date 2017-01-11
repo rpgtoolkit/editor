@@ -14,7 +14,8 @@ import javax.swing.JTable;
 import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.AbstractSprite;
 import net.rpgtoolkit.editor.editors.sprite.AbstractSpriteEditor;
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.MainWindow;
+import net.rpgtoolkit.editor.utilities.EditorFileManager;
 
 /**
  *
@@ -55,7 +56,7 @@ public class BrowseAnimationActionListener implements ActionListener {
       );
 
       if (result != -1 && result != 2) { // Cancel
-        String path = MainWindow.getInstance().browseByTypeRelative(Animation.class);
+        String path = EditorFileManager.browseByTypeRelative(Animation.class);
         if (path != null) {
           switch (result) { // Active Animation
             case 0:
@@ -70,7 +71,7 @@ public class BrowseAnimationActionListener implements ActionListener {
         }
       }
     } else {
-      String path = MainWindow.getInstance().browseByTypeRelative(Animation.class);
+      String path = EditorFileManager.browseByTypeRelative(Animation.class);
       if (path != null) {
         if (row < sprite.getStandardGraphics().size()) {
           sprite.updateStandardGraphics(row, path);

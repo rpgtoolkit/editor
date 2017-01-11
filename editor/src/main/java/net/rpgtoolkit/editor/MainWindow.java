@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package net.rpgtoolkit.editor.ui;
+package net.rpgtoolkit.editor;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -29,7 +29,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import net.rpgtoolkit.common.assets.AbstractAsset;
 import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
 import net.rpgtoolkit.common.assets.AssetException;
@@ -39,41 +38,17 @@ import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.assets.Enemy;
 import net.rpgtoolkit.common.assets.Item;
 import net.rpgtoolkit.common.assets.Player;
-import net.rpgtoolkit.common.assets.Program;
 import net.rpgtoolkit.common.assets.Project;
 import net.rpgtoolkit.common.assets.SpecialMove;
-import net.rpgtoolkit.common.assets.StatusEffect;
 import net.rpgtoolkit.common.assets.Tile;
 import net.rpgtoolkit.common.assets.TileSet;
-import net.rpgtoolkit.common.assets.files.FileAssetHandleResolver;
-import net.rpgtoolkit.common.assets.serialization.JsonAnimationSerializer;
-import net.rpgtoolkit.common.assets.serialization.JsonPlayerSerializer;
-import net.rpgtoolkit.common.assets.serialization.JsonBoardSerializer;
-import net.rpgtoolkit.common.assets.serialization.JsonEnemySerializer;
-import net.rpgtoolkit.common.assets.serialization.JsonItemSerializer;
-import net.rpgtoolkit.common.assets.serialization.JsonProjectSerializer;
-import net.rpgtoolkit.common.assets.serialization.JsonSpecialMoveSerializer;
-import net.rpgtoolkit.common.assets.serialization.legacy.LegacyAnimatedTileSerializer;
-import net.rpgtoolkit.common.assets.serialization.legacy.LegacyBackgroundSerializer;
-import net.rpgtoolkit.common.assets.serialization.legacy.LegacyBoardSerializer;
-import net.rpgtoolkit.common.assets.serialization.legacy.LegacyEnemySerializer;
-import net.rpgtoolkit.common.assets.serialization.legacy.LegacyItemSerializer;
-import net.rpgtoolkit.common.assets.serialization.legacy.LegacyPlayerSerializer;
-import net.rpgtoolkit.common.assets.serialization.legacy.LegacyProjectSerializer;
-import net.rpgtoolkit.common.assets.serialization.legacy.LegacySpecialMoveSerializer;
-import net.rpgtoolkit.common.assets.serialization.legacy.LegacyStatusEffectSerializer;
-import net.rpgtoolkit.common.assets.serialization.legacy.LegacyTileSetSerializer;
 import net.rpgtoolkit.editor.editors.AnimationEditor;
 import net.rpgtoolkit.editor.editors.BoardEditor;
 import net.rpgtoolkit.editor.editors.board.AbstractBrush;
-import net.rpgtoolkit.editor.editors.board.BucketBrush;
-import net.rpgtoolkit.editor.editors.board.CustomBrush;
 import net.rpgtoolkit.editor.editors.board.ShapeBrush;
 import net.rpgtoolkit.editor.editors.board.VectorBrush;
 import net.rpgtoolkit.editor.editors.ProjectEditor;
-import net.rpgtoolkit.editor.editors.TileSelectionEvent;
 import net.rpgtoolkit.editor.ui.listeners.TileSelectionListener;
-import net.rpgtoolkit.editor.editors.TileRegionSelectionEvent;
 import net.rpgtoolkit.editor.editors.board.NewBoardDialog;
 import net.rpgtoolkit.editor.ui.resources.Icons;
 import net.rpgtoolkit.editor.editors.board.ProgramBrush;
@@ -83,6 +58,18 @@ import net.rpgtoolkit.editor.editors.CharacterEditor;
 import net.rpgtoolkit.editor.editors.EnemyEditor;
 import net.rpgtoolkit.editor.editors.ItemEditor;
 import net.rpgtoolkit.editor.editors.tileset.NewTilesetDialog;
+import net.rpgtoolkit.editor.ui.EditorFactory;
+import net.rpgtoolkit.editor.ui.LayerPanel;
+import net.rpgtoolkit.editor.ui.MainMenuBar;
+import net.rpgtoolkit.editor.ui.MainToolBar;
+import net.rpgtoolkit.editor.ui.ProjectPanel;
+import net.rpgtoolkit.editor.ui.PropertiesPanel;
+import net.rpgtoolkit.editor.ui.TileSetTabbedPane;
+import net.rpgtoolkit.editor.ui.ToolkitDesktopManager;
+import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
+import net.rpgtoolkit.editor.ui.listeners.TileSetSelectionListener;
+import net.rpgtoolkit.editor.utilities.EditorFileManager;
+import net.rpgtoolkit.editor.ui.resources.EditorProperties;
 import net.rpgtoolkit.editor.utilities.FileTools;
 import net.rpgtoolkit.editor.utilities.TileSetRipper;
 
@@ -111,9 +98,6 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   private final TileSetTabbedPane tileSetPanel;
   private final PropertiesPanel propertiesPanel;
   private final LayerPanel layerPanel;
-
-  private JFileChooser fileChooser;
-  private final String workingDir = CoreProperties.getProjectsDirectory();
 
   // Project Related.
   private Project activeProject;
@@ -156,11 +140,6 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
     // Application icon.
     this.setIconImage(Icons.getLargeIcon("application").getImage());
-    this.registerResolvers();
-    this.registerSerializers();
-
-    this.fileChooser = new JFileChooser();
-    this.fileChooser.setCurrentDirectory(new File(this.workingDir));
 
     this.menuBar = new MainMenuBar(this);
     this.toolBar = new MainToolBar();
@@ -246,6 +225,10 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   public Tile getLastSelectedTile() {
     return this.lastSelectedTile;
   }
+  
+  public void setLastSelectedTile(Tile tile) {
+    lastSelectedTile = tile;
+  }
 
   public MainMenuBar getMainMenuBar() {
     return this.menuBar;
@@ -265,10 +248,6 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     }
 
     return null;
-  }
-
-  public JFileChooser getFileChooser() {
-    return this.fileChooser;
   }
 
   public Project getActiveProject() {
@@ -382,35 +361,6 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     }
   }
 
-  private void registerResolvers() {
-    AssetManager.getInstance().registerResolver(new FileAssetHandleResolver());
-  }
-
-  private void registerSerializers() {
-    AssetManager assetManager = AssetManager.getInstance();
-
-    // Legacy.
-    assetManager.registerSerializer(new LegacyAnimatedTileSerializer());
-    assetManager.registerSerializer(new LegacyBackgroundSerializer());
-    assetManager.registerSerializer(new LegacyBoardSerializer());
-    assetManager.registerSerializer(new LegacyEnemySerializer());
-    assetManager.registerSerializer(new LegacyItemSerializer());
-    assetManager.registerSerializer(new LegacyPlayerSerializer());
-    assetManager.registerSerializer(new LegacyProjectSerializer());
-    assetManager.registerSerializer(new LegacySpecialMoveSerializer());
-    assetManager.registerSerializer(new LegacyStatusEffectSerializer());
-    assetManager.registerSerializer(new LegacyTileSetSerializer());
-
-    // JSON.
-    assetManager.registerSerializer(new JsonAnimationSerializer());
-    assetManager.registerSerializer(new JsonPlayerSerializer());
-    assetManager.registerSerializer(new JsonBoardSerializer());
-    assetManager.registerSerializer(new JsonProjectSerializer());
-    assetManager.registerSerializer(new JsonSpecialMoveSerializer());
-    assetManager.registerSerializer(new JsonEnemySerializer());
-    assetManager.registerSerializer(new JsonItemSerializer());
-  }
-
   /**
    * Adds a new file format editor to our desktop pane.
    *
@@ -424,74 +374,45 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     selectToolkitWindow(editor);
   }
 
-  public void primeFileChooser() {
-    if (this.activeProject != null) {
-      File projectPath = new File(System.getProperty("project.path"));
-
-      this.fileChooser = new JFileChooser(
-              new SingleRootFileSystemView(projectPath));
-
-      FileNameExtensionFilter filter = new FileNameExtensionFilter(
-              "Toolkit Files", this.getTKFileExtensions());
-      this.fileChooser.setFileFilter(filter);
-
-      if (projectPath.exists()) {
-        this.fileChooser.setCurrentDirectory(projectPath);
-      }
-    }
-  }
-
-  public void openFile() {
-    this.primeFileChooser();
-
-    if (this.fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-      this.checkFileExtension(this.fileChooser.getSelectedFile());
-    }
-  }
-
-  private String[] getTKFileExtensions() {
-    return CoreProperties.getProperty("toolkit.supported.extensions").split(",");
-  }
-
   public void checkFileExtension(File file) {
     String fileName = file.getName().toLowerCase();
 
-    if (fileName.endsWith(".anm") || fileName.endsWith(".anm.json")) {
+    if (fileName.endsWith(EditorProperties.getDefaultExtension(Animation.class))) {
       addToolkitEditorWindow(EditorFactory.getEditor(openAnimation(file)));
-    } else if (fileName.endsWith(".brd") || fileName.endsWith(".brd.json")) {
+    } else if (fileName.endsWith(EditorProperties.getDefaultExtension(Board.class))) {
       addToolkitEditorWindow(EditorFactory.getEditor(openBoard(file)));
-    } else if (fileName.endsWith(".ene") || fileName.endsWith(".ene.json")) {
+    } else if (fileName.endsWith(EditorProperties.getDefaultExtension(Enemy.class))) {
       addToolkitEditorWindow(EditorFactory.getEditor(openEnemy(file)));
-    } else if (fileName.endsWith(".itm") || fileName.endsWith("itm.json")) {
+    } else if (fileName.endsWith(EditorProperties.getDefaultExtension(Item.class))) {
       addToolkitEditorWindow(EditorFactory.getEditor(openItem(file)));
-    } else if (fileName.endsWith(".tem") || fileName.endsWith(".tem.json")) {
+    } else if (fileName.endsWith(EditorProperties.getDefaultExtension(Player.class))) {
       addToolkitEditorWindow(EditorFactory.getEditor(openCharacter(file)));
-    } else if (fileName.endsWith(".tst") || fileName.endsWith("tst.json")) {
+    } else if (fileName.endsWith(EditorProperties.getDefaultExtension(TileSet.class))) {
       openTileset(file);
-    } else if (fileName.endsWith(".spc") || fileName.endsWith(".spc.json")) {
+    } else if (fileName.endsWith(EditorProperties.getDefaultExtension(SpecialMove.class))) {
       addToolkitEditorWindow(EditorFactory.getEditor(openSpecialMove(file)));
     }
   }
 
   public void openProject() {
-    this.fileChooser.resetChoosableFileFilters();
+    EditorFileManager.getFileChooser().resetChoosableFileFilters();
     FileNameExtensionFilter filter = new FileNameExtensionFilter(
-            "Toolkit Project", new String[]{"gam", "json"});
-    this.fileChooser.setFileFilter(filter);
+            "Toolkit Project", new String[]{"json"});
+    EditorFileManager.getFileChooser().setFileFilter(filter);
 
-    File mainFolder = new File(this.workingDir + "/"
+    File mainFolder = new File(CoreProperties.getProjectsDirectory() + File.separator
             + CoreProperties.getProperty("toolkit.directory.main"));
 
     if (mainFolder.exists()) {
-      this.fileChooser.setCurrentDirectory(mainFolder);
+      EditorFileManager.getFileChooser().setCurrentDirectory(mainFolder);
     }
 
-    if (this.fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-      String fileName = this.fileChooser.getSelectedFile().getName().
-              substring(0, this.fileChooser.getSelectedFile().
+    if (EditorFileManager.getFileChooser().showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+      String fileName = EditorFileManager.getFileChooser().getSelectedFile().getName().
+              substring(0, EditorFileManager.getFileChooser().getSelectedFile().
                       getName().indexOf('.'));
       System.setProperty("project.path",
-              this.fileChooser.getCurrentDirectory().getParent()
+              EditorFileManager.getFileChooser().getCurrentDirectory().getParent()
               + File.separator
               + CoreProperties.getProperty("toolkit.directory.game")
               + File.separator
@@ -499,7 +420,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
       try {
         AssetHandle handle = AssetManager.getInstance().deserialize(
-                new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
+                new AssetDescriptor(EditorFileManager.getFileChooser().getSelectedFile().toURI()));
         activeProject = (Project) handle.getAsset();
       } catch (IOException | AssetException ex) {
         Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
@@ -596,7 +517,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     try {
       if (file.canRead()) {
         AssetHandle handle = AssetManager.getInstance().deserialize(
-                new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
+                new AssetDescriptor(EditorFileManager.getFileChooser().getSelectedFile().toURI()));
         Board board = (Board) handle.getAsset();
 
         return board;
@@ -631,7 +552,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     try {
       if (file.canRead()) {
         AssetHandle handle = AssetManager.getInstance().deserialize(
-                new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
+                new AssetDescriptor(EditorFileManager.getFileChooser().getSelectedFile().toURI()));
         Enemy enemy = (Enemy) handle.getAsset();
 
         return enemy;
@@ -660,7 +581,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     try {
       if (file.canRead()) {
         AssetHandle handle = AssetManager.getInstance().deserialize(
-                new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
+                new AssetDescriptor(EditorFileManager.getFileChooser().getSelectedFile().toURI()));
         Item item = (Item) handle.getAsset();
 
         return item;
@@ -695,7 +616,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     try {
       if (file.canRead()) {
         AssetHandle handle = AssetManager.getInstance().deserialize(
-                new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
+                new AssetDescriptor(EditorFileManager.getFileChooser().getSelectedFile().toURI()));
         Player player = (Player) handle.getAsset();
 
         return player;
@@ -716,20 +637,20 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       int tileWidth = dialog.getValue()[0];
       int tileHeight = dialog.getValue()[1];
 
-      fileChooser.resetChoosableFileFilters();
+      EditorFileManager.getFileChooser().resetChoosableFileFilters();
       FileNameExtensionFilter filter = new FileNameExtensionFilter(
-              "Image Files", getImageExtensions());
-      fileChooser.setFileFilter(filter);
+              "Image Files", EditorFileManager.getImageExtensions());
+      EditorFileManager.getFileChooser().setFileFilter(filter);
 
-      if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-        File file = fileChooser.getSelectedFile();
+      if (EditorFileManager.getFileChooser().showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+        File file = EditorFileManager.getFileChooser().getSelectedFile();
 
         try (FileInputStream fis = new FileInputStream(file)) {
           BufferedImage source = ImageIO.read(fis);
 
           TileSet tileSet = TileSetRipper.rip(source, tileWidth, tileHeight);
 
-          File tileSetFile = MainWindow.getInstance().saveByType(TileSet.class);
+          File tileSetFile = EditorFileManager.saveByType(TileSet.class);
           tileSet.setDescriptor(new AssetDescriptor(tileSetFile.toURI()));
           tileSet.setName(tileSetFile.getName());
           
@@ -746,9 +667,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
   public void openTileset(File file) {
     TileSet tileSet = TileSetCache.addTileSet(file.getName());
-
     tileSetPanel.addTileSet(tileSet);
-
     upperTabbedPane.setSelectedComponent(tileSetPanel);
   }
 
@@ -756,7 +675,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     try {
       if (file.canRead()) {
         AssetHandle handle = AssetManager.getInstance().deserialize(
-                new AssetDescriptor(fileChooser.getSelectedFile().toURI()));
+                new AssetDescriptor(EditorFileManager.getFileChooser().getSelectedFile().toURI()));
         SpecialMove move = (SpecialMove) handle.getAsset();
 
         return move;
@@ -766,293 +685,6 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     }
 
     return null;
-  }
-
-  public String getTypeSubdirectory(Class<? extends AbstractAsset> type) {
-    if (type == Animation.class) {
-      return CoreProperties.getProperty("toolkit.directory.misc");
-    } else if (type == Board.class) {
-      return CoreProperties.getProperty("toolkit.directory.board");
-    } else if (type == Enemy.class) {
-      return CoreProperties.getProperty("toolkit.directory.enemy");
-    } else if (type == Item.class) {
-      return CoreProperties.getProperty("toolkit.directory.item");
-    } else if (type == Player.class) {
-      return CoreProperties.getProperty("toolkit.directory.character");
-    } else if (type == Program.class) {
-      return CoreProperties.getProperty("toolkit.directory.program");
-    } else if (type == Project.class) {
-      return CoreProperties.getProperty("toolkit.directory.main");
-    } else if (type == StatusEffect.class) {
-      return CoreProperties.getProperty("toolkit.directory.statuseffect");
-    } else if (type == SpecialMove.class) {
-      return CoreProperties.getProperty("toolkit.directory.specialmove");
-    } else if (type == TileSet.class) {
-      return CoreProperties.getProperty("toolkit.directory.tileset");
-    } else {
-      return "";
-    }
-  }
-
-  public String getImageSubdirectory() {
-    return CoreProperties.getProperty("toolkit.directory.bitmap");
-  }
-
-  public String getTypeFilterDescription(Class<? extends AbstractAsset> type) {
-    if (type == Animation.class) {
-      return "Animations";
-    } else if (type == Board.class) {
-      return CoreProperties.getProperty("toolkit.directory.board");
-    } else if (type == Enemy.class) {
-      return "Enemies";
-    } else if (type == Item.class) {
-      return "Items";
-    } else if (type == Player.class) {
-      return "Characters";
-    } else if (type == Program.class) {
-      return "Programs";
-    } else if (type == Project.class) {
-      return "Projects";
-    } else if (type == StatusEffect.class) {
-      return "Status Effects";
-    } else if (type == TileSet.class) {
-      return "Tilesets";
-    } else if (type == SpecialMove.class) {
-      return "Special Moves";
-    } else {
-      return "Toolkit Files";
-    }
-  }
-
-  public String getImageFilterDescription() {
-    return "Supported Files";
-  }
-
-  public String[] getTypeExtensions(Class<? extends AbstractAsset> type) {
-    if (type == Animation.class) {
-      return new String[]{"anm", "json"};
-    } else if (type == Board.class) {
-      return new String[]{"brd", "json"};
-    } else if (type == Enemy.class) {
-      return new String[]{"ene", "json"};
-    } else if (type == Item.class) {
-      return new String[]{"itm", "json"};
-    } else if (type == Player.class) {
-      return new String[]{"tem", "json"};
-    } else if (type == Program.class) {
-      return new String[]{"prg"};
-    } else if (type == Project.class) {
-      return new String[]{"gam", "json"};
-    } else if (type == StatusEffect.class) {
-      return new String[]{"ste", "json"};
-    } else if (type == TileSet.class) {
-      return new String[]{"tst"};
-    } else if (type == SpecialMove.class) {
-      return new String[]{"spc", "json"};
-    } else {
-      return this.getTKFileExtensions();
-    }
-  }
-
-  public String[] getImageExtensions() {
-    return new String[]{"png", "gif", "jpg", "jpeg", "bmp"};
-  }
-
-  /**
-   * Browse for aSystem.setProperty("project.path",
-   * this.fileChooser.getCurrentDirectory().getParent() + File.separator +
-   * PropertiesSingleton.getProperty("toolkit.directory.game") + File.separator + fileName +
-   * File.separator);
-   *
-   * this.activeProject = new Project(this.fileChooser.getSelectedFile(),
-   * System.getProperty("project.path"));
-   *
-   * ProjectEditor projectEditor = new ProjectEditor(this.activeProject);
-   * this.desktopPane.add(projectEditor, BorderLayout.CENTER);
-   *
-   * projectEditor.addInternalFrameListener(this); projectEditor.setWindowParent(this);
-   * projectEditor.toFront();
-   *
-   * this.selectToolkitWindow(projectEditor); this.setTitle(this.getTitle() + " - " +
-   * this.activeProject.getGameTitle());
-   *
-   * this.menuBar.enableMenus(true); this.toolBar.toggleButtonStates(true); file of the given type,
-   * starting in the subdirectory for that type, and return its location relative to the
-   * subdirectory for that type. Filters by extensions relevant to that type. This is a shortcut
-   * method for browseLocationBySubdir().
-   *
-   * @param type a BasicType class
-   * @return the location of the file the user selects, relative to the subdirectory corresponding
-   * to that type; or null if no file or an invalid file is selected (see browseLocationBySubdir())
-   */
-  public String browseByTypeRelative(Class<? extends AbstractAsset> type) {
-    File path = this.browseByType(type);
-    if (path == null) {
-      return null;
-    }
-    return this.getRelativePath(path,
-            this.getPath(this.getTypeSubdirectory(type)));
-  }
-
-  /**
-   * Browse for a file of the given type, starting in the subdirectory for that type, and return its
-   * location. Filters by extensions relevant to that type. This is a shortcut method for
-   * browseLocationBySubdir().
-   *
-   * @param type a BasicType class
-   * @return the location of the file the user selects; or null if no file or an invalid file is
-   * selected (see browseLocationBySubdir())
-   */
-  public File browseByType(Class<? extends AbstractAsset> type) {
-    String subdir = this.getTypeSubdirectory(type);
-    String desc = getTypeFilterDescription(type);
-    String[] exts = getTypeExtensions(type);
-    return this.browseLocationBySubdir(subdir, desc, exts);
-  }
-
-  /**
-   * Browse for a file of the given type, starting in the subdirectory for that type, and return its
-   * location relative to the subdirectory for that type. The file may not exist yet if the user
-   * types it in. Filters by extensions relevant to that type. This is a shortcut method for
-   * saveLocationBySubdir().
-   *
-   * @param type a BasicType class
-   * @return the location of the file the user selects, relative to the subdirectory corresponding
-   * to that type; or null if no file or an invalid file is selected (see saveLocationBySubdir())
-   */
-  public String saveByTypeRelative(Class<? extends AbstractAsset> type) {
-    File path = this.saveByType(type);
-    if (path == null) {
-      return null;
-    }
-    return this.getRelativePath(path,
-            this.getPath(this.getTypeSubdirectory(type)));
-  }
-
-  /**
-   * Browse for a file of the given type, starting in the subdirectory for that type, and return its
-   * location. The file may not exist yet if the user types it in. Filters by extensions relevant to
-   * that type. This is a shortcut method for saveLocationBySubdir().
-   *
-   * @param type a AbstractAsset class
-   * @return the location of the file the user selects; or null if no file or an invalid file is
-   * selected (see saveLocationBySubdir())
-   */
-  public File saveByType(Class<? extends AbstractAsset> type) {
-    String subdir = getTypeSubdirectory(type);
-    String desc = getTypeFilterDescription(type);
-    String[] exts = getTypeExtensions(type);
-    return this.saveLocationBySubdir(subdir, desc, exts);
-  }
-
-  /**
-   * Browse for a file with one of the given extensions, starting in the given subdirectory of the
-   * project, and return its location.
-   *
-   * @param subdirectory where within the project to start the file chooser
-   * @param description what to name the filter (for example, "Program Files")
-   * @param extensions the file extensions to filter by (the portion of the file name after the last
-   * ".")
-   * @return the location of the file the user selects; or null if no file or an invalid file is
-   * selected
-   */
-  public File browseLocationBySubdir(
-          String subdirectory, String description, String... extensions) {
-    File path = setFileChooserSubdirAndFilters(subdirectory, description, extensions);
-    if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-      if (validateFileChoice(path, extensions) == true) {
-        return fileChooser.getSelectedFile();
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Browse for a file with one of the given extensions, starting in the given subdirectory of the
-   * project, and return its location. May return a new filename if the user types one rather than
-   * selecting an existing file.
-   *
-   * @param subdirectory where within the project to start the file chooser
-   * @param description what to name the filter (for example, "Program Files")
-   * @param extensions the file extensions to filter by (the portion of the file name after the last
-   * ".")
-   * @return the location of the file the user selects; or null if no file or an invalid file is
-   * selected
-   */
-  public File saveLocationBySubdir(
-          String subdirectory, String description, String... extensions) {
-    File path = setFileChooserSubdirAndFilters(subdirectory, description, extensions);
-    if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-      if (validateFileChoice(path, extensions) == true) {
-        return fileChooser.getSelectedFile();
-      }
-    }
-    return null;
-  }
-
-  public File getPath(String relativePath) {
-    return new File(System.getProperty("project.path") + File.separator
-            + relativePath);
-  }
-
-  public String getRelativePath(File fullPath) {
-    return this.getRelativePath(fullPath,
-            new File(System.getProperty("project.path") + File.separator));
-  }
-
-  public String getRelativePath(File fullPath, File relativeTo) {
-    return fullPath.getPath().replace(
-            relativeTo.getPath() + File.separator, "");
-  }
-
-  public void zoomInOnBoardEditor() {
-    if (desktopPane.getSelectedFrame() instanceof BoardEditor) {
-      BoardEditor editor = (BoardEditor) desktopPane.getSelectedFrame();
-      editor.zoomIn();
-    }
-  }
-
-  public void zoomOutOnBoardEditor() {
-    if (desktopPane.getSelectedFrame() instanceof BoardEditor) {
-      BoardEditor editor = (BoardEditor) desktopPane.getSelectedFrame();
-      editor.zoomOut();
-    }
-  }
-
-  public void toogleGridOnBoardEditor(boolean isVisible) {
-    this.showGrid = isVisible;
-
-    if (this.desktopPane.getSelectedFrame() instanceof BoardEditor) {
-      BoardEditor editor = (BoardEditor) this.desktopPane.getSelectedFrame();
-      editor.getBoardView().repaint();
-    }
-  }
-
-  public void toogleCoordinatesOnBoardEditor(boolean isVisible) {
-    this.showCoordinates = isVisible;
-
-    if (desktopPane.getSelectedFrame() instanceof BoardEditor) {
-      BoardEditor editor = (BoardEditor) desktopPane.getSelectedFrame();
-      editor.getBoardView().repaint();
-    }
-  }
-
-  public void toogleVectorsOnBoardEditor(boolean isVisible) {
-    this.showVectors = isVisible;
-
-    if (desktopPane.getSelectedFrame() instanceof BoardEditor) {
-      BoardEditor editor = (BoardEditor) desktopPane.getSelectedFrame();
-      editor.getBoardView().repaint();
-    }
-  }
-
-  public void toogleProgramsOnBoardEditor(boolean isVisible) {
-    this.showPrograms = isVisible;
-
-    if (desktopPane.getSelectedFrame() instanceof BoardEditor) {
-      BoardEditor editor = (BoardEditor) desktopPane.getSelectedFrame();
-      editor.getBoardView().repaint();
-    }
   }
 
   private void setupProject() {
@@ -1076,83 +708,6 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     } catch (PropertyVetoException ex) {
       Logger.getLogger(MainWindow.class.getName()).
               log(Level.SEVERE, null, ex);
-    }
-  }
-
-  /**
-   * Sets the file chooser's directory to the given subdirectory of the project, sets its filter to
-   * the given description and extensions, and returns its new file path.
-   *
-   * @param subdirectory
-   * @param description
-   * @param extensions
-   * @return
-   */
-  private File setFileChooserSubdirAndFilters(
-          String subdirectory, String description, String... extensions) {
-    fileChooser.resetChoosableFileFilters();
-    FileNameExtensionFilter filter = new FileNameExtensionFilter(
-            description, extensions);
-    fileChooser.setFileFilter(filter);
-    File path = this.getPath(subdirectory);
-    if (path.exists()) {
-      fileChooser.setCurrentDirectory(path);
-    }
-    return path;
-  }
-
-  /**
-   * Gets the location, relative to the given path, of the file chooser's currently selected file.
-   * Returns null if the file does not end with one of the given extensions.
-   *
-   * @param extensions the file is required to end with one of these (do not include the dot that
-   * comes immediately before the extension)
-   * @param path the location will be relative to this path
-   * @return the location of the currently selected file of one of the given extensions, relative to
-   * the given path; or null if the extension does not match
-   */
-  private boolean validateFileChoice(File path, String... extensions) {
-    String fileName = fileChooser.getSelectedFile().getName().toLowerCase();
-    for (String ext : extensions) {
-      if (fileName.endsWith("." + ext)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private class TileSetSelectionListener implements TileSelectionListener {
-
-    @Override
-    public void tileSelected(TileSelectionEvent e) {
-      if (currentBrush instanceof ShapeBrush) {
-        ((ShapeBrush) currentBrush).setTile(e.getTile());
-        toolBar.getPencilButton().setSelected(true);
-      } else if (currentBrush instanceof BucketBrush) {
-        ((BucketBrush) currentBrush).setPourTile(e.getTile());
-      } else {
-        ShapeBrush shapeBrush = new ShapeBrush();
-        shapeBrush.setTile(e.getTile());
-        shapeBrush.makeRectangleBrush(
-                new Rectangle(0, 0, 1, 1));
-        currentBrush = shapeBrush;
-        toolBar.getPencilButton().setSelected(true);
-      }
-
-      if (lastSelectedTile != e.getTile()) {
-        lastSelectedTile = e.getTile();
-      }
-    }
-
-    @Override
-    public void tileRegionSelected(TileRegionSelectionEvent e) {
-      if (!(currentBrush instanceof CustomBrush)) {
-        currentBrush = new CustomBrush(e.getTiles());
-      } else {
-        ((CustomBrush) currentBrush).setTiles(e.getTiles());
-      }
-
-      toolBar.getPencilButton().setSelected(true);
     }
   }
 

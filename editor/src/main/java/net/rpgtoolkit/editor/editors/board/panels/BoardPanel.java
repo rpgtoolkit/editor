@@ -22,9 +22,9 @@ import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.editor.editors.board.BoardNeighboursDialog;
 import net.rpgtoolkit.editor.editors.board.BoardSpriteDialog;
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.common.utilities.CoreProperties;
-import net.rpgtoolkit.editor.utilities.Gui;
+import net.rpgtoolkit.editor.utilities.GuiHelper;
 
 /**
  *
@@ -101,7 +101,7 @@ public class BoardPanel extends AbstractModelPanel {
             + CoreProperties.getProperty("toolkit.directory.media")
             + File.separator);
     String[] exts = new String[] {"wav", "mp3"};
-    musicFileComboBox = Gui.getFileListJComboBox(directory, exts, true);
+    musicFileComboBox = GuiHelper.getFileListJComboBox(directory, exts, true);
     musicFileComboBox.setSelectedItem(board.getBackgroundMusic());
     musicFileComboBox.addActionListener(new ActionListener() {
 
@@ -118,7 +118,7 @@ public class BoardPanel extends AbstractModelPanel {
             + CoreProperties.getProperty("toolkit.directory.program") 
             + File.separator);
     exts = new String[] {"prg"};
-    entryProgramComboBox = Gui.getFileListJComboBox(directory, exts, true);
+    entryProgramComboBox = GuiHelper.getFileListJComboBox(directory, exts, true);
     entryProgramComboBox.setSelectedItem(board.getFirstRunProgram());
     entryProgramComboBox.addActionListener(new ActionListener() {
 

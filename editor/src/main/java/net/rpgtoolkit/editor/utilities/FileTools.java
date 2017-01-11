@@ -11,7 +11,7 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.rpgtoolkit.common.utilities.CoreProperties;
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.editor.ui.SingleRootFileSystemView;
 
 /**

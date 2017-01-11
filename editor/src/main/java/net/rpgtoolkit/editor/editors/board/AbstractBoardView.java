@@ -26,7 +26,7 @@ import net.rpgtoolkit.common.assets.BoardLayer;
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.assets.TilePixelOutOfRangeException;
 import net.rpgtoolkit.editor.editors.BoardEditor;
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.MainWindow;
 
 /**
  * This class is an Abstract model for the visual representation of a RPG-Toolkit board file. It

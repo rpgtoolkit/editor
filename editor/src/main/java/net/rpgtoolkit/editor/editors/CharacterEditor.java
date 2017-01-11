@@ -49,11 +49,12 @@ import net.rpgtoolkit.common.assets.SpecialMove;
 import net.rpgtoolkit.common.io.Paths;
 import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.editors.sprite.AbstractSpriteEditor;
-import net.rpgtoolkit.editor.utilities.Gui;
+import net.rpgtoolkit.editor.utilities.GuiHelper;
 import net.rpgtoolkit.editor.ui.IntegerField;
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.editor.ui.WholeNumberField;
 import net.rpgtoolkit.common.assets.listeners.SpriteChangeListener;
+import net.rpgtoolkit.editor.utilities.EditorFileManager;
 
 /**
  * Player Character Editor
@@ -160,7 +161,7 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
     player.setFrameRate(stepRateField.getValue());
 
     if (player.getDescriptor() == null) {
-      File file = MainWindow.getInstance().saveByType(Player.class);
+      File file = EditorFileManager.saveByType(Player.class);
       player.setDescriptor(new AssetDescriptor(file.toURI()));
       this.setTitle("Editing Player - " + file.getName());
     }
@@ -341,7 +342,7 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
       specialMoves.addElement(number + text);
     }
 
-    this.sMoveList = Gui.createVerticalJList(specialMoves);
+    this.sMoveList = GuiHelper.createVerticalJList(specialMoves);
 
     final JLabel sMoveExpMinLabel = new JLabel("Experience is at least");
     this.sMoveExpMin = new WholeNumberField(0);
@@ -491,7 +492,7 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
         if (index >= 0) {
           sMoves.remove(index);
         }
-        Gui.simpleRemoveListener(specialMoves, sMoveList).actionPerformed(e);
+        GuiHelper.simpleRemoveListener(specialMoves, sMoveList).actionPerformed(e);
       }
     });
 
@@ -617,12 +618,12 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
             this.defaultEtchedBorder, "The Player Can Use This Special Move If"));
 
     // Create Layout for Top Level Panel
-    GroupLayout layout = Gui.createGroupLayout(this.specialMovesPanel);
+    GroupLayout layout = GuiHelper.createGroupLayout(this.specialMovesPanel);
 
     // Configure Layouts for Second Level Panels
-    GroupLayout settingsLayout = Gui.createGroupLayout(settingsPanel);
-    GroupLayout sMoveLayout = Gui.createGroupLayout(sMovePanel);
-    GroupLayout conditionsLayout = Gui.createGroupLayout(conditionsPanel);
+    GroupLayout settingsLayout = GuiHelper.createGroupLayout(settingsPanel);
+    GroupLayout sMoveLayout = GuiHelper.createGroupLayout(sMovePanel);
+    GroupLayout conditionsLayout = GuiHelper.createGroupLayout(conditionsPanel);
 
     // Configure the SETTINGS PANEL layout
     settingsLayout.setHorizontalGroup(settingsLayout.createParallelGroup()
@@ -731,7 +732,7 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
       accessories.addElement(n);
     }
 
-    this.accList = Gui.createVerticalJList(accessories);
+    this.accList = GuiHelper.createVerticalJList(accessories);
     final JLabel accNameLabel = new JLabel("Slot Name");
     this.accName = new JTextField();
     if (accNames.isEmpty() == false) {
@@ -747,10 +748,10 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
             this.defaultEtchedBorder, "Additional Accessory Slots"));
 
     // Configure Layouts
-    GroupLayout layout = Gui.createGroupLayout(this.equipmentPanel);
+    GroupLayout layout = GuiHelper.createGroupLayout(this.equipmentPanel);
 
-    GroupLayout standardEquipLayout = Gui.createGroupLayout(standardEquipPanel);
-    GroupLayout accessoriesLayout = Gui.createGroupLayout(accessoriesPanel);
+    GroupLayout standardEquipLayout = GuiHelper.createGroupLayout(standardEquipPanel);
+    GroupLayout accessoriesLayout = GuiHelper.createGroupLayout(accessoriesPanel);
 
     standardEquipLayout.setHorizontalGroup(standardEquipLayout.createParallelGroup()
             .addComponent(this.equipHead)
@@ -815,7 +816,7 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
     levelUpProgramFindButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        String loc = mainWindow.browseByTypeRelative(Program.class);
+        String loc = EditorFileManager.browseByTypeRelative(Program.class);
         if (loc != null) {
           levelUpProgram.setText(loc);
         }
@@ -823,9 +824,9 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
     });
 
     // Configure Layouts
-    GroupLayout layout = Gui.createGroupLayout(this.levelsPanel);
+    GroupLayout layout = GuiHelper.createGroupLayout(this.levelsPanel);
 
-    GroupLayout rewardsPanelLayout = Gui.createGroupLayout(rewardsSubPanel);
+    GroupLayout rewardsPanelLayout = GuiHelper.createGroupLayout(rewardsSubPanel);
 
     rewardsPanelLayout.setHorizontalGroup(rewardsPanelLayout.createParallelGroup()
             .addGroup(rewardsPanelLayout.createSequentialGroup()
@@ -886,7 +887,7 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
   }
 
   private String browseSpecialMove() {
-    return mainWindow.browseByTypeRelative(SpecialMove.class);
+    return EditorFileManager.browseByTypeRelative(SpecialMove.class);
   }
 
   private String getSpecialMoveText(String loc) {
@@ -902,8 +903,8 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
 
   private SpecialMove loadSpecialMove(String loc) {
     if (Paths.extension("/" + loc).contains("spc")) {
-      File f = mainWindow.getPath(
-              mainWindow.getTypeSubdirectory(SpecialMove.class)
+      File f = EditorFileManager.getPath(
+              EditorFileManager.getTypeSubdirectory(SpecialMove.class)
               + File.separator + loc);
       if (f.canRead()) {
         try {

@@ -24,7 +24,8 @@ import net.rpgtoolkit.common.Selectable;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
 import net.rpgtoolkit.common.assets.AssetException;
 import net.rpgtoolkit.common.assets.AssetManager;
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.MainWindow;
+import net.rpgtoolkit.editor.utilities.EditorFileManager;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
 
 /**
@@ -231,7 +232,7 @@ public class BoardEditor extends ToolkitEditorWindow {
     boolean success = false;
 
     if (board.getDescriptor() == null) {
-      File file = MainWindow.getInstance().saveByType(Board.class);
+      File file = EditorFileManager.saveByType(Board.class);
       board.setDescriptor(new AssetDescriptor(file.toURI()));
       setTitle("Editing - " + file.getName());
     }

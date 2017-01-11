@@ -9,8 +9,9 @@ package net.rpgtoolkit.editor.ui.actions;
 
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
+import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
 
 /**
@@ -23,16 +24,17 @@ public class SaveAction extends AbstractAction {
   @Override
   public void actionPerformed(ActionEvent e) {
     MainWindow w = MainWindow.getInstance();
-    if (w.getDesktopPane().getSelectedFrame() != null) {
-      if (w.getDesktopPane().getSelectedFrame() instanceof ToolkitEditorWindow) {
-        ToolkitEditorWindow window = (ToolkitEditorWindow) w.getDesktopPane().getSelectedFrame();
+    JInternalFrame frame = w.getDesktopPane().getSelectedFrame();
+    
+    if (frame != null) {
+      if (frame instanceof ToolkitEditorWindow) {
+        ToolkitEditorWindow window = (ToolkitEditorWindow) frame;
 
         if (!window.save()) {
           JOptionPane.showMessageDialog(MainWindow.getInstance(),
                   "Error saving file please ensure the filename extension are correct.",
                   "Error on Save",
                   JOptionPane.ERROR_MESSAGE);
-
         }
       }
     }

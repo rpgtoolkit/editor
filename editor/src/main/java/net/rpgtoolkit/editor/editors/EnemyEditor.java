@@ -43,8 +43,9 @@ import net.rpgtoolkit.common.assets.Program;
 import net.rpgtoolkit.common.assets.SpecialMove;
 import net.rpgtoolkit.common.io.Paths;
 import net.rpgtoolkit.editor.editors.sprite.AbstractSpriteEditor;
-import net.rpgtoolkit.editor.ui.MainWindow;
-import net.rpgtoolkit.editor.utilities.Gui;
+import net.rpgtoolkit.editor.MainWindow;
+import net.rpgtoolkit.editor.utilities.EditorFileManager;
+import net.rpgtoolkit.editor.utilities.GuiHelper;
 import net.rpgtoolkit.editor.ui.IntegerField;
 import net.rpgtoolkit.editor.ui.WholeNumberField;
 
@@ -139,7 +140,7 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
     enemy.setFrameRate(stepRateField.getValue());
     
     if (enemy.getDescriptor() == null) {
-      File file = MainWindow.getInstance().saveByType(Enemy.class);
+      File file = EditorFileManager.saveByType(Enemy.class);
       enemy.setDescriptor(new AssetDescriptor(file.toURI()));
       this.setTitle("Editing Enemy - " + file.getName());
     }
@@ -284,9 +285,9 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
       weaknesses.addElement(text);
     }
 
-    this.sMoveList = Gui.createVerticalJList(specialMoves);
-    this.strengthList = Gui.createVerticalJList(strengths);
-    this.weaknessList = Gui.createVerticalJList(weaknesses);
+    this.sMoveList = GuiHelper.createVerticalJList(specialMoves);
+    this.strengthList = GuiHelper.createVerticalJList(strengths);
+    this.weaknessList = GuiHelper.createVerticalJList(weaknesses);
 
     // Configure function Scope Components
     JScrollPane sMoveListScroller = new JScrollPane(this.sMoveList);
@@ -430,14 +431,11 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
     });
 
     //remove buttons
-    sMoveRemoveButton.addActionListener(
-            Gui.simpleRemoveListener(specialMoves, sMoveList)
+    sMoveRemoveButton.addActionListener(GuiHelper.simpleRemoveListener(specialMoves, sMoveList)
     );
-    strengthRemoveButton.addActionListener(
-            Gui.simpleRemoveListener(strengths, strengthList)
+    strengthRemoveButton.addActionListener(GuiHelper.simpleRemoveListener(strengths, strengthList)
     );
-    weaknessRemoveButton.addActionListener(
-            Gui.simpleRemoveListener(weaknesses, weaknessList)
+    weaknessRemoveButton.addActionListener(GuiHelper.simpleRemoveListener(weaknesses, weaknessList)
     );
 
     // Configure the necessary Panels
@@ -452,12 +450,12 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
             this.defaultEtchedBorder, "Weakness List"));
 
     // Create Layout for Top Level Panel
-    GroupLayout layout = Gui.createGroupLayout(this.specialMovesPanel);
+    GroupLayout layout = GuiHelper.createGroupLayout(this.specialMovesPanel);
 
     // Configure Layouts for Second Level Panels
-    GroupLayout sMoveLayout = Gui.createGroupLayout(sMovePanel);
-    GroupLayout strengthLayout = Gui.createGroupLayout(strengthPanel);
-    GroupLayout weaknessLayout = Gui.createGroupLayout(weaknessPanel);
+    GroupLayout sMoveLayout = GuiHelper.createGroupLayout(sMovePanel);
+    GroupLayout strengthLayout = GuiHelper.createGroupLayout(strengthPanel);
+    GroupLayout weaknessLayout = GuiHelper.createGroupLayout(weaknessPanel);
 
     // Configure the SMOVE PANEL layout
     sMoveLayout.setHorizontalGroup(sMoveLayout.createSequentialGroup()
@@ -571,7 +569,7 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
     tacticsProgramFindButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        String loc = mainWindow.browseByTypeRelative(Program.class);
+        String loc = EditorFileManager.browseByTypeRelative(Program.class);
         if (loc != null) {
           tacticsProgram.setText(loc);
         }
@@ -579,10 +577,10 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
     });
 
     // Configure Layouts
-    GroupLayout layout = Gui.createGroupLayout(this.tacticsPanel);
+    GroupLayout layout = GuiHelper.createGroupLayout(this.tacticsPanel);
 
-    GroupLayout battleTacticsLayout = Gui.createGroupLayout(battleTacticsPanel);
-    GroupLayout aiLevelLayout = Gui.createGroupLayout(aiLevelPanel);
+    GroupLayout battleTacticsLayout = GuiHelper.createGroupLayout(battleTacticsPanel);
+    GroupLayout aiLevelLayout = GuiHelper.createGroupLayout(aiLevelPanel);
 
     aiLevelLayout.setHorizontalGroup(aiLevelLayout.createSequentialGroup()
             .addComponent(this.aiLevel)
@@ -642,7 +640,7 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
     victoryProgramFindButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        String loc = mainWindow.browseByTypeRelative(Program.class);
+        String loc = EditorFileManager.browseByTypeRelative(Program.class);
         if (loc != null) {
           victoryProgram.setText(loc);
         }
@@ -650,9 +648,9 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
     });
 
     // Configure Layouts
-    GroupLayout layout = Gui.createGroupLayout(this.rewardsPanel);
+    GroupLayout layout = GuiHelper.createGroupLayout(this.rewardsPanel);
 
-    GroupLayout rewardsPanelLayout = Gui.createGroupLayout(rewardsSubPanel);
+    GroupLayout rewardsPanelLayout = GuiHelper.createGroupLayout(rewardsSubPanel);
 
     rewardsPanelLayout.setHorizontalGroup(rewardsPanelLayout.createParallelGroup()
             .addGroup(rewardsPanelLayout.createSequentialGroup()
@@ -700,7 +698,7 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
   }
 
   private String browseSpecialMove() {
-    return mainWindow.browseByTypeRelative(SpecialMove.class);
+    return EditorFileManager.browseByTypeRelative(SpecialMove.class);
   }
 
   private String getSpecialMoveText(String loc) {
@@ -716,8 +714,8 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
 
   private SpecialMove loadSpecialMove(String loc) {
     if(Paths.extension("/"+loc).contains("spc")) {
-      File f = mainWindow.getPath(
-          mainWindow.getTypeSubdirectory(SpecialMove.class)
+      File f = EditorFileManager.getPath(
+          EditorFileManager.getTypeSubdirectory(SpecialMove.class)
               + File.separator + loc);
       if(f.canRead()) {
         try {

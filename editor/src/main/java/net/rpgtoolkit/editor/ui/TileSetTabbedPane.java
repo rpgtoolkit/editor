@@ -7,6 +7,8 @@
  */
 package net.rpgtoolkit.editor.ui;
 
+import net.rpgtoolkit.editor.utilities.EditorFileManager;
+import net.rpgtoolkit.editor.MainWindow;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,7 +39,7 @@ public class TileSetTabbedPane extends JTabbedPane {
 
       @Override
       public void actionPerformed(ActionEvent ae) {
-        MainWindow.getInstance().openFile();
+        EditorFileManager.openFile();
       }
 
     });

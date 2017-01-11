@@ -17,7 +17,8 @@ import javax.swing.JPanel;
 import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.AnimationFrame;
 import net.rpgtoolkit.common.utilities.CoreProperties;
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.MainWindow;
+import net.rpgtoolkit.editor.utilities.EditorFileManager;
 import net.rpgtoolkit.editor.utilities.TransparentDrawer;
 
 /**
@@ -84,10 +85,10 @@ public class TimelineFrame extends JPanel implements MouseListener {
   public void mouseClicked(MouseEvent e) {
     if (e.getButton() == MouseEvent.BUTTON1) {
       MainWindow mainWindow = MainWindow.getInstance();
-      File imageFile = mainWindow.browseLocationBySubdir(
-              mainWindow.getImageSubdirectory(),
-              mainWindow.getImageFilterDescription(),
-              mainWindow.getImageExtensions()
+      File imageFile = EditorFileManager.browseLocationBySubdir(
+              EditorFileManager.getImageSubdirectory(),
+              EditorFileManager.getImageFilterDescription(),
+              EditorFileManager.getImageExtensions()
       );
 
       if (imageFile != null) {

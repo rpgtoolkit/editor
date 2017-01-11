@@ -24,7 +24,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
-import net.rpgtoolkit.editor.ui.MainWindow;
 import net.rpgtoolkit.editor.ui.listeners.PopupListFilesListener;
 
 /**
@@ -32,7 +31,7 @@ import net.rpgtoolkit.editor.ui.listeners.PopupListFilesListener;
  *
  * @author Joel Moore
  */
-public abstract class Gui {
+public abstract class GuiHelper {
 
   public static final int JTF_HEIGHT = 24;
 
@@ -142,9 +141,9 @@ public abstract class Gui {
   public static BufferedImage loadImage(String fileName) {
     try {
       if (!fileName.equals("")) {
-        String subdir = MainWindow.getInstance().getImageSubdirectory();
+        String subdir = EditorFileManager.getImageSubdirectory();
         FileInputStream fis = new FileInputStream(
-                MainWindow.getInstance().getPath(subdir + "/" + fileName));
+                EditorFileManager.getPath(subdir + "/" + fileName));
         return ImageIO.read(fis);
       }
     } catch (IOException e) {

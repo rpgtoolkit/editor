@@ -12,7 +12,7 @@ import javax.swing.AbstractAction;
 import net.rpgtoolkit.common.assets.Tile;
 import net.rpgtoolkit.editor.editors.BoardEditor;
 import net.rpgtoolkit.editor.editors.board.SelectionBrush;
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.MainWindow;
 
 /**
  *

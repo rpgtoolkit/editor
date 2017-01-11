@@ -31,7 +31,8 @@ import net.rpgtoolkit.editor.editors.animation.TimelineFrame;
 import net.rpgtoolkit.editor.ui.AnimatedPanel;
 
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
-import net.rpgtoolkit.editor.ui.MainWindow;
+import net.rpgtoolkit.editor.MainWindow;
+import net.rpgtoolkit.editor.utilities.EditorFileManager;
 
 /**
  *
@@ -64,7 +65,7 @@ public class AnimationEditor extends ToolkitEditorWindow implements AnimationCha
     boolean success = false;
     
     if (animation.getDescriptor() == null) {
-      File file = MainWindow.getInstance().saveByType(Animation.class);
+      File file = EditorFileManager.saveByType(Animation.class);
       animation.setDescriptor(new AssetDescriptor(file.toURI()));
       this.setTitle("Editing Animation - " + file.getName());
     }

@@ -7,6 +7,7 @@
  */
 package net.rpgtoolkit.editor.ui;
 
+import net.rpgtoolkit.editor.MainWindow;
 import javax.swing.JMenuBar;
 
 /**
