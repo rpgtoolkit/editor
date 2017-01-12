@@ -5,13 +5,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package net.rpgtoolkit.editor.ui;
+package net.rpgtoolkit.editor.ui.toolbar;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import net.rpgtoolkit.editor.ui.EditorButton;
 import net.rpgtoolkit.editor.ui.actions.BucketAction;
 import net.rpgtoolkit.editor.ui.actions.EraserAction;
 import net.rpgtoolkit.editor.ui.actions.HelpAction;

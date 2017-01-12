@@ -60,8 +60,8 @@ import net.rpgtoolkit.editor.editors.ItemEditor;
 import net.rpgtoolkit.editor.editors.tileset.NewTilesetDialog;
 import net.rpgtoolkit.editor.ui.EditorFactory;
 import net.rpgtoolkit.editor.ui.LayerPanel;
-import net.rpgtoolkit.editor.ui.MainMenuBar;
-import net.rpgtoolkit.editor.ui.MainToolBar;
+import net.rpgtoolkit.editor.ui.menu.MainMenuBar;
+import net.rpgtoolkit.editor.ui.toolbar.MainToolBar;
 import net.rpgtoolkit.editor.ui.ProjectPanel;
 import net.rpgtoolkit.editor.ui.PropertiesPanel;
 import net.rpgtoolkit.editor.ui.TileSetTabbedPane;
@@ -69,7 +69,6 @@ import net.rpgtoolkit.editor.ui.ToolkitDesktopManager;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
 import net.rpgtoolkit.editor.ui.listeners.TileSetSelectionListener;
 import net.rpgtoolkit.editor.utilities.EditorFileManager;
-import net.rpgtoolkit.editor.ui.resources.EditorProperties;
 import net.rpgtoolkit.editor.utilities.FileTools;
 import net.rpgtoolkit.editor.utilities.TileSetRipper;
 
@@ -377,19 +376,19 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   public void checkFileExtension(File file) {
     String fileName = file.getName().toLowerCase();
 
-    if (fileName.endsWith(EditorProperties.getDefaultExtension(Animation.class))) {
+    if (fileName.endsWith(CoreProperties.getDefaultExtension(Animation.class))) {
       addToolkitEditorWindow(EditorFactory.getEditor(openAnimation(file)));
-    } else if (fileName.endsWith(EditorProperties.getDefaultExtension(Board.class))) {
+    } else if (fileName.endsWith(CoreProperties.getDefaultExtension(Board.class))) {
       addToolkitEditorWindow(EditorFactory.getEditor(openBoard(file)));
-    } else if (fileName.endsWith(EditorProperties.getDefaultExtension(Enemy.class))) {
+    } else if (fileName.endsWith(CoreProperties.getDefaultExtension(Enemy.class))) {
       addToolkitEditorWindow(EditorFactory.getEditor(openEnemy(file)));
-    } else if (fileName.endsWith(EditorProperties.getDefaultExtension(Item.class))) {
+    } else if (fileName.endsWith(CoreProperties.getDefaultExtension(Item.class))) {
       addToolkitEditorWindow(EditorFactory.getEditor(openItem(file)));
-    } else if (fileName.endsWith(EditorProperties.getDefaultExtension(Player.class))) {
+    } else if (fileName.endsWith(CoreProperties.getDefaultExtension(Player.class))) {
       addToolkitEditorWindow(EditorFactory.getEditor(openCharacter(file)));
-    } else if (fileName.endsWith(EditorProperties.getDefaultExtension(TileSet.class))) {
+    } else if (fileName.endsWith(CoreProperties.getDefaultExtension(TileSet.class))) {
       openTileset(file);
-    } else if (fileName.endsWith(EditorProperties.getDefaultExtension(SpecialMove.class))) {
+    } else if (fileName.endsWith(CoreProperties.getDefaultExtension(SpecialMove.class))) {
       addToolkitEditorWindow(EditorFactory.getEditor(openSpecialMove(file)));
     }
   }
@@ -397,7 +396,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   public void openProject() {
     EditorFileManager.getFileChooser().resetChoosableFileFilters();
     FileNameExtensionFilter filter = new FileNameExtensionFilter(
-            "Toolkit Project", new String[]{"json"});
+            "Toolkit Project", CoreProperties.getDefaultExtension(Project.class));
     EditorFileManager.getFileChooser().setFileFilter(filter);
 
     File mainFolder = new File(CoreProperties.getProjectsDirectory() + File.separator
@@ -408,11 +407,10 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     }
 
     if (EditorFileManager.getFileChooser().showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-      String fileName = EditorFileManager.getFileChooser().getSelectedFile().getName().
-              substring(0, EditorFileManager.getFileChooser().getSelectedFile().
-                      getName().indexOf('.'));
+      File file = EditorFileManager.getFileChooser().getSelectedFile();
+      String fileName = file.getName().substring(0, file.getName().indexOf('.'));
       System.setProperty("project.path",
-              EditorFileManager.getFileChooser().getCurrentDirectory().getParent()
+              file.getParentFile().getParent()
               + File.separator
               + CoreProperties.getProperty("toolkit.directory.game")
               + File.separator
@@ -420,7 +418,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
       try {
         AssetHandle handle = AssetManager.getInstance().deserialize(
-                new AssetDescriptor(EditorFileManager.getFileChooser().getSelectedFile().toURI()));
+                new AssetDescriptor(file.toURI()));
         activeProject = (Project) handle.getAsset();
       } catch (IOException | AssetException ex) {
         Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);

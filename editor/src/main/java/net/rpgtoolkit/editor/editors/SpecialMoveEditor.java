@@ -10,7 +10,6 @@ package net.rpgtoolkit.editor.editors;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.text.ParseException;
 import java.util.logging.Level;
@@ -29,8 +28,6 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
-import net.rpgtoolkit.common.assets.AssetException;
-import net.rpgtoolkit.common.assets.AssetManager;
 import net.rpgtoolkit.common.assets.Program;
 import net.rpgtoolkit.common.assets.SpecialMove;
 import net.rpgtoolkit.common.assets.StatusEffect;
@@ -48,9 +45,7 @@ import net.rpgtoolkit.editor.ui.IntegerField;
 public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFrameListener {
 
   private final SpecialMove move; // SpecialMove file we are altering
-
-  private final MainWindow mainWindow = MainWindow.getInstance();
-
+  
   // Tabs required by the menu
   private JPanel specialMovePanel;
 
@@ -108,9 +103,7 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
    * *************************************************************************
    */
   @Override
-  public boolean save() throws Exception {
-    boolean success = false;
-    
+  public void save() throws Exception {
     try {
       mpCost.commitEdit();
       fightPower.commitEdit();
@@ -134,34 +127,19 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
     this.move.isUsableInBattle(battleDriven.isSelected());
     this.move.isUsableInMenu(boardDriven.isSelected());
     
-    if (this.move.getDescriptor() == null) {
-      File file = EditorFileManager.saveByType(SpecialMove.class);
-      move.setDescriptor(new AssetDescriptor(file.toURI()));
-      this.setTitle("Editing Special Move - " + file.getName());
-    }
-
-    try {
-      AssetManager.getInstance().serialize(
-              AssetManager.getInstance().getHandle(move));
-      success = true;
-    } catch (IOException | AssetException ex) {
-      Logger.getLogger(SpecialMoveEditor.class.getName()).log(Level.SEVERE, null, ex);
-    }
-
-    return success;
+    save(move);
   }
   
   /**
    * 
    * 
    * @param file
-   * @return 
    */
   @Override
-  public boolean saveAs(File file) throws Exception {
+  public void saveAs(File file) throws Exception {
     move.setDescriptor(new AssetDescriptor(file.toURI()));
     this.setTitle("Editing Special Move - " + file.getName());
-    return save();
+    save();
   }
 
   public void gracefulClose() {

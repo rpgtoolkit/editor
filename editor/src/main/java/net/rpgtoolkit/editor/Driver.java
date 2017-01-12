@@ -18,14 +18,6 @@ import net.rpgtoolkit.common.assets.serialization.JsonPlayerSerializer;
 import net.rpgtoolkit.common.assets.serialization.JsonProjectSerializer;
 import net.rpgtoolkit.common.assets.serialization.JsonSpecialMoveSerializer;
 import net.rpgtoolkit.common.assets.serialization.legacy.LegacyAnimatedTileSerializer;
-import net.rpgtoolkit.common.assets.serialization.legacy.LegacyBackgroundSerializer;
-import net.rpgtoolkit.common.assets.serialization.legacy.LegacyBoardSerializer;
-import net.rpgtoolkit.common.assets.serialization.legacy.LegacyEnemySerializer;
-import net.rpgtoolkit.common.assets.serialization.legacy.LegacyItemSerializer;
-import net.rpgtoolkit.common.assets.serialization.legacy.LegacyPlayerSerializer;
-import net.rpgtoolkit.common.assets.serialization.legacy.LegacyProjectSerializer;
-import net.rpgtoolkit.common.assets.serialization.legacy.LegacySpecialMoveSerializer;
-import net.rpgtoolkit.common.assets.serialization.legacy.LegacyStatusEffectSerializer;
 import net.rpgtoolkit.common.assets.serialization.legacy.LegacyTileSetSerializer;
 
 public class Driver {
@@ -39,14 +31,6 @@ public class Driver {
 
     // Legacy.
     assetManager.registerSerializer(new LegacyAnimatedTileSerializer());
-    assetManager.registerSerializer(new LegacyBackgroundSerializer());
-    assetManager.registerSerializer(new LegacyBoardSerializer());
-    assetManager.registerSerializer(new LegacyEnemySerializer());
-    assetManager.registerSerializer(new LegacyItemSerializer());
-    assetManager.registerSerializer(new LegacyPlayerSerializer());
-    assetManager.registerSerializer(new LegacyProjectSerializer());
-    assetManager.registerSerializer(new LegacySpecialMoveSerializer());
-    assetManager.registerSerializer(new LegacyStatusEffectSerializer());
     assetManager.registerSerializer(new LegacyTileSetSerializer());
 
     // JSON.

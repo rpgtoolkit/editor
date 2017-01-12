@@ -43,7 +43,6 @@ import net.rpgtoolkit.common.assets.Program;
 import net.rpgtoolkit.common.assets.SpecialMove;
 import net.rpgtoolkit.common.io.Paths;
 import net.rpgtoolkit.editor.editors.sprite.AbstractSpriteEditor;
-import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.editor.utilities.EditorFileManager;
 import net.rpgtoolkit.editor.utilities.GuiHelper;
 import net.rpgtoolkit.editor.ui.IntegerField;
@@ -58,8 +57,6 @@ import net.rpgtoolkit.editor.ui.WholeNumberField;
 public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameListener {
 
   private final Enemy enemy;
-
-  private final MainWindow mainWindow = MainWindow.getInstance();
 
   // Tabs required by the menu
   private JPanel specialMovesPanel;
@@ -123,9 +120,7 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
    * *************************************************************************
    */
   @Override
-  public boolean save() throws Exception {
-    boolean success = false;
-    
+  public void save() throws Exception {
     //Update all enemy variables from the stats panel
     enemy.setName(enemyName.getText());
     enemy.setMaxHitPoints(maxHitPoints.getValue());
@@ -139,35 +134,20 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
     enemy.setIdleTimeBeforeStanding(idleTimeoutField.getValue());
     enemy.setFrameRate(stepRateField.getValue());
     
-    if (enemy.getDescriptor() == null) {
-      File file = EditorFileManager.saveByType(Enemy.class);
-      enemy.setDescriptor(new AssetDescriptor(file.toURI()));
-      this.setTitle("Editing Enemy - " + file.getName());
-    }
-
-    try {
-      AssetManager.getInstance().serialize(
-              AssetManager.getInstance().getHandle(enemy));
-      success = true;
-    } catch (IOException | AssetException ex) {
-      Logger.getLogger(EnemyEditor.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    
-    return success;
+    save(enemy);
   }
 
   /**
    *
    *
    * @param file
-   * @return
    * @throws java.lang.Exception
    */
   @Override
-  public boolean saveAs(File file) throws Exception {
+  public void saveAs(File file) throws Exception {
     enemy.setDescriptor(new AssetDescriptor(file.toURI()));
     this.setTitle("Editing Enemy - " + file.getName());
-    return save();
+    save();
   }
 
   /*

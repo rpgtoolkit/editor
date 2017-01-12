@@ -66,8 +66,6 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
 
   private final Player player; // Player file we are altering
 
-  private final MainWindow mainWindow = MainWindow.getInstance();
-
   // Tabs required by the menu
   private JPanel specialMovesPanel;
   private JPanel equipmentPanel;
@@ -133,9 +131,7 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
   }
 
   @Override
-  public boolean save() throws Exception {
-    boolean success = false;
-
+  public void save() throws Exception {
     // Get the relative portrait path.
     if (profilePanel.getFile() != null) {
       String remove = System.getProperty("project.path")
@@ -160,35 +156,20 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
     player.setIdleTimeBeforeStanding(idleTimeoutField.getValue());
     player.setFrameRate(stepRateField.getValue());
 
-    if (player.getDescriptor() == null) {
-      File file = EditorFileManager.saveByType(Player.class);
-      player.setDescriptor(new AssetDescriptor(file.toURI()));
-      this.setTitle("Editing Player - " + file.getName());
-    }
-
-    try {
-      AssetManager.getInstance().serialize(
-              AssetManager.getInstance().getHandle(player));
-      success = true;
-    } catch (IOException | AssetException ex) {
-      Logger.getLogger(CharacterEditor.class.getName()).log(Level.SEVERE, null, ex);
-    }
-
-    return success;
+    save(player);
   }
 
   /**
    *
    *
    * @param file
-   * @return
    * @throws java.lang.Exception
    */
   @Override
-  public boolean saveAs(File file) throws Exception {
+  public void saveAs(File file) throws Exception {
     player.setDescriptor(new AssetDescriptor(file.toURI()));
     this.setTitle("Editing Player - " + file.getName());
-    return save();
+    save();
   }
 
   private void setupNewPlayer() {

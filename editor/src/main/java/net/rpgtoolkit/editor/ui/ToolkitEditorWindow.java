@@ -8,7 +8,16 @@
 package net.rpgtoolkit.editor.ui;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JInternalFrame;
+import net.rpgtoolkit.common.assets.AbstractAsset;
+import net.rpgtoolkit.common.assets.AssetDescriptor;
+import net.rpgtoolkit.common.assets.AssetException;
+import net.rpgtoolkit.common.assets.AssetManager;
+import net.rpgtoolkit.editor.editors.AnimationEditor;
+import net.rpgtoolkit.editor.utilities.EditorFileManager;
 
 public abstract class ToolkitEditorWindow extends JInternalFrame {
 
@@ -21,8 +30,28 @@ public abstract class ToolkitEditorWindow extends JInternalFrame {
     super(title, resizeable, closeable, maximizable, iconifiable);
   }
 
-  public abstract boolean save() throws Exception;
+  public abstract void save() throws Exception;
   
-  public abstract boolean saveAs(File file) throws Exception;
+  protected void save(AbstractAsset asset) throws Exception {
+    if (asset.getDescriptor() == null) {
+      File file = EditorFileManager.saveByType(asset.getClass());
+      
+      if (file == null) {
+        return; // Save was aborted by the user.
+      }
+      
+      asset.setDescriptor(new AssetDescriptor(file.toURI()));
+      setTitle("Editing " + file.getName());
+    }
+
+    try {
+      AssetManager.getInstance().serialize(
+              AssetManager.getInstance().getHandle(asset));
+    } catch (IOException | AssetException ex) {
+      Logger.getLogger(AnimationEditor.class.getName()).log(Level.SEVERE, null, ex);
+    }
+  }
+  
+  public abstract void saveAs(File file) throws Exception;
 
 }

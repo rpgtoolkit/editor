@@ -9,22 +9,16 @@ package net.rpgtoolkit.editor.editors;
 import java.awt.Component;
 import java.awt.Point;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.event.InternalFrameListener;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
-import net.rpgtoolkit.common.assets.AssetException;
-import net.rpgtoolkit.common.assets.AssetManager;
 import net.rpgtoolkit.common.assets.BoardVector;
 import net.rpgtoolkit.common.assets.Item;
 import net.rpgtoolkit.common.assets.listeners.SpriteChangeListener;
 import net.rpgtoolkit.editor.editors.sprite.AbstractSpriteEditor;
-import net.rpgtoolkit.editor.utilities.EditorFileManager;
 
 /**
  *
@@ -57,34 +51,18 @@ public class ItemEditor extends AbstractSpriteEditor implements InternalFrameLis
   }
 
   @Override
-  public boolean save() throws Exception {
-    boolean success = false;
-
+  public void save() throws Exception {
     item.setName(itemName.getText());
     item.setDescription(itemDescription.getText());
 
-    if (item.getDescriptor() == null) {
-      File file = EditorFileManager.saveByType(Item.class);
-      item.setDescriptor(new AssetDescriptor(file.toURI()));
-      this.setTitle("Editing Item - " + file.getName());
-    }
-
-    try {
-      AssetManager.getInstance().serialize(
-              AssetManager.getInstance().getHandle(item));
-      success = true;
-    } catch (IOException | AssetException ex) {
-      Logger.getLogger(CharacterEditor.class.getName()).log(Level.SEVERE, null, ex);
-    }
-
-    return success;
+    save(item);
   }
 
   @Override
-  public boolean saveAs(File file) throws Exception {
+  public void saveAs(File file) throws Exception {
     item.setDescriptor(new AssetDescriptor((file.toURI())));
     setTitle("Editing Item - " + file.getName());
-    return save();
+    save();
   }
   
   private void setupNewItem() {

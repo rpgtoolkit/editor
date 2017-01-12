@@ -12,18 +12,13 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
-import net.rpgtoolkit.common.assets.AssetException;
-import net.rpgtoolkit.common.assets.AssetManager;
 import net.rpgtoolkit.common.assets.events.AnimationChangedEvent;
 import net.rpgtoolkit.common.assets.listeners.AnimationChangeListener;
 import net.rpgtoolkit.editor.editors.animation.AddTimelineFrame;
@@ -31,8 +26,6 @@ import net.rpgtoolkit.editor.editors.animation.TimelineFrame;
 import net.rpgtoolkit.editor.ui.AnimatedPanel;
 
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
-import net.rpgtoolkit.editor.MainWindow;
-import net.rpgtoolkit.editor.utilities.EditorFileManager;
 
 /**
  *
@@ -52,7 +45,7 @@ public class AnimationEditor extends ToolkitEditorWindow implements AnimationCha
     animation.addAnimationChangeListener(this);
     
     if (animation.getDescriptor() != null) {
-      setTitle("Editing - " + animation.getDescriptor().getURI().toString());
+      setTitle("Editing - " + animation.getDescriptor().getURI().getPath());
     }
 
     configureInterface();
@@ -61,38 +54,21 @@ public class AnimationEditor extends ToolkitEditorWindow implements AnimationCha
   }
 
   @Override
-  public boolean save() throws Exception {
-    boolean success = false;
-    
-    if (animation.getDescriptor() == null) {
-      File file = EditorFileManager.saveByType(Animation.class);
-      animation.setDescriptor(new AssetDescriptor(file.toURI()));
-      this.setTitle("Editing Animation - " + file.getName());
-    }
-
-    try {
-      AssetManager.getInstance().serialize(
-              AssetManager.getInstance().getHandle(animation));
-      success = true;
-    } catch (IOException | AssetException ex) {
-      Logger.getLogger(AnimationEditor.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    
-    return success;
+  public void save() throws Exception {
+    save(animation);
   }
 
   /**
    *
    *
    * @param file
-   * @return
    * @throws java.lang.Exception
    */
   @Override
-  public boolean saveAs(File file) throws Exception {
+  public void saveAs(File file) throws Exception {
     animation.setDescriptor(new AssetDescriptor(file.toURI()));
     this.setTitle("Editing Animation - " + file.getName());
-    return save();
+    save();
   }
 
   public void gracefulClose() {

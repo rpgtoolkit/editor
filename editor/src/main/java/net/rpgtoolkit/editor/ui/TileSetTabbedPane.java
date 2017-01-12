@@ -14,12 +14,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.Collection;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JViewport;
 import net.rpgtoolkit.common.assets.TileSet;
+import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.editors.TileSetCanvas;
 import net.rpgtoolkit.editor.ui.resources.Icons;
 
@@ -39,7 +41,11 @@ public class TileSetTabbedPane extends JTabbedPane {
 
       @Override
       public void actionPerformed(ActionEvent ae) {
-        EditorFileManager.openFile();
+        File file = EditorFileManager.browseByType(TileSet.class);
+        
+        if (file != null) {
+          MainWindow.getInstance().openTileset(file);
+        }
       }
 
     });
@@ -64,7 +70,8 @@ public class TileSetTabbedPane extends JTabbedPane {
   }
 
   public void addTileSet(TileSet tileSet) {
-    String tabName = tileSet.getName().replace(".tst", "");
+    String tabName = tileSet.getName().replace(
+            CoreProperties.getDefaultExtension(TileSet.class), "");
 
     if (indexOfTab(tabName) < 0) {
       JScrollPane scrollPane = new JScrollPane();

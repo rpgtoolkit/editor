@@ -12,7 +12,6 @@ import net.rpgtoolkit.editor.editors.board.BoardMouseAdapter;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.File;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JScrollPane;
@@ -22,10 +21,7 @@ import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.editor.editors.board.AbstractBrush;
 import net.rpgtoolkit.common.Selectable;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
-import net.rpgtoolkit.common.assets.AssetException;
-import net.rpgtoolkit.common.assets.AssetManager;
 import net.rpgtoolkit.editor.MainWindow;
-import net.rpgtoolkit.editor.utilities.EditorFileManager;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
 
 /**
@@ -225,41 +221,23 @@ public class BoardEditor extends ToolkitEditorWindow {
 
   /**
    *
-   * @return
    * @throws java.lang.Exception
    */
   @Override
-  public boolean save() throws Exception {
-    boolean success = false;
-
-    if (board.getDescriptor() == null) {
-      File file = EditorFileManager.saveByType(Board.class);
-      board.setDescriptor(new AssetDescriptor(file.toURI()));
-      setTitle("Editing - " + file.getName());
-    }
-
-    try {
-      AssetManager.getInstance().serialize(
-              AssetManager.getInstance().getHandle(board));
-      success = true;
-    } catch (IOException | AssetException ex) {
-      Logger.getLogger(BoardEditor.class.getName()).log(Level.SEVERE, null, ex);
-    }
-
-    return success;
+  public void save() throws Exception {
+    save(board);
   }
 
   /**
    *
    *
    * @param file
-   * @return
    */
   @Override
-  public boolean saveAs(File file) throws Exception {
+  public void saveAs(File file) throws Exception {
     board.setDescriptor(new AssetDescriptor(file.toURI()));
     setTitle("Editing - " + file.getName());
-    return save();
+    save();
   }
 
   /**

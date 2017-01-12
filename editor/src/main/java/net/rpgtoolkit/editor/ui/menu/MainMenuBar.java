@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package net.rpgtoolkit.editor.ui;
+package net.rpgtoolkit.editor.ui.menu;
 
 import net.rpgtoolkit.editor.MainWindow;
 import javax.swing.JMenuBar;
@@ -23,7 +23,6 @@ public class MainMenuBar extends JMenuBar {
   private final FileMenu fileMenu;
   private final EditMenu editMenu;
   private final ViewMenu viewMenu;
-  private final ProjectMenu projectMenu;
   private final RunMenu runMenu;
   private final ToolsMenu toolsMenu;
   private final HelpMenu helpMenu;
@@ -34,7 +33,6 @@ public class MainMenuBar extends JMenuBar {
     fileMenu = new FileMenu();
     editMenu = new EditMenu();
     viewMenu = new ViewMenu();
-    projectMenu = new ProjectMenu();
     runMenu = new RunMenu();
     toolsMenu = new ToolsMenu();
     helpMenu = new HelpMenu();
@@ -42,7 +40,6 @@ public class MainMenuBar extends JMenuBar {
     add(fileMenu);
     add(editMenu);
     add(viewMenu);
-    add(projectMenu);
     add(runMenu);
     add(toolsMenu);
     add(helpMenu);
@@ -62,10 +59,6 @@ public class MainMenuBar extends JMenuBar {
 
   public ViewMenu getViewMenu() {
     return viewMenu;
-  }
-
-  public ProjectMenu getProjectMenu() {
-    return projectMenu;
   }
 
   public RunMenu getRunMenu() {

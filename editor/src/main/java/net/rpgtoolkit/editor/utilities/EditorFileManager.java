@@ -6,6 +6,8 @@
 package net.rpgtoolkit.editor.utilities;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.rpgtoolkit.common.assets.AbstractAsset;
@@ -22,6 +24,7 @@ import net.rpgtoolkit.common.assets.TileSet;
 import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.editor.ui.SingleRootFileSystemView;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  *
@@ -134,7 +137,7 @@ public class EditorFileManager {
     } else if (type == StatusEffect.class) {
       return new String[]{CoreProperties.getProperty("toolkit.statuseffect.extension.default")};
     } else if (type == TileSet.class) {
-      return new String[]{CoreProperties.getProperty("toolkit.animation.tileset.default")};
+      return new String[]{CoreProperties.getProperty("toolkit.tileset.extension.default")};
     } else if (type == SpecialMove.class) {
       return new String[]{CoreProperties.getProperty("toolkit.specialmove.extension.default")};
     } else {
@@ -148,7 +151,7 @@ public class EditorFileManager {
 
   public static void openFile() {
     setFileChooserSubdirAndFilters(
-            System.getProperty("project.path"), 
+            "", 
             "Toolkit Files", 
             getTKFileExtensions());
     if (FILE_CHOOSER.showOpenDialog(MainWindow.getInstance()) == JFileChooser.APPROVE_OPTION) {
@@ -256,7 +259,7 @@ public class EditorFileManager {
           String subdirectory, String description, String... extensions) {
     File path = setFileChooserSubdirAndFilters(subdirectory, description, extensions);
     if (FILE_CHOOSER.showOpenDialog(MainWindow.getInstance()) == JFileChooser.APPROVE_OPTION) {
-      if (validateFileChoice(path, extensions) == true) {
+      if (validateFileChoice(path, extensions)) {
         return FILE_CHOOSER.getSelectedFile();
       }
     }
@@ -283,7 +286,7 @@ public class EditorFileManager {
         return FILE_CHOOSER.getSelectedFile();
       } else {
         File file = FILE_CHOOSER.getSelectedFile();
-        return new File(file.getAbsolutePath() + extensions[0]);
+        return new File(file.getAbsolutePath() + "." + extensions[0]);
       }
     }
     return null;
@@ -310,7 +313,6 @@ public class EditorFileManager {
     FileNameExtensionFilter filter = new FileNameExtensionFilter(
             description, extensions);
     FILE_CHOOSER.setFileFilter(filter);
-    FILE_CHOOSER.setSelectedFile(new File("Untitled"));
     return path;
   }
 
@@ -327,7 +329,7 @@ public class EditorFileManager {
   public static boolean validateFileChoice(File path, String... extensions) {
     String fileName = FILE_CHOOSER.getSelectedFile().getName().toLowerCase();
     for (String ext : extensions) {
-      if (fileName.endsWith(ext)) {
+      if (fileName.endsWith("." + ext)) {
         return true;
       }
     }

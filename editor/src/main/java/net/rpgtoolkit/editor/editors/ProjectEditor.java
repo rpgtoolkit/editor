@@ -10,9 +10,6 @@ package net.rpgtoolkit.editor.editors;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
@@ -33,13 +30,9 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
-import net.rpgtoolkit.common.assets.AssetException;
-import net.rpgtoolkit.common.assets.AssetManager;
 import net.rpgtoolkit.common.assets.Project;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
 import net.rpgtoolkit.editor.utilities.GuiHelper;
-import net.rpgtoolkit.editor.MainWindow;
-import net.rpgtoolkit.editor.utilities.EditorFileManager;
 
 /**
  * Project File editor
@@ -158,24 +151,8 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
    * *************************************************************************
    */
   @Override
-  public boolean save() throws Exception {
-    boolean success = false;
-
-    if (project.getDescriptor() == null) {
-      File file = EditorFileManager.saveByType(Project.class);
-      project.setDescriptor(new AssetDescriptor(file.toURI()));
-      this.setTitle("Editing Project - " + file.getName());
-    }
-
-    try {
-      AssetManager.getInstance().serialize(
-              AssetManager.getInstance().getHandle(project));
-      success = true;
-    } catch (IOException | AssetException ex) {
-      Logger.getLogger(ProjectEditor.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    
-    return success;
+  public void save() throws Exception {
+    save(project);
   }
 
   /**
@@ -185,10 +162,10 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
    * @return
    */
   @Override
-  public boolean saveAs(File file) throws Exception {
+  public void saveAs(File file) throws Exception {
     project.setDescriptor(new AssetDescriptor(file.toURI()));
     this.setTitle("Editing Project - " + file.getName());
-    return save();
+    save();
   }
 
   public void gracefulClose() {
