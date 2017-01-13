@@ -17,11 +17,15 @@ import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import net.rpgtoolkit.common.assets.Animation;
+import net.rpgtoolkit.common.assets.AnimationFrame;
 import net.rpgtoolkit.common.assets.BoardSprite;
+import net.rpgtoolkit.common.assets.Item;
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
 import net.rpgtoolkit.editor.editors.board.BoardSpriteDialog;
 import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.common.utilities.CoreProperties;
+import net.rpgtoolkit.editor.utilities.EditorFileManager;
 import net.rpgtoolkit.editor.utilities.GuiHelper;
 
 /**
@@ -72,16 +76,38 @@ public class BoardSpritePanel extends BoardModelPanel {
     File directory = new File(System.getProperty("project.path") 
             + CoreProperties.getProperty("toolkit.directory.item") 
             + File.separator);
-    String[] exts = new String[]{"itm", "json"};
+    String[] exts = EditorFileManager.getTypeExtensions(Item.class);
     fileComboBox = GuiHelper.getFileListJComboBox(directory, exts, true);
     fileComboBox.setSelectedItem(boardSprite.getFileName());
     fileComboBox.addActionListener(new ActionListener() {
 
       @Override
       public void actionPerformed(ActionEvent e) {
+        String fileName = (String) fileComboBox.getSelectedItem();
+        
+        if (fileName == null) {
+          return;
+        }
+        
         boardSprite.setFileName((String) fileComboBox.getSelectedItem());
-      }
+        
+        AnimationFrame frame = null;
+        if (!fileName.isEmpty()) {
+          File file  = new File(EditorFileManager.getFullPath(Item.class), fileName);
+          Item item = MainWindow.getInstance().openItem(file);
+          if (item.getStandardGraphics().size() > 1) {
+            file = new File(EditorFileManager.getFullPath(Animation.class), 
+                    item.getStandardGraphics().get(0));
+            Animation animation = MainWindow.getInstance().openAnimation(file);
 
+            if (animation != null) {
+              frame = animation.getFrame(0);
+            }
+          }
+        }
+        
+        boardSprite.setSouthAnimationFrame(frame);
+      }
     });
     ///
     /// activationComboBox

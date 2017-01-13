@@ -46,6 +46,10 @@ public class EditorFileManager {
     return new File(System.getProperty("project.path") + File.separator
             + relativePath);
   }
+  
+  public static File getFullPath(Class<? extends AbstractAsset> type) {
+    return getPath(getTypeSubdirectory(type) + File.separator);
+  }
 
   public static String getRelativePath(File fullPath) {
     return getRelativePath(fullPath,

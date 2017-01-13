@@ -294,6 +294,11 @@ public class BoardMouseAdapter extends MouseAdapter {
    */
   private void selectSprite(BoardSprite sprite) {
     if (sprite != null) {
+      
+      if (editor.getSelectedObject() == sprite) {
+        return;
+      }
+      
       sprite.setSelectedState(true);
 
       if (editor.getSelectedObject() != null) {

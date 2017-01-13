@@ -515,7 +515,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     try {
       if (file.canRead()) {
         AssetHandle handle = AssetManager.getInstance().deserialize(
-                new AssetDescriptor(EditorFileManager.getFileChooser().getSelectedFile().toURI()));
+                new AssetDescriptor(file.toURI()));
         Board board = (Board) handle.getAsset();
 
         return board;
@@ -550,7 +550,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     try {
       if (file.canRead()) {
         AssetHandle handle = AssetManager.getInstance().deserialize(
-                new AssetDescriptor(EditorFileManager.getFileChooser().getSelectedFile().toURI()));
+                new AssetDescriptor(file.toURI()));
         Enemy enemy = (Enemy) handle.getAsset();
 
         return enemy;
@@ -579,7 +579,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     try {
       if (file.canRead()) {
         AssetHandle handle = AssetManager.getInstance().deserialize(
-                new AssetDescriptor(EditorFileManager.getFileChooser().getSelectedFile().toURI()));
+                new AssetDescriptor(file.toURI()));
         Item item = (Item) handle.getAsset();
 
         return item;
@@ -614,7 +614,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     try {
       if (file.canRead()) {
         AssetHandle handle = AssetManager.getInstance().deserialize(
-                new AssetDescriptor(EditorFileManager.getFileChooser().getSelectedFile().toURI()));
+                new AssetDescriptor(file.toURI()));
         Player player = (Player) handle.getAsset();
 
         return player;
@@ -673,7 +673,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     try {
       if (file.canRead()) {
         AssetHandle handle = AssetManager.getInstance().deserialize(
-                new AssetDescriptor(EditorFileManager.getFileChooser().getSelectedFile().toURI()));
+                new AssetDescriptor(file.toURI()));
         SpecialMove move = (SpecialMove) handle.getAsset();
 
         return move;

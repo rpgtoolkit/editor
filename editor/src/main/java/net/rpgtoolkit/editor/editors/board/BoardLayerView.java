@@ -12,7 +12,10 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.assets.BoardLayer;
@@ -415,32 +418,39 @@ public class BoardLayerView {
     g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP,
             opacity));
 
-    for (BoardSprite sprite : layer.getSprites()) {
+    List<BoardSprite> sprites = layer.getSprites();
+    sprites.sort((BoardSprite a, BoardSprite b) -> a.getY() - b.getY());
+    sprites.stream().forEach((sprite) -> {
       int x = (int) sprite.getX() * MainWindow.TILE_SIZE + 1;
       int y = (int) sprite.getY() * MainWindow.TILE_SIZE + 1;
-
-            // TODO: Deal with sprite selection.
+      
+      int tileSize = MainWindow.TILE_SIZE;
       try {
         // Attempt to get the south facing frame.
-        g.drawImage(sprite.getSpriteFile().getStandardAnimations().
-                get(2).getFrame(2).getFrameImage(), x, y, null);
+        BufferedImage frame = sprite.getSouthAnimationFrame().getFrameImage();
+        
+        int width = frame.getWidth();
+        int height = frame.getHeight();
+        int xShift = x - (width / 2) + (tileSize / 2);
+        int yShift = y - (height / 2) + (tileSize / 2);
+        g.drawImage(frame, xShift, yShift, null);
 
         // If the sprite has an animation frame.
         if (sprite.isSelected()) {
           g.setColor(Color.BLUE);
-          g.drawRect(x, y, sprite.getWidth(), getHeight());
+          g.drawRect(xShift, yShift, width, height);
         }
       } catch (NullPointerException | IndexOutOfBoundsException e) {
         g.setColor(Color.WHITE);
-        g.fillRect(x, y, 32, 32);
+        g.fillRect(x, y, tileSize, tileSize);
 
         // Used when the sprite does not have an animation frame.
         if (sprite.isSelected()) {
           g.setColor(Color.BLUE);
-          g.drawRect(x, y, 32, 32);
+          g.drawRect(x, y, tileSize, tileSize);
         }
       }
-    }
+    });
   }
 
   /**
