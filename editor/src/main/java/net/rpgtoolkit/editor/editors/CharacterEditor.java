@@ -47,11 +47,9 @@ import net.rpgtoolkit.common.assets.PlayerSpecialMove;
 import net.rpgtoolkit.common.assets.Program;
 import net.rpgtoolkit.common.assets.SpecialMove;
 import net.rpgtoolkit.common.io.Paths;
-import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.editors.sprite.AbstractSpriteEditor;
 import net.rpgtoolkit.editor.utilities.GuiHelper;
 import net.rpgtoolkit.editor.ui.IntegerField;
-import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.editor.ui.WholeNumberField;
 import net.rpgtoolkit.common.assets.listeners.SpriteChangeListener;
 import net.rpgtoolkit.editor.utilities.EditorFileManager;
@@ -133,13 +131,7 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
   @Override
   public void save() throws Exception {
     // Get the relative portrait path.
-    if (profilePanel.getFile() != null) {
-      String remove = System.getProperty("project.path")
-              + CoreProperties.getProperty("toolkit.directory.bitmap")
-              + File.separator;
-      String path = profilePanel.getFile().getAbsolutePath().replace(remove, "");
-      player.setProfilePicture(path);
-    }
+    checkProfileImagePath();
 
     // Update all player variables from stats panel.
     player.setName(playerName.getText());
@@ -173,8 +165,9 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
   }
 
   private void setupNewPlayer() {
+    setupNewSprite();
+    
     String undefined = "Undefined";
-
     player.setExpVariableName(undefined);
     player.setDpVariableName(undefined);
     player.setFpVariableName(undefined);
@@ -187,36 +180,9 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
     player.setSpecialMovesName(undefined);
     player.setProgramOnLevelUp(undefined);
 
-    // An empty path.
-    player.setProfilePicture("");
-
-    player.setStandardGraphics(new ArrayList<>(STANDARD_PLACE_HOLDERS));
-    player.setStandingGraphics(new ArrayList<>(STANDING_PLACE_HOLDERS));
-
-    BoardVector baseVector = new BoardVector();
-    baseVector.addPoint(0, 0);
-    baseVector.addPoint(30, 0);
-    baseVector.addPoint(30, 20);
-    baseVector.addPoint(0, 20);
-    baseVector.setClosed(true);
-    player.setBaseVector(baseVector);
-
-    BoardVector activationVector = new BoardVector();
-    activationVector.addPoint(0, 0);
-    activationVector.addPoint(30, 0);
-    activationVector.addPoint(30, 20);
-    activationVector.addPoint(0, 20);
-    activationVector.setClosed(true);
-    player.setActivationVector(activationVector);
-
-    player.setBaseVectorOffset(new Point(0, 0));
-    player.setActivationVectorOffset(new Point(0, 0));
-
     // Prepare the empty ArrayLists
-    player.setSpecialMoveList(new ArrayList<PlayerSpecialMove>());
-    player.setAccessoryNames(new ArrayList<String>());
-    player.setCustomGraphics(new ArrayList<String>());
-    player.setCustomGraphicNames(new ArrayList<String>());
+    player.setSpecialMoveList(new ArrayList<>());
+    player.setAccessoryNames(new ArrayList<>());
   }
 
   /**

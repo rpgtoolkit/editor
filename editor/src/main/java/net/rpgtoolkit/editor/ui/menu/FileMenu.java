@@ -55,7 +55,9 @@ public final class FileMenu extends JMenu implements ActionListener {
 
     configureFileMenu();
 
+    add(newProjectMenuItem);
     add(newMenu);
+    add(openProjectMenuItem);
     add(openMenu);
     add(new JSeparator());
     add(saveMenuItem);
@@ -131,6 +133,7 @@ public final class FileMenu extends JMenu implements ActionListener {
     newEnemyMenuItem.setEnabled(true);
     newItemMenuItem.setEnabled(true);
     newTilesetMenuItem.setEnabled(true);
+    saveMenuItem.setEnabled(true);
   }
 
   /**
@@ -159,7 +162,6 @@ public final class FileMenu extends JMenu implements ActionListener {
 
     newMenu = new JMenu("New");
     newMenu.setEnabled(true);
-    newMenu.add(newProjectMenuItem);
     newMenu.add(newAnimationMenuItem);
     newMenu.add(newBoardMenuItem);
     newMenu.add(newCharacterMenuItem);
@@ -173,7 +175,6 @@ public final class FileMenu extends JMenu implements ActionListener {
     configureOpenFileMenuItem();
 
     openMenu = new JMenu("Open");
-    openMenu.add(openProjectMenuItem);
     openMenu.add(openFileMenuItem);
   }
 
@@ -192,36 +193,42 @@ public final class FileMenu extends JMenu implements ActionListener {
     newAnimationMenuItem = new JMenuItem("New Animation");
     newAnimationMenuItem.setEnabled(false);
     newAnimationMenuItem.addActionListener(this);
+    newAnimationMenuItem.setIcon(Icons.getSmallIcon("new-animation"));
   }
 
   private void configureNewBoardMenuItem() {
     newBoardMenuItem = new JMenuItem("New Board");
     newBoardMenuItem.setEnabled(false);
     newBoardMenuItem.addActionListener(this);
+    newBoardMenuItem.setIcon(Icons.getSmallIcon("new-board"));
   }
 
   private void configureNewCharacterMenuItem() {
     newCharacterMenuItem = new JMenuItem("New Character");
     newCharacterMenuItem.setEnabled(false);
     newCharacterMenuItem.addActionListener(this);
+    newCharacterMenuItem.setIcon(Icons.getSmallIcon("new-character"));
   }
   
   private void configureNewEnemyMenuItem() {
     newEnemyMenuItem = new JMenuItem("New Enemy");
     newEnemyMenuItem.setEnabled(false);
     newEnemyMenuItem.addActionListener(this);
+    newEnemyMenuItem.setIcon(Icons.getSmallIcon("new-enemy"));
   }
   
   private void configureNewItemMenuItem() {
     newItemMenuItem = new JMenuItem("New Item");
     newItemMenuItem.setEnabled(false);
     newItemMenuItem.addActionListener(this);
+    newItemMenuItem.setIcon(Icons.getSmallIcon("new-item"));
   }
   
   private void configureNewTilesetMenuItem() {
     newTilesetMenuItem = new JMenuItem("New Tileset");
     newTilesetMenuItem.setEnabled(false);
     newTilesetMenuItem.addActionListener(this);
+    newTilesetMenuItem.setIcon(Icons.getSmallIcon("new-tile"));
   }
 
   private void configureOpenProjectMenuItem() {

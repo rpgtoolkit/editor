@@ -13,6 +13,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import net.rpgtoolkit.editor.MainWindow;
 
 /**
  *
@@ -51,6 +52,7 @@ public class PropertiesPanel extends JPanel implements ListSelectionListener {
 
     propertiesScrollPane.setViewportView(intermediate);
     propertiesScrollPane.getViewport().revalidate();
+    MainWindow.getInstance().setLowerTabbedPane(this);
   }
 
   @Override

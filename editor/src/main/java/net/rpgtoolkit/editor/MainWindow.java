@@ -9,6 +9,7 @@ package net.rpgtoolkit.editor;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
@@ -123,7 +124,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     this.projectPanel = new ProjectPanel();
     this.tileSetPanel = new TileSetTabbedPane();
     this.upperTabbedPane = new JTabbedPane();
-    this.upperTabbedPane.addTab("Project", this.projectPanel);
+    //this.upperTabbedPane.addTab("Project", this.projectPanel); // TOOD: TK 4.1.0
     this.upperTabbedPane.addTab("Tileset", this.tileSetPanel);
 
     this.propertiesPanel = new PropertiesPanel();
@@ -256,13 +257,18 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   public TileSelectionListener getTileSetSelectionListener() {
     return tileSetSelectionListener;
   }
+  
+  public void setLowerTabbedPane(Component component) {
+    if (lowerTabbedPane.getSelectedComponent() != component) {
+      lowerTabbedPane.setSelectedComponent(component);
+    }
+  }
 
   @Override
   public void internalFrameOpened(InternalFrameEvent e) {
     if (e.getInternalFrame() instanceof AnimationEditor) {
       AnimationEditor editor = (AnimationEditor) e.getInternalFrame();
       propertiesPanel.setModel(editor.getAnimation());
-      lowerTabbedPane.setSelectedComponent(propertiesPanel);
     } else if (e.getInternalFrame() instanceof BoardEditor) {
       BoardEditor editor = (BoardEditor) e.getInternalFrame();
       upperTabbedPane.setSelectedComponent(tileSetPanel);
@@ -271,7 +277,6 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     } else if (e.getInternalFrame() instanceof CharacterEditor) {
       CharacterEditor editor = (CharacterEditor) e.getInternalFrame();
       propertiesPanel.setModel(editor.getPlayer());
-      lowerTabbedPane.setSelectedComponent(propertiesPanel);
     }
   }
 
@@ -300,7 +305,6 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     if (e.getInternalFrame() instanceof AnimationEditor) {
       AnimationEditor editor = (AnimationEditor) e.getInternalFrame();
       propertiesPanel.setModel(editor.getAnimation());
-      lowerTabbedPane.setSelectedComponent(propertiesPanel);
     } else if (e.getInternalFrame() instanceof BoardEditor) {
       BoardEditor editor = (BoardEditor) e.getInternalFrame();
       this.layerPanel.setBoardView(editor.getBoardView());
@@ -313,11 +317,9 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     } else if (e.getInternalFrame() instanceof CharacterEditor) {
       CharacterEditor editor = (CharacterEditor) e.getInternalFrame();
       propertiesPanel.setModel(editor.getPlayer());
-      lowerTabbedPane.setSelectedComponent(propertiesPanel);
     } else if (e.getInternalFrame() instanceof ItemEditor) {
       ItemEditor editor = (ItemEditor) e.getInternalFrame();
       propertiesPanel.setModel(editor.getItem());
-      lowerTabbedPane.setSelectedComponent(propertiesPanel);
     }
   }
 
@@ -396,7 +398,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   public void openProject() {
     EditorFileManager.getFileChooser().resetChoosableFileFilters();
     FileNameExtensionFilter filter = new FileNameExtensionFilter(
-            "Toolkit Project", CoreProperties.getDefaultExtension(Project.class));
+            "Toolkit Project", CoreProperties.getDefaultExtension(Project.class).replace(".", ""));
     EditorFileManager.getFileChooser().setFileFilter(filter);
 
     File mainFolder = new File(CoreProperties.getProjectsDirectory() + File.separator

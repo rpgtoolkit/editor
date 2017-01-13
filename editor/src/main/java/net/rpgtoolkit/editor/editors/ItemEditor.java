@@ -1,8 +1,9 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of
- * the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.editor.editors;
 
@@ -52,6 +53,9 @@ public class ItemEditor extends AbstractSpriteEditor implements InternalFrameLis
 
   @Override
   public void save() throws Exception {
+    // Get the relative portrait path.
+    checkProfileImagePath();
+    
     item.setName(itemName.getText());
     item.setDescription(itemDescription.getText());
 
@@ -66,35 +70,10 @@ public class ItemEditor extends AbstractSpriteEditor implements InternalFrameLis
   }
   
   private void setupNewItem() {
-    String undefined = "Undefined";
-
-    item.setName(undefined);
-    item.setDescription(undefined);
-
-    item.setStandardGraphics(new ArrayList<>(STANDARD_PLACE_HOLDERS));
-    item.setStandingGraphics(new ArrayList<>(STANDING_PLACE_HOLDERS));
+    setupNewSprite();
     
-    BoardVector baseVector = new BoardVector();
-    baseVector.addPoint(0, 0);
-    baseVector.addPoint(30, 0);
-    baseVector.addPoint(30, 20);
-    baseVector.addPoint(0, 20);
-    baseVector.setClosed(true);
-    item.setBaseVector(baseVector);
-
-    BoardVector activationVector = new BoardVector();
-    activationVector.addPoint(0, 0);
-    activationVector.addPoint(30, 0);
-    activationVector.addPoint(30, 20);
-    activationVector.addPoint(0, 20);
-    activationVector.setClosed(true);
-    item.setActivationVector(activationVector);
-
-    item.setBaseVectorOffset(new Point(0, 0));
-    item.setActivationVectorOffset(new Point(0, 0));
-
-    item.setCustomGraphics(new ArrayList<String>());
-    item.setCustomGraphicNames(new ArrayList<String>());
+    String undefined = "Undefined";
+    item.setDescription(undefined);
   }
 
   private void constructWindow() {
@@ -121,7 +100,7 @@ public class ItemEditor extends AbstractSpriteEditor implements InternalFrameLis
     inputs.add(itemName);
     inputs.add(itemDescription);
 
-    profileImagePath = "";
+    profileImagePath = item.getProfilePicture();
 
     buildStatsPanel(labels, inputs);
   }

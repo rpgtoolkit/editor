@@ -1,10 +1,11 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of
- * the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package net.rpgtoolkit.editor.ui.resources;
+package net.rpgtoolkit.editor.properties;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,8 +31,8 @@ public class EditorProperties {
     }
   }
 
-  public static String getProperty(String key) {
-    return INSTANCE.properties.getProperty(key);
+  public static String getProperty(EditorProperty property) {
+    return INSTANCE.properties.getProperty(property.toString());
   }
 
 }

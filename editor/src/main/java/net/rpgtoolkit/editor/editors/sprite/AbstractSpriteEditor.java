@@ -10,7 +10,9 @@ package net.rpgtoolkit.editor.editors.sprite;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.swing.BorderFactory;
@@ -29,6 +31,7 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.AbstractSprite;
+import net.rpgtoolkit.common.assets.BoardVector;
 import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.common.assets.events.SpriteChangedEvent;
 import net.rpgtoolkit.common.assets.listeners.SpriteChangeListener;
@@ -253,6 +256,36 @@ public abstract class AbstractSpriteEditor extends ToolkitEditorWindow implement
   public void spriteAnimationRemoved(SpriteChangedEvent e) {
   }
 
+    public void setupNewSprite() {
+    String undefined = "Undefined";
+    sprite.setName(undefined);
+    sprite.setProfilePicture("");
+
+    sprite.setStandardGraphics(new ArrayList<>(STANDARD_PLACE_HOLDERS));
+    sprite.setStandingGraphics(new ArrayList<>(STANDING_PLACE_HOLDERS));
+
+    BoardVector base = new BoardVector();
+    base.addPoint(0, 0);
+    base.addPoint(30, 0);
+    base.addPoint(30, 20);
+    base.addPoint(0, 20);
+    base.setClosed(true);
+    sprite.setBaseVector(base);
+
+    BoardVector activation = new BoardVector();
+    activation.addPoint(0, 0);
+    activation.addPoint(30, 0);
+    activation.addPoint(30, 20);
+    activation.addPoint(0, 20);
+    activation.setClosed(true);
+    sprite.setActivationVector(activation);
+
+    sprite.setBaseVectorOffset(new Point(40, 0));
+    sprite.setActivationVectorOffset(new Point(0, 0));
+
+    sprite.setCustomGraphics(new ArrayList<>());
+    sprite.setCustomGraphicNames(new ArrayList<>());
+  }
   
   public void updateAnimatedPanel() {
     if (animatedPanel == null) {
@@ -422,6 +455,16 @@ public abstract class AbstractSpriteEditor extends ToolkitEditorWindow implement
             .addComponent(animatedPanel)
             .addComponent(southPanel)
     );
+  }
+  
+  protected void checkProfileImagePath() {
+    if (profilePanel.getFile() != null) {
+      String remove = System.getProperty("project.path")
+              + CoreProperties.getProperty("toolkit.directory.bitmap")
+              + File.separator;
+      String path = profilePanel.getFile().getAbsolutePath().replace(remove, "");
+      sprite.setProfilePicture(path);
+    }
   }
 
 }

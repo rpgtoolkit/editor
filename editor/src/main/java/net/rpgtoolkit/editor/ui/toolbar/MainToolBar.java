@@ -12,6 +12,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import net.rpgtoolkit.editor.properties.EditorProperties;
+import net.rpgtoolkit.editor.properties.EditorProperty;
 import net.rpgtoolkit.editor.ui.EditorButton;
 import net.rpgtoolkit.editor.ui.actions.BucketAction;
 import net.rpgtoolkit.editor.ui.actions.EraserAction;
@@ -88,100 +90,136 @@ public class MainToolBar extends JToolBar {
 
     newButton = new EditorButton();
     newButton.setIcon(Icons.getSmallIcon("new"));
+    newButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_NEW));
+    newButton.setEnabled(false);
 
     openButton = new EditorButton();
     openButton.setAction(new OpenFileAction());
+    openButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_OPEN));
     openButton.setIcon(Icons.getSmallIcon("open"));
     
     saveButton = new EditorButton();
     saveButton.setAction(new SaveAction());
     saveButton.setIcon(Icons.getSmallIcon("save"));
+    saveButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_SAVE));
 
     saveAllButton = new EditorButton();
     saveAllButton.setIcon(Icons.getSmallIcon("save-all"));
+    saveAllButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_SAVE_ALL));
+    saveAllButton.setEnabled(false);
 
     cutButton = new EditorButton();
     cutButton.setIcon(Icons.getSmallIcon("cut"));
+    cutButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_CUT));
+    cutButton.setEnabled(false);
 
     copyButton = new EditorButton();
     copyButton.setIcon(Icons.getSmallIcon("copy"));
+    copyButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_COPY));
+    copyButton.setEnabled(false);
 
     pasteButton = new EditorButton();
     pasteButton.setIcon(Icons.getSmallIcon("paste"));
+    pasteButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_PASTE));
+    pasteButton.setEnabled(false);
 
     deleteButton = new EditorButton();
     deleteButton.setIcon(Icons.getSmallIcon("delete"));
+    deleteButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_DELETE));
+    deleteButton.setEnabled(false);
 
     undoButton = new EditorButton();
     undoButton.setIcon(Icons.getSmallIcon("undo"));
+    undoButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_UNDO));
+    undoButton.setEnabled(false);
+    
     redoButton = new EditorButton();
     redoButton.setIcon(Icons.getSmallIcon("redo"));
+    redoButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_REDO));
+    redoButton.setEnabled(false);
 
     pencilButton = new JToggleButton();
     pencilButton.setFocusable(false);
     pencilButton.setAction(new PencilAction());
     pencilButton.setIcon(Icons.getSmallIcon("pencil"));
+    pencilButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_DRAW_TILE));
 
     selectionButton = new JToggleButton();
     selectionButton.setFocusable(false);
     selectionButton.setAction(new SelectionAction());
     selectionButton.setIcon(Icons.getSmallIcon("selection"));
+    selectionButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_SELECT_REGION));
 
     bucketButton = new JToggleButton();
     bucketButton.setFocusable(false);
     bucketButton.setAction(new BucketAction());
     bucketButton.setIcon(Icons.getSmallIcon("bucket"));
+    bucketButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_FILL_REGION));
 
     eraserButton = new JToggleButton();
     eraserButton.setFocusable(false);
     eraserButton.setAction(new EraserAction());
     eraserButton.setIcon(Icons.getSmallIcon("eraser"));
+    eraserButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_ERASE_REGION));
 
     vectorButton = new JToggleButton();
     vectorButton.setFocusable(false);
     vectorButton.setAction(new VectorAction());
     vectorButton.setIcon(Icons.getSmallIcon("layer-shape-polyline"));
+    vectorButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_DRAW_VECTOR));
 
     programButton = new JToggleButton();
     programButton.setFocusable(false);
     programButton.setAction(new ProgramAction());
     programButton.setIcon(Icons.getSmallIcon("layer-shape-polyline"));
+    programButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_DRAW_PROGRAM));
 
     spriteButton = new JToggleButton();
     spriteButton.setFocusable(false);
     spriteButton.setAction(new SpriteAction());
     spriteButton.setIcon(Icons.getSmallIcon("user"));
+    spriteButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_SET_BOARD_SPRITE));
 
     lightButton = new JToggleButton();
     lightButton.setFocusable(false);
     lightButton.setAction(new LightAction());
     lightButton.setIcon(Icons.getSmallIcon("flashlight-shine"));
+    lightButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_SET_BOARD_LIGHT));
+    lightButton.setEnabled(false);
     
     startPositionButton = new JToggleButton();
     startPositionButton.setFocusable(false);
     startPositionButton.setAction(new StartPositionAction());
     startPositionButton.setIcon(Icons.getSmallIcon("flag-checker"));
+    startPositionButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_SET_START_POSITION));
 
     zoomInButton = new EditorButton();
     zoomInButton.setAction(new ZoomInAction());
     zoomInButton.setIcon(Icons.getSmallIcon("zoom-in"));
+    zoomInButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_ZOOM_IN));
 
     zoomOutButton = new EditorButton();
     zoomOutButton.setAction(new ZoomOutAction());
     zoomOutButton.setIcon(Icons.getSmallIcon("zoom-out"));
+    zoomOutButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_ZOOM_OUT));
     
     runButton = new EditorButton();
     runButton.setAction(new RunAction());
     runButton.setIcon(Icons.getSmallIcon("run"));
+    runButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_RUN_GAME));
     runButton.setEnabled(false);
 
     stopButton = new EditorButton();
     stopButton.setAction(new StopAction());
     stopButton.setIcon(Icons.getSmallIcon("stop"));
+    stopButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_STOP_GAME));
+    stopButton.setEnabled(false);
 
     helpButton = new EditorButton();
     helpButton.setAction(new HelpAction());
     helpButton.setIcon(Icons.getSmallIcon("help"));
+    helpButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_HELP));
+    helpButton.setEnabled(false);
 
     // Disable all the buttons for now
     toggleButtonStates(false);
@@ -321,16 +359,16 @@ public class MainToolBar extends JToolBar {
   }
 
   public final void toggleButtonStates(boolean enable) {
-    newButton.setEnabled(enable);
+//    newButton.setEnabled(enable);
     openButton.setEnabled(enable);
     saveButton.setEnabled(enable);
-    saveAllButton.setEnabled(enable);
-    cutButton.setEnabled(enable);
-    copyButton.setEnabled(enable);
-    pasteButton.setEnabled(enable);
-    deleteButton.setEnabled(enable);
-    undoButton.setEnabled(enable);
-    redoButton.setEnabled(enable);
+//    saveAllButton.setEnabled(enable);
+//    cutButton.setEnabled(enable);
+//    copyButton.setEnabled(enable);
+//    pasteButton.setEnabled(enable);
+//    deleteButton.setEnabled(enable);
+//    undoButton.setEnabled(enable);
+//    redoButton.setEnabled(enable);
     pencilButton.setEnabled(enable);
     selectionButton.setEnabled(enable);
     bucketButton.setEnabled(enable);
@@ -338,13 +376,13 @@ public class MainToolBar extends JToolBar {
     vectorButton.setEnabled(enable);
     programButton.setEnabled(enable);
     spriteButton.setEnabled(enable);
-    lightButton.setEnabled(enable);
+    //lightButton.setEnabled(enable);
     startPositionButton.setEnabled(enable);
     zoomInButton.setEnabled(enable);
     zoomOutButton.setEnabled(enable);
-    runButton.setEnabled(enable);
-    stopButton.setEnabled(enable);
-    helpButton.setEnabled(enable);
+//    runButton.setEnabled(enable);
+//    stopButton.setEnabled(enable);
+//    helpButton.setEnabled(enable);
   }
 
 }
