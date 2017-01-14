@@ -8,13 +8,13 @@
 package net.rpgtoolkit.editor.ui.actions;
 
 import java.awt.event.ActionEvent;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -22,6 +22,8 @@ import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
  * @author Joshua Michael Daly
  */
 public class SaveAction extends AbstractAction {
+  
+  private static final Logger LOGGER = LoggerFactory.getLogger(SaveAction.class);
 
   @Override
   public void actionPerformed(ActionEvent e) {
@@ -34,7 +36,7 @@ public class SaveAction extends AbstractAction {
           ToolkitEditorWindow window = (ToolkitEditorWindow) frame;
           window.save();
         } catch (Exception ex) {
-          Logger.getLogger(SaveAction.class.getName()).log(Level.SEVERE, null, ex);
+          LOGGER.error("Failed to invoke save for asset frame=[{}]", frame, ex);
           
           JOptionPane.showMessageDialog(MainWindow.getInstance(),
                   "Error saving file!",

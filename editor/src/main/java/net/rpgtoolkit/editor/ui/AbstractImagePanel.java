@@ -16,12 +16,16 @@ import java.io.IOException;
 import java.util.LinkedList;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Joshua Michael Daly
  */
 public abstract class AbstractImagePanel extends JPanel implements MouseListener {
+  
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractImagePanel.class);
 
   protected File file;
   protected Dimension dimension;
@@ -63,7 +67,7 @@ public abstract class AbstractImagePanel extends JPanel implements MouseListener
         this.file = file;
         bufferedImages.add(ImageIO.read(file));
       } catch (IOException ex) {
-        System.out.println(ex.toString());
+        LOGGER.error("Failed to add image file=[{}]", file, ex);
       }
     }
   }

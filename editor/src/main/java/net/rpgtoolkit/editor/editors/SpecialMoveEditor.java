@@ -12,8 +12,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.URI;
 import java.text.ParseException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -36,6 +34,8 @@ import net.rpgtoolkit.editor.utilities.EditorFileManager;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
 import net.rpgtoolkit.editor.utilities.GuiHelper;
 import net.rpgtoolkit.editor.ui.IntegerField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * SpecialMove editor
@@ -43,6 +43,8 @@ import net.rpgtoolkit.editor.ui.IntegerField;
  * @author Joel Moore
  */
 public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFrameListener {
+  
+  private static final Logger LOGGER = LoggerFactory.getLogger(SpecialMoveEditor.class);
 
   private final SpecialMove move; // SpecialMove file we are altering
   
@@ -109,7 +111,7 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
       fightPower.commitEdit();
       mpRemovedTarget.commitEdit();
     } catch (ParseException ex) {
-      Logger.getLogger(SpecialMoveEditor.class.getName()).log(Level.SEVERE, null, ex);
+      LOGGER.error("Failed to parse fields during save.", ex);
     }
     
     URI programUri = URI.create(program.getText());

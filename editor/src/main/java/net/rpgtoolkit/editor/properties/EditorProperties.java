@@ -10,15 +10,17 @@ package net.rpgtoolkit.editor.properties;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Joshua Michael Daly
  */
 public class EditorProperties {
-
+  
+  private static final Logger LOGGER = LoggerFactory.getLogger(EditorProperties.class);
+  
   private static final EditorProperties INSTANCE = new EditorProperties();
   private final Properties properties = new Properties();
 
@@ -27,7 +29,7 @@ public class EditorProperties {
             getResourceAsStream("/editor/properties/editor.properties")) {
       properties.load(in);
     } catch (IOException ex) {
-      Logger.getLogger(EditorProperties.class.getName()).log(Level.SEVERE, null, ex);
+      LOGGER.error("Failed to load editor properties file.", ex);
     }
   }
 

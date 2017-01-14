@@ -9,8 +9,6 @@ package net.rpgtoolkit.editor.ui;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JInternalFrame;
 import net.rpgtoolkit.common.assets.AbstractAsset;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
@@ -18,8 +16,12 @@ import net.rpgtoolkit.common.assets.AssetException;
 import net.rpgtoolkit.common.assets.AssetManager;
 import net.rpgtoolkit.editor.editors.AnimationEditor;
 import net.rpgtoolkit.editor.utilities.EditorFileManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class ToolkitEditorWindow extends JInternalFrame {
+  
+  private static final Logger LOGGER = LoggerFactory.getLogger(ToolkitEditorWindow.class);
 
   public ToolkitEditorWindow() {
 
@@ -48,7 +50,7 @@ public abstract class ToolkitEditorWindow extends JInternalFrame {
       AssetManager.getInstance().serialize(
               AssetManager.getInstance().getHandle(asset));
     } catch (IOException | AssetException ex) {
-      Logger.getLogger(AnimationEditor.class.getName()).log(Level.SEVERE, null, ex);
+      LOGGER.error("Failed to save asset=[{}].", asset, ex);
     }
   }
   

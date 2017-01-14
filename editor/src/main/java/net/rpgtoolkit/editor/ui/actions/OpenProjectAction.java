@@ -8,18 +8,38 @@
 package net.rpgtoolkit.editor.ui.actions;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
 import javax.swing.AbstractAction;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import net.rpgtoolkit.common.assets.Project;
+import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.MainWindow;
+import net.rpgtoolkit.editor.utilities.EditorFileManager;
 
 /**
  *
- * @author 
+ * @author
  */
 public class OpenProjectAction extends AbstractAction {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    MainWindow.getInstance().openProject();
+    EditorFileManager.getFileChooser().resetChoosableFileFilters();
+    FileNameExtensionFilter filter = new FileNameExtensionFilter(
+            "Toolkit Project", CoreProperties.getDefaultExtension(Project.class).replace(".", ""));
+    EditorFileManager.getFileChooser().setFileFilter(filter);
+
+    File mainFolder = new File(CoreProperties.getProjectsDirectory() + File.separator
+            + CoreProperties.getProperty("toolkit.directory.main"));
+
+    if (mainFolder.exists()) {
+      EditorFileManager.getFileChooser().setCurrentDirectory(mainFolder);
+    }
+
+    if (EditorFileManager.getFileChooser().showOpenDialog(MainWindow.getInstance()) == JFileChooser.APPROVE_OPTION) {
+      MainWindow.getInstance().openProject(EditorFileManager.getFileChooser().getSelectedFile());
+    }
   }
-  
+
 }

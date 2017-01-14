@@ -19,14 +19,14 @@ import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.assets.TilePixelOutOfRangeException;
 import net.rpgtoolkit.editor.editors.BoardEditor;
 import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.editor.utilities.TransparentDrawer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A concrete class for drawing 2D RPG-Toolkit Boards, this is the view component. It defines the
@@ -41,6 +41,8 @@ import net.rpgtoolkit.editor.utilities.TransparentDrawer;
  * @version 0.1
  */
 public final class BoardView2D extends AbstractBoardView {
+  
+  private static final Logger LOGGER = LoggerFactory.getLogger(BoardView2D.class);
 
   /**
    * Default constructor.
@@ -156,8 +158,7 @@ public final class BoardView2D extends AbstractBoardView {
         try {
           layer.drawTiles(g);
         } catch (TilePixelOutOfRangeException ex) {
-          Logger.getLogger(BoardView2D.class.getName()).
-                  log(Level.SEVERE, null, ex);
+          LOGGER.error("Failed to paint tiles on layer=[{}]", layer, ex);
         }
       }
     }

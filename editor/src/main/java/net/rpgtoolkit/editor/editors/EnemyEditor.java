@@ -8,7 +8,6 @@
 package net.rpgtoolkit.editor.editors;
 
 import java.awt.Component;
-import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,6 @@ import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.event.InternalFrameListener;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
-import net.rpgtoolkit.common.assets.BoardVector;
 import net.rpgtoolkit.common.assets.Enemy;
 import net.rpgtoolkit.editor.editors.sprite.AbstractSpriteEditor;
 import net.rpgtoolkit.editor.ui.WholeNumberField;

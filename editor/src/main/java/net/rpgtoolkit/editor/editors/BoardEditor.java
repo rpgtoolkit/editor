@@ -12,8 +12,6 @@ import net.rpgtoolkit.editor.editors.board.BoardMouseAdapter;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import net.rpgtoolkit.common.assets.Tile;
@@ -23,6 +21,8 @@ import net.rpgtoolkit.common.Selectable;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
 import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -31,6 +31,8 @@ import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
  * @author Joshua Michael Daly
  */
 public class BoardEditor extends ToolkitEditorWindow {
+  
+  private static final Logger LOGGER = LoggerFactory.getLogger(BoardEditor.class);
 
   private JScrollPane scrollPane;
 
@@ -232,6 +234,7 @@ public class BoardEditor extends ToolkitEditorWindow {
    *
    *
    * @param file
+   * @throws java.lang.Exception
    */
   @Override
   public void saveAs(File file) throws Exception {
@@ -281,8 +284,8 @@ public class BoardEditor extends ToolkitEditorWindow {
       brush.doPaint(point.x, point.y, selection);
       brush.endPaint();
     } catch (Exception ex) {
-      Logger.getLogger(BoardEditor.class.getName()).log(
-              Level.SEVERE, null, ex);
+      LOGGER.error("Failed to paint on the board brush=[{}], point=[{}], selection=[{}]", 
+              brush, point,selection, ex);
     }
   }
 

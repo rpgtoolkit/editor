@@ -20,14 +20,33 @@ import net.rpgtoolkit.common.assets.serialization.JsonProjectSerializer;
 import net.rpgtoolkit.common.assets.serialization.JsonSpecialMoveSerializer;
 import net.rpgtoolkit.common.assets.serialization.legacy.LegacyAnimatedTileSerializer;
 import net.rpgtoolkit.common.assets.serialization.legacy.LegacyTileSetSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Driver {
+  
+  private static final Logger LOGGER = LoggerFactory.getLogger(Driver.class);
+  
+  private static void logSystemInfo() {
+    LOGGER.info("---------------------------- System Info ----------------------------");
+    LOGGER.info("Operating System: {}", System.getProperty("os.name"));
+    LOGGER.info("System Architecture: {}", System.getProperty("os.arch"));
+    LOGGER.info("Available Processors (cores): {}", Runtime.getRuntime().availableProcessors());
+    LOGGER.info("Free Memory (bytes): {}", Runtime.getRuntime().freeMemory());
+    LOGGER.info("Total Memory (bytes): {}", Runtime.getRuntime().totalMemory());
+    LOGGER.info("Max Memory (bytes): {}", Runtime.getRuntime().maxMemory());
+    LOGGER.info("---------------------------------------------------------------------");
+  }
 
   private static void registerResolvers() {
+    LOGGER.debug("Registering asset resolvers.");
+    
     AssetManager.getInstance().registerResolver(new FileAssetHandleResolver());
   }
 
   private static void registerSerializers() {
+    LOGGER.debug("Registering asset serializers.");
+    
     AssetManager assetManager = AssetManager.getInstance();
 
     // Legacy.
@@ -46,14 +65,17 @@ public class Driver {
 
   public static void main(String[] args) {
     try {
-      System.out.println(System.getProperty("os.name"));
-      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
+      LOGGER.info("Starting the RPGToolkit Editor...");
+      
+      logSystemInfo();
       registerResolvers();
       registerSerializers();
+      
+      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+      
       MainWindow.getInstance().setVisible(true);
     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-
+      LOGGER.error("Failed to start the editor!", ex);
     }
   }
 

@@ -34,3 +34,8 @@ out/
 /editor/nbactions.xml
 **/nb-configuration.xml
 /target/
+
+# Log Files  #
+##############
+*.log
+

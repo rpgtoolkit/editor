@@ -18,8 +18,6 @@ import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
@@ -72,14 +70,20 @@ import net.rpgtoolkit.editor.ui.listeners.TileSetSelectionListener;
 import net.rpgtoolkit.editor.utilities.EditorFileManager;
 import net.rpgtoolkit.editor.utilities.FileTools;
 import net.rpgtoolkit.editor.utilities.TileSetRipper;
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Currently opening TileSets, tiles, programs, boards, animations, characters etc.
+ * Main UI, holds all Asset editors as InternalFrames. This class deals with opening existing assets
+ * and creating new ones.
  *
  * @author Geoff Wilson
  * @author Joshua Michael Daly
  */
 public class MainWindow extends JFrame implements InternalFrameListener {
+  
+  private static final Logger LOGGER = LoggerFactory.getLogger(MainWindow.class);
 
   // Singleton.
   private static final MainWindow INSTANCE = new MainWindow();
@@ -395,80 +399,69 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     }
   }
 
-  public void openProject() {
-    EditorFileManager.getFileChooser().resetChoosableFileFilters();
-    FileNameExtensionFilter filter = new FileNameExtensionFilter(
-            "Toolkit Project", CoreProperties.getDefaultExtension(Project.class).replace(".", ""));
-    EditorFileManager.getFileChooser().setFileFilter(filter);
+  public void openProject(File file) {
+    LOGGER.info("Opening {} file=[{}].", Project.class.getSimpleName(), file);
+    
+    setProjectPath(file.getParentFile().getParent(), FilenameUtils.removeExtension(file.getName()));
 
-    File mainFolder = new File(CoreProperties.getProjectsDirectory() + File.separator
-            + CoreProperties.getProperty("toolkit.directory.main"));
-
-    if (mainFolder.exists()) {
-      EditorFileManager.getFileChooser().setCurrentDirectory(mainFolder);
-    }
-
-    if (EditorFileManager.getFileChooser().showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-      File file = EditorFileManager.getFileChooser().getSelectedFile();
-      String fileName = file.getName().substring(0, file.getName().indexOf('.'));
-      System.setProperty("project.path",
-              file.getParentFile().getParent()
-              + File.separator
-              + CoreProperties.getProperty("toolkit.directory.game")
-              + File.separator
-              + fileName + File.separator);
-
-      try {
-        AssetHandle handle = AssetManager.getInstance().deserialize(
-                new AssetDescriptor(file.toURI()));
-        activeProject = (Project) handle.getAsset();
-      } catch (IOException | AssetException ex) {
-        Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-      }
-
-      setupProject();
+    try {
+      AssetHandle handle = AssetManager.getInstance().deserialize(
+              new AssetDescriptor(file.toURI()));
+      setupProject((Project) handle.getAsset());
+    } catch (IOException | AssetException ex) {
+      LOGGER.error("Failed to open {} file=[{}].", Project.class.getSimpleName(), file, ex);
     }
   }
 
   public void createNewProject() {
+    LOGGER.info("Creating new {}.", Project.class.getSimpleName());
+    
     String projectName = JOptionPane.showInputDialog(this,
             "Project Name:",
             "Create Project",
             JOptionPane.QUESTION_MESSAGE);
 
     if (projectName != null) {
-      boolean result = FileTools.createDirectoryStructure(CoreProperties.getProjectsDirectory(), projectName);
+      // Remove any . extensions the user may have tried to add.
+      projectName = FilenameUtils.removeExtension(projectName);
+      
+      boolean result = FileTools.createDirectoryStructure(
+              CoreProperties.getProjectsDirectory(), projectName);
 
       if (result) {
+        String fileName = System.getProperty("user.home")
+                + File.separator
+                + CoreProperties.getProperty("toolkit.directory.projects")
+                + File.separator
+                + CoreProperties.getProperty("toolkit.directory.main")
+                + File.separator
+                + projectName
+                + CoreProperties.getDefaultExtension(Project.class);
+        File file = new File(fileName);
+        
         Project project = new Project(
-                null,
+                new AssetDescriptor(file.toURI()),
                 CoreProperties.getProjectsDirectory()
                 + File.separator
                 + CoreProperties.getProperty("toolkit.directory.main"),
                 projectName);
-
         try {
           // Write out new project file.
           AssetManager.getInstance().serialize(AssetManager.getInstance().getHandle(project));
-          System.setProperty("project.path",
-                  System.getProperty("user.home")
-                  + File.separator
-                  + CoreProperties.getProperty("toolkit.directory.projects")
-                  + File.separator
-                  + CoreProperties.getProperty("toolkit.directory.game")
-                  + File.separator
-                  + projectName + File.separator);
-
-          activeProject = project;
-          setupProject();
+          setProjectPath(file.getParentFile().getParent(), projectName);
+          setupProject(project);
         } catch (IOException | AssetException ex) {
-          Logger.getLogger(Board.class.getName()).log(Level.SEVERE, null, ex);
+          LOGGER.error("Failed to create new {} projectName=[{}].", Project.class, projectName, ex);
         }
+      } else {
+        // TODO: clean up directory structure?
       }
     }
   }
 
   public void createNewAnimation() {
+    LOGGER.info("Creating new {}.", Animation.class.getSimpleName());
+    
     addToolkitEditorWindow(EditorFactory.getEditor(new Animation(null)));
   }
 
@@ -479,6 +472,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
    * @return
    */
   public Animation openAnimation(File file) {
+    LOGGER.info("Opening {} file=[{}].", Animation.class.getSimpleName(), file);
+    
     try {
       if (file.canRead()) {
         Animation animation;
@@ -490,13 +485,15 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         return animation;
       }
     } catch (IOException | AssetException ex) {
-      Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+      LOGGER.error("Failed to open {} file=[{}].", Animation.class.getSimpleName(), file, ex);
     }
 
     return null;
   }
 
   public void createNewBoard() {
+    LOGGER.info("Creating new {}.", Board.class.getSimpleName());
+    
     NewBoardDialog dialog = new NewBoardDialog();
     dialog.setLocationRelativeTo(this);
     dialog.setVisible(true);
@@ -514,6 +511,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   }
 
   public Board openBoard(File file) {
+    LOGGER.info("Opening {} file=[{}].", Board.class.getSimpleName(), file);
+    
     try {
       if (file.canRead()) {
         AssetHandle handle = AssetManager.getInstance().deserialize(
@@ -523,13 +522,15 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         return board;
       }
     } catch (IOException | AssetException ex) {
-      Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+      LOGGER.error("Failed to open {} file=[{}].", Board.class.getSimpleName(), file, ex);
     }
 
     return null;
   }
 
   public void createNewEnemy() {
+    LOGGER.info("Creating new {}.", Enemy.class.getSimpleName());
+    
     Enemy enemy = new Enemy(null);
     enemy.setName("Untitled");
 
@@ -549,6 +550,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
    * @return
    */
   public Enemy openEnemy(File file) {
+    LOGGER.info("Opening {} file=[{}].", Enemy.class.getSimpleName(), file);
+    
     try {
       if (file.canRead()) {
         AssetHandle handle = AssetManager.getInstance().deserialize(
@@ -558,13 +561,15 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         return enemy;
       }
     } catch (IOException | AssetException ex) {
-      Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+      LOGGER.error("Failed to open {} file=[{}].", Enemy.class.getSimpleName(), file, ex);
     }
 
     return null;
   }
   
   public void createNewItem() {
+    LOGGER.info("Creating new {}.", Item.class.getSimpleName());
+    
     Item item = new Item(null);
     item.setName("Untitled");
     
@@ -578,6 +583,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   }
   
   public Item openItem(File file) {
+    LOGGER.info("Opening {} file=[{}].", Item.class.getSimpleName(), file);
+    
     try {
       if (file.canRead()) {
         AssetHandle handle = AssetManager.getInstance().deserialize(
@@ -587,13 +594,15 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         return item;
       }
     } catch (IOException | AssetException ex) {
-      Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+      LOGGER.error("Failed to open {} file=[{}].", Item.class.getSimpleName(), file, ex);
     }
 
     return null;
   }
 
   public void createNewCharacter() {
+    LOGGER.info("Creating new {}.", Character.class.getSimpleName());
+    
     Player player = new Player(null);
     player.setName("Untitled");
 
@@ -613,6 +622,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
    * @return
    */
   public Player openCharacter(File file) {
+    LOGGER.info("Opening {} file=[{}].", Character.class.getSimpleName(), file);
+    
     try {
       if (file.canRead()) {
         AssetHandle handle = AssetManager.getInstance().deserialize(
@@ -622,13 +633,15 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         return player;
       }
     } catch (IOException | AssetException ex) {
-      Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+      LOGGER.error("Failed to open {} file=[{}].", Character.class.getSimpleName(), file, ex);
     }
 
     return null;
   }
 
   public void createNewTileset() {
+    LOGGER.info("Creating new {}.", TileSet.class.getSimpleName());
+    
     NewTilesetDialog dialog = new NewTilesetDialog();
     dialog.setLocationRelativeTo(this);
     dialog.setVisible(true);
@@ -659,19 +672,23 @@ public class MainWindow extends JFrame implements InternalFrameListener {
           
           openTileset(tileSetFile);
         } catch (IOException | AssetException ex) {
-          Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+          LOGGER.error("Failed to create new {} file=[{}].", TileSet.class.getSimpleName(), file, ex);
         }
       }
     }
   }
 
   public void openTileset(File file) {
+    LOGGER.info("Opening {} file=[{}].", TileSet.class.getSimpleName(), file);
+    
     TileSet tileSet = TileSetCache.addTileSet(file.getName());
     tileSetPanel.addTileSet(tileSet);
     upperTabbedPane.setSelectedComponent(tileSetPanel);
   }
 
   public SpecialMove openSpecialMove(File file) {
+    LOGGER.info("Opening {} file=[{}].", SpecialMove.class.getSimpleName(), file);
+    
     try {
       if (file.canRead()) {
         AssetHandle handle = AssetManager.getInstance().deserialize(
@@ -681,13 +698,29 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         return move;
       }
     } catch (IOException | AssetException ex) {
-      Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+      LOGGER.error("Failed to open {} file=[{}].", SpecialMove.class.getSimpleName(), file, ex);
     }
 
     return null;
   }
+  
+  private void setProjectPath(String parentDirectory, String fileName) {
+    LOGGER.info("Setting project path parentDirectory=[{}], fileName=[{}].", parentDirectory, fileName);
+    
+    System.setProperty("project.path",
+            parentDirectory
+            + File.separator
+            + CoreProperties.getProperty("toolkit.directory.game")
+            + File.separator
+            + fileName
+            + File.separator);
+    
+    LOGGER.info("Project path set to project.path=[{}].", System.getProperty("project.path"));
+  }
 
-  private void setupProject() {
+  private void setupProject(Project project) {
+    activeProject = project;
+    
     ProjectEditor projectEditor = new ProjectEditor(this.activeProject);
     this.desktopPane.add(projectEditor, BorderLayout.CENTER);
 
@@ -706,8 +739,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     try {
       window.setSelected(true);
     } catch (PropertyVetoException ex) {
-      Logger.getLogger(MainWindow.class.getName()).
-              log(Level.SEVERE, null, ex);
+      LOGGER.error("Failed to select {} window=[{}].", ToolkitEditorWindow.class.getSimpleName(), window, ex);
     }
   }
 

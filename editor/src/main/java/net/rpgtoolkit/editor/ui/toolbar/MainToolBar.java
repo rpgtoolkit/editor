@@ -171,7 +171,7 @@ public class MainToolBar extends JToolBar {
     programButton = new JToggleButton();
     programButton.setFocusable(false);
     programButton.setAction(new ProgramAction());
-    programButton.setIcon(Icons.getSmallIcon("layer-shape-polyline"));
+    programButton.setIcon(Icons.getSmallIcon("layer-vector"));
     programButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_DRAW_PROGRAM));
 
     spriteButton = new JToggleButton();
