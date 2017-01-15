@@ -8,7 +8,6 @@
 package net.rpgtoolkit.editor.editors;
 
 import java.awt.Component;
-import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +15,6 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.event.InternalFrameListener;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
-import net.rpgtoolkit.common.assets.BoardVector;
 import net.rpgtoolkit.common.assets.Item;
 import net.rpgtoolkit.common.assets.listeners.SpriteChangeListener;
 import net.rpgtoolkit.editor.editors.sprite.AbstractSpriteEditor;
@@ -33,13 +31,15 @@ public class ItemEditor extends AbstractSpriteEditor implements InternalFrameLis
   private JTextField itemDescription;
 
   public ItemEditor(Item item) {
-    super("Editing Item - " + item.toString(), item);
+    super("Untitled", item);
 
     this.item = item;
     this.item.addSpriteChangeListener(this);
 
     if (this.item.getDescriptor() == null) {
       setupNewItem();
+    } else {
+      setTitle(new File(item.getDescriptor().getURI()).getName());
     }
 
     constructWindow();
@@ -65,7 +65,7 @@ public class ItemEditor extends AbstractSpriteEditor implements InternalFrameLis
   @Override
   public void saveAs(File file) throws Exception {
     item.setDescriptor(new AssetDescriptor((file.toURI())));
-    setTitle("Editing Item - " + file.getName());
+    setTitle(file.getName());
     save();
   }
   

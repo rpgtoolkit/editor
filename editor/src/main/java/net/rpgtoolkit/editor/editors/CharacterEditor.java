@@ -84,7 +84,7 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
   private JTextField levelUpProgram;
 
   public CharacterEditor(Player player) {
-    super("Editing Player Character - " + player.getName(), player);
+    super(player.getName(), player);
     
     this.player = player;
     this.player.addSpriteChangeListener(this);
@@ -134,7 +134,7 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
   @Override
   public void saveAs(File file) throws Exception {
     player.setDescriptor(new AssetDescriptor(file.toURI()));
-    this.setTitle("Editing Player - " + file.getName());
+    this.setTitle(file.getName());
     save();
   }
 

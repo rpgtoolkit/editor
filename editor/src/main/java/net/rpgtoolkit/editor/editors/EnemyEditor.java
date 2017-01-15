@@ -76,12 +76,14 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
    * @param theEnemy Enemy to edit
    */
   public EnemyEditor(Enemy theEnemy) {
-    super("Editing Enemy - " + theEnemy.toString(), theEnemy);
+    super("Untitled", theEnemy);
 
-    this.enemy = theEnemy;
+    enemy = theEnemy;
     
-    if (this.enemy.getDescriptor() == null) {
+    if (enemy.getDescriptor() == null) {
       setupNewEnemy();
+    } else {
+      setTitle(new File(enemy.getDescriptor().getURI()).getName());
     }
 
     this.constructWindow();
@@ -124,7 +126,7 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
   @Override
   public void saveAs(File file) throws Exception {
     enemy.setDescriptor(new AssetDescriptor(file.toURI()));
-    this.setTitle("Editing Enemy - " + file.getName());
+    this.setTitle(file.getName());
     save();
   }
 

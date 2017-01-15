@@ -40,12 +40,12 @@ public class AnimationEditor extends ToolkitEditorWindow implements AnimationCha
   private JPanel timelinePanel;
 
   public AnimationEditor(Animation theAnimation) {
-    super("Editing Animation", true, true, true, true);
+    super("Untitled", true, true, true, true);
     animation = theAnimation;
     animation.addAnimationChangeListener(this);
     
     if (animation.getDescriptor() != null) {
-      setTitle("Editing - " + animation.getDescriptor().getURI().getPath());
+      setTitle(new File(animation.getDescriptor().getURI()).getName());
     }
 
     configureInterface();
@@ -67,7 +67,6 @@ public class AnimationEditor extends ToolkitEditorWindow implements AnimationCha
   @Override
   public void saveAs(File file) throws Exception {
     animation.setDescriptor(new AssetDescriptor(file.toURI()));
-    this.setTitle("Editing Animation - " + file.getName());
     save();
   }
 

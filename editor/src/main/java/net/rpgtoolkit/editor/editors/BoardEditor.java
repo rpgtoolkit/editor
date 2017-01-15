@@ -57,10 +57,10 @@ public class BoardEditor extends ToolkitEditorWindow {
   }
 
   public BoardEditor(Board board) {
-    super("Board Viewer", true, true, true, true);
+    super("Untitled", true, true, true, true);
     boardMouseAdapter = new BoardMouseAdapter(this);
     this.board = board;
-    init(board, board.getDescriptor().getURI().toString());
+    init(board, new File(board.getDescriptor().getURI()).getName());
   }
 
   /**
@@ -70,7 +70,7 @@ public class BoardEditor extends ToolkitEditorWindow {
    * @param height
    */
   public BoardEditor(String fileName, int width, int height) {
-    super("Board Viewer", true, true, true, true);
+    super("Untitled", true, true, true, true);
     boardMouseAdapter = new BoardMouseAdapter(this);
     board = new Board(null, width, height);
     board.addLayer();
@@ -239,7 +239,7 @@ public class BoardEditor extends ToolkitEditorWindow {
   @Override
   public void saveAs(File file) throws Exception {
     board.setDescriptor(new AssetDescriptor(file.toURI()));
-    setTitle("Editing - " + file.getName());
+    setTitle(file.getName());
     save();
   }
 
@@ -349,7 +349,7 @@ public class BoardEditor extends ToolkitEditorWindow {
     cursorTileLocation = new Point(0, 0);
     cursorLocation = new Point(0, 0);
 
-    setTitle("Editing - " + fileName);
+    setTitle(fileName);
     add(scrollPane);
     pack();
   }

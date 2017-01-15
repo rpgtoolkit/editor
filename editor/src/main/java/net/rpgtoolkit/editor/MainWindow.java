@@ -22,6 +22,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -335,39 +336,46 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   public void internalFrameDeactivated(InternalFrameEvent e) {
     LOGGER.debug("Deactivated internal frame e=[{}].", e.getInternalFrame().getClass());
     
-    if (e.getInternalFrame() instanceof AnimationEditor) {
-      AnimationEditor editor = (AnimationEditor) e.getInternalFrame();
+    JInternalFrame frame = e.getInternalFrame();
+    if (frame instanceof AnimationEditor) {
+      AnimationEditor editor = (AnimationEditor) frame;
 
       if (propertiesPanel.getModel() == editor.getAnimation()) {
-        this.propertiesPanel.setModel(null);
+        propertiesPanel.setModel(null);
       }
-    } else if (e.getInternalFrame() instanceof BoardEditor) {
-      BoardEditor editor = (BoardEditor) e.getInternalFrame();
+    } else if (frame instanceof BoardEditor) {
+      BoardEditor editor = (BoardEditor) frame;
 
-      if (this.layerPanel.getBoardView().equals(editor.getBoardView())) {
-        this.layerPanel.clearTable();
+      if (layerPanel.getBoardView().equals(editor.getBoardView())) {
+        layerPanel.clearTable();
       }
 
-      if (this.propertiesPanel.getModel() == editor.getSelectedObject()
+      if (propertiesPanel.getModel() == editor.getSelectedObject()
               || propertiesPanel.getModel() == editor.getBoard()) {
-        this.propertiesPanel.setModel(null);
+        propertiesPanel.setModel(null);
       }
 
       // So we do not end up drawing the vector or program on the other 
       // board after it has been deactivated.
-      if (this.currentBrush instanceof VectorBrush
-              || this.currentBrush instanceof ProgramBrush) {
-        VectorBrush brush = (VectorBrush) this.currentBrush;
+      if (currentBrush instanceof VectorBrush
+              || currentBrush instanceof ProgramBrush) {
+        VectorBrush brush = (VectorBrush) currentBrush;
 
         if (brush.isDrawing() && brush.getBoardVector() != null) {
           brush.finish();
         }
       }
-    } else if (e.getInternalFrame() instanceof CharacterEditor) {
-      CharacterEditor editor = (CharacterEditor) e.getInternalFrame();
+    } else if (frame instanceof CharacterEditor) {
+      CharacterEditor editor = (CharacterEditor) frame;
 
       if (propertiesPanel.getModel() == editor.getPlayer()) {
-        this.propertiesPanel.setModel(null);
+        propertiesPanel.setModel(null);
+      }
+    } else if (frame instanceof ItemEditor) {
+      ItemEditor editor = (ItemEditor) frame;
+      
+      if (propertiesPanel.getModel() == editor.getItem()) {
+        propertiesPanel.setModel(null);
       }
     }
   }

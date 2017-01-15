@@ -42,7 +42,7 @@ public abstract class ToolkitEditorWindow extends JInternalFrame {
       }
       
       asset.setDescriptor(new AssetDescriptor(file.toURI()));
-      setTitle("Editing " + file.getName());
+      setTitle(file.getName());
     }
 
     try {
