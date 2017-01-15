@@ -8,18 +8,15 @@
 package net.rpgtoolkit.editor.editors;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -30,8 +27,12 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
+import net.rpgtoolkit.common.assets.Board;
+import net.rpgtoolkit.common.assets.Player;
+import net.rpgtoolkit.common.assets.Program;
 import net.rpgtoolkit.common.assets.Project;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
+import net.rpgtoolkit.editor.utilities.EditorFileManager;
 import net.rpgtoolkit.editor.utilities.GuiHelper;
 
 /**
@@ -42,23 +43,11 @@ import net.rpgtoolkit.editor.utilities.GuiHelper;
  */
 public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameListener {
 
-  // Key Values for project settings
-  private final int KEY_LEFT_UP = 0;
-  private final int KEY_UP = 1;
-  private final int KEY_RIGHT_UP = 2;
-  private final int KEY_LEFT = 3;
-  private final int KEY_RIGHT = 4;
-  private final int KEY_LEFT_DOWN = 5;
-  private final int KEY_DOWN = 6;
-  private final int KEY_RIGHT_DOWN = 7;
-
   private final Project project; // Project file we are altering
 
   // Tabs required by the menu
   private JPanel projectSettingsPanel;
-  private JPanel startupInfoPanel;
   private JPanel codePanel;
-  private JPanel fightingPanel;
   private JPanel graphicsPanel;
 
   // Components required for saving/loading data
@@ -67,23 +56,10 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
 
   //PROJECT SETTINGS
   private JTextField projectName;
-  private JCheckBox enableJoystick;
-  private JTextField cursorMoveSound;
-  private JTextField cursorSelectSound;
-  private JTextField cursorCancelSound;
-  private JCheckBox useKeyboard;
-  private JCheckBox useMouse;
-  private JCheckBox allowDiagonalMove;
-  private JTextField movementKeys[];
 
   // STARTUP SETTINGS
   private JTextField initialBoard;
   private JTextField initialChar;
-  private JSlider charSpeed;
-  private JRadioButton pixelMovement;
-  private JRadioButton tileMovement;
-  private JCheckBox pushInPixels;
-  private JComboBox pathfinding;
 
   // CODE SETTINGS
   private JTextField runTimeProgram;
@@ -91,20 +67,10 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
   private JTextField gameOverProgram;
   private JTextField runTimeKey;
   private JTextField menuKey;
-  private JTextField generalKey;
-
-  // FIGHTING SETTINGS
-  private JCheckBox enableFight;
 
   // GRAPHICS SETTINGS
   private JCheckBox showFPS;
   private JCheckBox drawBoardVectors;
-  private JCheckBox drawSpriteVectors;
-  private JCheckBox drawActivePlayerPath;
-  private JCheckBox drawActivePlayerDestination;
-  private JRadioButton sixteenBit;
-  private JRadioButton twentyFourBit;
-  private JRadioButton thirtyTwoBit;
   private JCheckBox fullScreen;
   private JRadioButton sixByFour;
   private JRadioButton eightBySix;
@@ -126,23 +92,23 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
   public ProjectEditor() {
     super("New Project", true, true, true, true);
 
-    this.project = new Project(null, "", "");
-    this.setVisible(true);
+    project = new Project(null, "", "");
+    setVisible(true);
   }
 
   /**
    * Opens an existing project
    *
-   * @param fileName Project file to open (.gam)
+   * @param project Project file to open (.gam)
    */
-  public ProjectEditor(Project fileName) {
-    super(fileName.getGameTitle(), true, true, true, true);
+  public ProjectEditor(Project project) {
+    super(project.getGameTitle(), true, true, true, true);
 
-    this.project = fileName;
+    this.project = project;
 
-    this.setSize(555, 530);
-    this.constructWindow();
-    this.setVisible(true);
+    setSize(555, 530);
+    constructWindow();
+    setVisible(true);
   }
 
   /*
@@ -152,6 +118,24 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
    */
   @Override
   public void save() throws Exception {
+    if (sixByFour.isSelected()) {
+      project.setResolutionWidth(640);
+      project.setResolutionHeight(480);
+      project.setMainResolution(0);
+    } else if (eightBySix.isSelected()) {
+      project.setResolutionWidth(800);
+      project.setResolutionHeight(600);
+      project.setMainResolution(1);
+    } else if (tenBySeven.isSelected()) {
+      project.setResolutionWidth(1024);
+      project.setResolutionHeight(768);
+      project.setMainResolution(2);
+    } else {
+      project.setResolutionWidth(Integer.parseInt(customResWidth.getText()));
+      project.setResolutionHeight(Integer.parseInt(customResHeight.getText()));
+      project.setMainResolution(3);
+    }
+    
     save(project);
   }
 
@@ -159,7 +143,7 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
    *
    *
    * @param file
-   * @return
+   * @throws java.lang.Exception
    */
   @Override
   public void saveAs(File file) throws Exception {
@@ -222,143 +206,51 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
     JTabbedPane tabPane = new JTabbedPane();
 
     this.projectSettingsPanel = new JPanel();
-    this.startupInfoPanel = new JPanel();
     this.codePanel = new JPanel();
-    this.fightingPanel = new JPanel();
     this.graphicsPanel = new JPanel();
 
     this.createProjectSettingsPanel();
-    this.createStartupInfoPanel();
     this.createCodePanel();
-    this.createFightPanel();
     this.createGraphicsPanel();
 
     tabPane.addTab("Project Settings", this.projectSettingsPanel);
-    tabPane.addTab("Startup Info", this.startupInfoPanel);
     tabPane.addTab("RPG Code", this.codePanel);
-    tabPane.addTab("Battle System", this.fightingPanel);
     tabPane.addTab("Graphics", this.graphicsPanel);
 
-    this.add(tabPane);
-    // this.setJMenuBar(new ProjectEditorMenu(this.parent));
+    add(tabPane);
+    pack();
   }
 
   private void createProjectSettingsPanel() {
     // Configure Class scope components
-    this.projectName = new JTextField(this.project.getGameTitle());
+    projectName = new JTextField(this.project.getGameTitle());
     projectName.getDocument().addDocumentListener(new DocumentListener() {
       @Override
       public void changedUpdate(DocumentEvent e) {
+      }
+
+      @Override
+      public void insertUpdate(DocumentEvent e) {
         project.setGameTitle(projectName.getText());
       }
 
       @Override
-      public void insertUpdate(DocumentEvent e) {
-      }
-
-      @Override
       public void removeUpdate(DocumentEvent e) {
+        project.setGameTitle(projectName.getText());
       }
     });
 
-    this.enableJoystick = new JCheckBox();
-    this.enableJoystick.setSelected(this.project.getJoystickStatus());
-    enableJoystick.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        project.setEnableJoyStick(enableJoystick.isSelected() ? 1 : 0);
-      }
-    });
-
-    this.cursorMoveSound = new JTextField(this.project.getCursorMoveSound());
-    cursorMoveSound.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      public void changedUpdate(DocumentEvent e) {
-        project.setCursorMoveSound(cursorMoveSound.getText());
-      }
-
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-      }
-
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-      }
-    });
-
-    this.cursorSelectSound = new JTextField(this.project.getCursorSelectSound());
-    cursorSelectSound.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      public void changedUpdate(DocumentEvent e) {
-        project.setCursorSelectSound(cursorSelectSound.getText());
-      }
-
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-      }
-
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-      }
-    });
-
-    this.cursorCancelSound = new JTextField(this.project.getCursorCancelSound());
-    cursorCancelSound.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      public void changedUpdate(DocumentEvent e) {
-        project.setCursorCancelSound(cursorCancelSound.getText());
-      }
-
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-      }
-
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-      }
-    });
-
-    // TODO: No functionality behind these!
-    this.useKeyboard = new JCheckBox();
-    this.useMouse = new JCheckBox();
-    this.allowDiagonalMove = new JCheckBox();
-    this.movementKeys = new JTextField[8];
-    for (int i = 0; i < this.movementKeys.length; i++) {
-      movementKeys[i] = new JTextField();
-    }
 
     // Configure function Scope Components
     JLabel projectNameLabel = new JLabel("Project Name");
-    JLabel enableJoystickLabel = new JLabel("Enable Joystick?");
-    JLabel cursorMoveSoundLabel = new JLabel("Move");
-    JLabel cursorSelectSoundLabel = new JLabel("Select");
-    JLabel cursorCancelSoundLabel = new JLabel("Cancel");
-    JButton cursorMoveSoundButton = new JButton("Browse");
-    JButton cursorSelectSoundButton = new JButton("Browse");
-    JButton cursorCancelSoundButton = new JButton("Browse");
-    JLabel useKeyboardLabel = new JLabel("Use Keyboard?");
-    JLabel useMouseLabel = new JLabel("Use Mouse?");
-    JLabel allowDiagonalMoveLabel = new JLabel("Allow Diagonal Movement?");
 
     // Configure the necessary Panels
     JPanel projectInfoPanel = new JPanel();
     projectInfoPanel.setBorder(BorderFactory.createTitledBorder(
             this.defaultEtchedBorder, "Project Information"));
-    JPanel cursorSoundsPanel = new JPanel();
-    cursorSoundsPanel.setBorder(BorderFactory.createTitledBorder(
-            this.defaultEtchedBorder, "Cursor Sounds"));
-    JPanel controlsPanel = new JPanel();
-    controlsPanel.setBorder(BorderFactory.createTitledBorder(
-            this.defaultEtchedBorder, "Control Options"));
-    JPanel keysPanel = new JPanel();
-    keysPanel.setBorder(BorderFactory.createTitledBorder(
-            this.defaultEtchedBorder, "Change Keys"));
 
-    GroupLayout layout = GuiHelper.createGroupLayout(this.projectSettingsPanel);
+    GroupLayout layout = GuiHelper.createGroupLayout(projectSettingsPanel);
     GroupLayout projectInfoLayout = GuiHelper.createGroupLayout(projectInfoPanel);
-    GroupLayout cursorSoundsLayout = GuiHelper.createGroupLayout(cursorSoundsPanel);
-    GroupLayout controlsLayout = GuiHelper.createGroupLayout(controlsPanel);
-    GroupLayout keysLayout = GuiHelper.createGroupLayout(keysPanel);
 
     // Configure the PROJECT INFO PANEL layout
     projectInfoLayout.setHorizontalGroup(projectInfoLayout.createSequentialGroup()
@@ -372,390 +264,140 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
             .addComponent(this.projectName, GuiHelper.JTF_HEIGHT,
                     GuiHelper.JTF_HEIGHT, GuiHelper.JTF_HEIGHT)
     );
+    
+    initialBoard = new JTextField();
+    initialBoard.setEditable(false);
+    initialBoard.setText(project.getInitBoard());
 
-    // Configure the CURSOR SOUNDS PANEL layout
-    cursorSoundsLayout.setHorizontalGroup(cursorSoundsLayout.createParallelGroup()
-            .addGroup(cursorSoundsLayout.createSequentialGroup()
-                    .addComponent(cursorMoveSoundLabel, 50, 50, 50)
-                    .addComponent(this.cursorMoveSound)
-                    .addComponent(cursorMoveSoundButton))
-            .addGroup(cursorSoundsLayout.createSequentialGroup()
-                    .addComponent(cursorSelectSoundLabel)
-                    .addComponent(this.cursorSelectSound)
-                    .addComponent(cursorSelectSoundButton))
-            .addGroup(cursorSoundsLayout.createSequentialGroup()
-                    .addComponent(cursorCancelSoundLabel)
-                    .addComponent(this.cursorCancelSound)
-                    .addComponent(cursorCancelSoundButton))
-    );
-
-    cursorSoundsLayout.linkSize(SwingConstants.HORIZONTAL,
-            cursorMoveSoundLabel,
-            cursorSelectSoundLabel,
-            cursorCancelSoundLabel);
-    cursorSoundsLayout.linkSize(SwingConstants.VERTICAL,
-            this.cursorMoveSound,
-            this.cursorCancelSound,
-            this.cursorSelectSound);
-
-    cursorSoundsLayout.setVerticalGroup(cursorSoundsLayout.createSequentialGroup()
-            .addGroup(cursorSoundsLayout.createParallelGroup()
-                    .addComponent(cursorMoveSoundLabel)
-                    .addComponent(this.cursorMoveSound, GuiHelper.JTF_HEIGHT,
-                            GuiHelper.JTF_HEIGHT, GuiHelper.JTF_HEIGHT)
-                    .addComponent(cursorMoveSoundButton))
-            .addGroup(cursorSoundsLayout.createParallelGroup()
-                    .addComponent(cursorSelectSoundLabel)
-                    .addComponent(this.cursorSelectSound)
-                    .addComponent(cursorSelectSoundButton))
-            .addGroup(cursorSoundsLayout.createParallelGroup()
-                    .addComponent(cursorCancelSoundLabel)
-                    .addComponent(this.cursorCancelSound)
-                    .addComponent(cursorCancelSoundButton))
-    );
-
-    // Configure CONTROL SETTINGS PANEL layout
-    controlsLayout.setHorizontalGroup(controlsLayout.createParallelGroup()
-            .addGroup(controlsLayout.createSequentialGroup()
-                    .addComponent(this.useKeyboard)
-                    .addComponent(useKeyboardLabel))
-            .addGroup(controlsLayout.createSequentialGroup()
-                    .addComponent(this.useMouse)
-                    .addComponent(useMouseLabel))
-            .addGroup(controlsLayout.createSequentialGroup()
-                    .addComponent(this.allowDiagonalMove)
-                    .addComponent(allowDiagonalMoveLabel))
-            .addGroup(controlsLayout.createSequentialGroup()
-                    .addComponent(this.enableJoystick)
-                    .addComponent(enableJoystickLabel))
-    );
-
-    controlsLayout.setVerticalGroup(controlsLayout.createSequentialGroup()
-            .addGroup(controlsLayout.createParallelGroup()
-                    .addComponent(this.useKeyboard)
-                    .addComponent(useKeyboardLabel))
-            .addGroup(controlsLayout.createParallelGroup()
-                    .addComponent(this.useMouse)
-                    .addComponent(useMouseLabel))
-            .addGroup(controlsLayout.createParallelGroup()
-                    .addComponent(this.allowDiagonalMove)
-                    .addComponent(allowDiagonalMoveLabel))
-            .addGroup(controlsLayout.createParallelGroup()
-                    .addComponent(this.enableJoystick)
-                    .addComponent(enableJoystickLabel))
-    );
-
-    // Configure KEY REBINDING PANEL layout
-    keysLayout.setHorizontalGroup(keysLayout.createParallelGroup()
-            .addGroup(keysLayout.createSequentialGroup()
-                    .addComponent(this.movementKeys[0], 40, 40, 40)
-                    .addComponent(this.movementKeys[1])
-                    .addComponent(this.movementKeys[2]))
-            .addGroup(keysLayout.createSequentialGroup()
-                    .addComponent(this.movementKeys[3])
-                    .addGap(52)
-                    .addComponent(this.movementKeys[4]))
-            .addGroup(keysLayout.createSequentialGroup()
-                    .addComponent(this.movementKeys[5])
-                    .addComponent(this.movementKeys[6])
-                    .addComponent(this.movementKeys[7]))
-    );
-
-    keysLayout.linkSize(this.movementKeys);
-
-    keysLayout.setVerticalGroup(keysLayout.createSequentialGroup()
-            .addGroup(keysLayout.createParallelGroup()
-                    .addComponent(this.movementKeys[0], GuiHelper.JTF_HEIGHT,
-                            GuiHelper.JTF_HEIGHT, GuiHelper.JTF_HEIGHT)
-                    .addComponent(this.movementKeys[1])
-                    .addComponent(this.movementKeys[2]))
-            .addGroup(keysLayout.createParallelGroup()
-                    .addComponent(this.movementKeys[3])
-                    .addComponent(this.movementKeys[4]))
-            .addGroup(keysLayout.createParallelGroup()
-                    .addComponent(this.movementKeys[5])
-                    .addComponent(this.movementKeys[6])
-                    .addComponent(this.movementKeys[7]))
-    );
-
-    // Configure PROJECT SETTINGS PANEL layout
-    layout.setHorizontalGroup(layout.createParallelGroup()
-            .addComponent(projectInfoPanel, 515, 515, 515)
-            .addComponent(cursorSoundsPanel)
-            .addGroup(layout.createSequentialGroup()
-                    .addComponent(controlsPanel, 255, 255, 255)
-                    .addComponent(keysPanel))
-    );
-
-    layout.linkSize(SwingConstants.HORIZONTAL, projectInfoPanel, cursorSoundsPanel);
-    layout.linkSize(SwingConstants.HORIZONTAL, controlsPanel, keysPanel);
-
-    layout.setVerticalGroup(layout.createSequentialGroup()
-            .addComponent(projectInfoPanel)
-            .addComponent(cursorSoundsPanel)
-            .addGroup(layout.createParallelGroup()
-                    .addComponent(controlsPanel)
-                    .addComponent(keysPanel))
-    );
-  }
-
-  private void createStartupInfoPanel() {
-    this.initialBoard = new JTextField();
-    initialBoard.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      public void changedUpdate(DocumentEvent e) {
-        project.setInitBoard(initialBoard.getText());
-      }
-
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-      }
-
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-      }
-    });
-
-    this.initialChar = new JTextField();
-    initialChar.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      public void changedUpdate(DocumentEvent e) {
-        project.setInitChar(initialChar.getText());
-      }
-
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-      }
-
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-      }
-    });
-
-    this.charSpeed = new JSlider();
-    this.charSpeed.setMaximum(3);
-    this.charSpeed.setMinimum(-3);
-    this.charSpeed.setMajorTickSpacing(1);
-    this.charSpeed.setMinorTickSpacing(1);
-    this.charSpeed.setPaintLabels(true);
-    this.charSpeed.setValue(0);
-
-    this.pixelMovement = new JRadioButton();
-    this.tileMovement = new JRadioButton();
-
-    this.pushInPixels = new JCheckBox();
-
-    this.pathfinding = new JComboBox();
-    this.pathfinding.addItem("Axial");
-    this.pathfinding.addItem("Diagonal");
-    this.pathfinding.addItem("Vector");
-    this.pathfinding.setEditable(false);
-    this.pathfinding.setSelectedIndex(2);
-
+    initialChar = new JTextField();
+    initialChar.setEditable(false);
+    initialChar.setText(project.getInitChar());
+    
     JLabel initialBoardLabel = new JLabel("Initial Board");
     JButton initialBoardButton = new JButton("Browse");
+    initialBoardButton.addActionListener((ActionEvent e) -> {
+      File file = EditorFileManager.browseByType(Board.class);
+      
+      if (file != null) {
+        String fileName = file.getName();
+        initialBoard.setText(fileName);
+        project.setInitBoard(fileName);
+      }
+    });
+    
     JLabel initialCharLabel = new JLabel("Initial Character");
     JButton initialCharButton = new JButton("Browse");
+    initialCharButton.addActionListener((ActionEvent e) -> {
+      File file = EditorFileManager.browseByType(Player.class);
+      
+      if (file != null) {
+        String fileName = file.getName();
+        initialChar.setText(fileName);
+        project.setInitChar(fileName);
+      }
+    });
+    
     JLabel blankBoardNote = new JLabel("You may leave the initial board "
             + "blank if you wish");
-    JLabel charSpeedLabel = new JLabel("Adjust game speed");
-    JLabel charSpeedNote = new JLabel("This is a secondary option, leave at "
-            + "zero for default character speeds");
-    JLabel movementLabel = new JLabel("Movement Style");
-    JLabel pixelMovementLabel = new JLabel("Per Pixel");
-    JLabel tileMovementLabel = new JLabel("Per Tile");
-    JLabel pushInPixelsLabel = new JLabel("Push[] in pixel increments");
-    JButton mouseCursorButton = new JButton("Mouse Cursor");
-    JLabel pathFindingLabel = new JLabel("Default Path Finding Mode");
 
     // Configure the necessary Panels
     JPanel conditionsPanel = new JPanel();
     conditionsPanel.setBorder(BorderFactory.createTitledBorder(
-            this.defaultEtchedBorder, "Startup Settings"));
-    JPanel miscPanel = new JPanel();
-    miscPanel.setBorder(BorderFactory.createTitledBorder(
-            this.defaultEtchedBorder, "Miscellaneous Settings"));
+            defaultEtchedBorder, "Startup Settings"));
 
-    GroupLayout layout = GuiHelper.createGroupLayout(this.startupInfoPanel);
     GroupLayout conditionsLayout = GuiHelper.createGroupLayout(conditionsPanel);
-    GroupLayout miscLayout = GuiHelper.createGroupLayout(miscPanel);
 
     conditionsLayout.setHorizontalGroup(conditionsLayout.createParallelGroup()
             .addGroup(conditionsLayout.createSequentialGroup()
                     .addComponent(initialBoardLabel, 75, 75, 75)
-                    .addComponent(this.initialBoard)
+                    .addComponent(initialBoard)
                     .addComponent(initialBoardButton))
             .addGroup(conditionsLayout.createSequentialGroup()
                     .addComponent(initialCharLabel)
-                    .addComponent(this.initialChar)
+                    .addComponent(initialChar)
                     .addComponent(initialCharButton))
             .addComponent(blankBoardNote)
     );
 
     conditionsLayout.linkSize(SwingConstants.HORIZONTAL, initialBoardLabel,
             initialCharLabel);
-    conditionsLayout.linkSize(SwingConstants.VERTICAL, this.initialBoard,
-            this.initialChar);
+    conditionsLayout.linkSize(SwingConstants.VERTICAL, initialBoard,
+            initialChar);
 
     conditionsLayout.setVerticalGroup(conditionsLayout.createSequentialGroup()
             .addGroup(conditionsLayout.createParallelGroup()
                     .addComponent(initialBoardLabel)
-                    .addComponent(this.initialBoard, GuiHelper.JTF_HEIGHT,
+                    .addComponent(initialBoard, GuiHelper.JTF_HEIGHT,
                             GuiHelper.JTF_HEIGHT, GuiHelper.JTF_HEIGHT)
                     .addComponent(initialBoardButton))
             .addGroup(conditionsLayout.createParallelGroup()
                     .addComponent(initialCharLabel)
-                    .addComponent(this.initialChar)
+                    .addComponent(initialChar)
                     .addComponent(initialCharButton))
             .addComponent(blankBoardNote)
     );
 
-    miscLayout.setHorizontalGroup(miscLayout.createParallelGroup()
-            .addGroup(miscLayout.createSequentialGroup()
-                    .addComponent(charSpeedLabel)
-                    .addComponent(this.charSpeed))
-            .addComponent(charSpeedNote)
-            .addGroup(miscLayout.createSequentialGroup()
-                    .addComponent(movementLabel)
-                    .addComponent(this.pixelMovement)
-                    .addComponent(pixelMovementLabel)
-                    .addComponent(this.tileMovement)
-                    .addComponent(tileMovementLabel))
-            .addGroup(miscLayout.createSequentialGroup()
-                    .addComponent(this.pushInPixels)
-                    .addComponent(pushInPixelsLabel))
-            .addGroup(miscLayout.createSequentialGroup()
-                    .addComponent(mouseCursorButton)
-                    .addComponent(pathFindingLabel)
-                    .addComponent(this.pathfinding))
-    );
-
-    miscLayout.setVerticalGroup(miscLayout.createSequentialGroup()
-            .addGroup(miscLayout.createParallelGroup()
-                    .addComponent(charSpeedLabel)
-                    .addComponent(this.charSpeed))
-            .addComponent(charSpeedNote)
-            .addGroup(miscLayout.createParallelGroup()
-                    .addComponent(movementLabel)
-                    .addComponent(this.pixelMovement)
-                    .addComponent(pixelMovementLabel)
-                    .addComponent(this.tileMovement)
-                    .addComponent(tileMovementLabel))
-            .addGroup(miscLayout.createParallelGroup()
-                    .addComponent(this.pushInPixels)
-                    .addComponent(pushInPixelsLabel))
-            .addGroup(miscLayout.createParallelGroup()
-                    .addComponent(mouseCursorButton)
-                    .addComponent(pathFindingLabel)
-                    .addComponent(this.pathfinding, 22, 22, 22))
-    );
-
+    // Configure PROJECT SETTINGS PANEL layout
     layout.setHorizontalGroup(layout.createParallelGroup()
+            .addComponent(projectInfoPanel, 515, 515, 515)
             .addComponent(conditionsPanel, 515, 515, 515)
-            .addComponent(miscPanel)
     );
 
-    layout.linkSize(SwingConstants.HORIZONTAL, conditionsPanel, miscPanel);
+    layout.linkSize(SwingConstants.HORIZONTAL, projectInfoPanel, conditionsPanel);
 
     layout.setVerticalGroup(layout.createSequentialGroup()
+            .addComponent(projectInfoPanel)
             .addComponent(conditionsPanel)
-            .addComponent(miscPanel)
     );
   }
 
   private void createCodePanel() {
     // Configure Class scope components
-    this.runTimeProgram = new JTextField();
-    runTimeProgram.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      public void changedUpdate(DocumentEvent e) {
-      }
+    runTimeProgram = new JTextField();
+    runTimeProgram.setEditable(false);
+    runTimeProgram.setText(project.getRunTime());
 
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-      }
+    startupProgram = new JTextField();
+    startupProgram.setEditable(false);
+    startupProgram.setText(project.getStartupPrg());
 
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-      }
-    });
+    gameOverProgram = new JTextField();
+    gameOverProgram.setEditable(false);
+    gameOverProgram.setText(project.getGameOverProgram());
 
-    this.startupProgram = new JTextField();
-    startupProgram.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      public void changedUpdate(DocumentEvent e) {
-        project.setStartupPrg(startupProgram.getText());
-      }
-
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-      }
-
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-      }
-    });
-
-    this.gameOverProgram = new JTextField();
-    gameOverProgram.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      public void changedUpdate(DocumentEvent e) {
-        project.setGameOverProgram(gameOverProgram.getText());
-      }
-
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-      }
-
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-      }
-    });
-
-    this.runTimeKey = new JTextField();
+    runTimeKey = new JTextField();
+    runTimeKey.setText(String.valueOf(project.getRunKey()));
     runTimeKey.getDocument().addDocumentListener(new DocumentListener() {
       @Override
       public void changedUpdate(DocumentEvent e) {
+      }
+
+      @Override
+      public void insertUpdate(DocumentEvent e) {
         project.setRunKey(Integer.parseInt(runTimeKey.getText()));
       }
 
       @Override
-      public void insertUpdate(DocumentEvent e) {
-      }
-
-      @Override
       public void removeUpdate(DocumentEvent e) {
+        project.setRunKey(Integer.parseInt(runTimeKey.getText()));
       }
     });
 
-    this.menuKey = new JTextField();
+    menuKey = new JTextField();
+    menuKey.setText(String.valueOf(project.getMenuKey()));
     menuKey.getDocument().addDocumentListener(new DocumentListener() {
       @Override
       public void changedUpdate(DocumentEvent e) {
+      }
+
+      @Override
+      public void insertUpdate(DocumentEvent e) {
         project.setMenuKey(Integer.parseInt(menuKey.getText()));
       }
 
       @Override
-      public void insertUpdate(DocumentEvent e) {
-      }
-
-      @Override
       public void removeUpdate(DocumentEvent e) {
-      }
-    });
-
-    this.generalKey = new JTextField();
-    generalKey.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      public void changedUpdate(DocumentEvent e) {
-      }
-
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-      }
-
-      @Override
-      public void removeUpdate(DocumentEvent e) {
+        project.setMenuKey(Integer.parseInt(menuKey.getText()));
       }
     });
 
@@ -763,13 +405,42 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
     JLabel runTimeProgramLabel = new JLabel("Run Time Program");
     JLabel startupProgramLabel = new JLabel("Startup Program");
     JLabel gameOverProgramLabel = new JLabel("Game Over Program");
+    
     JButton runTimeProgramButton = new JButton("Browse");
+    runTimeProgramButton.addActionListener((ActionEvent e) -> {
+      File file = EditorFileManager.browseByType(Program.class);
+
+      if (file != null) {
+        String fileName = file.getName();
+        runTimeProgram.setText(fileName);
+        project.setRunTime(fileName);
+      }
+    });
+    
     JButton startupProgramButton = new JButton("Browse");
+    startupProgramButton.addActionListener((ActionEvent e) -> {
+      File file = EditorFileManager.browseByType(Program.class);
+
+      if (file != null) {
+        String fileName = file.getName();
+        startupProgram.setText(fileName);
+        project.setStartupPrg(fileName);
+      }
+    });
+    
     JButton gameOverProgramButton = new JButton("Browse");
+    gameOverProgramButton.addActionListener((ActionEvent e) -> {
+      File file = EditorFileManager.browseByType(Program.class);
+
+      if (file != null) {
+        String fileName = file.getName();
+        gameOverProgram.setText(file.getName());
+        project.setGameOverProgram(fileName);
+      }
+    });
+    
     JLabel runTimeKeyLabel = new JLabel("Run Time");
     JLabel menuKeyLabel = new JLabel("Display Menu");
-    JLabel generalKeyLabel = new JLabel("General Key");
-    JButton moreKeysButton = new JButton("More");
 
     // Configure Panels
     JPanel programPanel = new JPanel();
@@ -827,18 +498,15 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
             .addGroup(keysPanelLayout.createSequentialGroup()
                     .addComponent(menuKeyLabel)
                     .addComponent(this.menuKey))
-            .addGroup(keysPanelLayout.createSequentialGroup()
-                    .addComponent(generalKeyLabel)
-                    .addComponent(this.generalKey))
-            .addComponent(moreKeysButton)
+            .addGroup(keysPanelLayout.createSequentialGroup())
     );
 
     keysPanelLayout.linkSize(SwingConstants.VERTICAL, this.runTimeKey,
-            this.menuKey, this.generalKey);
+            this.menuKey);
     keysPanelLayout.linkSize(SwingConstants.HORIZONTAL, this.runTimeKey,
-            this.menuKey, this.generalKey);
+            this.menuKey);
     keysPanelLayout.linkSize(SwingConstants.HORIZONTAL, runTimeKeyLabel,
-            menuKeyLabel, generalKeyLabel);
+            menuKeyLabel);
 
     keysPanelLayout.setVerticalGroup(keysPanelLayout.createSequentialGroup()
             .addGroup(keysPanelLayout.createParallelGroup()
@@ -848,10 +516,7 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
             .addGroup(keysPanelLayout.createParallelGroup()
                     .addComponent(menuKeyLabel)
                     .addComponent(this.menuKey))
-            .addGroup(keysPanelLayout.createParallelGroup()
-                    .addComponent(generalKeyLabel)
-                    .addComponent(this.generalKey))
-            .addComponent(moreKeysButton)
+            .addGroup(keysPanelLayout.createParallelGroup())
     );
 
     layout.setHorizontalGroup(layout.createParallelGroup()
@@ -868,124 +533,39 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
 
   }
 
-  private void createFightPanel() {
-    this.enableFight = new JCheckBox();
-    enableFight.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        project.setFightingEnabled(enableFight.isSelected() ? 1 : 0);
-      }
-    });
-
-    JLabel enableFightLabel = new JLabel("Enable Battle System?");
-    JButton configureFight = new JButton("Configure");
-
-    JPanel fightControlPanel = new JPanel();
-    fightControlPanel.setBorder(BorderFactory.createTitledBorder(
-            this.defaultEtchedBorder, "Configuration"));
-
-    // Configure Layouts
-    GroupLayout layout = GuiHelper.createGroupLayout(this.fightingPanel);
-    GroupLayout fightControlPanelLayout = GuiHelper.createGroupLayout(fightControlPanel);
-
-    fightControlPanelLayout.setHorizontalGroup(fightControlPanelLayout.createParallelGroup()
-            .addGroup(fightControlPanelLayout.createSequentialGroup()
-                    .addComponent(this.enableFight)
-                    .addComponent(enableFightLabel))
-            .addComponent(configureFight)
-    );
-
-    fightControlPanelLayout.setVerticalGroup(fightControlPanelLayout.createSequentialGroup()
-            .addGroup(fightControlPanelLayout.createParallelGroup()
-                    .addComponent(this.enableFight)
-                    .addComponent(enableFightLabel))
-            .addComponent(configureFight)
-    );
-
-    layout.setHorizontalGroup(layout.createParallelGroup()
-            .addComponent(fightControlPanel, 515, 515, 515)
-    );
-
-    layout.setVerticalGroup(layout.createSequentialGroup()
-            .addComponent(fightControlPanel)
-    );
-  }
-
   private void createGraphicsPanel() {
-
-    this.sixteenBit = new JRadioButton("16 bit");
-    this.twentyFourBit = new JRadioButton("24 bit");
-    this.thirtyTwoBit = new JRadioButton("32 bit");
-
-    this.fullScreen = new JCheckBox("Full Screen Mode?");
-    this.fullScreen.setSelected(this.project.getFullscreenMode());
-
-    this.sixByFour = new JRadioButton("640 x 480");
-    this.eightBySix = new JRadioButton("800 x 600");
-    this.tenBySeven = new JRadioButton("1024 x 768");
-    this.customRes = new JRadioButton("Custom");
-    this.customResWidth = new JTextField(Long.toString(this.project.getResolutionWidth()));
-    this.customResHeight = new JTextField(Long.toString(this.project.getResolutionHeight()));
-
-    this.showFPS = new JCheckBox();
-    showFPS.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-      }
+    fullScreen = new JCheckBox("Full Screen Mode?");
+    fullScreen.setSelected(project.getFullscreenMode());
+    fullScreen.addActionListener((ActionEvent e) -> {
+      project.setExtendToFullScreen(fullScreen.isSelected());
     });
 
-    this.drawBoardVectors = new JCheckBox();
-    drawBoardVectors.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-      }
+    sixByFour = new JRadioButton("640 x 480");
+    eightBySix = new JRadioButton("800 x 600");
+    tenBySeven = new JRadioButton("1024 x 768");
+    customRes = new JRadioButton("Custom");
+    customResWidth = new JTextField(Long.toString(this.project.getResolutionWidth()));
+    customResHeight = new JTextField(Long.toString(this.project.getResolutionHeight()));
+
+    showFPS = new JCheckBox();
+    showFPS.setSelected(project.getDisplayFPSInTitle());
+    showFPS.addActionListener((ActionEvent e) -> {
+      project.setDisplayFPSInTitle(showFPS.isSelected());
     });
 
-    this.drawSpriteVectors = new JCheckBox();
-    drawSpriteVectors.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-      }
+    drawBoardVectors = new JCheckBox();
+    drawBoardVectors.setSelected(project.getDrawVectors());
+    drawBoardVectors.addActionListener((ActionEvent e) -> {
+      project.setDrawVectors(drawBoardVectors.isSelected());
     });
-
-    this.drawActivePlayerPath = new JCheckBox();
-    drawActivePlayerPath.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-      }
-    });
-
-    this.drawActivePlayerDestination = new JCheckBox();
-    drawActivePlayerDestination.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-      }
-    });
-
-    ButtonGroup depthGroup = new ButtonGroup();
-    depthGroup.add(this.sixteenBit);
-    depthGroup.add(this.twentyFourBit);
-    depthGroup.add(this.thirtyTwoBit);
-
-    switch (this.project.getColourDepth()) {
-      case 0:
-        this.sixteenBit.setSelected(true);
-        break;
-      case 1:
-        this.twentyFourBit.setSelected(true);
-        break;
-      case 2:
-        this.thirtyTwoBit.setSelected(true);
-        break;
-    }
-
+    
     ButtonGroup resolutionGroup = new ButtonGroup();
     resolutionGroup.add(this.sixByFour);
     resolutionGroup.add(this.eightBySix);
     resolutionGroup.add(this.tenBySeven);
     resolutionGroup.add(this.customRes);
 
-    switch (this.project.getResolutionMode()) {
+    switch (project.getResolutionMode()) {
       case 0:
         this.sixByFour.setSelected(true);
         break;
@@ -1006,9 +586,6 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
     JLabel customResY = new JLabel("y");
     JLabel showFPSLabel = new JLabel("Show FPS?");
     JLabel drawBoardVectorsLabel = new JLabel("Draw Board Vectors?");
-    JLabel drawSpriteVectorsLabel = new JLabel("Draw Sprite Vectors?");
-    JLabel drawActivePlayerPathLabel = new JLabel("Draw Active Player Path?");
-    JLabel drawActivePlayerDestinationLabel = new JLabel("Draw Active Player Destination");
 
     JPanel screenPanel = new JPanel();
     screenPanel.setBorder(BorderFactory.createTitledBorder(
@@ -1017,9 +594,6 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
     miscPanel.setBorder(BorderFactory.createTitledBorder(
             this.defaultEtchedBorder, "Miscellaneous"));
 
-    JPanel colorDepthPanel = new JPanel();
-    colorDepthPanel.setBorder(BorderFactory.createTitledBorder(
-            this.defaultEtchedBorder, "Color Depth"));
     JPanel resolutionPanel = new JPanel();
     resolutionPanel.setBorder(BorderFactory.createTitledBorder(
             this.defaultEtchedBorder, "Resolution"));
@@ -1029,24 +603,12 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
 
     // Create Layout for Top Level Panel
     GroupLayout layout = GuiHelper.createGroupLayout(this.graphicsPanel);
+    
     // Configure Layouts for Second Level Panels
-    GroupLayout colorDepthLayout = GuiHelper.createGroupLayout(colorDepthPanel);
     GroupLayout resolutionLayout = GuiHelper.createGroupLayout(resolutionPanel);
     GroupLayout screenLayout = GuiHelper.createGroupLayout(screenPanel);
     GroupLayout miscLayout = GuiHelper.createGroupLayout(miscPanel);
     GroupLayout customResLayout = GuiHelper.createGroupLayout(customResolutionPanel);
-
-    colorDepthLayout.setHorizontalGroup(colorDepthLayout.createParallelGroup()
-            .addComponent(this.sixteenBit)
-            .addComponent(this.twentyFourBit)
-            .addComponent(this.thirtyTwoBit)
-    );
-
-    colorDepthLayout.setVerticalGroup(colorDepthLayout.createSequentialGroup()
-            .addComponent(this.sixteenBit)
-            .addComponent(this.twentyFourBit)
-            .addComponent(this.thirtyTwoBit)
-    );
 
     resolutionLayout.setHorizontalGroup(resolutionLayout.createParallelGroup()
             .addComponent(this.sixByFour)
@@ -1066,18 +628,15 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
 
     screenLayout.setHorizontalGroup(screenLayout.createParallelGroup()
             .addGroup(screenLayout.createSequentialGroup()
-                    .addComponent(colorDepthPanel, 150,
-                            GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(resolutionPanel, 150,
                             GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(customResolutionPanel)
     );
 
-    screenLayout.linkSize(SwingConstants.VERTICAL, colorDepthPanel, resolutionPanel);
+    screenLayout.linkSize(SwingConstants.VERTICAL, resolutionPanel);
 
     screenLayout.setVerticalGroup(screenLayout.createSequentialGroup()
             .addGroup(screenLayout.createParallelGroup()
-                    .addComponent(colorDepthPanel)
                     .addComponent(resolutionPanel))
             .addComponent(customResolutionPanel)
             .addGap(15)
@@ -1111,14 +670,7 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
                     .addComponent(showFPSLabel))
             .addGroup(miscLayout.createSequentialGroup()
                     .addComponent(this.drawBoardVectors)
-                    .addComponent(drawBoardVectorsLabel)
-                    .addComponent(this.drawActivePlayerPath)
-                    .addComponent(drawActivePlayerPathLabel))
-            .addGroup(miscLayout.createSequentialGroup()
-                    .addComponent(this.drawSpriteVectors)
-                    .addComponent(drawSpriteVectorsLabel)
-                    .addComponent(this.drawActivePlayerDestination)
-                    .addComponent(drawActivePlayerDestinationLabel))
+                    .addComponent(drawBoardVectorsLabel))
     );
 
     miscLayout.setVerticalGroup(miscLayout.createSequentialGroup()
@@ -1127,14 +679,7 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
                     .addComponent(showFPSLabel))
             .addGroup(miscLayout.createParallelGroup()
                     .addComponent(this.drawBoardVectors)
-                    .addComponent(drawBoardVectorsLabel)
-                    .addComponent(this.drawActivePlayerPath)
-                    .addComponent(drawActivePlayerPathLabel))
-            .addGroup(miscLayout.createParallelGroup()
-                    .addComponent(this.drawSpriteVectors)
-                    .addComponent(drawSpriteVectorsLabel)
-                    .addComponent(this.drawActivePlayerDestination)
-                    .addComponent(drawActivePlayerDestinationLabel))
+                    .addComponent(drawBoardVectorsLabel))
     );
 
     layout.setHorizontalGroup(layout.createParallelGroup()

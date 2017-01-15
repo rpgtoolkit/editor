@@ -5,16 +5,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.rpgtoolkit.editor.utilities;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.rpgtoolkit.common.assets.AbstractAsset;
@@ -31,7 +24,6 @@ import net.rpgtoolkit.common.assets.TileSet;
 import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.editor.ui.SingleRootFileSystemView;
-import org.apache.commons.io.FilenameUtils;
 
 /**
  *
@@ -143,6 +135,8 @@ public class EditorFileManager {
       return new String[]{CoreProperties.getProperty("toolkit.item.extension.default")};
     } else if (type == Player.class) {
       return new String[]{CoreProperties.getProperty("toolkit.character.extension.default")};
+    } else if (type == Program.class) {
+      return new String[]{CoreProperties.getProperty("toolkit.program.extension.default")};
     } else if (type == Project.class) {
       return new String[]{CoreProperties.getProperty("toolkit.project.extension.default")};
     } else if (type == StatusEffect.class) {
