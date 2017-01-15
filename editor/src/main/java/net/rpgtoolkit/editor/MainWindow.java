@@ -270,6 +270,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
   @Override
   public void internalFrameOpened(InternalFrameEvent e) {
+    LOGGER.debug("Opened internal frame e=[{}].", e.getInternalFrame().getClass());
+    
     if (e.getInternalFrame() instanceof AnimationEditor) {
       AnimationEditor editor = (AnimationEditor) e.getInternalFrame();
       propertiesPanel.setModel(editor.getAnimation());
@@ -286,17 +288,17 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
   @Override
   public void internalFrameClosing(InternalFrameEvent e) {
-
+    LOGGER.debug("Closing internal frame e=[{}].", e.getInternalFrame().getClass());
   }
 
   @Override
   public void internalFrameClosed(InternalFrameEvent e) {
-
+    LOGGER.debug("Closed internal frame e=[{}].", e.getInternalFrame().getClass());
   }
 
   @Override
   public void internalFrameIconified(InternalFrameEvent e) {
-
+    
   }
 
   @Override
@@ -306,6 +308,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
   @Override
   public void internalFrameActivated(InternalFrameEvent e) {
+    LOGGER.debug("Activated internal frame e=[{}].", e.getInternalFrame().getClass());
+    
     if (e.getInternalFrame() instanceof AnimationEditor) {
       AnimationEditor editor = (AnimationEditor) e.getInternalFrame();
       propertiesPanel.setModel(editor.getAnimation());
@@ -329,6 +333,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
   @Override
   public void internalFrameDeactivated(InternalFrameEvent e) {
+    LOGGER.debug("Deactivated internal frame e=[{}].", e.getInternalFrame().getClass());
+    
     if (e.getInternalFrame() instanceof AnimationEditor) {
       AnimationEditor editor = (AnimationEditor) e.getInternalFrame();
 

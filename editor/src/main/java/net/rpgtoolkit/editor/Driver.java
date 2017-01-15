@@ -27,6 +27,16 @@ public class Driver {
   
   private static final Logger LOGGER = LoggerFactory.getLogger(Driver.class);
   
+  private static void redirectUncaughtExceptions() {
+    try {
+      Thread.setDefaultUncaughtExceptionHandler((Thread t, Throwable e) -> {
+        LOGGER.error("Uncaught Exception detected in thread {}", t, e);
+      });
+    } catch (SecurityException e) {
+      LOGGER.error("Could not set the Default Uncaught Exception Handler", e);
+    }
+  }
+  
   private static void logSystemInfo() {
     LOGGER.info("---------------------------- System Info ----------------------------");
     LOGGER.info("Operating System: {}", System.getProperty("os.name"));
@@ -66,6 +76,7 @@ public class Driver {
   public static void main(String[] args) {
     try {
       LOGGER.info("Starting the RPGToolkit Editor...");
+      redirectUncaughtExceptions();
       
       logSystemInfo();
       registerResolvers();

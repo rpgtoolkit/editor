@@ -14,7 +14,6 @@ import net.rpgtoolkit.common.assets.AbstractAsset;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
 import net.rpgtoolkit.common.assets.AssetException;
 import net.rpgtoolkit.common.assets.AssetManager;
-import net.rpgtoolkit.editor.editors.AnimationEditor;
 import net.rpgtoolkit.editor.utilities.EditorFileManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
