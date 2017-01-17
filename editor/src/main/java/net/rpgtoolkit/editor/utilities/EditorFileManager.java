@@ -77,8 +77,6 @@ public class EditorFileManager {
       return CoreProperties.getProperty("toolkit.directory.character");
     } else if (type == Program.class) {
       return CoreProperties.getProperty("toolkit.directory.program");
-    } else if (type == Project.class) {
-      return CoreProperties.getProperty("toolkit.directory.main");
     } else if (type == StatusEffect.class) {
       return CoreProperties.getProperty("toolkit.directory.statuseffect");
     } else if (type == SpecialMove.class) {

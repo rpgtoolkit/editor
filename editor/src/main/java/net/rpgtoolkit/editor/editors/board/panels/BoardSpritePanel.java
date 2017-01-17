@@ -8,7 +8,6 @@
 package net.rpgtoolkit.editor.editors.board.panels;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -16,7 +15,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.AnimationFrame;
 import net.rpgtoolkit.common.assets.BoardSprite;
@@ -81,35 +79,15 @@ public class BoardSpritePanel extends BoardModelPanel {
     String[] exts = EditorFileManager.getTypeExtensions(Item.class);
     fileComboBox = GuiHelper.getFileListJComboBox(directory, exts, true);
     fileComboBox.setSelectedItem(boardSprite.getFileName());
-    fileComboBox.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
+    fileComboBox.addActionListener((ActionEvent e) -> {
         String fileName = (String) fileComboBox.getSelectedItem();
         
         if (fileName == null) {
-          return;
+            return;
         }
         
         boardSprite.setFileName((String) fileComboBox.getSelectedItem());
-        
-        AnimationFrame frame = null;
-        if (!fileName.isEmpty()) {
-          File file  = new File(EditorFileManager.getFullPath(Item.class), fileName);
-          Item item = MainWindow.getInstance().openItem(file);
-          if (item.getStandardGraphics().size() > 1) {
-            file = new File(EditorFileManager.getFullPath(Animation.class), 
-                    item.getStandardGraphics().get(0));
-            Animation animation = MainWindow.getInstance().openAnimation(file);
-
-            if (animation != null) {
-              frame = animation.getFrame(0);
-            }
-          }
-        }
-        
-        boardSprite.setSouthAnimationFrame(frame);
-      }
+        updateCurrentBoardView();
     });
     ///
     /// activationComboBox
@@ -122,71 +100,48 @@ public class BoardSpritePanel extends BoardModelPanel {
     exts = new String[]{"prg"};
     activationComboBox = GuiHelper.getFileListJComboBox(directory, exts, true);
     activationComboBox.setSelectedItem(boardSprite.getFileName());
-    activationComboBox.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
+    activationComboBox.addActionListener((ActionEvent e) -> {
         boardSprite.setActivationProgram((String) activationComboBox.getSelectedItem());
-      }
-
     });
     ///
     /// multiTaskingTextField
     ///
     multiTaskingComboBox = GuiHelper.getFileListJComboBox(directory, exts, true);
     multiTaskingComboBox.setSelectedItem(boardSprite.getFileName());
-    multiTaskingComboBox.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
+    multiTaskingComboBox.addActionListener((ActionEvent e) -> {
         boardSprite.setMultitaskingProgram((String) multiTaskingComboBox.getSelectedItem());
-      }
-
     });
     ///
     /// xSpinner
     ///
     xSpinner = new JSpinner();
     xSpinner.setValue(((BoardSprite) model).getX());
-    xSpinner.addChangeListener(new ChangeListener() {
-
-      @Override
-      public void stateChanged(ChangeEvent e) {
+    xSpinner.addChangeListener((ChangeEvent e) -> {
         BoardSprite sprite = (BoardSprite) model;
 
         if (sprite.getX() != (int) xSpinner.getValue()) {
-          sprite.setX((int) xSpinner.getValue());
-          updateCurrentBoardView();
+            sprite.setX((int) xSpinner.getValue());
+            updateCurrentBoardView();
         }
-      }
-
     });
     ///
     /// ySpinner
     ///
     ySpinner = new JSpinner();
     ySpinner.setValue(((BoardSprite) model).getY());
-    ySpinner.addChangeListener(new ChangeListener() {
-
-      @Override
-      public void stateChanged(ChangeEvent e) {
+    ySpinner.addChangeListener((ChangeEvent e) -> {
         BoardSprite sprite = (BoardSprite) model;
 
         if (sprite.getY() != (int) ySpinner.getValue()) {
-          sprite.setY((int) ySpinner.getValue());
-          updateCurrentBoardView();
+            sprite.setY((int) ySpinner.getValue());
+            updateCurrentBoardView();
         }
-      }
-
     });
     ///
     /// layerSpinner
     ///
     layerSpinner = getJSpinner(((BoardSprite) model).getLayer());
-    layerSpinner.addChangeListener(new ChangeListener() {
-
-      @Override
-      public void stateChanged(ChangeEvent e) {
+    layerSpinner.addChangeListener((ChangeEvent e) -> {
         BoardSprite sprite = (BoardSprite) model;
 
         BoardLayerView lastLayerView = getBoardEditor().getBoardView().
@@ -197,84 +152,72 @@ public class BoardSpritePanel extends BoardModelPanel {
 
         // Make sure this is a valid move.
         if (lastLayerView != null && newLayerView != null) {
-          // Do the swap.
-          sprite.setLayer((int) layerSpinner.getValue());
-          newLayerView.getLayer().getSprites().add(sprite);
-          lastLayerView.getLayer().getSprites().remove(sprite);
-          updateCurrentBoardView();
-
-          // Store new layer selection index.
-          lastSpinnerLayer = (int) layerSpinner.getValue();
+            // Do the swap.
+            sprite.setLayer((int) layerSpinner.getValue());
+            newLayerView.getLayer().getSprites().add(sprite);
+            lastLayerView.getLayer().getSprites().remove(sprite);
+            updateCurrentBoardView();
+            
+            // Store new layer selection index.
+            lastSpinnerLayer = (int) layerSpinner.getValue();
         } else {
-          // Not a valid layer revert selection.
-          layerSpinner.setValue(lastSpinnerLayer);
+            // Not a valid layer revert selection.
+            layerSpinner.setValue(lastSpinnerLayer);
         }
-      }
-
     });
     ///
     /// typeComboBox
     ///
     typeComboBox = new JComboBox(ACTIVATION_TYPES);
-    typeComboBox.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
+    typeComboBox.addActionListener((ActionEvent e) -> {
         String type = (String) typeComboBox.getSelectedItem();
         if (type.equals(ACTIVATION_TYPES[0])) {
-          boardSprite.setActivationType(0);
+            boardSprite.setActivationType(0);
         } else {
-          boardSprite.setActivationType(1);
+            boardSprite.setActivationType(1);
         }
-      }
-
     });
     ///
     /// variablesButton
     ///
     variablesButton = getJButton("Configure");
-    variablesButton.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
+    variablesButton.addActionListener((ActionEvent e) -> {
         BoardSpriteDialog dialog = new BoardSpriteDialog(
                 MainWindow.getInstance(), "Configure Variables",
                 true, (BoardSprite) model);
 
         if (dialog.showDialog() == BoardSpriteDialog.APPLY) {
-          String initialVariable = dialog.getInitialVariable();
-          String initialValue = dialog.getInitialValue();
-          String finalVariable = dialog.getFinalVariable();
-          String finalValue = dialog.getFinalValue();
-          String loadingVariable = dialog.getLoadingVariable();
-          String loadingValue = dialog.getLoadingValue();
-
-          if (!boardSprite.getInitialVariable().equals(initialVariable)) {
-            boardSprite.setInitialVariable(initialVariable);
-          }
-
-          if (!boardSprite.getInitialValue().equals(initialValue)) {
-            boardSprite.setInitialValue(initialValue);
-          }
-
-          if (!boardSprite.getFinalVariable().equals(finalVariable)) {
-            boardSprite.setFinalVariable(finalVariable);
-          }
-
-          if (!boardSprite.getFinalValue().equals(finalValue)) {
-            boardSprite.setFinalValue(finalValue);
-          }
-
-          if (!boardSprite.getLoadingVariable().equals(loadingVariable)) {
-            boardSprite.setLoadingVariable(loadingVariable);
-          }
-
-          if (!boardSprite.getLoadingValue().equals(loadingValue)) {
-            boardSprite.setLoadingValue(loadingValue);
-          }
+            String initialVariable = dialog.getInitialVariable();
+            String initialValue = dialog.getInitialValue();
+            String finalVariable = dialog.getFinalVariable();
+            String finalValue = dialog.getFinalValue();
+            String loadingVariable = dialog.getLoadingVariable();
+            String loadingValue = dialog.getLoadingValue();
+            
+            if (!boardSprite.getInitialVariable().equals(initialVariable)) {
+                boardSprite.setInitialVariable(initialVariable);
+            }
+            
+            if (!boardSprite.getInitialValue().equals(initialValue)) {
+                boardSprite.setInitialValue(initialValue);
+            }
+            
+            if (!boardSprite.getFinalVariable().equals(finalVariable)) {
+                boardSprite.setFinalVariable(finalVariable);
+            }
+            
+            if (!boardSprite.getFinalValue().equals(finalValue)) {
+                boardSprite.setFinalValue(finalValue);
+            }
+            
+            if (!boardSprite.getLoadingVariable().equals(loadingVariable)) {
+                boardSprite.setLoadingVariable(loadingVariable);
+            }
+            
+            if (!boardSprite.getLoadingValue().equals(loadingValue)) {
+                boardSprite.setLoadingValue(loadingValue);
+            }
         }
-      }
-
     });
     ///
     /// this

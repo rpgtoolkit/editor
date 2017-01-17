@@ -44,12 +44,7 @@ public class SpriteBrush extends AbstractBrush {
    */
   @Override
   public Rectangle getBounds() {
-    if (boardSprite.getSpriteFile() != null) {
-      return new Rectangle(0, 0, boardSprite.getWidth(),
-              boardSprite.getHeight());
-    } else {
       return new Rectangle(0, 0, 1, 1);
-    }
   }
 
   /**
