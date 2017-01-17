@@ -23,13 +23,10 @@ public final class FileTools {
   public static boolean createDirectoryStructure(String path, String projectName) {
     boolean result = true;
 
-    result &= createDirectory(path + File.separator + CoreProperties.getProperty("toolkit.directory.main"));
-    result &= createDirectory(path + File.separator
-            + CoreProperties.getProperty("toolkit.directory.game") + File.separator + projectName);
+    result &= createDirectory(path + File.separator + projectName);
 
-    String gameDirectory = CoreProperties.getProperty("toolkit.directory.game") + File.separator + projectName;
     for (String directory : CoreProperties.getDirectories()) {
-      result &= createDirectory(path + File.separator + gameDirectory + File.separator + directory);
+      result &= createDirectory(path + File.separator + projectName + File.separator + directory);
     }
 
     return result;
@@ -58,8 +55,10 @@ public final class FileTools {
 
   public static File doChooseFile(String extension, String directory, String type) {
     if (MainWindow.getInstance().getActiveProject() != null) {
-      File projectPath = new File(System.getProperty("project.path")
-              + "/" + directory);
+      File projectPath = new File(
+              System.getProperty("project.path")
+              + File.separator 
+              + directory);
 
       if (projectPath.exists()) {
         JFileChooser fileChooser = new JFileChooser(new SingleRootFileSystemView(projectPath));

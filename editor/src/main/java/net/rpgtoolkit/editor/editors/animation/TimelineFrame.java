@@ -92,7 +92,9 @@ public class TimelineFrame extends JPanel implements MouseListener {
       );
 
       if (imageFile != null) {
-        String remove = System.getProperty("project.path")
+        String remove = 
+                System.getProperty("project.path")
+                + File.separator
                 + CoreProperties.getProperty("toolkit.directory.bitmap")
                 + File.separator;
         String path = imageFile.getAbsolutePath().replace(remove, "");

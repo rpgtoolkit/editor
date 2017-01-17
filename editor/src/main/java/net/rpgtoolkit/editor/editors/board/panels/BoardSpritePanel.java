@@ -73,7 +73,9 @@ public class BoardSpritePanel extends BoardModelPanel {
     ///
     /// fileComboBox
     ///
-    File directory = new File(System.getProperty("project.path") 
+    File directory = new File(
+            System.getProperty("project.path")
+            + File.separator
             + CoreProperties.getProperty("toolkit.directory.item") 
             + File.separator);
     String[] exts = EditorFileManager.getTypeExtensions(Item.class);
@@ -112,7 +114,9 @@ public class BoardSpritePanel extends BoardModelPanel {
     ///
     /// activationComboBox
     ///
-    directory = new File(System.getProperty("project.path") 
+    directory = new File(
+            System.getProperty("project.path") 
+            + File.separator
             + CoreProperties.getProperty("toolkit.directory.program") 
             + File.separator);
     exts = new String[]{"prg"};

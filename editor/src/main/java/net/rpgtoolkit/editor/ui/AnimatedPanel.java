@@ -197,6 +197,7 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
     if (!animation.getSoundEffect().isEmpty()) {
       String path
               = System.getProperty("project.path")
+              + File.separator
               + CoreProperties.getProperty("toolkit.directory.media")
               + File.separator
               + animation.getSoundEffect();

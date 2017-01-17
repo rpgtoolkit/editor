@@ -8,7 +8,6 @@
 package net.rpgtoolkit.editor.editors.animation;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import javax.swing.GroupLayout;
 import javax.swing.JComboBox;
@@ -16,7 +15,6 @@ import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.ui.AbstractModelPanel;
@@ -54,70 +52,58 @@ public class AnimationModelPanel extends AbstractModelPanel {
     ///
     /// soundEffectComboBox
     ///
-    File directory = new File(System.getProperty("project.path") 
+    File directory = new File(
+            System.getProperty("project.path") 
+            + File.separator
             + CoreProperties.getProperty("toolkit.directory.media") 
             + File.separator);
     String[] exts = new String[] {"wav", "mp3"};
     soundEffectComboBox = GuiHelper.getFileListJComboBox(directory, exts, true);
     soundEffectComboBox.setSelectedItem(animation.getSoundEffect());
-    soundEffectComboBox.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
+    soundEffectComboBox.addActionListener((ActionEvent e) -> {
         animation.setSoundEffect((String)soundEffectComboBox.getSelectedItem());
-      }
-
     });
     ///
     /// widthSpinner
     ///
     widthSpinner = getJSpinner(animation.getAnimationWidth());
     widthSpinner.setModel(new SpinnerNumberModel(animation.getAnimationWidth(), 10, 1000, 1));
-    widthSpinner.addChangeListener(new ChangeListener() {
-      @Override
-      public void stateChanged(ChangeEvent e) {
+    widthSpinner.addChangeListener((ChangeEvent e) -> {
         long value = ((Double)widthSpinner.getValue()).longValue();
         
         if (value > 0 && value != animation.getAnimationWidth()) {
-          animation.setAnimationWidth(value);
+            animation.setAnimationWidth(value);
         } else {
-          widthSpinner.setValue(((Long)animation.getAnimationWidth()).intValue());
+            widthSpinner.setValue(((Long)animation.getAnimationWidth()).intValue());
         }
-      }
     });
     ///
     /// heightSpinner
     ///
     heightSpinner = getJSpinner(animation.getAnimationHeight());
     heightSpinner.setModel(new SpinnerNumberModel(animation.getAnimationHeight(), 10, 1000, 1));
-    heightSpinner.addChangeListener(new ChangeListener() {
-      @Override
-      public void stateChanged(ChangeEvent e) {
+    heightSpinner.addChangeListener((ChangeEvent e) -> {
         long value = ((Double)heightSpinner.getValue()).longValue();
         
         if (value > 0 && value != animation.getAnimationHeight()) {
-          animation.setAnimationHeight(value);
+            animation.setAnimationHeight(value);
         } else {
-          heightSpinner.setValue(((Long)animation.getAnimationHeight()).intValue());
+            heightSpinner.setValue(((Long)animation.getAnimationHeight()).intValue());
         }
-      }
     });
     ///
     /// frameRateSpinner
     ///
     frameRateSpinner = getJSpinner(animation.getFrameRate());
     frameRateSpinner.setModel(new SpinnerNumberModel(animation.getFrameRate(), 0, 100, 0.01));
-    frameRateSpinner.addChangeListener(new ChangeListener() {
-      @Override
-      public void stateChanged(ChangeEvent e) {
+    frameRateSpinner.addChangeListener((ChangeEvent e) -> {
         double value = (double) frameRateSpinner.getValue();
         
         if (value > 0 && value != animation.getFrameRate()) {
-          animation.setFramRate(value);
+            animation.setFramRate(value);
         } else {
-          frameRateSpinner.setValue(animation.getFrameRate());
+            frameRateSpinner.setValue(animation.getFrameRate());
         }
-      }
     });
     ///
     /// this

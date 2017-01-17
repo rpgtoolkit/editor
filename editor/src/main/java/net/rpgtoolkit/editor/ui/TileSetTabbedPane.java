@@ -7,23 +7,17 @@
  */
 package net.rpgtoolkit.editor.ui;
 
-import net.rpgtoolkit.editor.utilities.EditorFileManager;
 import net.rpgtoolkit.editor.MainWindow;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.Collection;
-import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JViewport;
 import net.rpgtoolkit.common.assets.TileSet;
 import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.editors.TileSetCanvas;
-import net.rpgtoolkit.editor.ui.resources.Icons;
 
 /**
  *
@@ -31,25 +25,8 @@ import net.rpgtoolkit.editor.ui.resources.Icons;
  */
 public class TileSetTabbedPane extends JTabbedPane {
 
-  private final JButton openTileSetButton;
-
   public TileSetTabbedPane() {
     setFont(new Font(getFont().getFontName(), Font.PLAIN, 10));
-    
-    openTileSetButton = new JButton("Open TileSet");
-    openTileSetButton.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent ae) {
-        File file = EditorFileManager.browseByType(TileSet.class);
-        
-        if (file != null) {
-          MainWindow.getInstance().openTileset(file);
-        }
-      }
-
-    });
-
     addMouseListener(new MouseAdapter() {
 
       @Override
@@ -58,14 +35,16 @@ public class TileSetTabbedPane extends JTabbedPane {
 
         int index = tabs.indexAtLocation(e.getX(), e.getY());
 
-        if (index > 0 && e.getButton() == MouseEvent.BUTTON2) {
+        if (index > -1 && e.getButton() == MouseEvent.BUTTON2) {
           tabs.remove(index);
         }
       }
 
     });
 
-    addTab(null, Icons.getLargeIcon("plus"), openTileSetButton);
+    // Disabled until TK 4.1.0
+    //addTab(null, Icons.getLargeIcon("plus"), openTileSetButton);
+    
     setTabPlacement(JTabbedPane.BOTTOM);
   }
 

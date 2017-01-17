@@ -27,11 +27,11 @@ public class OpenProjectAction extends AbstractAction {
   public void actionPerformed(ActionEvent e) {
     EditorFileManager.getFileChooser().resetChoosableFileFilters();
     FileNameExtensionFilter filter = new FileNameExtensionFilter(
-            "Toolkit Project", CoreProperties.getDefaultExtension(Project.class).replace(".", ""));
+            "Toolkit Project", 
+            CoreProperties.getDefaultExtension(Project.class).replace(".", ""));
     EditorFileManager.getFileChooser().setFileFilter(filter);
 
-    File mainFolder = new File(CoreProperties.getProjectsDirectory() + File.separator
-            + CoreProperties.getProperty("toolkit.directory.main"));
+    File mainFolder = new File(CoreProperties.getProjectsDirectory());
 
     if (mainFolder.exists()) {
       EditorFileManager.getFileChooser().setCurrentDirectory(mainFolder);

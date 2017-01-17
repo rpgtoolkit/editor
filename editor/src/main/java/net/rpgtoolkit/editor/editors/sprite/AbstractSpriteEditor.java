@@ -371,6 +371,7 @@ public abstract class AbstractSpriteEditor extends ToolkitEditorWindow implement
     if (!profileImagePath.isEmpty()) {
       profilePanel.addImage(new File(
               System.getProperty("project.path")
+              + File.separator
               + CoreProperties.getProperty("toolkit.directory.bitmap")
               + File.separator
               + profileImagePath));
@@ -459,7 +460,9 @@ public abstract class AbstractSpriteEditor extends ToolkitEditorWindow implement
   
   protected void checkProfileImagePath() {
     if (profilePanel.getFile() != null) {
-      String remove = System.getProperty("project.path")
+      String remove = 
+              System.getProperty("project.path")
+              + File.separator
               + CoreProperties.getProperty("toolkit.directory.bitmap")
               + File.separator;
       String path = profilePanel.getFile().getAbsolutePath().replace(remove, "");

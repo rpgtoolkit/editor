@@ -416,7 +416,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   public void openProject(File file) {
     LOGGER.info("Opening {} file=[{}].", Project.class.getSimpleName(), file);
     
-    setProjectPath(file.getParentFile().getParent(), FilenameUtils.removeExtension(file.getName()));
+    setProjectPath(file.getParent());
 
     try {
       AssetHandle handle = AssetManager.getInstance().deserialize(
@@ -447,7 +447,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
                 + File.separator
                 + CoreProperties.getProperty("toolkit.directory.projects")
                 + File.separator
-                + CoreProperties.getProperty("toolkit.directory.main")
+                + projectName
                 + File.separator
                 + projectName
                 + CoreProperties.getDefaultExtension(Project.class);
@@ -456,13 +456,12 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         Project project = new Project(
                 new AssetDescriptor(file.toURI()),
                 CoreProperties.getProjectsDirectory()
-                + File.separator
-                + CoreProperties.getProperty("toolkit.directory.main"),
+                + File.separator,
                 projectName);
         try {
           // Write out new project file.
           AssetManager.getInstance().serialize(AssetManager.getInstance().getHandle(project));
-          setProjectPath(file.getParentFile().getParent(), projectName);
+          setProjectPath(file.getParent());
           setupProject(project);
         } catch (IOException | AssetException ex) {
           LOGGER.error("Failed to create new {} projectName=[{}].", Project.class, projectName, ex);
@@ -718,17 +717,9 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     return null;
   }
   
-  private void setProjectPath(String parentDirectory, String fileName) {
-    LOGGER.info("Setting project path parentDirectory=[{}], fileName=[{}].", parentDirectory, fileName);
-    
-    System.setProperty("project.path",
-            parentDirectory
-            + File.separator
-            + CoreProperties.getProperty("toolkit.directory.game")
-            + File.separator
-            + fileName
-            + File.separator);
-    
+  private void setProjectPath(String path) {
+    LOGGER.info("Setting project path=[{}].", path);
+    System.setProperty("project.path", path);
     LOGGER.info("Project path set to project.path=[{}].", System.getProperty("project.path"));
   }
 
@@ -741,12 +732,11 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     projectEditor.addInternalFrameListener(this);
     projectEditor.toFront();
 
-    this.selectToolkitWindow(projectEditor);
-    this.setTitle(this.getTitle() + " - "
-            + this.activeProject.getGameTitle());
+    selectToolkitWindow(projectEditor);
+    setTitle(getTitle() + " - " + activeProject.getGameTitle());
 
-    this.menuBar.enableMenus(true);
-    this.toolBar.toggleButtonStates(true);
+    menuBar.enableMenus(true);
+    toolBar.toggleButtonStates(true);
   }
 
   private void selectToolkitWindow(ToolkitEditorWindow window) {

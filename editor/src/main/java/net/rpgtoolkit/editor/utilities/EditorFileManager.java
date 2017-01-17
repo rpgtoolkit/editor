@@ -42,7 +42,9 @@ public class EditorFileManager {
   }
 
   public static File getPath(String relativePath) {
-    return new File(System.getProperty("project.path") + File.separator
+    return new File(
+            System.getProperty("project.path") 
+            + File.separator
             + relativePath);
   }
   
@@ -52,7 +54,9 @@ public class EditorFileManager {
 
   public static String getRelativePath(File fullPath) {
     return getRelativePath(fullPath,
-            new File(System.getProperty("project.path") + File.separator));
+            new File(
+                    System.getProperty("project.path") 
+                    + File.separator));
   }
 
   public static String getRelativePath(File fullPath, File relativeTo) {

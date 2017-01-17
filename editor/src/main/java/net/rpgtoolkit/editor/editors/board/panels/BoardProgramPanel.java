@@ -16,7 +16,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.BoardProgram;
 import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
@@ -60,27 +59,22 @@ public class BoardProgramPanel extends BoardModelPanel {
     ///
     /// programComboBox
     ///
-    File directory = new File(System.getProperty("project.path") 
+    File directory = new File(
+            System.getProperty("project.path")
+            + File.separator
             + CoreProperties.getProperty("toolkit.directory.program") 
             + File.separator);
     String[] exts = new String[] {"prg"};
     programComboBox = GuiHelper.getFileListJComboBox(directory, exts, true);
     programComboBox.setSelectedItem(boardProgram.getFileName());
-    programComboBox.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
+    programComboBox.addActionListener((ActionEvent e) -> {
         boardProgram.setFileName((String)programComboBox.getSelectedItem());
-      }
-
     });
     ///
     /// layerSpinner
     ///
     layerSpinner = getJSpinner(boardProgram.getLayer());
-    layerSpinner.addChangeListener(new ChangeListener() {
-      @Override
-      public void stateChanged(ChangeEvent e) {
+    layerSpinner.addChangeListener((ChangeEvent e) -> {
         BoardLayerView lastLayerView = getBoardEditor().getBoardView().
                 getLayer((int) boardProgram.getLayer());
 
@@ -89,19 +83,18 @@ public class BoardProgramPanel extends BoardModelPanel {
 
         // Make sure this is a valid move.
         if (lastLayerView != null && newLayerView != null) {
-          // Do the swap.
-          boardProgram.setLayer((int) layerSpinner.getValue());
-          newLayerView.getLayer().getPrograms().add(boardProgram);
-          lastLayerView.getLayer().getPrograms().remove(boardProgram);
-          updateCurrentBoardView();
-
-          // Store new layer selection index.
-          lastSpinnerLayer = (int) layerSpinner.getValue();
+            // Do the swap.
+            boardProgram.setLayer((int) layerSpinner.getValue());
+            newLayerView.getLayer().getPrograms().add(boardProgram);
+            lastLayerView.getLayer().getPrograms().remove(boardProgram);
+            updateCurrentBoardView();
+            
+            // Store new layer selection index.
+            lastSpinnerLayer = (int) layerSpinner.getValue();
         } else {
-          // Not a valid layer revert selection.
-          layerSpinner.setValue(lastSpinnerLayer);
+            // Not a valid layer revert selection.
+            layerSpinner.setValue(lastSpinnerLayer);
         }
-      }
     });
     ///
     /// activationComboBox

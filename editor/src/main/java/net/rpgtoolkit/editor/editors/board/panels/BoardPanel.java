@@ -97,7 +97,9 @@ public class BoardPanel extends AbstractModelPanel {
     ///
     /// musicTextField
     ///
-    File directory = new File(System.getProperty("project.path") 
+    File directory = new File(
+            System.getProperty("project.path")
+            + File.separator
             + CoreProperties.getProperty("toolkit.directory.media")
             + File.separator);
     String[] exts = new String[] {"wav", "mp3"};
@@ -114,7 +116,9 @@ public class BoardPanel extends AbstractModelPanel {
     ///
     /// entryProgramTextField
     ///
-    directory = new File(System.getProperty("project.path") 
+    directory = new File(
+            System.getProperty("project.path") 
+            + File.separator
             + CoreProperties.getProperty("toolkit.directory.program") 
             + File.separator);
     exts = new String[] {"prg"};
