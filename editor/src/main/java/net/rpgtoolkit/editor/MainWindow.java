@@ -512,8 +512,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     dialog.setVisible(true);
 
     if (dialog.getValue() != null) {
-      BoardEditor boardEditor = new BoardEditor(
-              "Untitled", dialog.getValue()[0], dialog.getValue()[1]);
+      Board board = new Board(null, dialog.getValue()[0], dialog.getValue()[1]);
+      BoardEditor boardEditor = new BoardEditor(board);
       boardEditor.addInternalFrameListener(this);
       boardEditor.setVisible(true);
       boardEditor.toFront();

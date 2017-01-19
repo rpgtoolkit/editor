@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -109,8 +110,8 @@ public abstract class AbstractSpriteEditor extends ToolkitEditorWindow implement
   private JButton addButton;
   private JButton removeButton;
 
-  public AbstractSpriteEditor(String title, AbstractSprite model) {
-    super(title, true, true, true, true);
+  public AbstractSpriteEditor(String title, AbstractSprite model, ImageIcon icon) {
+    super(title, true, true, true, true, icon);
     this.sprite = model;
     tabbedPane = new JTabbedPane();
 

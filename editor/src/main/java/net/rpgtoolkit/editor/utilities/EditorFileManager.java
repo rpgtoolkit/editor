@@ -8,6 +8,7 @@
 package net.rpgtoolkit.editor.utilities;
 
 import java.io.File;
+import java.io.IOException;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.rpgtoolkit.common.assets.AbstractAsset;
@@ -24,6 +25,7 @@ import net.rpgtoolkit.common.assets.TileSet;
 import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.editor.ui.SingleRootFileSystemView;
+import org.codehaus.plexus.util.FileUtils;
 
 /**
  *
@@ -164,6 +166,13 @@ public class EditorFileManager {
     if (FILE_CHOOSER.showOpenDialog(MainWindow.getInstance()) == JFileChooser.APPROVE_OPTION) {
       MainWindow.getInstance().checkFileExtension(FILE_CHOOSER.getSelectedFile());
     }
+  }
+  
+  public static File backupFile(File original) throws IOException {
+      File backup = new File(original.getAbsoluteFile() + ".tmp");
+      FileUtils.copyFile(original, backup);
+      
+      return backup;
   }
 
   /**

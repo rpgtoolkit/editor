@@ -23,6 +23,7 @@ import net.rpgtoolkit.editor.editors.sprite.AbstractSpriteEditor;
 import net.rpgtoolkit.editor.ui.IntegerField;
 import net.rpgtoolkit.editor.ui.WholeNumberField;
 import net.rpgtoolkit.common.assets.listeners.SpriteChangeListener;
+import net.rpgtoolkit.editor.ui.resources.Icons;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,13 +85,15 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
   private JTextField levelUpProgram;
 
   public CharacterEditor(Player player) {
-    super(player.getName(), player);
+    super(player.getName(), player, Icons.getIcon("character"));
     
     this.player = player;
     this.player.addSpriteChangeListener(this);
 
     if (this.player.getDescriptor() == null) {
       setupNewPlayer();
+    } else {
+        setTitle(new File(player.getDescriptor().getURI()).getName());
     }
 
     constructWindow();

@@ -177,7 +177,7 @@ public class MainToolBar extends JToolBar {
     spriteButton = new JToggleButton();
     spriteButton.setFocusable(false);
     spriteButton.setAction(new SpriteAction());
-    spriteButton.setIcon(Icons.getSmallIcon("user"));
+    spriteButton.setIcon(Icons.getSmallIcon("character"));
     spriteButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_SET_BOARD_SPRITE));
 
     lightButton = new JToggleButton();
@@ -233,6 +233,7 @@ public class MainToolBar extends JToolBar {
     toolButtonGroup.add(programButton);
     toolButtonGroup.add(spriteButton);
     toolButtonGroup.add(lightButton);
+    toolButtonGroup.add(startPositionButton);
 
     add(newButton);
     add(openButton);

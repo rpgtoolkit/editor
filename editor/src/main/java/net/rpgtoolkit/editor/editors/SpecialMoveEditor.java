@@ -34,6 +34,7 @@ import net.rpgtoolkit.editor.utilities.EditorFileManager;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
 import net.rpgtoolkit.editor.utilities.GuiHelper;
 import net.rpgtoolkit.editor.ui.IntegerField;
+import net.rpgtoolkit.editor.ui.resources.Icons;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +76,7 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
    * Create a new blank SpecialMove
    */
   public SpecialMoveEditor() {
-    super("New Special Move", true, true, true, true);
+    super("New Special Move", true, true, true, true, Icons.getIcon("new-specialmove"));
 
     this.move = new SpecialMove(null);
 
@@ -90,7 +91,7 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
    * @param theMove SpecialMove to edit
    */
   public SpecialMoveEditor(SpecialMove theMove) {
-    super("Editing Special Move - " + theMove.toString(), true, true, true, true);
+    super("Editing Special Move - " + theMove.toString(), true, true, true, true, Icons.getIcon("new-specialmove"));
 
     this.move = theMove;
 

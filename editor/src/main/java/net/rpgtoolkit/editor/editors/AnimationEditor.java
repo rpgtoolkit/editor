@@ -26,6 +26,7 @@ import net.rpgtoolkit.editor.editors.animation.TimelineFrame;
 import net.rpgtoolkit.editor.ui.AnimatedPanel;
 
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
+import net.rpgtoolkit.editor.ui.resources.Icons;
 
 /**
  *
@@ -40,7 +41,8 @@ public class AnimationEditor extends ToolkitEditorWindow implements AnimationCha
   private JPanel timelinePanel;
 
   public AnimationEditor(Animation theAnimation) {
-    super("Untitled", true, true, true, true);
+    super("Untitled", true, true, true, true, Icons.getIcon("animation"));
+    
     animation = theAnimation;
     animation.addAnimationChangeListener(this);
     

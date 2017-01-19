@@ -32,6 +32,7 @@ import net.rpgtoolkit.common.assets.Player;
 import net.rpgtoolkit.common.assets.Program;
 import net.rpgtoolkit.common.assets.Project;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
+import net.rpgtoolkit.editor.ui.resources.Icons;
 import net.rpgtoolkit.editor.utilities.EditorFileManager;
 import net.rpgtoolkit.editor.utilities.GuiHelper;
 
@@ -85,24 +86,12 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
    * *************************************************************************
    */
   /**
-   * Create a new blank Project
-   *
-   * May in the future load up a wizard to help users create a new project
-   */
-  public ProjectEditor() {
-    super("New Project", true, true, true, true);
-
-    project = new Project(null, "", "");
-    setVisible(true);
-  }
-
-  /**
    * Opens an existing project
    *
    * @param project Project file to open (.gam)
    */
   public ProjectEditor(Project project) {
-    super(project.getGameTitle(), true, true, true, true);
+    super(project.getGameTitle(), true, true, true, true, Icons.getIcon("project"));
 
     this.project = project;
 

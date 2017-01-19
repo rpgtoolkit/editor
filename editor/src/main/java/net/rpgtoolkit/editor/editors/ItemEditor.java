@@ -18,6 +18,7 @@ import net.rpgtoolkit.common.assets.AssetDescriptor;
 import net.rpgtoolkit.common.assets.Item;
 import net.rpgtoolkit.common.assets.listeners.SpriteChangeListener;
 import net.rpgtoolkit.editor.editors.sprite.AbstractSpriteEditor;
+import net.rpgtoolkit.editor.ui.resources.Icons;
 
 /**
  *
@@ -31,7 +32,7 @@ public class ItemEditor extends AbstractSpriteEditor implements InternalFrameLis
   private JTextField itemDescription;
 
   public ItemEditor(Item item) {
-    super("Untitled", item);
+    super("Untitled", item, Icons.getIcon("item"));
 
     this.item = item;
     this.item.addSpriteChangeListener(this);

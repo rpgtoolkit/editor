@@ -21,6 +21,7 @@ import net.rpgtoolkit.common.Selectable;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
 import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
+import net.rpgtoolkit.editor.ui.resources.Icons;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,24 +58,16 @@ public class BoardEditor extends ToolkitEditorWindow {
   }
 
   public BoardEditor(Board board) {
-    super("Untitled", true, true, true, true);
+    super("Untitled", true, true, true, true, Icons.getIcon("board"));
+    
     boardMouseAdapter = new BoardMouseAdapter(this);
     this.board = board;
-    init(board, new File(board.getDescriptor().getURI()).getName());
-  }
-
-  /**
-   *
-   * @param fileName
-   * @param width
-   * @param height
-   */
-  public BoardEditor(String fileName, int width, int height) {
-    super("Untitled", true, true, true, true);
-    boardMouseAdapter = new BoardMouseAdapter(this);
-    board = new Board(null, width, height);
-    board.addLayer();
-    init(board, fileName);
+    
+    if (board.getDescriptor() == null) {
+        init(board, "Untitled");
+    } else {
+        init(board, new File(board.getDescriptor().getURI()).getName());
+    }
   }
 
   /**

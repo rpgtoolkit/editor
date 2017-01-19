@@ -22,6 +22,7 @@ import net.rpgtoolkit.common.assets.AssetDescriptor;
 import net.rpgtoolkit.common.assets.Enemy;
 import net.rpgtoolkit.editor.editors.sprite.AbstractSpriteEditor;
 import net.rpgtoolkit.editor.ui.WholeNumberField;
+import net.rpgtoolkit.editor.ui.resources.Icons;
 
 /**
  * Enemy editor
@@ -76,7 +77,7 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
    * @param theEnemy Enemy to edit
    */
   public EnemyEditor(Enemy theEnemy) {
-    super("Untitled", theEnemy);
+    super("Untitled", theEnemy, Icons.getIcon("enemy"));
 
     enemy = theEnemy;
     

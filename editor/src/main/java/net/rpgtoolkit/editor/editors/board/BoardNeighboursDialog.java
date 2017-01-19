@@ -13,7 +13,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.utilities.CoreProperties;
+import net.rpgtoolkit.editor.utilities.EditorFileManager;
 import net.rpgtoolkit.editor.utilities.FileTools;
 
 /**
@@ -143,99 +143,61 @@ public class BoardNeighboursDialog extends JDialog {
     /// northBrowseButton
     ///
     northBrowseButton = new JButton("...");
-    northBrowseButton.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        File file = FileTools.doChooseFile("brd",
-                CoreProperties.getProperty("toolkit.directory.board"),
-                "Board Files");
+    northBrowseButton.addActionListener((ActionEvent e) -> {
+        File file = EditorFileManager.browseByType(Board.class);
 
         if (file != null) {
-          northNeighbourTextField.setText(file.getName());
+            northNeighbourTextField.setText(file.getName());
         }
-      }
-
     });
     ///
     /// southBrowseButton
     ///
     southBrowseButton = new JButton("...");
-    southBrowseButton.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        File file = FileTools.doChooseFile("brd",
-                CoreProperties.getProperty("toolkit.directory.board"),
-                "Board Files");
+    southBrowseButton.addActionListener((ActionEvent e) -> {
+        File file = EditorFileManager.browseByType(Board.class);
 
         if (file != null) {
-          southNeighbourTextField.setText(file.getName());
+            southNeighbourTextField.setText(file.getName());
         }
-      }
-
     });
     ///
     /// eastBrowseButton
     ///
     eastBrowseButton = new JButton("...");
-    eastBrowseButton.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        File file = FileTools.doChooseFile("brd",
-                CoreProperties.getProperty("toolkit.directory.board"),
-                "Board Files");
+    eastBrowseButton.addActionListener((ActionEvent e) -> {
+        File file = EditorFileManager.browseByType(Board.class);
 
         if (file != null) {
-          eastNeighbourTextField.setText(file.getName());
+            eastNeighbourTextField.setText(file.getName());
         }
-      }
-
     });
     ///
     /// westBrowseButton
     ///
     westBrowseButton = new JButton("...");
-    westBrowseButton.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        File file = FileTools.doChooseFile("brd",
-                CoreProperties.getProperty("toolkit.directory.board"),
-                "Board Files");
+    westBrowseButton.addActionListener((ActionEvent e) -> {
+        File file = EditorFileManager.browseByType(Board.class);
 
         if (file != null) {
-          westNeighbourTextField.setText(file.getName());
+            westNeighbourTextField.setText(file.getName());
         }
-      }
-
     });
     ///
     /// applyButton
     ///
     applyButton = new JButton("Apply");
-    applyButton.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
+    applyButton.addActionListener((ActionEvent e) -> {
         result = APPLY;
         dispose();
-      }
-
     });
     ///
     /// cancelButton
     ///
     cancelButton = new JButton("Cancel");
-    cancelButton.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
+    cancelButton.addActionListener((ActionEvent e) -> {
         result = CANCEL;
         dispose();
-      }
-
     });
     ///
     /// dialogPanel

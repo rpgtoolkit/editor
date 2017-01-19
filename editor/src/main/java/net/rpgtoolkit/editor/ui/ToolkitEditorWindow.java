@@ -9,12 +9,14 @@ package net.rpgtoolkit.editor.ui;
 
 import java.io.File;
 import java.io.IOException;
+import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
 import net.rpgtoolkit.common.assets.AbstractAsset;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
 import net.rpgtoolkit.common.assets.AssetException;
 import net.rpgtoolkit.common.assets.AssetManager;
 import net.rpgtoolkit.editor.utilities.EditorFileManager;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,32 +29,62 @@ public abstract class ToolkitEditorWindow extends JInternalFrame {
   }
 
   public ToolkitEditorWindow(String title, boolean resizeable, boolean closeable,
-          boolean maximizable, boolean iconifiable) {
+          boolean maximizable, boolean iconifiable, ImageIcon icon) {
     super(title, resizeable, closeable, maximizable, iconifiable);
+    setFrameIcon(icon);
   }
 
   public abstract void save() throws Exception;
   
   protected void save(AbstractAsset asset) throws Exception {
+    File original;
+    File backup = null;
     if (asset.getDescriptor() == null) {
-      File file = EditorFileManager.saveByType(asset.getClass());
-      
-      if (file == null) {
-        return; // Save was aborted by the user.
-      }
-      
-      asset.setDescriptor(new AssetDescriptor(file.toURI()));
-      setTitle(file.getName());
+        if (!selectDescriptor(asset)) {
+            return; // Save was aborted by the user.
+        }
+    } else {
+        // This will throw an exception if it can't make a backup.
+        backup = EditorFileManager.backupFile(new File(asset.getDescriptor().getURI()));
     }
-
+ 
+    original = new File(asset.getDescriptor().getURI());
     try {
       AssetManager.getInstance().serialize(
               AssetManager.getInstance().getHandle(asset));
+      setTitle(original.getName());
     } catch (IOException | AssetException ex) {
       LOGGER.error("Failed to save asset=[{}].", asset, ex);
+      
+      if (backup != null) {
+        // Existing file that failed during save.
+        FileUtils.copyFile(backup, original);
+        FileUtils.deleteQuietly(backup);
+      } else {
+        // New file that failed during save.
+        asset.setDescriptor(null);
+        FileUtils.deleteQuietly(original);
+      }
+      
+      throw new Exception("Failed to save asset.");
+    }
+    
+    if (backup != null) {
+        FileUtils.deleteQuietly(backup);
     }
   }
   
   public abstract void saveAs(File file) throws Exception;
+  
+  private boolean selectDescriptor(AbstractAsset asset) {
+      File file = EditorFileManager.saveByType(asset.getClass());
+
+      if (file == null) {
+          return false;
+      }
+
+      asset.setDescriptor(new AssetDescriptor(file.toURI()));
+      return true;
+  }
 
 }
