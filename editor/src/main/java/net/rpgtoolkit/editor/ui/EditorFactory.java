@@ -13,11 +13,13 @@ import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.assets.Enemy;
 import net.rpgtoolkit.common.assets.Item;
 import net.rpgtoolkit.common.assets.Player;
+import net.rpgtoolkit.common.assets.Project;
 import net.rpgtoolkit.editor.editors.AnimationEditor;
 import net.rpgtoolkit.editor.editors.BoardEditor;
 import net.rpgtoolkit.editor.editors.CharacterEditor;
 import net.rpgtoolkit.editor.editors.EnemyEditor;
 import net.rpgtoolkit.editor.editors.ItemEditor;
+import net.rpgtoolkit.editor.editors.ProjectEditor;
 
 /**
  * A factory for obtaining the corresponding file format editor based on the
@@ -47,7 +49,9 @@ public class EditorFactory {
         } else if (asset instanceof Item) {
           return new ItemEditor((Item) asset);
         } else if (asset instanceof Player) {
-            return new CharacterEditor((Player) asset);
+          return new CharacterEditor((Player) asset);
+        } else if (asset instanceof Project) {
+          return new ProjectEditor((Project) asset);
         }
         
         return null;

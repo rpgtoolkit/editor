@@ -14,6 +14,7 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.event.InternalFrameListener;
+import net.rpgtoolkit.common.assets.AbstractAsset;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
 import net.rpgtoolkit.common.assets.Item;
 import net.rpgtoolkit.common.assets.listeners.SpriteChangeListener;
@@ -46,6 +47,11 @@ public class ItemEditor extends AbstractSpriteEditor implements InternalFrameLis
     constructWindow();
     setVisible(true);
     pack();
+  }
+  
+  @Override
+  public AbstractAsset getAsset() {
+      return item;
   }
   
   public Item getItem() {

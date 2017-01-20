@@ -38,7 +38,12 @@ public class OpenProjectAction extends AbstractAction {
     }
 
     if (EditorFileManager.getFileChooser().showOpenDialog(MainWindow.getInstance()) == JFileChooser.APPROVE_OPTION) {
-      MainWindow.getInstance().openProject(EditorFileManager.getFileChooser().getSelectedFile());
+      File file = EditorFileManager.getFileChooser().getSelectedFile();
+      MainWindow mainWindow = MainWindow.getInstance();
+      
+      Project project = mainWindow.openProject(file);
+      mainWindow.setProjectPath(file.getParent());
+      mainWindow.setupProject(project);
     }
   }
 

@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.event.InternalFrameListener;
+import net.rpgtoolkit.common.assets.AbstractAsset;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
 import net.rpgtoolkit.common.assets.Enemy;
 import net.rpgtoolkit.editor.editors.sprite.AbstractSpriteEditor;
@@ -97,6 +98,12 @@ public class EnemyEditor extends AbstractSpriteEditor implements InternalFrameLi
    * Public Methods
    * *************************************************************************
    */
+  
+  @Override
+  public AbstractAsset getAsset() {
+      return enemy;
+  }
+  
   @Override
   public void save() throws Exception {
     // Get the relative portrait path.

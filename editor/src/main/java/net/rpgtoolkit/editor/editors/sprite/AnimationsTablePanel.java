@@ -19,31 +19,29 @@ import net.rpgtoolkit.editor.ui.AnimatedPanel;
 public class AnimationsTablePanel extends JPanel {
   
   private final ProfilePanel profilePanel;
-  private final AnimatedPanel animatedPanel;
   
-  public AnimationsTablePanel(ProfilePanel profilePanel, AnimatedPanel animatedPanel) {
+  public AnimationsTablePanel(ProfilePanel profilePanel) {
     super(new BorderLayout());
     this.profilePanel = profilePanel;
-    this.animatedPanel = animatedPanel;
   }
 
   @Override
   public Dimension getPreferredSize() {
-    return calculateDimensions();
+    super.getPreferredSize();
+    return calculateDimensions(super.getPreferredSize().width);
   }
 
   @Override
   public Dimension getMaximumSize() {
-    return calculateDimensions();
+    return calculateDimensions(super.getMaximumSize().width);
   }
 
   @Override
   public Dimension getMinimumSize() {
-    return calculateDimensions();
+    return calculateDimensions(super.getMinimumSize().width);
   }
   
-  private Dimension calculateDimensions() {
-    int width = animatedPanel.getWidth();
+  private Dimension calculateDimensions(int width) {
     int height = profilePanel.getHeight() - AnimatedPanel.DEFAULT_HEIGHT;
     
     return new Dimension(width, height);

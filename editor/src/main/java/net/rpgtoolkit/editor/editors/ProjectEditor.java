@@ -26,6 +26,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
+import net.rpgtoolkit.common.assets.AbstractAsset;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.assets.Player;
@@ -106,6 +107,11 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
    * *************************************************************************
    */
   @Override
+  public AbstractAsset getAsset() {
+      return project;
+  }
+  
+  @Override
   public void save() throws Exception {
     if (sixByFour.isSelected()) {
       project.setResolutionWidth(640);
@@ -126,6 +132,7 @@ public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameL
     }
     
     save(project);
+    setTitle(project.getGameTitle());
   }
 
   /**

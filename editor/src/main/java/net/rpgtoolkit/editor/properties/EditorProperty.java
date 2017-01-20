@@ -19,6 +19,9 @@ package net.rpgtoolkit.editor.properties;
  */
 public enum EditorProperty {
 
+  EDITOR_UI_TITLE("editor.ui.title"),
+    
+  // Tooltips
   EDITOR_UI_TOOLTIP_NEW("editor.ui.tooltip.new"),
   EDITOR_UI_TOOLTIP_OPEN("editor.ui.tooltip.open"),
   EDITOR_UI_TOOLTIP_SAVE("editor.ui.tooltip.save"),

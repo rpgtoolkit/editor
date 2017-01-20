@@ -24,6 +24,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
+import net.rpgtoolkit.common.assets.AbstractAsset;
 import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
 import net.rpgtoolkit.common.assets.Program;
@@ -105,6 +106,11 @@ public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFr
    * Public Methods
    * *************************************************************************
    */
+  @Override
+  public AbstractAsset getAsset() {
+      return move;
+  }
+  
   @Override
   public void save() throws Exception {
     try {

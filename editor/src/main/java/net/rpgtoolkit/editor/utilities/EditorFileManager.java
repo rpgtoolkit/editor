@@ -25,7 +25,7 @@ import net.rpgtoolkit.common.assets.TileSet;
 import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.editor.ui.SingleRootFileSystemView;
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -164,7 +164,7 @@ public class EditorFileManager {
             "Toolkit Files", 
             getTKFileExtensions());
     if (FILE_CHOOSER.showOpenDialog(MainWindow.getInstance()) == JFileChooser.APPROVE_OPTION) {
-      MainWindow.getInstance().checkFileExtension(FILE_CHOOSER.getSelectedFile());
+      MainWindow.getInstance().openAssetEditor(FILE_CHOOSER.getSelectedFile());
     }
   }
   

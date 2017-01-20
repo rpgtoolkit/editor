@@ -28,6 +28,8 @@ public abstract class ToolkitEditorWindow extends JInternalFrame {
 
   }
 
+  public abstract AbstractAsset getAsset();
+  
   public ToolkitEditorWindow(String title, boolean resizeable, boolean closeable,
           boolean maximizable, boolean iconifiable, ImageIcon icon) {
     super(title, resizeable, closeable, maximizable, iconifiable);

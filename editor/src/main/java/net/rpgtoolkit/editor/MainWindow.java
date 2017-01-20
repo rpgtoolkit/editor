@@ -18,6 +18,8 @@ import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
@@ -58,11 +60,12 @@ import net.rpgtoolkit.editor.editors.CharacterEditor;
 import net.rpgtoolkit.editor.editors.EnemyEditor;
 import net.rpgtoolkit.editor.editors.ItemEditor;
 import net.rpgtoolkit.editor.editors.tileset.NewTilesetDialog;
+import net.rpgtoolkit.editor.properties.EditorProperties;
+import net.rpgtoolkit.editor.properties.EditorProperty;
 import net.rpgtoolkit.editor.ui.EditorFactory;
 import net.rpgtoolkit.editor.ui.LayerPanel;
 import net.rpgtoolkit.editor.ui.menu.MainMenuBar;
 import net.rpgtoolkit.editor.ui.toolbar.MainToolBar;
-import net.rpgtoolkit.editor.ui.ProjectPanel;
 import net.rpgtoolkit.editor.ui.PropertiesPanel;
 import net.rpgtoolkit.editor.ui.TileSetTabbedPane;
 import net.rpgtoolkit.editor.ui.ToolkitDesktopManager;
@@ -92,6 +95,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   public static final int TILE_SIZE = 32;
 
   private final JDesktopPane desktopPane;
+  private final Map<File, ToolkitEditorWindow> editorMap;
 
   private final MainMenuBar menuBar;
   private final MainToolBar toolBar;
@@ -99,7 +103,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   private final JPanel toolboxPanel;
   private final JTabbedPane upperTabbedPane;
   private final JTabbedPane lowerTabbedPane;
-  private final ProjectPanel projectPanel;
+//  private final ProjectPanel projectPanel;
   private final TileSetTabbedPane tileSetPanel;
   private final PropertiesPanel propertiesPanel;
   private final LayerPanel layerPanel;
@@ -120,55 +124,57 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   private final TileSetSelectionListener tileSetSelectionListener;
 
   private MainWindow() {
-    super("RPG Toolkit 4.0");
+    super(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TITLE));
 
-    this.desktopPane = new JDesktopPane();
-    this.desktopPane.setBackground(Color.LIGHT_GRAY);
-    this.desktopPane.setDesktopManager(new ToolkitDesktopManager());
+    desktopPane = new JDesktopPane();
+    desktopPane.setBackground(Color.LIGHT_GRAY);
+    desktopPane.setDesktopManager(new ToolkitDesktopManager());
+    
+    editorMap = new HashMap();
 
-    this.projectPanel = new ProjectPanel();
-    this.tileSetPanel = new TileSetTabbedPane();
-    this.upperTabbedPane = new JTabbedPane();
+//    this.projectPanel = new ProjectPanel();
+    tileSetPanel = new TileSetTabbedPane();
+    upperTabbedPane = new JTabbedPane();
     //this.upperTabbedPane.addTab("Project", this.projectPanel); // TOOD: TK 4.1.0
-    this.upperTabbedPane.addTab("Tileset", this.tileSetPanel);
+    upperTabbedPane.addTab("Tileset", tileSetPanel);
 
-    this.propertiesPanel = new PropertiesPanel();
-    this.layerPanel = new LayerPanel();
-    this.lowerTabbedPane = new JTabbedPane();
-    this.lowerTabbedPane.addTab("Properties", this.propertiesPanel);
-    this.lowerTabbedPane.addTab("Layers", this.layerPanel);
+    propertiesPanel = new PropertiesPanel();
+    layerPanel = new LayerPanel();
+    lowerTabbedPane = new JTabbedPane();
+    lowerTabbedPane.addTab("Properties", propertiesPanel);
+    lowerTabbedPane.addTab("Layers", layerPanel);
 
-    this.toolboxPanel = new JPanel(new GridLayout(2, 1));
-    this.toolboxPanel.setPreferredSize(new Dimension(352, 0));
-    this.toolboxPanel.add(this.upperTabbedPane);
-    this.toolboxPanel.add(this.lowerTabbedPane);
+    toolboxPanel = new JPanel(new GridLayout(2, 1));
+    toolboxPanel.setPreferredSize(new Dimension(352, 0));
+    toolboxPanel.add(upperTabbedPane);
+    toolboxPanel.add(lowerTabbedPane);
 
     // Application icon.
-    this.setIconImage(Icons.getLargeIcon("application").getImage());
+    setIconImage(Icons.getLargeIcon("application").getImage());
 
-    this.menuBar = new MainMenuBar(this);
-    this.toolBar = new MainToolBar();
+    menuBar = new MainMenuBar(this);
+    toolBar = new MainToolBar();
 
-    this.currentBrush = new ShapeBrush();
-    ((ShapeBrush) this.currentBrush).makeRectangleBrush(new Rectangle(0, 0, 1, 1));
+    currentBrush = new ShapeBrush();
+    ((ShapeBrush) currentBrush).makeRectangleBrush(new Rectangle(0, 0, 1, 1));
 
-    this.lastSelectedTile = new Tile();
+    lastSelectedTile = new Tile();
 
-    this.tileSetSelectionListener = new TileSetSelectionListener();
+    tileSetSelectionListener = new TileSetSelectionListener();
 
     JPanel parent = new JPanel(new BorderLayout());
-    parent.add(this.desktopPane, BorderLayout.CENTER);
+    parent.add(desktopPane, BorderLayout.CENTER);
 
-    this.setLayout(new BorderLayout());
-    this.add(this.toolBar, BorderLayout.NORTH);
-    this.add(parent, BorderLayout.CENTER);
-    this.add(this.toolboxPanel, BorderLayout.EAST);
+    setLayout(new BorderLayout());
+    add(toolBar, BorderLayout.NORTH);
+    add(parent, BorderLayout.CENTER);
+    add(toolboxPanel, BorderLayout.EAST);
 
-    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-    this.setSize(new Dimension(1024, 768));
-    this.setLocationByPlatform(true);
-    this.setJMenuBar(this.menuBar);
+    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setExtendedState(JFrame.MAXIMIZED_BOTH);
+    setSize(new Dimension(1024, 768));
+    setLocationByPlatform(true);
+    setJMenuBar(menuBar);
   }
 
   public static MainWindow getInstance() {
@@ -268,21 +274,48 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       lowerTabbedPane.setSelectedComponent(component);
     }
   }
+  
+  public void updateEditorMap(File previous, File current, ToolkitEditorWindow editor) {
+      if (current == null) {
+          return;
+      }
+      
+      if (previous != null) {
+          editorMap.remove(previous);
+      }
+      
+      editorMap.put(current, editor);
+  }
+  
+  public void closeEditors() {
+      if (editorMap.isEmpty()) {
+          return;
+      }
+      
+      // Because the collection is invalidated on frame close.
+      int size = editorMap.size();
+      ToolkitEditorWindow[] windows;
+      windows = (ToolkitEditorWindow[]) editorMap.values().toArray(new ToolkitEditorWindow[size]);
+      for (int i = 0; i < size; i++) {
+          windows[i].dispose();
+      }
+  }
 
   @Override
   public void internalFrameOpened(InternalFrameEvent e) {
     LOGGER.debug("Opened internal frame e=[{}].", e.getInternalFrame().getClass());
     
-    if (e.getInternalFrame() instanceof AnimationEditor) {
-      AnimationEditor editor = (AnimationEditor) e.getInternalFrame();
+    ToolkitEditorWindow window = (ToolkitEditorWindow) e.getInternalFrame();
+    if (window instanceof AnimationEditor) {
+      AnimationEditor editor = (AnimationEditor) window;
       propertiesPanel.setModel(editor.getAnimation());
-    } else if (e.getInternalFrame() instanceof BoardEditor) {
-      BoardEditor editor = (BoardEditor) e.getInternalFrame();
+    } else if (window instanceof BoardEditor) {
+      BoardEditor editor = (BoardEditor) window;
       upperTabbedPane.setSelectedComponent(tileSetPanel);
       lowerTabbedPane.setSelectedComponent(layerPanel);
       propertiesPanel.setModel(editor.getBoard());
-    } else if (e.getInternalFrame() instanceof CharacterEditor) {
-      CharacterEditor editor = (CharacterEditor) e.getInternalFrame();
+    } else if (window instanceof CharacterEditor) {
+      CharacterEditor editor = (CharacterEditor) window;
       propertiesPanel.setModel(editor.getPlayer());
     }
   }
@@ -295,7 +328,14 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   @Override
   public void internalFrameClosed(InternalFrameEvent e) {
     LOGGER.debug("Closed internal frame e=[{}].", e.getInternalFrame().getClass());
-  }
+    
+    ToolkitEditorWindow window = (ToolkitEditorWindow) e.getInternalFrame();
+    if (window.getAsset().getFile() != null) {
+        editorMap.remove(window.getAsset().getFile());
+    }
+    
+    desktopPane.remove(window);
+ }
 
   @Override
   public void internalFrameIconified(InternalFrameEvent e) {
@@ -311,11 +351,13 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   public void internalFrameActivated(InternalFrameEvent e) {
     LOGGER.debug("Activated internal frame e=[{}].", e.getInternalFrame().getClass());
     
-    if (e.getInternalFrame() instanceof AnimationEditor) {
-      AnimationEditor editor = (AnimationEditor) e.getInternalFrame();
+    ToolkitEditorWindow window = (ToolkitEditorWindow) e.getInternalFrame();
+    updateEditorMap(null, window.getAsset().getFile(), window);
+    if (window instanceof AnimationEditor) {
+      AnimationEditor editor = (AnimationEditor) window;
       propertiesPanel.setModel(editor.getAnimation());
-    } else if (e.getInternalFrame() instanceof BoardEditor) {
-      BoardEditor editor = (BoardEditor) e.getInternalFrame();
+    } else if (window instanceof BoardEditor) {
+      BoardEditor editor = (BoardEditor) window;
       this.layerPanel.setBoardView(editor.getBoardView());
 
       if (editor.getSelectedObject() != null) {
@@ -323,11 +365,11 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       } else {
         this.propertiesPanel.setModel(editor.getBoard());
       }
-    } else if (e.getInternalFrame() instanceof CharacterEditor) {
-      CharacterEditor editor = (CharacterEditor) e.getInternalFrame();
+    } else if (window instanceof CharacterEditor) {
+      CharacterEditor editor = (CharacterEditor) window;
       propertiesPanel.setModel(editor.getPlayer());
-    } else if (e.getInternalFrame() instanceof ItemEditor) {
-      ItemEditor editor = (ItemEditor) e.getInternalFrame();
+    } else if (window instanceof ItemEditor) {
+      ItemEditor editor = (ItemEditor) window;
       propertiesPanel.setModel(editor.getItem());
     }
   }
@@ -393,9 +435,12 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     selectToolkitWindow(editor);
   }
 
-  public void checkFileExtension(File file) {
+  public void openAssetEditor(File file) {
+    if(editorMap.containsKey(file)) {
+        return;
+    }
+      
     String fileName = file.getName().toLowerCase();
-
     if (fileName.endsWith(CoreProperties.getDefaultExtension(Animation.class))) {
       addToolkitEditorWindow(EditorFactory.getEditor(openAnimation(file)));
     } else if (fileName.endsWith(CoreProperties.getDefaultExtension(Board.class))) {
@@ -410,21 +455,23 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       openTileset(file);
     } else if (fileName.endsWith(CoreProperties.getDefaultExtension(SpecialMove.class))) {
       addToolkitEditorWindow(EditorFactory.getEditor(openSpecialMove(file)));
+    } else if (fileName.endsWith(CoreProperties.getDefaultExtension(Project.class))) {
+      addToolkitEditorWindow(EditorFactory.getEditor(openProject(file)));
     }
   }
 
-  public void openProject(File file) {
+  public Project openProject(File file) {
     LOGGER.info("Opening {} file=[{}].", Project.class.getSimpleName(), file);
-    
-    setProjectPath(file.getParent());
 
     try {
       AssetHandle handle = AssetManager.getInstance().deserialize(
               new AssetDescriptor(file.toURI()));
-      setupProject((Project) handle.getAsset());
+      return (Project) handle.getAsset();
     } catch (IOException | AssetException ex) {
       LOGGER.error("Failed to open {} file=[{}].", Project.class.getSimpleName(), file, ex);
     }
+    
+    return null;
   }
 
   public void createNewProject() {
@@ -717,13 +764,14 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     return null;
   }
   
-  private void setProjectPath(String path) {
+  public void setProjectPath(String path) {
     LOGGER.info("Setting project path=[{}].", path);
     System.setProperty("project.path", path);
     LOGGER.info("Project path set to project.path=[{}].", System.getProperty("project.path"));
   }
 
-  private void setupProject(Project project) {
+  public void setupProject(Project project) {
+    closeEditors();
     activeProject = project;
     
     ProjectEditor projectEditor = new ProjectEditor(this.activeProject);
@@ -733,7 +781,10 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     projectEditor.toFront();
 
     selectToolkitWindow(projectEditor);
-    setTitle(getTitle() + " - " + activeProject.getGameTitle());
+    setTitle(
+            EditorProperties.getProperty(EditorProperty.EDITOR_UI_TITLE) 
+            + " - " 
+            + activeProject.getGameTitle());
 
     menuBar.enableMenus(true);
     toolBar.toggleButtonStates(true);

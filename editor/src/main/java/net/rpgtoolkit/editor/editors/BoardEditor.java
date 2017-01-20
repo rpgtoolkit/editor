@@ -18,6 +18,7 @@ import net.rpgtoolkit.common.assets.Tile;
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.editor.editors.board.AbstractBrush;
 import net.rpgtoolkit.common.Selectable;
+import net.rpgtoolkit.common.assets.AbstractAsset;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
 import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
@@ -68,6 +69,11 @@ public class BoardEditor extends ToolkitEditorWindow {
     } else {
         init(board, new File(board.getDescriptor().getURI()).getName());
     }
+  }
+  
+  @Override
+  public AbstractAsset getAsset() {
+      return board;
   }
 
   /**

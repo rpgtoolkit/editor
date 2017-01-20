@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import net.rpgtoolkit.common.assets.AbstractAsset;
 
 import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
@@ -53,6 +54,11 @@ public class AnimationEditor extends ToolkitEditorWindow implements AnimationCha
     configureInterface();
     setSize(400, 400);
     setVisible(true);
+  }
+  
+  @Override
+  public AbstractAsset getAsset() {
+      return animation;
   }
 
   @Override

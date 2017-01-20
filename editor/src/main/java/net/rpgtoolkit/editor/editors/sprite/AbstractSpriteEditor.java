@@ -440,7 +440,7 @@ public abstract class AbstractSpriteEditor extends ToolkitEditorWindow implement
     configurationPanel.add(stepRateField);
 
     // Fix the size of this panel to stop the JTable growing beyond the Window.
-    AnimationsTablePanel southPanel = new AnimationsTablePanel(profilePanel, animatedPanel);
+    AnimationsTablePanel southPanel = new AnimationsTablePanel(profilePanel);
     southPanel.add(animationScrollPane, BorderLayout.CENTER);
     southPanel.add(configurationPanel, BorderLayout.SOUTH);
 

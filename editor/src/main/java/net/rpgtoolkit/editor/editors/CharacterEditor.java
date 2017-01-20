@@ -17,6 +17,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.InternalFrameListener;
+import net.rpgtoolkit.common.assets.AbstractAsset;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
 import net.rpgtoolkit.common.assets.Player;
 import net.rpgtoolkit.editor.editors.sprite.AbstractSpriteEditor;
@@ -99,6 +100,11 @@ public class CharacterEditor extends AbstractSpriteEditor implements InternalFra
     constructWindow();
     setVisible(true);
     pack();
+  }
+  
+  @Override
+  public AbstractAsset getAsset() {
+      return player;
   }
 
   public Player getPlayer() {
