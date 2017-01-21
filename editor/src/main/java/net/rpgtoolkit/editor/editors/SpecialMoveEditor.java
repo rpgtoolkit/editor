@@ -32,7 +32,7 @@ import net.rpgtoolkit.common.assets.SpecialMove;
 import net.rpgtoolkit.common.assets.StatusEffect;
 import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.editor.utilities.EditorFileManager;
-import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
+import net.rpgtoolkit.editor.ui.AssetEditorWindow;
 import net.rpgtoolkit.editor.utilities.GuiHelper;
 import net.rpgtoolkit.editor.ui.IntegerField;
 import net.rpgtoolkit.editor.ui.resources.Icons;
@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Joel Moore
  */
-public class SpecialMoveEditor extends ToolkitEditorWindow implements InternalFrameListener {
+public class SpecialMoveEditor extends AssetEditorWindow implements InternalFrameListener {
   
   private static final Logger LOGGER = LoggerFactory.getLogger(SpecialMoveEditor.class);
 

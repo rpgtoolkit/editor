@@ -45,14 +45,14 @@ import net.rpgtoolkit.editor.ui.DoubleField;
 import net.rpgtoolkit.editor.utilities.GuiHelper;
 import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.editor.utilities.EditorFileManager;
-import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
+import net.rpgtoolkit.editor.ui.AssetEditorWindow;
 import net.rpgtoolkit.editor.ui.resources.Icons;
 
 /**
  *
  * @author Joshua Michael Daly
  */
-public abstract class AbstractSpriteEditor extends ToolkitEditorWindow implements InternalFrameListener, SpriteChangeListener {
+public abstract class AbstractSpriteEditor extends AssetEditorWindow implements InternalFrameListener, SpriteChangeListener {
 
   public static final int DEFAULT_INPUT_COLUMNS = 12;
 
@@ -243,18 +243,22 @@ public abstract class AbstractSpriteEditor extends ToolkitEditorWindow implement
   @Override
   public void spriteChanged(SpriteChangedEvent e) {
     updateAnimatedPanel();
+    setNeedSave(true);  
   }
 
   @Override
   public void spriteAnimationAdded(SpriteChangedEvent e) {
+      setNeedSave(true);
   }
 
   @Override
   public void spriteAnimationUpdated(SpriteChangedEvent e) {
+      setNeedSave(true);
   }
 
   @Override
   public void spriteAnimationRemoved(SpriteChangedEvent e) {
+      setNeedSave(true);
   }
 
     public void setupNewSprite() {
@@ -271,7 +275,7 @@ public abstract class AbstractSpriteEditor extends ToolkitEditorWindow implement
     base.addPoint(30, 20);
     base.addPoint(0, 20);
     base.setClosed(true);
-    sprite.setBaseVector(base);
+    sprite.setBaseVector(base, false);
 
     BoardVector activation = new BoardVector();
     activation.addPoint(0, 0);
@@ -279,10 +283,10 @@ public abstract class AbstractSpriteEditor extends ToolkitEditorWindow implement
     activation.addPoint(30, 20);
     activation.addPoint(0, 20);
     activation.setClosed(true);
-    sprite.setActivationVector(activation);
+    sprite.setActivationVector(activation, false);
 
-    sprite.setBaseVectorOffset(new Point(40, 0));
-    sprite.setActivationVectorOffset(new Point(0, 0));
+    sprite.setBaseVectorOffset(new Point(40, 0), false);
+    sprite.setActivationVectorOffset(new Point(0, 0), false);
 
     sprite.setCustomGraphics(new ArrayList<>());
     sprite.setCustomGraphicNames(new ArrayList<>());

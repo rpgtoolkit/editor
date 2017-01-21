@@ -16,7 +16,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.AbstractSprite;
 import net.rpgtoolkit.common.assets.BoardVector;
-import net.rpgtoolkit.common.assets.Player;
 import net.rpgtoolkit.editor.ui.AbstractModelPanel;
 
 /**
@@ -80,7 +79,7 @@ public abstract class AbstractSpriteModelPanel extends AbstractModelPanel {
         boardVector.addPoint(0, height);
         boardVector.setClosed(true);
 
-        sprite.setBaseVector(boardVector);
+        sprite.setBaseVector(boardVector, true);
       }
     });
     ///
@@ -103,7 +102,7 @@ public abstract class AbstractSpriteModelPanel extends AbstractModelPanel {
         boardVector.addPoint(0, height);
         boardVector.setClosed(true);
 
-        sprite.setBaseVector(boardVector);
+        sprite.setBaseVector(boardVector, true);
       }
     });
     ///
@@ -118,7 +117,7 @@ public abstract class AbstractSpriteModelPanel extends AbstractModelPanel {
         int x = ((Double) baseVectorOffsetXSpinner.getValue()).intValue();
         int y = (int) sprite.getBaseVectorOffset().getY();
 
-        sprite.setBaseVectorOffset(new Point(x, y));
+        sprite.setBaseVectorOffset(new Point(x, y), true);
       }
     });
     ///
@@ -133,7 +132,7 @@ public abstract class AbstractSpriteModelPanel extends AbstractModelPanel {
         int x = (int) sprite.getBaseVectorOffset().getX();
         int y = ((Double) baseVectorOffsetYSpinner.getValue()).intValue();
 
-        sprite.setBaseVectorOffset(new Point(x, y));
+        sprite.setBaseVectorOffset(new Point(x, y), true);
       }
     });
     ///
@@ -156,7 +155,7 @@ public abstract class AbstractSpriteModelPanel extends AbstractModelPanel {
         boardVector.addPoint(0, height);
         boardVector.setClosed(true);
 
-        sprite.setActivationVector(boardVector);
+        sprite.setActivationVector(boardVector, true);
       }
     });
     ///
@@ -179,7 +178,7 @@ public abstract class AbstractSpriteModelPanel extends AbstractModelPanel {
         boardVector.addPoint(0, height);
         boardVector.setClosed(true);
 
-        sprite.setActivationVector(boardVector);
+        sprite.setActivationVector(boardVector, true);
       }
     });
     ///
@@ -194,7 +193,7 @@ public abstract class AbstractSpriteModelPanel extends AbstractModelPanel {
         int x = ((Double) activationVectorOffsetXSpinner.getValue()).intValue();
         int y = (int) sprite.getActivationVectorOffset().getY();
 
-        sprite.setActivationVectorOffset(new Point(x, y));
+        sprite.setActivationVectorOffset(new Point(x, y), true);
       }
     });
     ///
@@ -209,7 +208,7 @@ public abstract class AbstractSpriteModelPanel extends AbstractModelPanel {
         int x = (int) sprite.getActivationVectorOffset().getX();
         int y = ((Double) activationVectorOffsetYSpinner.getValue()).intValue();
 
-        sprite.setActivationVectorOffset(new Point(x, y));
+        sprite.setActivationVectorOffset(new Point(x, y), true);
       }
     });
     ///

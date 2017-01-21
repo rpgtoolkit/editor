@@ -26,7 +26,7 @@ import net.rpgtoolkit.editor.editors.animation.AddTimelineFrame;
 import net.rpgtoolkit.editor.editors.animation.TimelineFrame;
 import net.rpgtoolkit.editor.ui.AnimatedPanel;
 
-import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
+import net.rpgtoolkit.editor.ui.AssetEditorWindow;
 import net.rpgtoolkit.editor.ui.resources.Icons;
 
 /**
@@ -34,7 +34,7 @@ import net.rpgtoolkit.editor.ui.resources.Icons;
  * @author Geoff Wilson
  * @author Joshua Michael Daly
  */
-public class AnimationEditor extends ToolkitEditorWindow implements AnimationChangeListener {
+public class AnimationEditor extends AssetEditorWindow implements AnimationChangeListener {
 
   private final Animation animation;
   private AnimatedPanel animatedPanel;
@@ -89,16 +89,19 @@ public class AnimationEditor extends ToolkitEditorWindow implements AnimationCha
   @Override
   public void animationChanged(AnimationChangedEvent e) {
     updateInterface();
+    setNeedSave(true);
   }
 
   @Override
   public void animationFrameAdded(AnimationChangedEvent e) {
     updateInterface();
+    setNeedSave(true);
   }
 
   @Override
   public void animationFrameRemoved(AnimationChangedEvent e) {
     updateInterface();
+    setNeedSave(true);
   }
 
   private void updateInterface() {

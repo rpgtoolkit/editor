@@ -8,7 +8,9 @@
 package net.rpgtoolkit.editor.ui.actions;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
 import javax.swing.AbstractAction;
+import net.rpgtoolkit.editor.MainWindow;
 
 /**
  * 
@@ -19,7 +21,7 @@ public class ExitAction extends AbstractAction {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    System.exit(0);
+      MainWindow.getInstance().dispatchEvent(new WindowEvent(MainWindow.getInstance(), WindowEvent.WINDOW_CLOSING));
   }
   
 }

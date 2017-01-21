@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
@@ -69,7 +70,7 @@ import net.rpgtoolkit.editor.ui.toolbar.MainToolBar;
 import net.rpgtoolkit.editor.ui.PropertiesPanel;
 import net.rpgtoolkit.editor.ui.TileSetTabbedPane;
 import net.rpgtoolkit.editor.ui.ToolkitDesktopManager;
-import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
+import net.rpgtoolkit.editor.ui.AssetEditorWindow;
 import net.rpgtoolkit.editor.ui.listeners.TileSetSelectionListener;
 import net.rpgtoolkit.editor.utilities.EditorFileManager;
 import net.rpgtoolkit.editor.utilities.FileTools;
@@ -95,7 +96,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   public static final int TILE_SIZE = 32;
 
   private final JDesktopPane desktopPane;
-  private final Map<File, ToolkitEditorWindow> editorMap;
+  private final Map<File, AssetEditorWindow> editorMap;
 
   private final MainMenuBar menuBar;
   private final MainToolBar toolBar;
@@ -275,7 +276,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     }
   }
   
-  public void updateEditorMap(File previous, File current, ToolkitEditorWindow editor) {
+  public void updateEditorMap(File previous, File current, AssetEditorWindow editor) {
       if (current == null) {
           return;
       }
@@ -294,18 +295,24 @@ public class MainWindow extends JFrame implements InternalFrameListener {
       
       // Because the collection is invalidated on frame close.
       int size = editorMap.size();
-      ToolkitEditorWindow[] windows;
-      windows = (ToolkitEditorWindow[]) editorMap.values().toArray(new ToolkitEditorWindow[size]);
+      AssetEditorWindow[] windows;
+      windows = (AssetEditorWindow[]) editorMap.values().toArray(new AssetEditorWindow[size]);
       for (int i = 0; i < size; i++) {
-          windows[i].dispose();
+          try {
+              windows[i].setClosed(true);
+          } catch (PropertyVetoException ex) {
+              LOGGER.error("Failed to close internal frame.", ex);
+          }
       }
   }
+  
+  
 
   @Override
   public void internalFrameOpened(InternalFrameEvent e) {
     LOGGER.debug("Opened internal frame e=[{}].", e.getInternalFrame().getClass());
     
-    ToolkitEditorWindow window = (ToolkitEditorWindow) e.getInternalFrame();
+    AssetEditorWindow window = (AssetEditorWindow) e.getInternalFrame();
     if (window instanceof AnimationEditor) {
       AnimationEditor editor = (AnimationEditor) window;
       propertiesPanel.setModel(editor.getAnimation());
@@ -323,13 +330,37 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   @Override
   public void internalFrameClosing(InternalFrameEvent e) {
     LOGGER.debug("Closing internal frame e=[{}].", e.getInternalFrame().getClass());
+    
+    AssetEditorWindow window = (AssetEditorWindow) e.getInternalFrame();
+    if (window.doesNeedSave()) {
+        String title = getTitle();
+        String message = "Do you want to save changes to " + window.getTitle() + "?";
+        int result = JOptionPane.showConfirmDialog(this, message, title, JOptionPane.YES_NO_CANCEL_OPTION);
+        
+        try {
+            switch (result) {
+                case 0:
+                    window.save();
+                case 1:
+                    window.dispose();
+                    break;
+                case 2:
+            }
+        } catch (Exception ex) {
+            LOGGER.error("Failed to close window=[{}].", window, ex);
+        }
+    } else {
+        window.dispose();
+    }
+    
+    AssetManager.getInstance().removeAsset(window.getAsset());
   }
 
   @Override
   public void internalFrameClosed(InternalFrameEvent e) {
     LOGGER.debug("Closed internal frame e=[{}].", e.getInternalFrame().getClass());
     
-    ToolkitEditorWindow window = (ToolkitEditorWindow) e.getInternalFrame();
+    AssetEditorWindow window = (AssetEditorWindow) e.getInternalFrame();
     if (window.getAsset().getFile() != null) {
         editorMap.remove(window.getAsset().getFile());
     }
@@ -351,7 +382,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
   public void internalFrameActivated(InternalFrameEvent e) {
     LOGGER.debug("Activated internal frame e=[{}].", e.getInternalFrame().getClass());
     
-    ToolkitEditorWindow window = (ToolkitEditorWindow) e.getInternalFrame();
+    AssetEditorWindow window = (AssetEditorWindow) e.getInternalFrame();
     updateEditorMap(null, window.getAsset().getFile(), window);
     if (window instanceof AnimationEditor) {
       AnimationEditor editor = (AnimationEditor) window;
@@ -427,7 +458,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
    *
    * @param editor
    */
-  public void addToolkitEditorWindow(ToolkitEditorWindow editor) {
+  public void addToolkitEditorWindow(AssetEditorWindow editor) {
     editor.addInternalFrameListener(this);
     editor.setVisible(true);
     editor.toFront();
@@ -790,11 +821,11 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     toolBar.toggleButtonStates(true);
   }
 
-  private void selectToolkitWindow(ToolkitEditorWindow window) {
+  private void selectToolkitWindow(AssetEditorWindow window) {
     try {
       window.setSelected(true);
     } catch (PropertyVetoException ex) {
-      LOGGER.error("Failed to select {} window=[{}].", ToolkitEditorWindow.class.getSimpleName(), window, ex);
+      LOGGER.error("Failed to select {} window=[{}].", AssetEditorWindow.class.getSimpleName(), window, ex);
     }
   }
 

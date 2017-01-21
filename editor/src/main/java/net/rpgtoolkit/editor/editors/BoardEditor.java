@@ -20,8 +20,10 @@ import net.rpgtoolkit.editor.editors.board.AbstractBrush;
 import net.rpgtoolkit.common.Selectable;
 import net.rpgtoolkit.common.assets.AbstractAsset;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
+import net.rpgtoolkit.common.assets.events.BoardChangedEvent;
+import net.rpgtoolkit.common.assets.listeners.BoardChangeListener;
 import net.rpgtoolkit.editor.MainWindow;
-import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
+import net.rpgtoolkit.editor.ui.AssetEditorWindow;
 import net.rpgtoolkit.editor.ui.resources.Icons;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Geoff Wilson
  * @author Joshua Michael Daly
  */
-public class BoardEditor extends ToolkitEditorWindow {
+public class BoardEditor extends AssetEditorWindow implements BoardChangeListener {
   
   private static final Logger LOGGER = LoggerFactory.getLogger(BoardEditor.class);
 
@@ -63,6 +65,7 @@ public class BoardEditor extends ToolkitEditorWindow {
     
     boardMouseAdapter = new BoardMouseAdapter(this);
     this.board = board;
+    this.board.addBoardChangeListener(this);
     
     if (board.getDescriptor() == null) {
         init(board, "Untitled");
@@ -335,6 +338,36 @@ public class BoardEditor extends ToolkitEditorWindow {
 
     return coordinates;
   }
+  
+    @Override
+    public void boardChanged(BoardChangedEvent e) {
+        setNeedSave(true);
+    }
+
+    @Override
+    public void boardLayerAdded(BoardChangedEvent e) {
+        setNeedSave(true);
+    }
+
+    @Override
+    public void boardLayerMovedUp(BoardChangedEvent e) {
+        setNeedSave(true);
+    }
+
+    @Override
+    public void boardLayerMovedDown(BoardChangedEvent e) {
+        setNeedSave(true);
+    }
+
+    @Override
+    public void boardLayerCloned(BoardChangedEvent e) {
+        setNeedSave(true);
+    }
+
+    @Override
+    public void boardLayerDeleted(BoardChangedEvent e) {
+        setNeedSave(true);
+    }
 
   private void init(Board board, String fileName) {
     boardView = new BoardView2D(this, board);

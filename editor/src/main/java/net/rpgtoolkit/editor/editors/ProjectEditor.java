@@ -32,7 +32,7 @@ import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.assets.Player;
 import net.rpgtoolkit.common.assets.Program;
 import net.rpgtoolkit.common.assets.Project;
-import net.rpgtoolkit.editor.ui.ToolkitEditorWindow;
+import net.rpgtoolkit.editor.ui.AssetEditorWindow;
 import net.rpgtoolkit.editor.ui.resources.Icons;
 import net.rpgtoolkit.editor.utilities.EditorFileManager;
 import net.rpgtoolkit.editor.utilities.GuiHelper;
@@ -43,7 +43,7 @@ import net.rpgtoolkit.editor.utilities.GuiHelper;
  * @author Geoff Wilson
  * @author Joshua Michael Daly
  */
-public class ProjectEditor extends ToolkitEditorWindow implements InternalFrameListener {
+public class ProjectEditor extends AssetEditorWindow implements InternalFrameListener {
 
   private final Project project; // Project file we are altering
 

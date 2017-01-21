@@ -20,19 +20,35 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class ToolkitEditorWindow extends JInternalFrame {
+public abstract class AssetEditorWindow extends JInternalFrame {
   
-  private static final Logger LOGGER = LoggerFactory.getLogger(ToolkitEditorWindow.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AssetEditorWindow.class);
+  
+  protected boolean needSave;
 
-  public ToolkitEditorWindow() {
+  public AssetEditorWindow() {
 
+  }
+  
+  public boolean doesNeedSave() {
+      return needSave;
+  }
+  
+  protected void setNeedSave(boolean needSave) {
+      if (this.needSave == needSave) {
+          return;
+      }
+      
+      this.needSave = needSave;
+      setTitle(getTitle() + "*");
   }
 
   public abstract AbstractAsset getAsset();
   
-  public ToolkitEditorWindow(String title, boolean resizeable, boolean closeable,
+  public AssetEditorWindow(String title, boolean resizeable, boolean closeable,
           boolean maximizable, boolean iconifiable, ImageIcon icon) {
     super(title, resizeable, closeable, maximizable, iconifiable);
+    setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
     setFrameIcon(icon);
   }
 
@@ -55,6 +71,8 @@ public abstract class ToolkitEditorWindow extends JInternalFrame {
       AssetManager.getInstance().serialize(
               AssetManager.getInstance().getHandle(asset));
       setTitle(original.getName());
+      needSave = false;
+      setTitle(getTitle().replace("*", ""));
     } catch (IOException | AssetException ex) {
       LOGGER.error("Failed to save asset=[{}].", asset, ex);
       

@@ -7,6 +7,8 @@
  */
 package net.rpgtoolkit.editor;
 
+import java.awt.event.WindowEvent;
+import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import net.rpgtoolkit.common.assets.AssetManager;
@@ -84,7 +86,17 @@ public class Driver {
       
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
       
-      MainWindow.getInstance().setVisible(true);
+      MainWindow mainWindow = MainWindow.getInstance();
+      mainWindow.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+      mainWindow.addWindowListener(new java.awt.event.WindowAdapter() {
+        @Override
+        public void windowClosing(WindowEvent windowEvent) {
+            mainWindow.closeEditors();
+            mainWindow.dispose();
+        }
+      });
+      
+      mainWindow.setVisible(true);
     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
       LOGGER.error("Failed to start the editor!", ex);
     }
