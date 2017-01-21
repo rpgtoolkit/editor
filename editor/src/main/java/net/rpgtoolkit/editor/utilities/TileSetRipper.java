@@ -31,15 +31,15 @@ public class TileSetRipper {
     BufferedImage subImage;
     for (int x = 0; x < rows; x++) {
       for (int y = 0; y < columns; y++) {
-        subImage = new BufferedImage(tileWidth, tileHeight, source.getType());
+        subImage = new BufferedImage(tileWidth, tileHeight, BufferedImage.TYPE_INT_ARGB);
 
-        Graphics2D gr = subImage.createGraphics();
-        gr.drawImage(source, 0, 0, tileWidth, tileHeight, tileWidth * y, tileHeight * x,
+        Graphics2D g2d = subImage.createGraphics();
+        g2d.drawImage(source, 0, 0, tileWidth, tileHeight, tileWidth * y, tileHeight * x,
                 tileWidth * y + tileWidth, tileHeight * x + tileHeight, null);
-        gr.dispose();
+        g2d.dispose();
 
         tile = new Tile();
-        tile.setRect(subImage.getRaster());
+        tile.setRect(0, 0, subImage.getRaster());
         tileSet.addTile(tile);
       }
     }
