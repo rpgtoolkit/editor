@@ -8,12 +8,10 @@
 package net.rpgtoolkit.editor.ui;
 
 import java.io.File;
-import java.io.IOException;
 import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
 import net.rpgtoolkit.common.assets.AbstractAsset;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
-import net.rpgtoolkit.common.assets.AssetException;
 import net.rpgtoolkit.common.assets.AssetManager;
 import net.rpgtoolkit.editor.utilities.EditorFileManager;
 import org.apache.commons.io.FileUtils;
@@ -73,7 +71,7 @@ public abstract class AssetEditorWindow extends JInternalFrame {
       setTitle(original.getName());
       needSave = false;
       setTitle(getTitle().replace("*", ""));
-    } catch (IOException | AssetException ex) {
+    } catch (Exception ex) {
       LOGGER.error("Failed to save asset=[{}].", asset, ex);
       
       if (backup != null) {
