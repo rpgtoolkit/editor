@@ -381,7 +381,7 @@ public class MainToolBar extends JToolBar {
     startPositionButton.setEnabled(enable);
     zoomInButton.setEnabled(enable);
     zoomOutButton.setEnabled(enable);
-//    runButton.setEnabled(enable);
+    runButton.setEnabled(enable);
 //    stopButton.setEnabled(enable);
 //    helpButton.setEnabled(enable);
   }

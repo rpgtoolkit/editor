@@ -8,6 +8,7 @@
 package net.rpgtoolkit.editor.utilities;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.rpgtoolkit.common.utilities.CoreProperties;
@@ -20,6 +21,12 @@ import net.rpgtoolkit.editor.ui.SingleRootFileSystemView;
  */
 public final class FileTools {
 
+  public static String getExecutionPath(Class clazz) throws URISyntaxException {
+      return new File(clazz.getProtectionDomain()
+                .getCodeSource().getLocation().toURI().getPath())
+                .getAbsolutePath();
+  }
+    
   public static boolean createDirectoryStructure(String path, String projectName) {
     boolean result = true;
 
