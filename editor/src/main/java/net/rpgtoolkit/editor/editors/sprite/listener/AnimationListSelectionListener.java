@@ -11,8 +11,8 @@ import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import net.rpgtoolkit.common.assets.AbstractSprite;
+import net.rpgtoolkit.common.assets.AnimationEnum;
 import net.rpgtoolkit.editor.editors.sprite.AbstractSpriteEditor;
-import net.rpgtoolkit.editor.editors.sprite.AnimationsTableModel;
 
 /**
  *
@@ -35,28 +35,23 @@ public class AnimationListSelectionListener implements ListSelectionListener {
   @Override
   public void valueChanged(ListSelectionEvent e) {
     if (!e.getValueIsAdjusting()) {
-      int row = animationsTable.getSelectedRow();
-      if (row == -1) {
+      int rowIndex = animationsTable.getSelectedRow();
+      if (rowIndex == -1) {
         spriteEditor.updateAnimatedPanel();
 
         spriteEditor.getBrowseButton().setEnabled(false);
         spriteEditor.getRemoveButton().setEnabled(false);
       } else {
-        String path;
-        if (row < AnimationsTableModel.STANDARD_GRAPHICS.length) {
-          path = sprite.getStandardGraphics().get(row);
-        } else {
-          path = sprite.getCustomGraphics().get(
-                  row - AnimationsTableModel.STANDARD_GRAPHICS.length);
-        }
+        String path = (String) animationsTable.getValueAt(rowIndex, 1);
 
         spriteEditor.openAnimation(path);
         spriteEditor.getBrowseButton().setEnabled(true);
-
-        if (row < AnimationsTableModel.STANDARD_GRAPHICS.length) {
-          spriteEditor.getRemoveButton().setEnabled(false); // Cannot remove default graphics.
-        } else {
-          spriteEditor.getRemoveButton().setEnabled(true);
+        
+        try {
+            AnimationEnum.valueOf((String) animationsTable.getValueAt(rowIndex, 0));
+            spriteEditor.getRemoveButton().setEnabled(false); // Cannot remove default graphics.
+        } catch (IllegalArgumentException ex) {
+            spriteEditor.getRemoveButton().setEnabled(true);
         }
       }
     }

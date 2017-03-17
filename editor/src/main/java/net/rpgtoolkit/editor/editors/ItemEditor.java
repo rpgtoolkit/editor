@@ -16,6 +16,7 @@ import javax.swing.JTextField;
 import javax.swing.event.InternalFrameListener;
 import net.rpgtoolkit.common.assets.AbstractAsset;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
+import net.rpgtoolkit.common.assets.GraphicEnum;
 import net.rpgtoolkit.common.assets.Item;
 import net.rpgtoolkit.common.assets.listeners.SpriteChangeListener;
 import net.rpgtoolkit.editor.editors.sprite.AbstractSpriteEditor;
@@ -77,8 +78,6 @@ public class ItemEditor extends AbstractSpriteEditor implements InternalFrameLis
   }
   
   private void setupNewItem() {
-    setupNewSprite();
-    
     String undefined = "Undefined";
     item.setDescription(undefined);
   }
@@ -107,7 +106,7 @@ public class ItemEditor extends AbstractSpriteEditor implements InternalFrameLis
     inputs.add(itemName);
     inputs.add(itemDescription);
 
-    profileImagePath = item.getProfilePicture();
+    profileImagePath = item.getGraphics().get(GraphicEnum.PROFILE.toString());
 
     buildStatsPanel(labels, inputs);
   }

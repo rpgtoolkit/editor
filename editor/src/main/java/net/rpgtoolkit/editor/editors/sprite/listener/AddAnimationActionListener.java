@@ -25,31 +25,24 @@ public class AddAnimationActionListener implements ActionListener {
   
   private final JPanel animationsPanel;
   
-  private final JTable animationsTable;
-  
   public AddAnimationActionListener(AbstractSpriteEditor editor) {
     sprite = editor.getSprite();
     animationsPanel = editor.getAnimationsPanel();
-    animationsTable = editor.getAnimationsTable();
   }
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    String name = (String) JOptionPane.showInputDialog(
+    String key = (String) JOptionPane.showInputDialog(
             animationsPanel,
             "Enter the handle for the new animation:",
             "Add Animation",
             JOptionPane.PLAIN_MESSAGE);
 
-    if (name == null || name.isEmpty()) {
+    if (key == null || key.isEmpty()) {
       return;
     }
-
-    sprite.getCustomGraphicsNames().add(name);
-    sprite.addCustomGraphics("");
-
-    animationsTable.scrollRectToVisible(animationsTable.getCellRect(
-            animationsTable.getRowCount() - 1, 0, true));
+    
+    sprite.addAnimation(key, "");
   }
 
 }

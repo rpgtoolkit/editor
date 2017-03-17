@@ -431,7 +431,7 @@ public class BoardLayerView {
         int width = frame.getWidth();
         int height = frame.getHeight();
         int xShift = x - (width / 2) + (tileSize / 2);
-        int yShift = y - (height / 2) + (tileSize / 2);
+        int yShift = y - (height - tileSize);
         g.drawImage(frame, xShift, yShift, null);
 
         // If the sprite has an animation frame.
