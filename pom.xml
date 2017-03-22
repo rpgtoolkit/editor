@@ -39,8 +39,8 @@
     </repositories>
         
     <modules>
-        <module>editor</module>
         <module>pluginsystem</module>
+        <module>editor</module>
     </modules>
     
     <properties>

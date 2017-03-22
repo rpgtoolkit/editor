@@ -8,7 +8,13 @@
 package net.rpgtoolkit.editor.ui.actions;
 
 import java.awt.event.ActionEvent;
+import java.util.List;
 import javax.swing.AbstractAction;
+import net.rpgtoolkit.editor.MainWindow;
+import net.rpgtoolkit.pluginsystem.Engine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ro.fortsoft.pf4j.PluginManager;
 
 /**
  *
@@ -16,8 +22,25 @@ import javax.swing.AbstractAction;
  */
 public class StopAction extends AbstractAction {
 
-  @Override
-  public void actionPerformed(ActionEvent e) {
-  }
+    private static final Logger LOGGER = LoggerFactory.getLogger(StopAction.class);
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        try {
+            MainWindow instance = MainWindow.getInstance();
+            
+            PluginManager pluginManager = MainWindow.getInstance().getPluginManager();
+            List<Engine> engines = pluginManager.getExtensions(Engine.class);
+            // Just use the first available engine for now.
+            if (engines.size() > 0) {
+                engines.get(0).stop();
+            }
+            
+            instance.getMainToolBar().getRunButton().setEnabled(true);
+           instance.getMainToolBar().getStopButton().setEnabled(false);
+        } catch (Exception ex) {
+            LOGGER.error("Failed to stop engine.", ex);
+        }
+    }
 
 }

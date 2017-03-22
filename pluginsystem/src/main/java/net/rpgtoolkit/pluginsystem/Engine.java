@@ -7,6 +7,7 @@
  */
 package net.rpgtoolkit.pluginsystem;
 
+import java.io.File;
 import ro.fortsoft.pf4j.ExtensionPoint;
 
 /**
@@ -21,9 +22,18 @@ public interface Engine extends ExtensionPoint {
      * should take a copy of the project rather than running directly against
      * what the editor is using.
      * 
-     * @param projectPath 
+     * @param projectName
+     * @param projectCopy 
      * @throws java.lang.Exception 
      */
-    public void run(String projectPath) throws Exception;
+    public void run(String projectName, File projectCopy) throws Exception;
+    
+    /**
+     * Requests that the running engine instance stop. It is the responsibility 
+     * of the engine to remove the temporary folder created at the run step.
+     * 
+     * @throws java.lang.Exception
+     */
+    public void stop() throws Exception;
     
 }
