@@ -22,8 +22,8 @@ import net.rpgtoolkit.common.assets.serialization.JsonItemSerializer;
 import net.rpgtoolkit.common.assets.serialization.JsonPlayerSerializer;
 import net.rpgtoolkit.common.assets.serialization.JsonProjectSerializer;
 import net.rpgtoolkit.common.assets.serialization.JsonSpecialMoveSerializer;
+import net.rpgtoolkit.common.assets.serialization.JsonTileSetSerializer;
 import net.rpgtoolkit.common.assets.serialization.legacy.LegacyAnimatedTileSerializer;
-import net.rpgtoolkit.common.assets.serialization.legacy.LegacyTileSetSerializer;
 import net.rpgtoolkit.editor.properties.EditorProperties;
 import net.rpgtoolkit.editor.properties.EditorProperty;
 import net.rpgtoolkit.editor.utilities.FileTools;
@@ -70,7 +70,6 @@ public class Driver {
 
         // Legacy.
         assetManager.registerSerializer(new LegacyAnimatedTileSerializer());
-        assetManager.registerSerializer(new LegacyTileSetSerializer());
 
         // JSON.
         assetManager.registerSerializer(new JsonAnimationSerializer());
@@ -80,6 +79,7 @@ public class Driver {
         assetManager.registerSerializer(new JsonSpecialMoveSerializer());
         assetManager.registerSerializer(new JsonEnemySerializer());
         assetManager.registerSerializer(new JsonItemSerializer());
+        assetManager.registerSerializer(new JsonTileSetSerializer());
     }
 
     private static PluginManager registerPlugins() throws URISyntaxException {

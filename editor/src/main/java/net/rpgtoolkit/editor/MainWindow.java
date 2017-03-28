@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
@@ -73,7 +74,7 @@ import net.rpgtoolkit.editor.ui.AssetEditorWindow;
 import net.rpgtoolkit.editor.ui.listeners.TileSetSelectionListener;
 import net.rpgtoolkit.editor.utilities.EditorFileManager;
 import net.rpgtoolkit.editor.utilities.FileTools;
-import net.rpgtoolkit.editor.utilities.TileSetRipper;
+import net.rpgtoolkit.editor.editors.tileset.TileSetUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -760,14 +761,13 @@ public class MainWindow extends JFrame implements InternalFrameListener {
             if (EditorFileManager.getFileChooser().showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 File file = EditorFileManager.getFileChooser().getSelectedFile();
 
-                try (FileInputStream fis = new FileInputStream(file)) {
-                    BufferedImage source = ImageIO.read(fis);
-
-                    TileSet tileSet = TileSetRipper.rip(source, tileWidth, tileHeight);
-
+                try {
                     File tileSetFile = EditorFileManager.saveByType(TileSet.class);
+                    
+                    TileSet tileSet = new TileSet(new AssetDescriptor(tileSetFile.toURI()));
                     tileSet.setDescriptor(new AssetDescriptor(tileSetFile.toURI()));
                     tileSet.setName(tileSetFile.getName());
+                    tileSet.getImages().add(file.getName());
 
                     AssetManager.getInstance().serialize(
                             AssetManager.getInstance().getHandle(tileSet));
@@ -782,10 +782,22 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
     public void openTileset(File file) {
         LOGGER.info("Opening {} file=[{}].", TileSet.class.getSimpleName(), file);
-
-        TileSet tileSet = TileSetCache.addTileSet(file.getName());
-        tileSetPanel.addTileSet(tileSet);
-        upperTabbedPane.setSelectedComponent(tileSetPanel);
+        
+        try {
+            TileSet tileSet;
+            String key = file.getName();
+            if (!TileSetCache.contains(key)) {
+                tileSet = TileSetCache.addTileSet(key);
+                tileSet = TileSetUtil.load(tileSet);
+            } else {
+                tileSet = TileSetCache.getTileSet(key);
+            }
+            
+            tileSetPanel.addTileSet(tileSet);
+            upperTabbedPane.setSelectedComponent(tileSetPanel);
+        } catch (IOException ex) {
+            LOGGER.error("Failed to open {} file=[{}].", TileSet.class.getSimpleName(), file, ex);
+        }
     }
 
     public SpecialMove openSpecialMove(File file) {

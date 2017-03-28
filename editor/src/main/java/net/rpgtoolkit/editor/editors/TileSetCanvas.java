@@ -53,7 +53,7 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
 
     this.tileset = tileset;
     int width = 320;
-    int height = 32 * (int)(Math.ceil(tileset.getTileCount() / (double)TILES_PER_ROW));
+    int height = 32 * (int)(Math.ceil(tileset.getTiles().size() / (double)TILES_PER_ROW));
     
     if (height == 0) {
       height = 32;
@@ -313,7 +313,7 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
   private Point getTileCoordinates(int x, int y) {
     int tileWidth = tileset.getTileWidth() + 1;
     int tileHeight = tileset.getTileHeight() + 1;
-    int tileCount = tileset.getTileCount();
+    int tileCount = tileset.getTiles().size();
     int rows = tileCount / TILES_PER_ROW
             + (tileCount % TILES_PER_ROW > 0 ? 1 : 0);
 
@@ -335,7 +335,7 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
   private Tile getTileAt(int x, int y) {
     int tileAt = y * TILES_PER_ROW + x;
 
-    if (tileAt >= tileset.getTileCount()) {
+    if (tileAt >= tileset.getTiles().size()) {
       return null;
     } else {
       return tileset.getTile(tileAt);
