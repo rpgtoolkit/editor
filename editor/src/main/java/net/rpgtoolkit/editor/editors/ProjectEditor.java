@@ -61,18 +61,13 @@ public class ProjectEditor extends AssetEditorWindow implements InternalFrameLis
 
   // STARTUP SETTINGS
   private JTextField initialBoard;
-  private JTextField initialChar;
+  private JTextField initialCharacter;
 
   // CODE SETTINGS
-  private JTextField runTimeProgram;
   private JTextField startupProgram;
   private JTextField gameOverProgram;
-  private JTextField runTimeKey;
-  private JTextField menuKey;
 
   // GRAPHICS SETTINGS
-  private JCheckBox showFPS;
-  private JCheckBox drawBoardVectors;
   private JCheckBox fullScreen;
   private JRadioButton sixByFour;
   private JRadioButton eightBySix;
@@ -92,7 +87,7 @@ public class ProjectEditor extends AssetEditorWindow implements InternalFrameLis
    * @param project Project file to open (.gam)
    */
   public ProjectEditor(Project project) {
-    super(project.getGameTitle(), true, true, true, true, Icons.getIcon("project"));
+    super(project.getName(), true, true, true, true, Icons.getIcon("project"));
 
     this.project = project;
 
@@ -116,23 +111,19 @@ public class ProjectEditor extends AssetEditorWindow implements InternalFrameLis
     if (sixByFour.isSelected()) {
       project.setResolutionWidth(640);
       project.setResolutionHeight(480);
-      project.setMainResolution(0);
     } else if (eightBySix.isSelected()) {
       project.setResolutionWidth(800);
       project.setResolutionHeight(600);
-      project.setMainResolution(1);
     } else if (tenBySeven.isSelected()) {
       project.setResolutionWidth(1024);
       project.setResolutionHeight(768);
-      project.setMainResolution(2);
     } else {
       project.setResolutionWidth(Integer.parseInt(customResWidth.getText()));
       project.setResolutionHeight(Integer.parseInt(customResHeight.getText()));
-      project.setMainResolution(3);
     }
     
     save(project);
-    setTitle(project.getGameTitle());
+    setTitle(project.getName());
   }
 
   /**
@@ -219,7 +210,7 @@ public class ProjectEditor extends AssetEditorWindow implements InternalFrameLis
 
   private void createProjectSettingsPanel() {
     // Configure Class scope components
-    projectName = new JTextField(this.project.getGameTitle());
+    projectName = new JTextField(project.getName());
     projectName.getDocument().addDocumentListener(new DocumentListener() {
       @Override
       public void changedUpdate(DocumentEvent e) {
@@ -227,12 +218,12 @@ public class ProjectEditor extends AssetEditorWindow implements InternalFrameLis
 
       @Override
       public void insertUpdate(DocumentEvent e) {
-        project.setGameTitle(projectName.getText());
+        project.setName(projectName.getText());
       }
 
       @Override
       public void removeUpdate(DocumentEvent e) {
-        project.setGameTitle(projectName.getText());
+        project.setName(projectName.getText());
       }
     });
 
@@ -263,11 +254,11 @@ public class ProjectEditor extends AssetEditorWindow implements InternalFrameLis
     
     initialBoard = new JTextField();
     initialBoard.setEditable(false);
-    initialBoard.setText(project.getInitBoard());
+    initialBoard.setText(project.getInitialBoard());
 
-    initialChar = new JTextField();
-    initialChar.setEditable(false);
-    initialChar.setText(project.getInitChar());
+    initialCharacter = new JTextField();
+    initialCharacter.setEditable(false);
+    initialCharacter.setText(project.getInitialCharacter());
     
     JLabel initialBoardLabel = new JLabel("Initial Board");
     JButton initialBoardButton = new JButton("Browse");
@@ -277,7 +268,7 @@ public class ProjectEditor extends AssetEditorWindow implements InternalFrameLis
       if (file != null) {
         String fileName = file.getName();
         initialBoard.setText(fileName);
-        project.setInitBoard(fileName);
+        project.setInitialBoard(fileName);
       }
     });
     
@@ -288,8 +279,8 @@ public class ProjectEditor extends AssetEditorWindow implements InternalFrameLis
       
       if (file != null) {
         String fileName = file.getName();
-        initialChar.setText(fileName);
-        project.setInitChar(fileName);
+        initialCharacter.setText(fileName);
+        project.setInitialCharacter(fileName);
       }
     });
     
@@ -310,7 +301,7 @@ public class ProjectEditor extends AssetEditorWindow implements InternalFrameLis
                     .addComponent(initialBoardButton))
             .addGroup(conditionsLayout.createSequentialGroup()
                     .addComponent(initialCharLabel)
-                    .addComponent(initialChar)
+                    .addComponent(initialCharacter)
                     .addComponent(initialCharButton))
             .addComponent(blankBoardNote)
     );
@@ -318,7 +309,7 @@ public class ProjectEditor extends AssetEditorWindow implements InternalFrameLis
     conditionsLayout.linkSize(SwingConstants.HORIZONTAL, initialBoardLabel,
             initialCharLabel);
     conditionsLayout.linkSize(SwingConstants.VERTICAL, initialBoard,
-            initialChar);
+            initialCharacter);
 
     conditionsLayout.setVerticalGroup(conditionsLayout.createSequentialGroup()
             .addGroup(conditionsLayout.createParallelGroup()
@@ -328,7 +319,7 @@ public class ProjectEditor extends AssetEditorWindow implements InternalFrameLis
                     .addComponent(initialBoardButton))
             .addGroup(conditionsLayout.createParallelGroup()
                     .addComponent(initialCharLabel)
-                    .addComponent(initialChar)
+                    .addComponent(initialCharacter)
                     .addComponent(initialCharButton))
             .addComponent(blankBoardNote)
     );
@@ -348,70 +339,16 @@ public class ProjectEditor extends AssetEditorWindow implements InternalFrameLis
   }
 
   private void createCodePanel() {
-    // Configure Class scope components
-    runTimeProgram = new JTextField();
-    runTimeProgram.setEditable(false);
-    runTimeProgram.setText(project.getRunTime());
-
     startupProgram = new JTextField();
     startupProgram.setEditable(false);
-    startupProgram.setText(project.getStartupPrg());
+    startupProgram.setText(project.getStartupProgram());
 
     gameOverProgram = new JTextField();
     gameOverProgram.setEditable(false);
     gameOverProgram.setText(project.getGameOverProgram());
 
-    runTimeKey = new JTextField();
-    runTimeKey.setText(String.valueOf(project.getRunKey()));
-    runTimeKey.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      public void changedUpdate(DocumentEvent e) {
-      }
-
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-        project.setRunKey(Integer.parseInt(runTimeKey.getText()));
-      }
-
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-        project.setRunKey(Integer.parseInt(runTimeKey.getText()));
-      }
-    });
-
-    menuKey = new JTextField();
-    menuKey.setText(String.valueOf(project.getMenuKey()));
-    menuKey.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      public void changedUpdate(DocumentEvent e) {
-      }
-
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-        project.setMenuKey(Integer.parseInt(menuKey.getText()));
-      }
-
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-        project.setMenuKey(Integer.parseInt(menuKey.getText()));
-      }
-    });
-
-    // Configure Function scope components
-    JLabel runTimeProgramLabel = new JLabel("Run Time Program");
     JLabel startupProgramLabel = new JLabel("Startup Program");
     JLabel gameOverProgramLabel = new JLabel("Game Over Program");
-    
-    JButton runTimeProgramButton = new JButton("Browse");
-    runTimeProgramButton.addActionListener((ActionEvent e) -> {
-      File file = EditorFileManager.browseByType(Program.class);
-
-      if (file != null) {
-        String fileName = file.getName();
-        runTimeProgram.setText(fileName);
-        project.setRunTime(fileName);
-      }
-    });
     
     JButton startupProgramButton = new JButton("Browse");
     startupProgramButton.addActionListener((ActionEvent e) -> {
@@ -420,7 +357,7 @@ public class ProjectEditor extends AssetEditorWindow implements InternalFrameLis
       if (file != null) {
         String fileName = file.getName();
         startupProgram.setText(fileName);
-        project.setStartupPrg(fileName);
+        project.setStartupProgram(fileName);
       }
     });
     
@@ -434,29 +371,18 @@ public class ProjectEditor extends AssetEditorWindow implements InternalFrameLis
         project.setGameOverProgram(fileName);
       }
     });
-    
-    JLabel runTimeKeyLabel = new JLabel("Run Time");
-    JLabel menuKeyLabel = new JLabel("Display Menu");
 
     // Configure Panels
     JPanel programPanel = new JPanel();
     programPanel.setBorder(BorderFactory.createTitledBorder(
             this.defaultEtchedBorder, "Programs"));
-    JPanel keysPanel = new JPanel();
-    keysPanel.setBorder(BorderFactory.createTitledBorder(
-            this.defaultEtchedBorder, "Keys"));
 
     // Configure Layouts
     GroupLayout layout = GuiHelper.createGroupLayout(this.codePanel);
     GroupLayout programPanelLayout = GuiHelper.createGroupLayout(programPanel);
-    GroupLayout keysPanelLayout = GuiHelper.createGroupLayout(keysPanel);
 
     programPanelLayout.setHorizontalGroup(programPanelLayout.createParallelGroup()
             .addGroup(programPanelLayout.createSequentialGroup()
-                    .addComponent(runTimeProgramLabel)
-                    .addComponent(this.runTimeProgram)
-                    .addComponent(runTimeProgramButton))
-            .addGroup(programPanelLayout.createSequentialGroup()
                     .addComponent(startupProgramLabel)
                     .addComponent(this.startupProgram)
                     .addComponent(startupProgramButton))
@@ -466,18 +392,14 @@ public class ProjectEditor extends AssetEditorWindow implements InternalFrameLis
                     .addComponent(gameOverProgramButton))
     );
 
-    programPanelLayout.linkSize(SwingConstants.VERTICAL, this.gameOverProgram,
-            this.startupProgram, this.runTimeProgram);
-    programPanelLayout.linkSize(SwingConstants.HORIZONTAL,
-            gameOverProgramLabel, startupProgramLabel, runTimeProgramLabel);
+        programPanelLayout.linkSize(SwingConstants.HORIZONTAL, startupProgramLabel,
+            gameOverProgramLabel);
+
+    programPanelLayout.linkSize(SwingConstants.VERTICAL, startupProgram,
+            gameOverProgram);
 
     programPanelLayout.setVerticalGroup(programPanelLayout.createSequentialGroup()
             .addGroup(programPanelLayout.createParallelGroup()
-                    .addComponent(runTimeProgramLabel)
-                    .addComponent(this.runTimeProgram, GuiHelper.JTF_HEIGHT,
-                            GuiHelper.JTF_HEIGHT, GuiHelper.JTF_HEIGHT)
-                    .addComponent(runTimeProgramButton))
-            .addGroup(programPanelLayout.createParallelGroup()
                     .addComponent(startupProgramLabel)
                     .addComponent(this.startupProgram)
                     .addComponent(startupProgramButton))
@@ -485,55 +407,25 @@ public class ProjectEditor extends AssetEditorWindow implements InternalFrameLis
                     .addComponent(gameOverProgramLabel)
                     .addComponent(this.gameOverProgram)
                     .addComponent(gameOverProgramButton))
-    );
-
-    keysPanelLayout.setHorizontalGroup(keysPanelLayout.createParallelGroup()
-            .addGroup(keysPanelLayout.createSequentialGroup()
-                    .addComponent(runTimeKeyLabel)
-                    .addComponent(this.runTimeKey, 50, 50, 50))
-            .addGroup(keysPanelLayout.createSequentialGroup()
-                    .addComponent(menuKeyLabel)
-                    .addComponent(this.menuKey))
-            .addGroup(keysPanelLayout.createSequentialGroup())
-    );
-
-    keysPanelLayout.linkSize(SwingConstants.VERTICAL, this.runTimeKey,
-            this.menuKey);
-    keysPanelLayout.linkSize(SwingConstants.HORIZONTAL, this.runTimeKey,
-            this.menuKey);
-    keysPanelLayout.linkSize(SwingConstants.HORIZONTAL, runTimeKeyLabel,
-            menuKeyLabel);
-
-    keysPanelLayout.setVerticalGroup(keysPanelLayout.createSequentialGroup()
-            .addGroup(keysPanelLayout.createParallelGroup()
-                    .addComponent(runTimeKeyLabel)
-                    .addComponent(this.runTimeKey, GuiHelper.JTF_HEIGHT,
-                            GuiHelper.JTF_HEIGHT, GuiHelper.JTF_HEIGHT))
-            .addGroup(keysPanelLayout.createParallelGroup()
-                    .addComponent(menuKeyLabel)
-                    .addComponent(this.menuKey))
-            .addGroup(keysPanelLayout.createParallelGroup())
     );
 
     layout.setHorizontalGroup(layout.createParallelGroup()
             .addComponent(programPanel, 515, 515, 515)
-            .addComponent(keysPanel)
     );
 
-    layout.linkSize(SwingConstants.HORIZONTAL, programPanel, keysPanel);
+    layout.linkSize(SwingConstants.HORIZONTAL, programPanel);
 
     layout.setVerticalGroup(layout.createSequentialGroup()
             .addComponent(programPanel)
-            .addComponent(keysPanel)
     );
 
   }
 
   private void createGraphicsPanel() {
     fullScreen = new JCheckBox("Full Screen Mode?");
-    fullScreen.setSelected(project.getFullscreenMode());
+    fullScreen.setSelected(project.isFullScreen());
     fullScreen.addActionListener((ActionEvent e) -> {
-      project.setExtendToFullScreen(fullScreen.isSelected());
+      project.setIsFullScreen(fullScreen.isSelected());
     });
 
     sixByFour = new JRadioButton("640 x 480");
@@ -542,38 +434,23 @@ public class ProjectEditor extends AssetEditorWindow implements InternalFrameLis
     customRes = new JRadioButton("Custom");
     customResWidth = new JTextField(Long.toString(this.project.getResolutionWidth()));
     customResHeight = new JTextField(Long.toString(this.project.getResolutionHeight()));
-
-    showFPS = new JCheckBox();
-    showFPS.setSelected(project.getDisplayFPSInTitle());
-    showFPS.addActionListener((ActionEvent e) -> {
-      project.setDisplayFPSInTitle(showFPS.isSelected());
-    });
-
-    drawBoardVectors = new JCheckBox();
-    drawBoardVectors.setSelected(project.getDrawVectors());
-    drawBoardVectors.addActionListener((ActionEvent e) -> {
-      project.setDrawVectors(drawBoardVectors.isSelected());
-    });
     
     ButtonGroup resolutionGroup = new ButtonGroup();
     resolutionGroup.add(this.sixByFour);
     resolutionGroup.add(this.eightBySix);
     resolutionGroup.add(this.tenBySeven);
     resolutionGroup.add(this.customRes);
-
-    switch (project.getResolutionMode()) {
-      case 0:
-        this.sixByFour.setSelected(true);
-        break;
-      case 1:
-        this.eightBySix.setSelected(true);
-        break;
-      case 2:
-        this.tenBySeven.setSelected(true);
-        break;
-      case 3:
-        this.customRes.setSelected(true);
-        break;
+    
+    int width = project.getResolutionWidth();
+    int height = project.getResolutionHeight();
+    if (width == 640 && height == 480) {
+        sixByFour.setSelected(true);
+    } else if (width == 800 && height == 600) {
+        eightBySix.setSelected(true);
+    } else if (width == 1024 && height == 768) {
+        tenBySeven.setSelected(true);
+    } else {
+        customRes.setSelected(true);
     }
 
     JLabel customResWarningLabel = new JLabel("Please note that not all "
@@ -586,9 +463,6 @@ public class ProjectEditor extends AssetEditorWindow implements InternalFrameLis
     JPanel screenPanel = new JPanel();
     screenPanel.setBorder(BorderFactory.createTitledBorder(
             this.defaultEtchedBorder, "Screen"));
-    JPanel miscPanel = new JPanel();
-    miscPanel.setBorder(BorderFactory.createTitledBorder(
-            this.defaultEtchedBorder, "Miscellaneous"));
 
     JPanel resolutionPanel = new JPanel();
     resolutionPanel.setBorder(BorderFactory.createTitledBorder(
@@ -603,7 +477,6 @@ public class ProjectEditor extends AssetEditorWindow implements InternalFrameLis
     // Configure Layouts for Second Level Panels
     GroupLayout resolutionLayout = GuiHelper.createGroupLayout(resolutionPanel);
     GroupLayout screenLayout = GuiHelper.createGroupLayout(screenPanel);
-    GroupLayout miscLayout = GuiHelper.createGroupLayout(miscPanel);
     GroupLayout customResLayout = GuiHelper.createGroupLayout(customResolutionPanel);
 
     resolutionLayout.setHorizontalGroup(resolutionLayout.createParallelGroup()
@@ -660,34 +533,14 @@ public class ProjectEditor extends AssetEditorWindow implements InternalFrameLis
                     .addComponent(this.customResHeight))
     );
 
-    miscLayout.setHorizontalGroup(miscLayout.createParallelGroup()
-            .addGroup(miscLayout.createSequentialGroup()
-                    .addComponent(this.showFPS)
-                    .addComponent(showFPSLabel))
-            .addGroup(miscLayout.createSequentialGroup()
-                    .addComponent(this.drawBoardVectors)
-                    .addComponent(drawBoardVectorsLabel))
-    );
-
-    miscLayout.setVerticalGroup(miscLayout.createSequentialGroup()
-            .addGroup(miscLayout.createParallelGroup()
-                    .addComponent(this.showFPS)
-                    .addComponent(showFPSLabel))
-            .addGroup(miscLayout.createParallelGroup()
-                    .addComponent(this.drawBoardVectors)
-                    .addComponent(drawBoardVectorsLabel))
-    );
-
     layout.setHorizontalGroup(layout.createParallelGroup()
             .addComponent(screenPanel, 515, 515, 515)
-            .addComponent(miscPanel)
     );
 
-    layout.linkSize(SwingConstants.HORIZONTAL, screenPanel, miscPanel);
+    layout.linkSize(SwingConstants.HORIZONTAL, screenPanel);
 
     layout.setVerticalGroup(layout.createSequentialGroup()
             .addComponent(screenPanel)
-            .addComponent(miscPanel)
     );
   }
   

@@ -22,7 +22,9 @@ import javax.swing.event.ChangeListener;
 
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
 import net.rpgtoolkit.common.assets.BoardVector;
-import net.rpgtoolkit.common.assets.TileType;
+import net.rpgtoolkit.common.assets.BoardVectorType;
+import net.rpgtoolkit.common.assets.Event;
+import net.rpgtoolkit.common.assets.EventType;
 
 /**
  *
@@ -40,12 +42,22 @@ public class BoardVectorPanel extends BoardModelPanel {
   private final JTextField handleTextField;
   private final JLabel handleLabel;
   
-  private final JComboBox<String> tileTypeComboBox;
-  private final JLabel tileTypeLabel;
+  private final JComboBox<String> typeComboBox;
+  private final JLabel typeLabel;
 
-  private static final String[] TILE_TYPES = {
-    "SOLID", "UNDER", "STAIRS", "WAYPOINT"
+  private static final String[] VECTOR_TYPES = {
+    "PASSABLE", "SOLID"
   };
+  
+  private final JComboBox<String> eventComboBox;
+  private final JLabel eventLabel;
+  
+  private static final String[] EVENT_TYPES = {
+      "OVERLAP"
+  };
+  
+  private final JTextField eventProgramTextField;
+  private final JLabel eventProgramLabel;
 
   private int lastSpinnerLayer; // Used to ensure that the selection is valid.
 
@@ -119,43 +131,74 @@ public class BoardVectorPanel extends BoardModelPanel {
       }
     });
     ///
-    /// tileTypeComboBox
+    /// typeComboBox
     ///
-    tileTypeComboBox = new JComboBox<>(TILE_TYPES);
+    typeComboBox = new JComboBox<>(VECTOR_TYPES);
 
-    switch (((BoardVector) model).getTileType()) {
+    switch (((BoardVector) model).getType()) {
+      case PASSABLE:
+        typeComboBox.setSelectedIndex(0);
+        break;
       case SOLID:
-        tileTypeComboBox.setSelectedIndex(0);
+        typeComboBox.setSelectedIndex(1);
         break;
-      case UNDER:
-        tileTypeComboBox.setSelectedIndex(1);
-        break;
-      case STAIRS:
-        tileTypeComboBox.setSelectedIndex(2);
-        break;
-      case WAYPOINT:
-        tileTypeComboBox.setSelectedIndex(3);
     }
 
-    tileTypeComboBox.addActionListener(new ActionListener() {
+    typeComboBox.addActionListener(new ActionListener() {
 
       @Override
       public void actionPerformed(ActionEvent e) {
-        switch (tileTypeComboBox.getSelectedIndex()) {
+        switch (typeComboBox.getSelectedIndex()) {
           case 0:
-            ((BoardVector) model).setTileType(TileType.SOLID);
+            ((BoardVector) model).setType(BoardVectorType.PASSABLE);
             break;
           case 1:
-            ((BoardVector) model).setTileType(TileType.UNDER);
+            ((BoardVector) model).setType(BoardVectorType.SOLID);
             break;
-          case 2:
-            ((BoardVector) model).setTileType(TileType.STAIRS);
-            break;
-          case 3:
-            ((BoardVector) model).setTileType(TileType.WAYPOINT);
         }
 
         updateCurrentBoardView();
+      }
+    });
+    ///
+    /// eventComboBox
+    ///
+    // Fixed only one event type for now.
+    eventComboBox = new JComboBox<>(EVENT_TYPES);
+    eventComboBox.setEnabled(false);
+    eventComboBox.setSelectedIndex(0);
+    ///
+    /// handleTextField
+    ///
+    if (!((BoardVector) model).getEvents().isEmpty()) {
+        Event firstEvent = ((BoardVector) model).getEvents().get(0);
+        eventProgramTextField = getJTextField(firstEvent.getProgram());
+    } else {
+        eventProgramTextField = getJTextField("");
+    }
+    
+    eventProgramTextField.addFocusListener(new FocusListener() {
+
+      @Override
+      public void focusGained(FocusEvent e) {
+
+      }
+
+      @Override
+      public void focusLost(FocusEvent e) {
+        if (((BoardVector) model).getEvents().isEmpty()) {
+            if (eventProgramTextField.getText().isEmpty()) {
+                return;
+            }
+            
+            ((BoardVector) model).getEvents().add(new Event(EventType.OVERLAP, eventProgramTextField.getText()));
+        } else {
+            Event firstEvent = ((BoardVector) model).getEvents().get(0);
+            if (!firstEvent.getProgram().equals(eventProgramTextField.getText())) {
+              ((BoardVector) model).getEvents()
+                      .get(0).setProgram(eventProgramTextField.getText());
+            }
+        }
       }
     });
     ///
@@ -166,14 +209,18 @@ public class BoardVectorPanel extends BoardModelPanel {
                     .addComponent(handleLabel = getJLabel("Handle"))
                     .addComponent(isClosedLabel = getJLabel("Is Closed"))
                     .addComponent(layerLabel = getJLabel("Layer"))
-                    .addComponent(tileTypeLabel = getJLabel("Type")));
+                    .addComponent(typeLabel = getJLabel("Type"))
+                    .addComponent(eventLabel = getJLabel("Event"))
+                    .addComponent(eventProgramLabel = getJLabel("Event Program")));
     
     horizontalGroup.addGroup(
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(handleTextField)
                     .addComponent(isClosedCheckBox)
                     .addComponent(layerSpinner)
-                    .addComponent(tileTypeComboBox));
+                    .addComponent(typeComboBox)
+                    .addComponent(eventComboBox)
+                    .addComponent(eventProgramTextField));
     
     layout.setHorizontalGroup(horizontalGroup);
     
@@ -187,7 +234,13 @@ public class BoardVectorPanel extends BoardModelPanel {
             .addComponent(layerLabel).addComponent(layerSpinner));
     
     verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-            .addComponent(tileTypeLabel).addComponent(tileTypeComboBox));
+            .addComponent(typeLabel).addComponent(typeComboBox));
+    
+    verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(eventLabel).addComponent(eventComboBox));
+    
+    verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(eventProgramLabel).addComponent(eventProgramTextField));
   
     layout.setVerticalGroup(verticalGroup);
   }

@@ -355,21 +355,14 @@ public class BoardLayerView {
         g.setStroke(new BasicStroke(3.0f)); // Draw it thicker.
       }
 
-      switch (vector.getTileType()) {
-        case SOLID:
+      switch (vector.getType()) {
+        case PASSABLE:
           g.setColor(Color.WHITE);
           break;
-        case UNDER:
-          g.setColor(Color.GREEN);
-          break;
-        case STAIRS:
-          g.setColor(Color.MAGENTA);
-          break;
-        case WAYPOINT:
+        case SOLID:
           g.setColor(Color.RED);
           break;
         default:
-          
       }
 
       drawVectorLines(g, vector);

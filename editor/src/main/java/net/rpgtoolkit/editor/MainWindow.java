@@ -1,9 +1,9 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.editor;
 
@@ -13,15 +13,11 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 import java.beans.PropertyVetoException;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import javax.imageio.ImageIO;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -543,8 +539,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
                 Project project = new Project(
                         new AssetDescriptor(file.toURI()),
                         CoreProperties.getProjectsDirectory()
-                        + File.separator,
-                        projectName);
+                        + File.separator);
                 try {
                     // Write out new project file.
                     AssetManager.getInstance().serialize(AssetManager.getInstance().getHandle(project));
@@ -619,6 +614,18 @@ public class MainWindow extends JFrame implements InternalFrameListener {
                 AssetHandle handle = AssetManager.getInstance().deserialize(
                         new AssetDescriptor(file.toURI()));
                 Board board = (Board) handle.getAsset();
+
+                // Setup the TileSets used on this Board.
+                for (TileSet tileSet : board.getTileSets().values()) {
+                    String path = System.getProperty("project.path")
+                            + File.separator
+                            + EditorFileManager.getTypeSubdirectory(TileSet.class)
+                            + File.separator
+                            + tileSet.getName();
+                    openTileset(new File(path));
+                }
+                
+                board.loadTiles();
 
                 return board;
             }
@@ -763,7 +770,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
                 try {
                     File tileSetFile = EditorFileManager.saveByType(TileSet.class);
-                    
+
                     TileSet tileSet = new TileSet(new AssetDescriptor(tileSetFile.toURI()));
                     tileSet.setDescriptor(new AssetDescriptor(tileSetFile.toURI()));
                     tileSet.setName(tileSetFile.getName());
@@ -782,7 +789,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
     public void openTileset(File file) {
         LOGGER.info("Opening {} file=[{}].", TileSet.class.getSimpleName(), file);
-        
+
         try {
             TileSet tileSet;
             String key = file.getName();
@@ -792,7 +799,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
             } else {
                 tileSet = TileSetCache.getTileSet(key);
             }
-            
+
             tileSetPanel.addTileSet(tileSet);
             upperTabbedPane.setSelectedComponent(tileSetPanel);
         } catch (IOException ex) {
@@ -838,7 +845,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         setTitle(
                 EditorProperties.getProperty(EditorProperty.EDITOR_UI_TITLE)
                 + " - "
-                + activeProject.getGameTitle());
+                + activeProject.getName());
 
         menuBar.enableMenus(true);
         toolBar.toggleButtonStates(true);

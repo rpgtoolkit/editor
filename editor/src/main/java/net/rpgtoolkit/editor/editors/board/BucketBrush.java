@@ -131,6 +131,9 @@ public class BucketBrush extends AbstractBrush {
     if (layer == null) {
       return null;
     }
+    if (pourTile.getTileSet() == null) {
+        return null;
+    }
 
     oldTile = layer.getLayer().getTileAt(x, y);
 
@@ -149,7 +152,7 @@ public class BucketBrush extends AbstractBrush {
         Point point = stack.pop();
 
         if (layer.getLayer().contains(point.x, point.y)
-                && layer.getLayer().getTileAt(point.x, point.y) == oldTile) {
+                && layer.getLayer().getTileAt(point.x, point.y).equals(oldTile)) {
           layer.getLayer().setTileAt(point.x, point.y, pourTile);
           area.add(point);
 
