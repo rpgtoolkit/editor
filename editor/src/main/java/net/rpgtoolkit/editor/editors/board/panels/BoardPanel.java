@@ -21,7 +21,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.editor.editors.board.BoardNeighboursDialog;
-import net.rpgtoolkit.editor.editors.board.BoardSpriteDialog;
 import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.utilities.GuiHelper;
@@ -38,9 +37,6 @@ public class BoardPanel extends AbstractModelPanel {
   
   private final JSpinner heightSpinner;
   private final JLabel heightLabel;
-
-  private final JButton configureButton;
-  private final JLabel configureLabel;
 
   private final JComboBox musicFileComboBox;
   private final JLabel musicLabel;
@@ -74,23 +70,6 @@ public class BoardPanel extends AbstractModelPanel {
       @Override
       public void stateChanged(ChangeEvent e) {
 
-      }
-
-    });
-    ///
-    /// configureButton
-    ///
-    configureButton = getJButton("Configure");
-    configureButton.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        BoardNeighboursDialog dialog = new BoardNeighboursDialog(MainWindow.getInstance(), 
-                "Configure Neighbours", true, board);
-
-        if (dialog.showDialog() == BoardSpriteDialog.APPLY) { 
-          ((Board) model).setDirectionalLinks(dialog.getNeighbours());
-        }
       }
 
     });
@@ -139,7 +118,6 @@ public class BoardPanel extends AbstractModelPanel {
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(widthLabel = getJLabel("Width"))
                     .addComponent(heightLabel = getJLabel("Height"))
-                    .addComponent(configureLabel = getJLabel("Neighbours"))
                     .addComponent(musicLabel = getJLabel("Music"))
                     .addComponent(entryProgramLabel = getJLabel("Entry Program")));
     
@@ -147,7 +125,6 @@ public class BoardPanel extends AbstractModelPanel {
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(widthSpinner)
                     .addComponent(heightSpinner)
-                    .addComponent(configureButton)
                     .addComponent(musicFileComboBox)
                     .addComponent(entryProgramComboBox));
     
@@ -158,9 +135,6 @@ public class BoardPanel extends AbstractModelPanel {
     
     verticalGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE)
             .addComponent(heightLabel).addComponent(heightSpinner));
-    
-    verticalGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE)
-            .addComponent(configureLabel).addComponent(configureButton));
     
     verticalGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE)
             .addComponent(musicLabel).addComponent(musicFileComboBox));

@@ -10,18 +10,14 @@ package net.rpgtoolkit.editor.editors.board.panels;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import javax.swing.GroupLayout;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.event.ChangeEvent;
-import net.rpgtoolkit.common.assets.Animation;
-import net.rpgtoolkit.common.assets.AnimationFrame;
 import net.rpgtoolkit.common.assets.BoardSprite;
+import net.rpgtoolkit.common.assets.EventType;
 import net.rpgtoolkit.common.assets.Item;
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
-import net.rpgtoolkit.editor.editors.board.BoardSpriteDialog;
-import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.utilities.EditorFileManager;
 import net.rpgtoolkit.editor.utilities.GuiHelper;
@@ -36,11 +32,11 @@ public class BoardSpritePanel extends BoardModelPanel {
   private final JComboBox fileComboBox;
   private final JLabel fileLabel;
 
-  private final JComboBox activationComboBox;
-  private final JLabel activationProgramLabel;
+  private final JComboBox eventProgramComboBox;
+  private final JLabel eventProgramLabel;
 
-  private final JComboBox multiTaskingComboBox;
-  private final JLabel multiTaskingLabel;
+  private final JComboBox threadComboBox;
+  private final JLabel threadLabel;
 
   private final JSpinner xSpinner;
   private final JLabel xLabel;
@@ -53,14 +49,11 @@ public class BoardSpritePanel extends BoardModelPanel {
 
   private int lastSpinnerLayer; // Used to ensure that the selection is valid.
 
-  private final JComboBox typeComboBox;
-  private final JLabel typeLabel;
+  private final JComboBox eventComboBox;
+  private final JLabel eventLabel;
 
-  private final JButton variablesButton;
-  private final JLabel variablesLabel;
-
-  private static final String[] ACTIVATION_TYPES = {
-    "STEP-ON", "KEYPRESS"
+  private static final String[] EVENT_TYPES = {
+    "OVERLAP"
   };
 
   public BoardSpritePanel(final BoardSprite boardSprite) {
@@ -98,18 +91,22 @@ public class BoardSpritePanel extends BoardModelPanel {
             + CoreProperties.getProperty("toolkit.directory.program") 
             + File.separator);
     exts = new String[]{"prg"};
-    activationComboBox = GuiHelper.getFileListJComboBox(directory, exts, true);
-    activationComboBox.setSelectedItem(boardSprite.getFileName());
-    activationComboBox.addActionListener((ActionEvent e) -> {
-        boardSprite.setActivationProgram((String) activationComboBox.getSelectedItem());
+    eventProgramComboBox = GuiHelper.getFileListJComboBox(directory, exts, true);
+    eventProgramComboBox.setSelectedItem(boardSprite.getFileName());
+    eventProgramComboBox.addActionListener((ActionEvent e) -> {
+        if (eventProgramComboBox.getSelectedItem() != null) {
+            boardSprite.setEventProgram((String) eventProgramComboBox.getSelectedItem());
+        }
     });
     ///
     /// multiTaskingTextField
     ///
-    multiTaskingComboBox = GuiHelper.getFileListJComboBox(directory, exts, true);
-    multiTaskingComboBox.setSelectedItem(boardSprite.getFileName());
-    multiTaskingComboBox.addActionListener((ActionEvent e) -> {
-        boardSprite.setMultitaskingProgram((String) multiTaskingComboBox.getSelectedItem());
+    threadComboBox = GuiHelper.getFileListJComboBox(directory, exts, true);
+    threadComboBox.setSelectedItem(boardSprite.getFileName());
+    threadComboBox.addActionListener((ActionEvent e) -> {
+        if (threadComboBox.getSelectedItem() != null) {
+            boardSprite.setThread((String) threadComboBox.getSelectedItem());
+        }
     });
     ///
     /// xSpinner
@@ -168,55 +165,11 @@ public class BoardSpritePanel extends BoardModelPanel {
     ///
     /// typeComboBox
     ///
-    typeComboBox = new JComboBox(ACTIVATION_TYPES);
-    typeComboBox.addActionListener((ActionEvent e) -> {
-        String type = (String) typeComboBox.getSelectedItem();
-        if (type.equals(ACTIVATION_TYPES[0])) {
-            boardSprite.setActivationType(0);
-        } else {
-            boardSprite.setActivationType(1);
-        }
-    });
-    ///
-    /// variablesButton
-    ///
-    variablesButton = getJButton("Configure");
-    variablesButton.addActionListener((ActionEvent e) -> {
-        BoardSpriteDialog dialog = new BoardSpriteDialog(
-                MainWindow.getInstance(), "Configure Variables",
-                true, (BoardSprite) model);
-
-        if (dialog.showDialog() == BoardSpriteDialog.APPLY) {
-            String initialVariable = dialog.getInitialVariable();
-            String initialValue = dialog.getInitialValue();
-            String finalVariable = dialog.getFinalVariable();
-            String finalValue = dialog.getFinalValue();
-            String loadingVariable = dialog.getLoadingVariable();
-            String loadingValue = dialog.getLoadingValue();
-            
-            if (!boardSprite.getInitialVariable().equals(initialVariable)) {
-                boardSprite.setInitialVariable(initialVariable);
-            }
-            
-            if (!boardSprite.getInitialValue().equals(initialValue)) {
-                boardSprite.setInitialValue(initialValue);
-            }
-            
-            if (!boardSprite.getFinalVariable().equals(finalVariable)) {
-                boardSprite.setFinalVariable(finalVariable);
-            }
-            
-            if (!boardSprite.getFinalValue().equals(finalValue)) {
-                boardSprite.setFinalValue(finalValue);
-            }
-            
-            if (!boardSprite.getLoadingVariable().equals(loadingVariable)) {
-                boardSprite.setLoadingVariable(loadingVariable);
-            }
-            
-            if (!boardSprite.getLoadingValue().equals(loadingValue)) {
-                boardSprite.setLoadingValue(loadingValue);
-            }
+    eventComboBox = new JComboBox(EVENT_TYPES);
+    eventComboBox.addActionListener((ActionEvent e) -> {
+        String type = (String) eventComboBox.getSelectedItem();
+        if (type.equals(EVENT_TYPES[0])) {
+            boardSprite.setEventType(EventType.OVERLAP);
         }
     });
     ///
@@ -225,35 +178,27 @@ public class BoardSpritePanel extends BoardModelPanel {
     horizontalGroup.addGroup(
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addComponent(fileLabel = getJLabel("Item File"))
-            .addComponent(activationProgramLabel = getJLabel("Activation Program"))
-            .addComponent(multiTaskingLabel = getJLabel("MultiTasking Program"))
             .addComponent(xLabel = getJLabel("X"))
             .addComponent(yLabel = getJLabel("Y"))
             .addComponent(layerLabel = getJLabel("Layer"))
-            .addComponent(typeLabel = getJLabel("Type"))
-            .addComponent(variablesLabel = getJLabel("Variables")));
+            .addComponent(eventLabel = getJLabel("Event"))
+            .addComponent(eventProgramLabel = getJLabel("Event Program"))
+            .addComponent(threadLabel = getJLabel("Thread")));
 
     horizontalGroup.addGroup(
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addComponent(fileComboBox)
-            .addComponent(activationComboBox)
-            .addComponent(multiTaskingComboBox)
             .addComponent(xSpinner)
             .addComponent(ySpinner)
             .addComponent(layerSpinner)
-            .addComponent(typeComboBox)
-            .addComponent(variablesButton));
+            .addComponent(eventComboBox)
+            .addComponent(eventProgramComboBox)
+            .addComponent(threadComboBox));
 
     layout.setHorizontalGroup(horizontalGroup);
 
     verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
             .addComponent(fileLabel).addComponent(fileComboBox));
-
-    verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-            .addComponent(activationProgramLabel).addComponent(activationComboBox));
-
-    verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-            .addComponent(multiTaskingLabel).addComponent(multiTaskingComboBox));
 
     verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
             .addComponent(xLabel).addComponent(xSpinner));
@@ -268,10 +213,13 @@ public class BoardSpritePanel extends BoardModelPanel {
             .addComponent(layerLabel).addComponent(layerSpinner));
 
     verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-            .addComponent(typeLabel).addComponent(typeComboBox));
+            .addComponent(eventLabel).addComponent(eventComboBox));
+    
+    verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(eventProgramLabel).addComponent(eventProgramComboBox));
 
     verticalGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-            .addComponent(variablesLabel).addComponent(variablesButton));
+            .addComponent(threadLabel).addComponent(threadComboBox));
 
     layout.setVerticalGroup(verticalGroup);
   }

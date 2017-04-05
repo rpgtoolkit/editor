@@ -10,6 +10,7 @@ package net.rpgtoolkit.editor.editors.board;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.assets.BoardSprite;
 
 /**
@@ -98,10 +99,11 @@ public class SpriteBrush extends AbstractBrush {
       boardSprite.setY(y);
       boardSprite.setLayer(initialLayer);
 
+      Board board = boardLayerView.getLayer().getBoard();
+      board.addSprite(boardSprite);
+      
       affectedContainer.getLayer(initialLayer).
               getLayer().getSprites().add(boardSprite);
-
-      boardLayerView.getLayer().getBoard().fireBoardChanged();
 
       Rectangle shapeBounds = getBounds();
       int centerX = x - shapeBounds.width / 2;
