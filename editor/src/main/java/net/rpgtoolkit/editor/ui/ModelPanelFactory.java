@@ -8,13 +8,11 @@
 package net.rpgtoolkit.editor.ui;
 
 import net.rpgtoolkit.common.assets.Animation;
-import net.rpgtoolkit.editor.editors.board.panels.BoardProgramPanel;
 import net.rpgtoolkit.editor.editors.board.panels.BoardPanel;
 import net.rpgtoolkit.editor.editors.board.panels.BoardVectorPanel;
 import net.rpgtoolkit.editor.editors.board.panels.BoardSpritePanel;
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.assets.BoardLight;
-import net.rpgtoolkit.common.assets.BoardProgram;
 import net.rpgtoolkit.common.assets.BoardSprite;
 import net.rpgtoolkit.common.assets.BoardVector;
 import net.rpgtoolkit.common.assets.Item;
@@ -39,8 +37,6 @@ public final class ModelPanelFactory {
       return new BoardPanel((Board) model);
     } else if (model instanceof BoardVector) {
       return new BoardVectorPanel((BoardVector) model);
-    } else if (model instanceof BoardProgram) {
-      return new BoardProgramPanel((BoardProgram) model);
     } else if (model instanceof BoardSprite) {
       return new BoardSpritePanel((BoardSprite) model);
     } else if (model instanceof BoardLight) {

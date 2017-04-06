@@ -21,7 +21,6 @@ import net.rpgtoolkit.editor.ui.actions.HelpAction;
 import net.rpgtoolkit.editor.ui.actions.LightAction;
 import net.rpgtoolkit.editor.ui.actions.OpenFileAction;
 import net.rpgtoolkit.editor.ui.actions.PencilAction;
-import net.rpgtoolkit.editor.ui.actions.ProgramAction;
 import net.rpgtoolkit.editor.ui.actions.RunAction;
 import net.rpgtoolkit.editor.ui.actions.SaveAction;
 import net.rpgtoolkit.editor.ui.actions.SelectionAction;
@@ -63,7 +62,6 @@ public class MainToolBar extends JToolBar {
   private final JToggleButton eraserButton;
   
   private final JToggleButton vectorButton;
-  private final JToggleButton programButton;
   private final JToggleButton spriteButton;
   private final JToggleButton lightButton;
   private final JToggleButton startPositionButton;
@@ -168,12 +166,6 @@ public class MainToolBar extends JToolBar {
     vectorButton.setIcon(Icons.getSmallIcon("layer-shape-polyline"));
     vectorButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_DRAW_VECTOR));
 
-    programButton = new JToggleButton();
-    programButton.setFocusable(false);
-    programButton.setAction(new ProgramAction());
-    programButton.setIcon(Icons.getSmallIcon("layer-vector"));
-    programButton.setToolTipText(EditorProperties.getProperty(EditorProperty.EDITOR_UI_TOOLTIP_DRAW_PROGRAM));
-
     spriteButton = new JToggleButton();
     spriteButton.setFocusable(false);
     spriteButton.setAction(new SpriteAction());
@@ -230,7 +222,6 @@ public class MainToolBar extends JToolBar {
     toolButtonGroup.add(bucketButton);
     toolButtonGroup.add(eraserButton);
     toolButtonGroup.add(vectorButton);
-    toolButtonGroup.add(programButton);
     toolButtonGroup.add(spriteButton);
     toolButtonGroup.add(lightButton);
     toolButtonGroup.add(startPositionButton);
@@ -253,9 +244,8 @@ public class MainToolBar extends JToolBar {
     add(bucketButton);
     add(eraserButton);
     add(vectorButton);
-    add(programButton);
     add(spriteButton);
-    add(lightButton);
+//    add(lightButton);
     add(startPositionButton);
     addSeparator();
     add(zoomInButton);
@@ -375,7 +365,6 @@ public class MainToolBar extends JToolBar {
     bucketButton.setEnabled(enable);
     eraserButton.setEnabled(enable);
     vectorButton.setEnabled(enable);
-    programButton.setEnabled(enable);
     spriteButton.setEnabled(enable);
     //lightButton.setEnabled(enable);
     startPositionButton.setEnabled(enable);

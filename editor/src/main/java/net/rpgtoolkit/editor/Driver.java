@@ -1,9 +1,9 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.editor;
 
@@ -11,6 +11,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URISyntaxException;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import net.rpgtoolkit.common.assets.AssetManager;
@@ -92,41 +93,44 @@ public class Driver {
 
         System.setProperty("pf4j.pluginsDir", path);
         System.out.println(System.getProperty("pf4j.pluginsDir"));
-        
+
         PluginManager pluginManager = new JarPluginManager();
         pluginManager.loadPlugins();
         pluginManager.startPlugins();
-        
+
         return pluginManager;
     }
 
     public static void main(String[] args) {
-        try {
-            LOGGER.info("Starting the RPGToolkit Editor...");
-            redirectUncaughtExceptions();
+        SwingUtilities.invokeLater(() -> {
+            try {
+                LOGGER.info("Starting the RPGToolkit Editor...");
+                redirectUncaughtExceptions();
+                
+                logSystemInfo();
+                registerResolvers();
+                registerSerializers();
+                PluginManager pluginManager = registerPlugins();
+                
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                
+                MainWindow mainWindow = MainWindow.getInstance();
+                mainWindow.setPluginManager(pluginManager);
+                mainWindow.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                mainWindow.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(WindowEvent windowEvent) {
+                        mainWindow.closeEditors();
+                        mainWindow.dispose();
+                    }
+                });
+                
+                mainWindow.setVisible(true);
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException | URISyntaxException ex) {
+                LOGGER.error("Failed to start the editor!", ex);
+            }
+        });
 
-            logSystemInfo();
-            registerResolvers();
-            registerSerializers();
-            PluginManager pluginManager = registerPlugins();
-
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
-            MainWindow mainWindow = MainWindow.getInstance();
-            mainWindow.setPluginManager(pluginManager);
-            mainWindow.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-            mainWindow.addWindowListener(new java.awt.event.WindowAdapter() {
-                @Override
-                public void windowClosing(WindowEvent windowEvent) {
-                    mainWindow.closeEditors();
-                    mainWindow.dispose();
-                }
-            });
-
-            mainWindow.setVisible(true);
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException | URISyntaxException ex) {
-            LOGGER.error("Failed to start the editor!", ex);
-        }
     }
 
 }

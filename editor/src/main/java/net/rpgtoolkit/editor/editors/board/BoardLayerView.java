@@ -18,7 +18,6 @@ import java.util.List;
 
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.assets.BoardLayer;
-import net.rpgtoolkit.common.assets.BoardProgram;
 import net.rpgtoolkit.common.assets.BoardSprite;
 import net.rpgtoolkit.common.assets.BoardVector;
 import net.rpgtoolkit.common.assets.Tile;
@@ -364,35 +363,6 @@ public class BoardLayerView {
           break;
         default:
       }
-
-      drawVectorLines(g, vector);
-
-      if (vector.isSelected()) {
-        g.setStroke(new BasicStroke(1.0f)); // Return to normal stroke.
-      }
-    }
-  }
-
-  /**
-   * Draws the programs for this layer.
-   *
-   * @param g The graphics context to draw to.
-   */
-  public void drawPrograms(Graphics2D g) {
-    g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP,
-            opacity));
-
-    // Draw Vectors
-    ArrayList<BoardProgram> programs = layer.getPrograms();
-
-    for (BoardProgram program : programs) {
-      BoardVector vector = program.getVector();
-
-      if (vector.isSelected()) {
-        g.setStroke(new BasicStroke(3.0f)); // Draw it thicker.
-      }
-
-      g.setColor(Color.YELLOW);
 
       drawVectorLines(g, vector);
 

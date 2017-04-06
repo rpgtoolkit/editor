@@ -50,7 +50,6 @@ import net.rpgtoolkit.editor.editors.ProjectEditor;
 import net.rpgtoolkit.editor.ui.listeners.TileSelectionListener;
 import net.rpgtoolkit.editor.editors.board.NewBoardDialog;
 import net.rpgtoolkit.editor.ui.resources.Icons;
-import net.rpgtoolkit.editor.editors.board.ProgramBrush;
 import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.common.utilities.TileSetCache;
 import net.rpgtoolkit.editor.editors.CharacterEditor;
@@ -112,7 +111,6 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     // Board Related.
     private boolean showGrid;
     private boolean showVectors;
-    private boolean showPrograms;
     private boolean showCoordinates;
     private boolean snapToGrid;
     private AbstractBrush currentBrush;
@@ -199,14 +197,6 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
     public void setShowVectors(boolean showVectors) {
         this.showVectors = showVectors;
-    }
-
-    public boolean isShowPrograms() {
-        return showPrograms;
-    }
-
-    public void setShowPrograms(boolean showPrograms) {
-        this.showPrograms = showPrograms;
     }
 
     public boolean isShowCoordinates() {
@@ -433,10 +423,9 @@ public class MainWindow extends JFrame implements InternalFrameListener {
                 propertiesPanel.setModel(null);
             }
 
-            // So we do not end up drawing the vector or program on the other 
+            // So we do not end up drawing the vector on the other 
             // board after it has been deactivated.
-            if (currentBrush instanceof VectorBrush
-                    || currentBrush instanceof ProgramBrush) {
+            if (currentBrush instanceof VectorBrush) {
                 VectorBrush brush = (VectorBrush) currentBrush;
 
                 if (brush.isDrawing() && brush.getBoardVector() != null) {
@@ -536,10 +525,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
                         + CoreProperties.getDefaultExtension(Project.class);
                 File file = new File(fileName);
 
-                Project project = new Project(
-                        new AssetDescriptor(file.toURI()),
-                        CoreProperties.getProjectsDirectory()
-                        + File.separator);
+                Project project = new Project(new AssetDescriptor(file.toURI()), projectName);
                 try {
                     // Write out new project file.
                     AssetManager.getInstance().serialize(AssetManager.getInstance().getHandle(project));

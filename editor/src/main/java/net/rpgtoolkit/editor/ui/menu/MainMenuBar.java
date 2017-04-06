@@ -31,6 +31,8 @@ public class MainMenuBar extends JMenuBar {
     parent = menuBarParent;
 
     fileMenu = new FileMenu();
+    fileMenu.setName("fileMenu");
+    
     editMenu = new EditMenu();
     viewMenu = new ViewMenu();
     runMenu = new RunMenu();

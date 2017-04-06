@@ -92,7 +92,7 @@ public class BoardSpritePanel extends BoardModelPanel {
             + File.separator);
     exts = new String[]{"prg"};
     eventProgramComboBox = GuiHelper.getFileListJComboBox(directory, exts, true);
-    eventProgramComboBox.setSelectedItem(boardSprite.getFileName());
+    eventProgramComboBox.setSelectedItem(boardSprite.getEventProgram());
     eventProgramComboBox.addActionListener((ActionEvent e) -> {
         if (eventProgramComboBox.getSelectedItem() != null) {
             boardSprite.setEventProgram((String) eventProgramComboBox.getSelectedItem());
@@ -102,7 +102,7 @@ public class BoardSpritePanel extends BoardModelPanel {
     /// multiTaskingTextField
     ///
     threadComboBox = GuiHelper.getFileListJComboBox(directory, exts, true);
-    threadComboBox.setSelectedItem(boardSprite.getFileName());
+    threadComboBox.setSelectedItem(boardSprite.getThread());
     threadComboBox.addActionListener((ActionEvent e) -> {
         if (threadComboBox.getSelectedItem() != null) {
             boardSprite.setThread((String) threadComboBox.getSelectedItem());

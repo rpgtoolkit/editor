@@ -9,7 +9,6 @@ package net.rpgtoolkit.editor.ui.menu;
 
 import net.rpgtoolkit.editor.ui.listeners.SnapToGridItemListener;
 import net.rpgtoolkit.editor.ui.listeners.ShowVectorsItemListener;
-import net.rpgtoolkit.editor.ui.listeners.ShowProgramsItemListener;
 import net.rpgtoolkit.editor.ui.listeners.ShowGridItemListener;
 import net.rpgtoolkit.editor.ui.listeners.ShowCoordinatesItemListener;
 import java.awt.event.ActionEvent;
@@ -34,7 +33,6 @@ public final class ViewMenu extends JMenu {
   private JCheckBoxMenuItem showGridMenuItem;
   private JCheckBoxMenuItem showCoordinatesMenuItem;
   private JCheckBoxMenuItem showVectorsMenuItem;
-  private JCheckBoxMenuItem showProgramsMenuItem;
   private JCheckBoxMenuItem snapToGridMenuItem;
 
   /**
@@ -50,7 +48,6 @@ public final class ViewMenu extends JMenu {
     configureShowGridMenuItem();
     configureShowCoordinatesMenuItem();
     configureShowVectorsMenuItem();
-    configureShowProgramsMenuItem();
     configureSnapToGridMenuItem();
 
     add(zoomInMenuItem);
@@ -59,7 +56,6 @@ public final class ViewMenu extends JMenu {
     add(showGridMenuItem);
     add(showCoordinatesMenuItem);
     add(showVectorsMenuItem);
-    add(showProgramsMenuItem);
     add(new JSeparator());
     add(snapToGridMenuItem);
   }
@@ -82,10 +78,6 @@ public final class ViewMenu extends JMenu {
 
   public JCheckBoxMenuItem getShowVectorsMenuItem() {
     return showVectorsMenuItem;
-  }
-
-  public JCheckBoxMenuItem getShowProgramsMenuItem() {
-    return showProgramsMenuItem;
   }
 
   /**
@@ -144,19 +136,6 @@ public final class ViewMenu extends JMenu {
     //        KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
     //showGridMenuItem.setMnemonic(KeyEvent.VK_G);
     showVectorsMenuItem.addItemListener(new ShowVectorsItemListener());
-  }
-
-  /**
-   *
-   */
-  public void configureShowProgramsMenuItem() {
-    showProgramsMenuItem = new JCheckBoxMenuItem("Show Programs");
-        //showGridMenuItem.setIcon(new ImageIcon(getClass()
-    //        .getResource("/editor/grid.png")));
-    //showGridMenuItem.setAccelerator(
-    //        KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
-    //showGridMenuItem.setMnemonic(KeyEvent.VK_G);
-    showProgramsMenuItem.addItemListener(new ShowProgramsItemListener());
   }
 
   /**

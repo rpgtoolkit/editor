@@ -13,15 +13,12 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import net.rpgtoolkit.common.assets.Board;
-import net.rpgtoolkit.editor.editors.board.BoardNeighboursDialog;
-import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.utilities.GuiHelper;
 
@@ -93,7 +90,7 @@ public class BoardPanel extends AbstractModelPanel {
       
     });
     ///
-    /// entryProgramTextField
+    /// entryProgramComboBox
     ///
     directory = new File(
             System.getProperty("project.path") 

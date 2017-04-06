@@ -11,7 +11,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import net.rpgtoolkit.common.assets.BoardProgram;
 
 import net.rpgtoolkit.common.assets.BoardSprite;
 import net.rpgtoolkit.common.assets.BoardVector;
@@ -164,15 +163,7 @@ public class BoardMouseAdapter extends MouseAdapter {
     private void doMouseButton2Pressed(AbstractBrush brush, int x, int y) {
         Object result = null;
 
-        if (brush instanceof ProgramBrush) {
-            ProgramBrush programBrush = (ProgramBrush) brush;
-
-            if (programBrush.isDrawing()) {
-                programBrush.finish();
-            }
-
-            result = editor.getBoardView().getCurrentSelectedLayer().getLayer().removeProgramAt(x, y);
-        } else if (brush instanceof VectorBrush) {
+        if (brush instanceof VectorBrush) {
             VectorBrush vectorBrush = (VectorBrush) brush;
 
             if (vectorBrush.isDrawing()) {
@@ -203,16 +194,7 @@ public class BoardMouseAdapter extends MouseAdapter {
      */
     private void doMouseButton3Pressed(AbstractBrush brush, int x, int y) {
 
-        if (brush instanceof ProgramBrush) {
-            // We are drawing a vector, so lets finish it.
-            if (((ProgramBrush) brush).isDrawing()) {
-                ((ProgramBrush) brush).finish();
-            } else // We want to select a program.
-            {
-                selectProgram(editor.getBoardView().getCurrentSelectedLayer()
-                        .getLayer().findProgramAt(x, y));
-            }
-        } else if (brush instanceof VectorBrush) {
+        if (brush instanceof VectorBrush) {
             // We are drawing a vector, so lets finish it.
             if (((VectorBrush) brush).isDrawing()) {
                 ((VectorBrush) brush).finish();
@@ -280,26 +262,6 @@ public class BoardMouseAdapter extends MouseAdapter {
             }
 
             editor.setSelectedObject(vector);
-        } else if (editor.getSelectedObject() != null) {
-            editor.getSelectedObject().setSelectedState(false);
-            editor.setSelectedObject(null);
-        }
-    }
-
-    /**
-     *
-     *
-     * @param program
-     */
-    private void selectProgram(BoardProgram program) {
-        if (program != null) {
-            program.getVector().setSelectedState(true);
-
-            if (editor.getSelectedObject() != null) {
-                editor.getSelectedObject().setSelectedState(false);
-            }
-
-            editor.setSelectedObject(program);
         } else if (editor.getSelectedObject() != null) {
             editor.getSelectedObject().setSelectedState(false);
             editor.setSelectedObject(null);

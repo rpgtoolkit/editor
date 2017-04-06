@@ -136,10 +136,6 @@ public final class BoardView2D extends AbstractBoardView {
       paintVectors(g);
     }
 
-    if (MainWindow.getInstance().isShowPrograms()) {
-      paintPrograms(g);
-    }
-
     paintBrushPreview(g);
   }
 
@@ -216,23 +212,6 @@ public final class BoardView2D extends AbstractBoardView {
     for (BoardLayerView layer : layers) {
       if (layer.isVisible()) {
         layer.drawVectors(g);
-      }
-    }
-  }
-
-  /**
-   * Handles the drawing of each layers set of programs and draws them to the graphics context. It
-   * cycles through each layer and calls that layers drawPrograms(g) method.
-   *
-   * @param g The graphics context to draw on.
-   */
-  @Override
-  protected void paintPrograms(Graphics2D g) {
-    ArrayList<BoardLayerView> layers = getLayerArrayList();
-
-    for (BoardLayerView layer : layers) {
-      if (layer.isVisible()) {
-        layer.drawPrograms(g);
       }
     }
   }

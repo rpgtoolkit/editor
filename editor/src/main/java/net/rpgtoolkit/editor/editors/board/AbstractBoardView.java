@@ -420,13 +420,6 @@ public abstract class AbstractBoardView extends JPanel implements
   protected abstract void paintVectors(Graphics2D g);
 
   /**
-   * A concrete BoardView will implement its own program drawing code here.
-   *
-   * @param g The graphics context to draw on.
-   */
-  protected abstract void paintPrograms(Graphics2D g);
-
-  /**
    * A concrete BoardView will implement its own sprite drawing code here.
    *
    * @param g The graphics context to draw on.
