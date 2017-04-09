@@ -1,9 +1,9 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public License,
- * v. 2.0. If a copy of the MPL was not distributed with this file, You can
- * obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.editor.editors.board.panels;
 
@@ -177,7 +177,7 @@ public class BoardVectorPanel extends BoardModelPanel {
                 + File.separator
                 + CoreProperties.getProperty("toolkit.directory.program")
                 + File.separator);
-        String[] exts = new String[]{"prg"};
+        String[] exts = new String[]{"program", "js"};
         eventProgramComboBox = GuiHelper.getFileListJComboBox(directory, exts, true);
         eventProgramComboBox.setSelectedItem(((BoardVector) model).getEvents().get(0).getProgram());
         eventProgramComboBox.addActionListener(new ActionListener() {

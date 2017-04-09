@@ -10,7 +10,7 @@ package net.rpgtoolkit.editor.ui.actions;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import net.rpgtoolkit.editor.editors.BoardEditor;
-import net.rpgtoolkit.editor.editors.board.SpriteBrush;
+import net.rpgtoolkit.editor.editors.board.BoardSpriteBrush;
 import net.rpgtoolkit.editor.MainWindow;
 
 /**
@@ -23,7 +23,7 @@ public class SpriteAction extends AbstractAction {
   public void actionPerformed(ActionEvent e) {
     BoardEditor.toggleSelectedOnBoardEditor();
 
-    SpriteBrush brush = new SpriteBrush();
+    BoardSpriteBrush brush = new BoardSpriteBrush();
     MainWindow.getInstance().setCurrentBrush(brush);
   }
 

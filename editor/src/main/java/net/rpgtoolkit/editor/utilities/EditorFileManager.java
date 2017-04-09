@@ -53,7 +53,7 @@ public class EditorFileManager {
   public static File getFullPath(Class<? extends AbstractAsset> type) {
     return getPath(getTypeSubdirectory(type) + File.separator);
   }
-
+  
   public static String getRelativePath(File fullPath) {
     return getRelativePath(fullPath,
             new File(
@@ -90,7 +90,7 @@ public class EditorFileManager {
     }
   }
 
-  public static String getImageSubdirectory() {
+  public static String getGraphicsSubdirectory() {
     return CoreProperties.getProperty("toolkit.directory.bitmap");
   }
 
@@ -167,6 +167,13 @@ public class EditorFileManager {
       MainWindow.getInstance().openAssetEditor(FILE_CHOOSER.getSelectedFile());
     }
   }
+  
+    public static void openFile(String path, String description, String[] extensions) {
+    setFileChooserSubdirAndFilters(path, description, extensions);
+    if (FILE_CHOOSER.showOpenDialog(MainWindow.getInstance()) == JFileChooser.APPROVE_OPTION) {
+      MainWindow.getInstance().openAssetEditor(FILE_CHOOSER.getSelectedFile());
+    }
+  } 
   
   public static File backupFile(File original) throws IOException {
       File backup = new File(original.getAbsoluteFile() + ".tmp");

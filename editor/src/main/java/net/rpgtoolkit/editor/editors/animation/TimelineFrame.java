@@ -86,7 +86,7 @@ public class TimelineFrame extends JPanel implements MouseListener {
     if (e.getButton() == MouseEvent.BUTTON1) {
       MainWindow mainWindow = MainWindow.getInstance();
       File imageFile = EditorFileManager.browseLocationBySubdir(
-              EditorFileManager.getImageSubdirectory(),
+              EditorFileManager.getGraphicsSubdirectory(),
               EditorFileManager.getImageFilterDescription(),
               EditorFileManager.getImageExtensions()
       );

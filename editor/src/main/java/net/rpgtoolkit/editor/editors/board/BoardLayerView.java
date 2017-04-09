@@ -383,8 +383,8 @@ public class BoardLayerView {
     List<BoardSprite> sprites = layer.getSprites();
     sprites.sort((BoardSprite a, BoardSprite b) -> a.getY() - b.getY());
     sprites.stream().forEach((sprite) -> {
-      int x = (int) sprite.getX() * MainWindow.TILE_SIZE + 1;
-      int y = (int) sprite.getY() * MainWindow.TILE_SIZE + 1;
+      int x = (int) sprite.getX();
+      int y = (int) sprite.getY();
       
       int tileSize = MainWindow.TILE_SIZE;
       try {

@@ -117,10 +117,12 @@ public class BoardMouseAdapter extends MouseAdapter {
         Rectangle bucketSelection = null;
 
         Point point;
-        if (!(brush instanceof StartPositionBrush)) {
-            point = editor.getBoardView().getTileCoordinates(x, y);
+        if (brush instanceof StartPositionBrush) {
+             point = new Point(x, y);
+        } else if (brush instanceof BoardSpriteBrush) {
+            point = new Point(x - 16, y - 16);
         } else {
-            point = new Point(x, y);
+            point = editor.getBoardView().getTileCoordinates(x, y);
         }
 
         if (brush instanceof SelectionBrush) {
@@ -172,10 +174,9 @@ public class BoardMouseAdapter extends MouseAdapter {
 
             result = editor.getBoardView().getCurrentSelectedLayer().getLayer().removeVectorAt(x, y);
 
-        } else if (brush instanceof SpriteBrush) {
-            result = editor.getBoardView().getCurrentSelectedLayer().getLayer().removeSpriteAt(
-                    x / MainWindow.TILE_SIZE,
-                    y / MainWindow.TILE_SIZE);
+        } else if (brush instanceof BoardSpriteBrush) {
+            BoardSpriteBrush spriteBrush = (BoardSpriteBrush) brush;
+            editor.getBoard().removeSprite(spriteBrush.getBoardSprite());
         }
 
         if (result != null) {
@@ -203,11 +204,12 @@ public class BoardMouseAdapter extends MouseAdapter {
                 selectVector(editor.getBoardView().getCurrentSelectedLayer()
                         .getLayer().findVectorAt(x, y));
             }
-        } else if (brush instanceof SpriteBrush) {
-            selectSprite(editor.getBoardView().getCurrentSelectedLayer().getLayer()
-                    .findSpriteAt(
-                            x / MainWindow.TILE_SIZE,
-                            y / MainWindow.TILE_SIZE));
+        } else if (brush instanceof BoardSpriteBrush) {
+            BoardSprite sprite = editor.getBoardView()
+                    .getCurrentSelectedLayer().getLayer()
+                    .findSpriteAt(x, y);
+            ((BoardSpriteBrush) brush).setBoardSprite(sprite);
+            selectSprite(sprite);
         }
     }
 

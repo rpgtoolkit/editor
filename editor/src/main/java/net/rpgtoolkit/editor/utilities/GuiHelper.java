@@ -141,7 +141,7 @@ public abstract class GuiHelper {
   public static BufferedImage loadImage(String fileName) {
     try {
       if (!fileName.equals("")) {
-        String subdir = EditorFileManager.getImageSubdirectory();
+        String subdir = EditorFileManager.getGraphicsSubdirectory();
         FileInputStream fis = new FileInputStream(
                 EditorFileManager.getPath(subdir + "/" + fileName));
         return ImageIO.read(fis);

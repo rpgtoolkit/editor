@@ -97,7 +97,7 @@ public class BoardPanel extends AbstractModelPanel {
             + File.separator
             + CoreProperties.getProperty("toolkit.directory.program") 
             + File.separator);
-    exts = new String[] {"prg"};
+    exts = new String[] {"program", "js"};
     entryProgramComboBox = GuiHelper.getFileListJComboBox(directory, exts, true);
     entryProgramComboBox.setSelectedItem(board.getFirstRunProgram());
     entryProgramComboBox.addActionListener(new ActionListener() {

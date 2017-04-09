@@ -46,7 +46,7 @@ public class AddTimelineFrame extends TimelineFrame {
   public void mouseClicked(MouseEvent e) {
     MainWindow mainWindow = MainWindow.getInstance();
     File imageFile = EditorFileManager.browseLocationBySubdir(
-            EditorFileManager.getImageSubdirectory(),
+            EditorFileManager.getGraphicsSubdirectory(),
             EditorFileManager.getImageFilterDescription(),
             EditorFileManager.getImageExtensions()
     );

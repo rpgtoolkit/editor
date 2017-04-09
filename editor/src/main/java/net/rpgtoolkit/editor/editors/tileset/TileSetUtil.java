@@ -1,9 +1,9 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public License,
- * v. 2.0. If a copy of the MPL was not distributed with this file, You can
- * obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.editor.editors.tileset;
 
@@ -29,13 +29,8 @@ public class TileSetUtil {
         int tileHeight = tileSet.getTileHeight();
         List<String> images = tileSet.getImages();
         for (String image : images) {
-            String path = System.getProperty("project.path")
-                    + File.separator
-                    + EditorFileManager.getTypeSubdirectory(TileSet.class)
-                    + File.separator
-                    + image;
-
-            File file = new File(path);
+            String subdir = EditorFileManager.getGraphicsSubdirectory();
+            File file = EditorFileManager.getPath(subdir + File.separator + image);
 
             try (FileInputStream fis = new FileInputStream(file)) {
                 BufferedImage source = ImageIO.read(fis);

@@ -81,7 +81,7 @@ public class ProfilePanel extends AbstractImagePanel {
     if (e.getClickCount() == 2) {
       MainWindow mainWindow = MainWindow.getInstance();
       File imageFile = EditorFileManager.browseLocationBySubdir(
-              EditorFileManager.getImageSubdirectory(),
+              EditorFileManager.getGraphicsSubdirectory(),
               EditorFileManager.getImageFilterDescription(),
               EditorFileManager.getImageExtensions()
       );

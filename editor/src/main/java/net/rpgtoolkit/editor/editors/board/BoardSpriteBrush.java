@@ -17,14 +17,14 @@ import net.rpgtoolkit.common.assets.BoardSprite;
  *
  * @author Joshua Michael Daly
  */
-public class SpriteBrush extends AbstractBrush {
+public class BoardSpriteBrush extends AbstractBrush {
 
   private BoardSprite boardSprite;
 
   /**
    *
    */
-  public SpriteBrush() {
+  public BoardSpriteBrush() {
     boardSprite = new BoardSprite();
   }
 
@@ -101,9 +101,6 @@ public class SpriteBrush extends AbstractBrush {
 
       Board board = boardLayerView.getLayer().getBoard();
       board.addSprite(boardSprite);
-      
-      affectedContainer.getLayer(initialLayer).
-              getLayer().getSprites().add(boardSprite);
 
       Rectangle shapeBounds = getBounds();
       int centerX = x - shapeBounds.width / 2;
@@ -124,8 +121,8 @@ public class SpriteBrush extends AbstractBrush {
    */
   @Override
   public boolean equals(Brush brush) {
-    return brush instanceof SpriteBrush
-            && ((SpriteBrush) brush).boardSprite.equals(boardSprite);
+    return brush instanceof BoardSpriteBrush
+            && ((BoardSpriteBrush) brush).boardSprite.equals(boardSprite);
   }
   
 }

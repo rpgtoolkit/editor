@@ -1,9 +1,9 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public License,
- * v. 2.0. If a copy of the MPL was not distributed with this file, You can
- * obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.editor;
 
@@ -27,7 +27,6 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.AssetDescriptor;
 import net.rpgtoolkit.common.assets.AssetException;
@@ -581,7 +580,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         dialog.setVisible(true);
 
         if (dialog.getValue() != null) {
-            Board board = new Board(null, dialog.getValue()[0], dialog.getValue()[1]);
+            Board board = new Board(null, dialog.getValue()[0], dialog.getValue()[1], TILE_SIZE, TILE_SIZE);
             BoardEditor boardEditor = new BoardEditor(board);
             boardEditor.addInternalFrameListener(this);
             boardEditor.setVisible(true);
@@ -745,11 +744,11 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         if (dialog.getValue() != null) {
             int tileWidth = dialog.getValue()[0];
             int tileHeight = dialog.getValue()[1];
-
-            EditorFileManager.getFileChooser().resetChoosableFileFilters();
-            FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                    "Image Files", EditorFileManager.getImageExtensions());
-            EditorFileManager.getFileChooser().setFileFilter(filter);
+            
+            String path = CoreProperties.getProperty("toolkit.directory.bitmap");
+            String description = "Image Files";
+            String[] extensions = EditorFileManager.getImageExtensions();
+            EditorFileManager.setFileChooserSubdirAndFilters(path, description, extensions);
 
             if (EditorFileManager.getFileChooser().showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 File file = EditorFileManager.getFileChooser().getSelectedFile();
