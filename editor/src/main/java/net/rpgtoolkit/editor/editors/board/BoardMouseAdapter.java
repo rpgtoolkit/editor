@@ -120,7 +120,7 @@ public class BoardMouseAdapter extends MouseAdapter {
         if (brush instanceof StartPositionBrush) {
              point = new Point(x, y);
         } else if (brush instanceof BoardSpriteBrush) {
-            point = new Point(x - 16, y - 16);
+            point = new Point(x, y);
         } else {
             point = editor.getBoardView().getTileCoordinates(x, y);
         }

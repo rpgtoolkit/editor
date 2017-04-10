@@ -177,7 +177,7 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
 
             // Define them for drawing the vectors at the animations base.
             x = getWidth() / 2;
-            y = (getHeight() + (int) animation.getAnimationHeight()) / 2;
+            y = getHeight() / 2;
             if (baseVector != null) {
                 g.setColor(Color.WHITE);
                 drawVector(baseVector, g, x, y,
