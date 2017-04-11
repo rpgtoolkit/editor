@@ -9,8 +9,10 @@ package net.rpgtoolkit.editor.editors.board;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import net.rpgtoolkit.editor.ui.AssetEditorWindow;
 
 /**
  *
@@ -108,5 +110,15 @@ public abstract class AbstractBrush implements Brush {
           AbstractBoardView view) {
     // TODO: draw an off-board preview here.
   }
+  
+  public abstract void doMouseButton1Pressed(Point point, AssetEditorWindow editor);
+  
+  public abstract void doMouseButton2Pressed(Point point, AssetEditorWindow editor);
+  
+  public abstract void doMouseButton3Pressed(Point point, AssetEditorWindow editor);
+  
+  public abstract void doMouseButton1Dragged(Point point, Point origin, AssetEditorWindow editor);
+  
+  public abstract boolean isPixelBased();
 
 }

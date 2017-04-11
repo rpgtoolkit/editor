@@ -1,17 +1,21 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.editor.editors.board;
 
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.assets.BoardSprite;
+import net.rpgtoolkit.editor.MainWindow;
+import net.rpgtoolkit.editor.editors.BoardEditor;
+import net.rpgtoolkit.editor.ui.AssetEditorWindow;
 
 /**
  *
@@ -19,110 +23,187 @@ import net.rpgtoolkit.common.assets.BoardSprite;
  */
 public class BoardSpriteBrush extends AbstractBrush {
 
-  private BoardSprite boardSprite;
+    private BoardSprite boardSprite;
 
-  /**
-   *
-   */
-  public BoardSpriteBrush() {
-    boardSprite = new BoardSprite();
-  }
-
-  /**
-   *
-   *
-   * @return
-   */
-  @Override
-  public Shape getShape() {
-    return getBounds();
-  }
-
-  /**
-   *
-   *
-   * @return
-   */
-  @Override
-  public Rectangle getBounds() {
-      return new Rectangle(0, 0, 1, 1);
-  }
-
-  /**
-   *
-   *
-   * @return
-   */
-  public BoardSprite getBoardSprite() {
-    return boardSprite;
-  }
-
-  /**
-   *
-   *
-   * @param boardSprite
-   */
-  public void setBoardSprite(BoardSprite boardSprite) {
-    this.boardSprite = boardSprite;
-  }
-
-  /**
-   *
-   *
-   * @param g2d
-   * @param view
-   */
-  @Override
-  public void drawPreview(Graphics2D g2d, AbstractBoardView view) {
-
-  }
-
-  /**
-   *
-   *
-   * @param x
-   * @param y
-   * @param selection
-   * @return
-   * @throws Exception
-   */
-  @Override
-  public Rectangle doPaint(int x, int y, Rectangle selection) throws Exception {
-    super.doPaint(x, y, selection);
-
-    BoardLayerView boardLayerView = affectedContainer.getLayer(
-            initialLayer);
-
-    if (boardLayerView != null) {
-      boardSprite = new BoardSprite();
-      boardSprite.setX(x);
-      boardSprite.setY(y);
-      boardSprite.setLayer(initialLayer);
-
-      Board board = boardLayerView.getLayer().getBoard();
-      board.addSprite(boardSprite);
-
-      Rectangle shapeBounds = getBounds();
-      int centerX = x - shapeBounds.width / 2;
-      int centerY = y - shapeBounds.height / 2;
-
-      return new Rectangle(
-              centerX, centerY, shapeBounds.width, shapeBounds.height);
-    } else {
-      return null;
+    /**
+     *
+     */
+    public BoardSpriteBrush() {
+        boardSprite = new BoardSprite();
     }
-  }
 
-  /**
-   *
-   *
-   * @param brush
-   * @return
-   */
-  @Override
-  public boolean equals(Brush brush) {
-    return brush instanceof BoardSpriteBrush
-            && ((BoardSpriteBrush) brush).boardSprite.equals(boardSprite);
-  }
-  
+    /**
+     *
+     *
+     * @return
+     */
+    @Override
+    public Shape getShape() {
+        return getBounds();
+    }
+
+    /**
+     *
+     *
+     * @return
+     */
+    @Override
+    public Rectangle getBounds() {
+        return new Rectangle(0, 0, 1, 1);
+    }
+
+    /**
+     *
+     *
+     * @return
+     */
+    public BoardSprite getBoardSprite() {
+        return boardSprite;
+    }
+
+    /**
+     *
+     *
+     * @param boardSprite
+     */
+    public void setBoardSprite(BoardSprite boardSprite) {
+        this.boardSprite = boardSprite;
+    }
+
+    /**
+     *
+     *
+     * @param g2d
+     * @param view
+     */
+    @Override
+    public void drawPreview(Graphics2D g2d, AbstractBoardView view) {
+
+    }
+
+    /**
+     *
+     *
+     * @param x
+     * @param y
+     * @param selection
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Rectangle doPaint(int x, int y, Rectangle selection) throws Exception {
+        super.doPaint(x, y, selection);
+
+        BoardLayerView boardLayerView = affectedContainer.getLayer(
+                initialLayer);
+
+        if (boardLayerView != null) {
+            boolean snap = MainWindow.getInstance().isSnapToGrid();
+            Board board = boardLayerView.getLayer().getBoard();
+            Rectangle shapeBounds = getBounds();
+
+            if (snap) {
+                x = Math.max(0, Math.min(x
+                        / board.getTileWidth(), 
+                        board.getWidth() - 1)) * board.getTileWidth() + 16;
+                y = Math.max(0, Math.min(y
+                        / board.getTileHeight(), 
+                        board.getHeight() - 1)) * board.getTileHeight() + 16;
+            }
+
+            boardSprite = new BoardSprite();
+            boardSprite.setX(x);
+            boardSprite.setY(y);
+            boardSprite.setLayer(initialLayer);
+
+            board.addSprite(boardSprite);
+
+            int centerX = x - shapeBounds.width / 2;
+            int centerY = y - shapeBounds.height / 2;
+
+            return new Rectangle(
+                    centerX, centerY, shapeBounds.width, shapeBounds.height);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     *
+     *
+     * @param brush
+     * @return
+     */
+    @Override
+    public boolean equals(Brush brush) {
+        return brush instanceof BoardSpriteBrush
+                && ((BoardSpriteBrush) brush).boardSprite.equals(boardSprite);
+    }
+
+    @Override
+    public void doMouseButton1Pressed(Point point, AssetEditorWindow editor) {
+
+    }
+
+    @Override
+    public void doMouseButton2Pressed(Point point, AssetEditorWindow editor) {
+        if (editor instanceof BoardEditor) {
+            BoardEditor boardEditor = (BoardEditor) editor;
+            boardEditor.getBoard().removeSprite(boardSprite);
+
+            if (boardSprite == boardEditor.getSelectedObject()) {
+                boardEditor.getSelectedObject().setSelectedState(false);
+                boardEditor.setSelectedObject(null);
+            }
+        }
+    }
+
+    @Override
+    public void doMouseButton3Pressed(Point point, AssetEditorWindow editor) {
+        if (editor instanceof BoardEditor) {
+            BoardEditor boardEditor = (BoardEditor) editor;
+
+            BoardSprite sprite = boardEditor.getBoardView()
+                    .getCurrentSelectedLayer().getLayer()
+                    .findSpriteAt(point.x, point.y);
+            boardSprite = sprite;
+            selectSprite(sprite, boardEditor);
+        }
+    }
+
+    @Override
+    public void doMouseButton1Dragged(Point point, Point origin, AssetEditorWindow editor) {
+
+    }
+
+    @Override
+    public boolean isPixelBased() {
+        return true;
+    }
+
+    /**
+     *
+     *
+     * @param sprite
+     */
+    private void selectSprite(BoardSprite sprite, BoardEditor editor) {
+        if (sprite != null) {
+
+            if (editor.getSelectedObject() == sprite) {
+                return;
+            }
+
+            sprite.setSelectedState(true);
+
+            if (editor.getSelectedObject() != null) {
+                editor.getSelectedObject().setSelectedState(false);
+            }
+
+            editor.setSelectedObject(sprite);
+        } else if (editor.getSelectedObject() != null) {
+            editor.getSelectedObject().setSelectedState(false);
+            editor.setSelectedObject(null);
+        }
+    }
+
 }

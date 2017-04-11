@@ -1,9 +1,9 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.editor.editors.board;
 
@@ -13,6 +13,8 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.Stack;
 import net.rpgtoolkit.common.assets.Tile;
+import net.rpgtoolkit.editor.editors.BoardEditor;
+import net.rpgtoolkit.editor.ui.AssetEditorWindow;
 
 /**
  *
@@ -21,160 +23,221 @@ import net.rpgtoolkit.common.assets.Tile;
  */
 public class BucketBrush extends AbstractBrush {
 
-  /**
-   *
-   */
-  protected Tile pourTile;
+    /**
+     *
+     */
+    protected Tile pourTile;
 
-  /**
-   *
-   */
-  protected Tile oldTile;
+    /**
+     *
+     */
+    protected Tile oldTile;
 
-  /**
-   *
-   */
-  public BucketBrush() {
+    /**
+     *
+     */
+    protected Rectangle bucketSelection;
 
-  }
+    /**
+     *
+     */
+    public BucketBrush() {
 
-  /**
-   *
-   *
-   * @return
-   */
-  @Override
-  public Shape getShape() {
-    return getBounds();
-  }
-
-  /**
-   *
-   *
-   * @return
-   */
-  @Override
-  public Rectangle getBounds() {
-    return new Rectangle(0, 0, 1, 1);
-  }
-
-  /**
-   *
-   *
-   * @return
-   */
-  public Tile getPourTile() {
-    return pourTile;
-  }
-
-  /**
-   *
-   *
-   * @param tile
-   */
-  public void setPourTile(Tile tile) {
-    pourTile = tile;
-  }
-
-  /**
-   *
-   *
-   * @return
-   */
-  public Tile getOldTile() {
-    return oldTile;
-  }
-
-  /**
-   *
-   *
-   * @param tile
-   */
-  public void setOldTile(Tile tile) {
-    oldTile = tile;
-  }
-
-  /**
-   *
-   *
-   * @param g2d
-   * @param view
-   */
-  @Override
-  public void drawPreview(Graphics2D g2d, AbstractBoardView view) {
-
-  }
-
-  /**
-   *
-   *
-   * @param brush
-   * @return
-   */
-  @Override
-  public boolean equals(Brush brush) {
-    return brush instanceof BucketBrush;
-  }
-
-  /**
-   *
-   *
-   * @param x
-   * @param y
-   * @param selection
-   * @return
-   */
-  @Override
-  public Rectangle doPaint(int x, int y, Rectangle selection) {
-    BoardLayerView layer = affectedContainer.getLayer(initialLayer);
-
-    if (layer == null) {
-      return null;
-    }
-    if (pourTile.getTileSet() == null) {
-        return null;
     }
 
-    oldTile = layer.getLayer().getTileAt(x, y);
-
-    if (oldTile == pourTile) {
-      return null;
+    /**
+     *
+     *
+     * @return
+     */
+    @Override
+    public Shape getShape() {
+        return getBounds();
     }
 
-    if (selection == null) {
-      Rectangle area = new Rectangle(new Point(x, y));
-      Stack<Point> stack = new Stack<>();
+    /**
+     *
+     *
+     * @return
+     */
+    @Override
+    public Rectangle getBounds() {
+        return new Rectangle(0, 0, 1, 1);
+    }
 
-      stack.push(new Point(x, y));
+    /**
+     *
+     *
+     * @return
+     */
+    public Tile getPourTile() {
+        return pourTile;
+    }
 
-      while (!stack.empty()) {
-        // Remove the next tile from the stack.
-        Point point = stack.pop();
+    /**
+     *
+     *
+     * @param tile
+     */
+    public void setPourTile(Tile tile) {
+        pourTile = tile;
+    }
 
-        if (layer.getLayer().contains(point.x, point.y)
-                && layer.getLayer().getTileAt(point.x, point.y).equals(oldTile)) {
-          layer.getLayer().setTileAt(point.x, point.y, pourTile);
-          area.add(point);
+    /**
+     *
+     *
+     * @return
+     */
+    public Tile getOldTile() {
+        return oldTile;
+    }
 
-          stack.push(new Point(point.x, point.y - 1));
-          stack.push(new Point(point.x, point.y + 1));
-          stack.push(new Point(point.x + 1, point.y));
-          stack.push(new Point(point.x - 1, point.y));
+    /**
+     *
+     *
+     * @param tile
+     */
+    public void setOldTile(Tile tile) {
+        oldTile = tile;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public Rectangle getBucketSelection() {
+        return bucketSelection;
+    }
+
+    /**
+     *
+     * @param bucketSelection
+     */
+    public void setBucketSelection(Rectangle bucketSelection) {
+        this.bucketSelection = bucketSelection;
+    }
+
+    /**
+     *
+     *
+     * @param g2d
+     * @param view
+     */
+    @Override
+    public void drawPreview(Graphics2D g2d, AbstractBoardView view) {
+
+    }
+
+    /**
+     *
+     *
+     * @param brush
+     * @return
+     */
+    @Override
+    public boolean equals(Brush brush) {
+        return brush instanceof BucketBrush;
+    }
+
+    /**
+     *
+     *
+     * @param x
+     * @param y
+     * @param selection
+     * @return
+     */
+    @Override
+    public Rectangle doPaint(int x, int y, Rectangle selection) {
+        BoardLayerView layer = affectedContainer.getLayer(initialLayer);
+
+        if (layer == null) {
+            return null;
         }
-      }
-
-      return new Rectangle(area.x, area.y, area.width + 1, area.height + 1);
-    } else {
-      if (selection.contains(x, y)) {
-        for (int y2 = selection.y; y2 < selection.height + selection.y; y2++) {
-          for (int x2 = selection.x; x2 < selection.width + selection.x; x2++) {
-            layer.getLayer().setTileAt(x2, y2, pourTile);
-          }
+        if (pourTile.getTileSet() == null) {
+            return null;
         }
-      }
 
-      return selection;
+        oldTile = layer.getLayer().getTileAt(x, y);
+
+        if (oldTile == pourTile) {
+            return null;
+        }
+
+        if (selection == null) {
+            Rectangle area = new Rectangle(new Point(x, y));
+            Stack<Point> stack = new Stack<>();
+
+            stack.push(new Point(x, y));
+
+            while (!stack.empty()) {
+                // Remove the next tile from the stack.
+                Point point = stack.pop();
+
+                if (layer.getLayer().contains(point.x, point.y)
+                        && layer.getLayer().getTileAt(point.x, point.y).equals(oldTile)) {
+                    layer.getLayer().setTileAt(point.x, point.y, pourTile);
+                    area.add(point);
+
+                    stack.push(new Point(point.x, point.y - 1));
+                    stack.push(new Point(point.x, point.y + 1));
+                    stack.push(new Point(point.x + 1, point.y));
+                    stack.push(new Point(point.x - 1, point.y));
+                }
+            }
+
+            return new Rectangle(area.x, area.y, area.width + 1, area.height + 1);
+        } else {
+            if (selection.contains(x, y)) {
+                for (int y2 = selection.y; y2 < selection.height + selection.y; y2++) {
+                    for (int x2 = selection.x; x2 < selection.width + selection.x; x2++) {
+                        layer.getLayer().setTileAt(x2, y2, pourTile);
+                    }
+                }
+            }
+
+            return selection;
+        }
     }
-  }
-  
+
+    @Override
+    public void doMouseButton1Pressed(Point point, AssetEditorWindow editor) {
+        if (editor instanceof BoardEditor) {
+            BoardEditor boardEditor = (BoardEditor) editor;
+            // To compensate for the fact that the selection
+            // is 1 size too small in both width and height.
+            // Bit of a hack really.
+            boardEditor.getSelection().width++;
+            boardEditor.getSelection().height++;
+
+            if (boardEditor.getSelection().contains(point)) {
+                bucketSelection = (Rectangle) boardEditor.getSelection().clone();
+            }
+
+            // Revert back to original dimensions.
+            boardEditor.getSelection().width--;
+            boardEditor.getSelection().height--;
+        }
+    }
+
+    @Override
+    public void doMouseButton2Pressed(Point point, AssetEditorWindow editor) {
+
+    }
+
+    @Override
+    public void doMouseButton3Pressed(Point point, AssetEditorWindow editor) {
+
+    }
+
+    @Override
+    public void doMouseButton1Dragged(Point point, Point origin, AssetEditorWindow editor) {
+        
+    }
+
+    @Override
+    public boolean isPixelBased() {
+        return false;
+    }
+
 }

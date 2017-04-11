@@ -44,7 +44,7 @@ import net.rpgtoolkit.editor.editors.AnimationEditor;
 import net.rpgtoolkit.editor.editors.BoardEditor;
 import net.rpgtoolkit.editor.editors.board.AbstractBrush;
 import net.rpgtoolkit.editor.editors.board.ShapeBrush;
-import net.rpgtoolkit.editor.editors.board.VectorBrush;
+import net.rpgtoolkit.editor.editors.board.BoardVectorBrush;
 import net.rpgtoolkit.editor.editors.ProjectEditor;
 import net.rpgtoolkit.editor.ui.listeners.TileSelectionListener;
 import net.rpgtoolkit.editor.editors.board.NewBoardDialog;
@@ -424,8 +424,8 @@ public class MainWindow extends JFrame implements InternalFrameListener {
 
             // So we do not end up drawing the vector on the other 
             // board after it has been deactivated.
-            if (currentBrush instanceof VectorBrush) {
-                VectorBrush brush = (VectorBrush) currentBrush;
+            if (currentBrush instanceof BoardVectorBrush) {
+                BoardVectorBrush brush = (BoardVectorBrush) currentBrush;
 
                 if (brush.isDrawing() && brush.getBoardVector() != null) {
                     brush.finish();

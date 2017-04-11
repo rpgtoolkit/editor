@@ -1,9 +1,9 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.editor.editors.board;
 
@@ -12,8 +12,6 @@ import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import net.rpgtoolkit.common.assets.BoardSprite;
-import net.rpgtoolkit.common.assets.BoardVector;
 import net.rpgtoolkit.editor.editors.BoardEditor;
 import net.rpgtoolkit.editor.MainWindow;
 
@@ -114,46 +112,24 @@ public class BoardMouseAdapter extends MouseAdapter {
      * @param brush
      */
     private void doMouseButton1Pressed(AbstractBrush brush, int x, int y) {
-        Rectangle bucketSelection = null;
+        Rectangle selection = null;
 
         Point point;
-        if (brush instanceof StartPositionBrush) {
-             point = new Point(x, y);
-        } else if (brush instanceof BoardSpriteBrush) {
+        if (brush.isPixelBased()) {
             point = new Point(x, y);
         } else {
             point = editor.getBoardView().getTileCoordinates(x, y);
         }
 
-        if (brush instanceof SelectionBrush) {
-            origin = point;
-            editor.setSelection(new Rectangle(
-                    origin.x, origin.y,
-                    0, 0));
-            editor.setSelectedTiles(editor.
-                    createTileLayerFromRegion(editor.getSelection()));
-        } else if (brush instanceof ShapeBrush && editor.getSelection() != null) {
-            editor.setSelection(null);
-        } else if (brush instanceof BucketBrush && editor.getSelection() != null) {
-            // To compensate for the fact that the selection
-            // is 1 size too small in both width and height.
-            // Bit of a hack really.
-            editor.getSelection().width++;
-            editor.getSelection().height++;
+        origin = point;
+        brush.doMouseButton1Pressed(point, editor);
 
-            if (editor.getSelection().contains(point)) {
-                bucketSelection = (Rectangle) editor.getSelection().clone();
-            }
-
-            // Revert back to original dimensions.
-            editor.getSelection().width--;
-            editor.getSelection().height--;
-        } else if (brush instanceof VectorBrush) {
-            // Because vectors and programs coordinates are pixel based.
-            point = new Point(x, y);
+        if (brush instanceof BucketBrush && editor.getSelection() != null) {
+            BucketBrush bucketBrush = (BucketBrush) brush;
+            selection = bucketBrush.getBucketSelection();
         }
 
-        editor.doPaint(brush, point, bucketSelection);
+        editor.doPaint(brush, point, selection);
     }
 
     /**
@@ -163,28 +139,14 @@ public class BoardMouseAdapter extends MouseAdapter {
      * @param brush
      */
     private void doMouseButton2Pressed(AbstractBrush brush, int x, int y) {
-        Object result = null;
-
-        if (brush instanceof VectorBrush) {
-            VectorBrush vectorBrush = (VectorBrush) brush;
-
-            if (vectorBrush.isDrawing()) {
-                vectorBrush.finish();
-            }
-
-            result = editor.getBoardView().getCurrentSelectedLayer().getLayer().removeVectorAt(x, y);
-
-        } else if (brush instanceof BoardSpriteBrush) {
-            BoardSpriteBrush spriteBrush = (BoardSpriteBrush) brush;
-            editor.getBoard().removeSprite(spriteBrush.getBoardSprite());
+        Point point;
+        if (brush.isPixelBased()) {
+            point = new Point(x, y);
+        } else {
+            point = editor.getBoardView().getTileCoordinates(x, y);
         }
 
-        if (result != null) {
-            if (result == editor.getSelectedObject()) {
-                editor.getSelectedObject().setSelectedState(false);
-                editor.setSelectedObject(null);
-            }
-        }
+        brush.doMouseButton2Pressed(point, editor);
     }
 
     /**
@@ -194,23 +156,14 @@ public class BoardMouseAdapter extends MouseAdapter {
      * @param brush
      */
     private void doMouseButton3Pressed(AbstractBrush brush, int x, int y) {
-
-        if (brush instanceof VectorBrush) {
-            // We are drawing a vector, so lets finish it.
-            if (((VectorBrush) brush).isDrawing()) {
-                ((VectorBrush) brush).finish();
-            } else // We want to select a vector.
-            {
-                selectVector(editor.getBoardView().getCurrentSelectedLayer()
-                        .getLayer().findVectorAt(x, y));
-            }
-        } else if (brush instanceof BoardSpriteBrush) {
-            BoardSprite sprite = editor.getBoardView()
-                    .getCurrentSelectedLayer().getLayer()
-                    .findSpriteAt(x, y);
-            ((BoardSpriteBrush) brush).setBoardSprite(sprite);
-            selectSprite(sprite);
+        Point point;
+        if (brush.isPixelBased()) {
+            point = new Point(x, y);
+        } else {
+            point = editor.getBoardView().getTileCoordinates(x, y);
         }
+
+        brush.doMouseButton3Pressed(point, editor);
     }
 
     /**
@@ -220,21 +173,17 @@ public class BoardMouseAdapter extends MouseAdapter {
      * @param brush
      */
     private void doMouseButton1Dragged(AbstractBrush brush, int x, int y) {
-        Point point = editor.getBoardView().getTileCoordinates(x, y);
+        Point point;
+        if (brush.isPixelBased()) {
+            point = new Point(x, y);
+        } else {
+            point = editor.getBoardView().getTileCoordinates(x, y);
+        }
+
         editor.setCursorTileLocation(point);
         editor.setCursorLocation(new Point(x, y));
 
-        if (brush instanceof SelectionBrush) {
-            Rectangle select = new Rectangle(origin.x, origin.y, 0, 0);
-            select.add(point);
-
-            if (!select.equals(editor.getSelection())) {
-                editor.setSelection(select);
-            }
-
-            editor.setSelectedTiles(editor.
-                    createTileLayerFromRegion(editor.getSelection()));
-        }
+        brush.doMouseButton1Dragged(point, origin, editor);
 
         editor.doPaint(brush, point, null);
     }
@@ -248,51 +197,6 @@ public class BoardMouseAdapter extends MouseAdapter {
         }
 
         return true;
-    }
-
-    /**
-     *
-     *
-     * @param vector
-     */
-    private void selectVector(BoardVector vector) {
-        if (vector != null) {
-            vector.setSelectedState(true);
-
-            if (editor.getSelectedObject() != null) {
-                editor.getSelectedObject().setSelectedState(false);
-            }
-
-            editor.setSelectedObject(vector);
-        } else if (editor.getSelectedObject() != null) {
-            editor.getSelectedObject().setSelectedState(false);
-            editor.setSelectedObject(null);
-        }
-    }
-
-    /**
-     *
-     *
-     * @param sprite
-     */
-    private void selectSprite(BoardSprite sprite) {
-        if (sprite != null) {
-
-            if (editor.getSelectedObject() == sprite) {
-                return;
-            }
-
-            sprite.setSelectedState(true);
-
-            if (editor.getSelectedObject() != null) {
-                editor.getSelectedObject().setSelectedState(false);
-            }
-
-            editor.setSelectedObject(sprite);
-        } else if (editor.getSelectedObject() != null) {
-            editor.getSelectedObject().setSelectedState(false);
-            editor.setSelectedObject(null);
-        }
     }
 
 }

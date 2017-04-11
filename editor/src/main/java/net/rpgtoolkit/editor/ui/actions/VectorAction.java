@@ -10,7 +10,7 @@ package net.rpgtoolkit.editor.ui.actions;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import net.rpgtoolkit.editor.editors.BoardEditor;
-import net.rpgtoolkit.editor.editors.board.VectorBrush;
+import net.rpgtoolkit.editor.editors.board.BoardVectorBrush;
 import net.rpgtoolkit.editor.MainWindow;
 
 /**
@@ -23,7 +23,7 @@ public class VectorAction extends AbstractAction {
   public void actionPerformed(ActionEvent e) {
     BoardEditor.toggleSelectedOnBoardEditor();
 
-    VectorBrush brush = new VectorBrush();
+    BoardVectorBrush brush = new BoardVectorBrush();
     MainWindow.getInstance().setCurrentBrush(brush);
 
     if (MainWindow.getInstance().getMainMenuBar().getViewMenu()

@@ -179,7 +179,7 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
             x = getWidth() / 2;
             y = getHeight() / 2;
             if (baseVector != null) {
-                g.setColor(Color.WHITE);
+                g.setColor(Color.RED);
                 drawVector(baseVector, g, x, y,
                         (int) baseVectorOffset.getX(), (int) baseVectorOffset.getY());
             }
