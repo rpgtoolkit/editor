@@ -149,6 +149,10 @@ public class AnimationEditor extends AssetEditorWindow implements AnimationChang
     for (TimelineFrame frame : timelineFrames) {
       timelinePanel.add(frame);
     }
+    
+    if (!timelineFrames.isEmpty()) {
+        animatedPanel.setAnimation(timelineFrames.get(0).getAnimation());
+    }
 
     timelinePanel.add(new AddTimelineFrame(animation));
   }
