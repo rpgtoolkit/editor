@@ -9,6 +9,9 @@ package net.rpgtoolkit.editor.utilities;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.rpgtoolkit.common.assets.AbstractAsset;
@@ -382,12 +385,19 @@ public class EditorFileManager {
      * match
      */
     public static boolean validateFileChoice(File path, String... extensions) {
-        if (FILE_CHOOSER.getSelectedFiles().length == 0) {
+        List<File> files = new ArrayList<>();
+        if (FILE_CHOOSER.getSelectedFiles().length > 0) {
+            files.addAll(Arrays.asList(FILE_CHOOSER.getSelectedFiles()));
+        } else if (FILE_CHOOSER.getSelectedFile() != null) {
+            files.add(FILE_CHOOSER.getSelectedFile());
+        }
+        
+        if (files.isEmpty()) {
             return false;
         }
         
         boolean valid = true;
-        for (File file : FILE_CHOOSER.getSelectedFiles()) {
+        for (File file : files) {
             String fileName = file.getName().toLowerCase();
             boolean extValid = false;
             for (String ext : extensions) {

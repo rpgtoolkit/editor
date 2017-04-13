@@ -381,8 +381,8 @@ public abstract class AbstractBoardView extends JPanel implements
      * @return tile coordinates
      */
     public Point getTileCoordinates(int x, int y) {
-        int tileWidth = MainWindow.TILE_SIZE + 1;
-        int tileHeight = MainWindow.TILE_SIZE + 1;
+        int tileWidth = board.getTileWidth() + 1;
+        int tileHeight = board.getTileHeight() + 1;
 
         int tileX = Math.max(0, Math.min(x / tileWidth, board.getWidth() - 1));
         int tileY = Math.max(0, Math.min(y / tileHeight, board.getHeight() - 1));
@@ -700,11 +700,11 @@ public abstract class AbstractBoardView extends JPanel implements
         affineTransform = new AffineTransform();
 
         loadTiles(board);
-        setPreferredSize(new Dimension((board.getWidth() * 32),
-                (board.getHeight() * 32)));
+        setPreferredSize(new Dimension((board.getWidth() * board.getTileWidth()),
+                (board.getHeight() * board.getTileHeight())));
 
-        bufferedImage = new BufferedImage((board.getWidth() * 32),
-                (board.getHeight() * 32), BufferedImage.TYPE_INT_ARGB);
+        bufferedImage = new BufferedImage((board.getWidth() * board.getTileWidth()),
+                (board.getHeight() * board.getTileHeight()), BufferedImage.TYPE_INT_ARGB);
 
         antialiasGrid = true;
         gridColor = DEFAULT_GRID_COLOR;
@@ -723,8 +723,8 @@ public abstract class AbstractBoardView extends JPanel implements
     private void rescale() {
         affineTransform = AffineTransform.getScaleInstance(zoom,
                 zoom);
-        int width = (int) ((board.getWidth() * 32) * zoom);
-        int height = (int) ((board.getHeight() * 32) * zoom);
+        int width = (int) ((board.getWidth() * board.getTileWidth()) * zoom);
+        int height = (int) ((board.getHeight() * board.getTileHeight()) * zoom);
         setPreferredSize(new Dimension(width, height));
         repaint();
     }

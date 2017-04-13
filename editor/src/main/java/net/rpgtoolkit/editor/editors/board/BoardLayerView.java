@@ -328,8 +328,12 @@ public class BoardLayerView {
                 if (layer.getTiles()[x][y] != null) {
                     Tile tile = layer.getTiles()[x][y];
 
-                    g.drawImage(tile.getTileAsImage(), (x * 32),
-                            (y * 32), null);
+                    g.drawImage(
+                            tile.getTileAsImage(), 
+                            (x * layer.getBoard().getTileWidth()),
+                            (y * layer.getBoard().getTileHeight()),
+                            null
+                    );
                 } else {
                     g.setColor(Color.white);
                 }
@@ -386,7 +390,6 @@ public class BoardLayerView {
             int x = (int) sprite.getX();
             int y = (int) sprite.getY();
 
-            int tileSize = MainWindow.TILE_SIZE;
             try {
                 // Attempt to get the south facing frame.
                 BufferedImage frame = sprite.getSouthAnimationFrame().getFrameImage();
@@ -403,17 +406,17 @@ public class BoardLayerView {
                     g.drawRect(xShift, yShift, width, height);
                 }
             } catch (NullPointerException | IndexOutOfBoundsException e) {
-                int width = tileSize;
-                int height = tileSize;
-                int xShift = x - (width / 2);
-                int yShift = y - (height / 2);
+                int tileWidth = layer.getBoard().getTileWidth();
+                int tileHeight = layer.getBoard().getTileHeight();
+                int xShift = x - (tileWidth / 2);
+                int yShift = y - (tileHeight / 2);
                 g.setColor(Color.WHITE);
-                g.fillRect(xShift, yShift, tileSize, tileSize);
+                g.fillRect(xShift, yShift, tileWidth, tileHeight);
 
                 // Used when the sprite does not have an animation frame.
                 if (sprite.isSelected()) {
                     g.setColor(Color.BLUE);
-                    g.drawRect(xShift, yShift, tileSize, tileSize);
+                    g.drawRect(xShift, yShift, tileWidth, tileHeight);
                 }
             }
         });

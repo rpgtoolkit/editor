@@ -111,7 +111,11 @@ public final class BoardView2D extends AbstractBoardView {
         Graphics2D g = bufferedImage.createGraphics();
 
         // Draw background first.
-        TransparentDrawer.drawTransparentBackground(g, (board.getWidth() * 32), (board.getHeight() * 32));
+        TransparentDrawer.drawTransparentBackground(
+                g, 
+                (board.getWidth() * board.getTileWidth()), 
+                (board.getHeight() * board.getTileHeight())
+        );
 
         paintLayers(g);
         paintSprites(g);
@@ -176,7 +180,7 @@ public final class BoardView2D extends AbstractBoardView {
     @Override
     protected void paintGrid(Graphics2D g) {
         // Determine tile size
-        Dimension tileSize = new Dimension(32, 32);
+        Dimension tileSize = new Dimension(board.getTileWidth(), board.getTileHeight());
 
         if (tileSize.width <= 0 || tileSize.height <= 0) {
             return;
@@ -266,7 +270,7 @@ public final class BoardView2D extends AbstractBoardView {
      */
     @Override
     protected void paintCoordinates(Graphics2D g) {
-        Dimension tileSize = new Dimension(32, 32);
+        Dimension tileSize = new Dimension(board.getTileWidth(), board.getTileHeight());
 
         if (tileSize.width <= 0 || tileSize.height <= 0) {
             return;
@@ -323,8 +327,8 @@ public final class BoardView2D extends AbstractBoardView {
      */
     @Override
     protected void paintSelection(Graphics2D g) {
-        int tileWidth = MainWindow.TILE_SIZE;
-        int tileHeight = tileWidth;
+        int tileWidth = board.getTileWidth();
+        int tileHeight = board.getTileHeight();
 
         Rectangle selection = boardEditor.getSelection();
 

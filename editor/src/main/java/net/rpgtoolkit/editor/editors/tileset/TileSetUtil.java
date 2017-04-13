@@ -41,12 +41,6 @@ public class TileSetUtil {
         return tileSet;
     }
 
-    public static TileSet ripTileSet(BufferedImage source, int tileWidth, int tileHeight) {
-        TileSet tileSet = new TileSet(null);
-
-        return loadImageIntoTileSet(tileSet, source, tileWidth, tileHeight);
-    }
-
     public static TileSet loadImageIntoTileSet(TileSet tileSet, BufferedImage source, int tileWidth, int tileHeight) {
         int sourceWidth = source.getWidth();
         int sourceHeight = source.getHeight();

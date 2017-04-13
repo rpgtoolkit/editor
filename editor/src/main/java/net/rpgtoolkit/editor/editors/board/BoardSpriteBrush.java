@@ -105,10 +105,12 @@ public class BoardSpriteBrush extends AbstractBrush {
             if (snap) {
                 x = Math.max(0, Math.min(x
                         / board.getTileWidth(), 
-                        board.getWidth() - 1)) * board.getTileWidth() + 16;
+                        board.getWidth() - 1)) * board.getTileWidth() 
+                        + (board.getTileWidth() / 2);
                 y = Math.max(0, Math.min(y
                         / board.getTileHeight(), 
-                        board.getHeight() - 1)) * board.getTileHeight() + 16;
+                        board.getHeight() - 1)) * board.getTileHeight() 
+                        + (board.getTileHeight() / 2);
             }
 
             boardSprite = new BoardSprite();

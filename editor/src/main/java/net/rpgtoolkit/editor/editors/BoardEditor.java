@@ -352,22 +352,23 @@ public class BoardEditor extends AssetEditorWindow implements BoardChangeListene
      * @return
      */
     public int[] calculateSnapCoordinates(int x, int y) {
-        int tileSize = MainWindow.TILE_SIZE;
+        int tileWidth = board.getTileWidth();
+        int tileHeight = board.getTileHeight();
         int[] coordinates = {0, 0};
 
-        int mx = x % tileSize;
-        int my = y % tileSize;
+        int mx = x % tileWidth;
+        int my = y % tileHeight;
 
-        if (mx < tileSize / 2) {
+        if (mx < tileWidth / 2) {
             coordinates[0] = x - mx;
         } else {
-            coordinates[0] = x + (tileSize - mx);
+            coordinates[0] = x + (tileWidth - mx);
         }
 
-        if (my < tileSize / 2) {
+        if (my < tileHeight / 2) {
             coordinates[1] = y - my;
         } else {
-            coordinates[1] = y + (tileSize - my);
+            coordinates[1] = y + (tileHeight - my);
         }
 
         return coordinates;

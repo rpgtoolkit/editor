@@ -88,8 +88,6 @@ public class MainWindow extends JFrame implements InternalFrameListener {
     // Singleton.
     private static final MainWindow INSTANCE = new MainWindow();
 
-    public static final int TILE_SIZE = 32;
-
     private final JDesktopPane desktopPane;
     private final Map<File, AssetEditorWindow> editorMap;
 
@@ -580,7 +578,10 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         dialog.setVisible(true);
 
         if (dialog.getValue() != null) {
-            Board board = new Board(null, dialog.getValue()[0], dialog.getValue()[1], TILE_SIZE, TILE_SIZE);
+            Board board = new Board(null, 
+                    dialog.getValue()[0], dialog.getValue()[1],
+                    dialog.getValue()[2], dialog.getValue()[3]
+            );
             BoardEditor boardEditor = new BoardEditor(board);
             boardEditor.addInternalFrameListener(this);
             boardEditor.setVisible(true);
@@ -756,7 +757,11 @@ public class MainWindow extends JFrame implements InternalFrameListener {
                 try {
                     File tileSetFile = EditorFileManager.saveByType(TileSet.class);
 
-                    TileSet tileSet = new TileSet(new AssetDescriptor(tileSetFile.toURI()));
+                    TileSet tileSet = new TileSet(
+                            new AssetDescriptor(tileSetFile.toURI()),
+                            tileWidth,
+                            tileHeight
+                    );
                     tileSet.setDescriptor(new AssetDescriptor(tileSetFile.toURI()));
                     tileSet.setName(tileSetFile.getName());
                     tileSet.getImages().add(file.getName());

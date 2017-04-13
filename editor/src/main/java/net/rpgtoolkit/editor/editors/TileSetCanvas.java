@@ -33,11 +33,11 @@ import net.rpgtoolkit.common.assets.TileSet;
  */
 public final class TileSetCanvas extends JPanel implements Scrollable {
 
-  private static final int TILES_PER_ROW = 10;
+  private static int tilesPerRow;
 
   private final LinkedList<TileSelectionListener> tileSelectionListeners = new LinkedList<>();
 
-  private final TileSet tileset;
+  private final TileSet tileSet;
   private final BufferedImage bufferedImage;
 
   private Rectangle selection;
@@ -46,14 +46,15 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
   
   /**
    *
-   * @param tileset
+   * @param tileSet
    */
-  public TileSetCanvas(TileSet tileset) {
+  public TileSetCanvas(TileSet tileSet) {
     super();
 
-    this.tileset = tileset;
+    this.tileSet = tileSet;
+    tilesPerRow = 320 / tileSet.getTileWidth();
     int width = 320;
-    int height = 32 * (int)(Math.ceil(tileset.getTiles().size() / (double)TILES_PER_ROW));
+    int height = tileSet.getTileHeight() * (int)(Math.ceil(tileSet.getTiles().size() / (double)tilesPerRow));
     
     if (height == 0) {
       height = 32;
@@ -72,8 +73,10 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
    */
   @Override
   public Dimension getPreferredSize() {
-    return new Dimension(bufferedImage.getWidth(),
-            bufferedImage.getHeight());
+    return new Dimension(
+            bufferedImage.getWidth(),
+            bufferedImage.getHeight()
+    );
   }
 
   /**
@@ -117,10 +120,10 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
    */
   @Override
   public Dimension getPreferredScrollableViewportSize() {
-    if (tileset != null) {
-      int tileWidth = tileset.getTileWidth() + 1;
+    if (tileSet != null) {
+      int tileWidth = tileSet.getTileWidth() + 1;
 
-      return new Dimension(TILES_PER_ROW * tileWidth + 1, 200);
+      return new Dimension(tilesPerRow * tileWidth + 1, 200);
     } else {
       return new Dimension(0, 0);
     }
@@ -136,8 +139,8 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
   @Override
   public int getScrollableUnitIncrement(Rectangle visibleRect,
           int orientation, int direction) {
-    if (tileset != null) {
-      return tileset.getTileWidth();
+    if (tileSet != null) {
+      return tileSet.getTileWidth();
     } else {
       return 0;
     }
@@ -153,8 +156,8 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
   @Override
   public int getScrollableBlockIncrement(Rectangle visibleRect,
           int orientation, int direction) {
-    if (tileset != null) {
-      return tileset.getTileWidth();
+    if (tileSet != null) {
+      return tileSet.getTileWidth();
     } else {
       return 0;
     }
@@ -166,7 +169,7 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
    */
   @Override
   public boolean getScrollableTracksViewportWidth() {
-    return tileset == null || TILES_PER_ROW == 0;
+    return tileSet == null || tilesPerRow == 0;
   }
 
   /**
@@ -238,14 +241,14 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
     int y = 0;
     int i = 0;
 
-    for (Tile tile : tileset.getTiles()) {
+    for (Tile tile : tileSet.getTiles()) {
       g2d.drawImage(tile.getTileAsImage(), x, y, this);
 
       // Update coordinates to draw at.
-      x += 32;
+      x += tileSet.getTileWidth();
       i++;
-      if (i % 10 == 0) {
-        y += 32;
+      if (i % tilesPerRow == 0) {
+        y += tileSet.getTileHeight();
         x = 0;
       }
     }
@@ -253,8 +256,10 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
 
   private void paintGrid(Graphics2D g2d) {
     // Determine tile size
-    Dimension tileSize = new Dimension(tileset.getTileWidth(),
-            tileset.getTileHeight());
+    Dimension tileSize = new Dimension(
+            tileSet.getTileWidth(),
+            tileSet.getTileHeight()
+    );
 
     // Determine lines to draw from clipping rectangle
     Rectangle clipRectangle = new Rectangle(bufferedImage.getWidth(),
@@ -280,21 +285,25 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
 
   private void paintSelection(Graphics2D g2d) {
     g2d.setColor(new Color(100, 100, 255));
-    g2d.draw3DRect(selection.x * tileset.getTileWidth(),
-            selection.y * tileset.getTileHeight(),
-            (selection.width + 1) * tileset.getTileWidth(),
-            (selection.height + 1) * tileset.getTileHeight(),
-            false);
+    g2d.draw3DRect(
+            selection.x * tileSet.getTileWidth(),
+            selection.y * tileSet.getTileHeight(),
+            (selection.width + 1) * tileSet.getTileWidth(),
+            (selection.height + 1) * tileSet.getTileHeight(),
+            false
+    );
     g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.2f));
-    g2d.fillRect(selection.x * tileset.getTileWidth() + 1,
-            selection.y * tileset.getTileHeight() + 1,
-            (selection.width + 1) * tileset.getTileWidth() - 1,
-            (selection.height + 1) * tileset.getTileHeight() - 1);
+    g2d.fillRect(
+            selection.x * tileSet.getTileWidth() + 1,
+            selection.y * tileSet.getTileHeight() + 1,
+            (selection.width + 1) * tileSet.getTileWidth() - 1,
+            (selection.height + 1) * tileSet.getTileHeight() - 1
+    );
   }
 
   private void scrollTileToVisible(Point tile) {
-    int tileWidth = tileset.getTileWidth() + 1;
-    int tileHeight = tileset.getTileHeight() + 1;
+    int tileWidth = tileSet.getTileWidth() + 1;
+    int tileHeight = tileSet.getTileHeight() + 1;
 
     scrollRectToVisible(new Rectangle(tile.x * tileWidth,
             tile.y * tileHeight,
@@ -311,13 +320,13 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
    * @return tile coordinates
    */
   private Point getTileCoordinates(int x, int y) {
-    int tileWidth = tileset.getTileWidth() + 1;
-    int tileHeight = tileset.getTileHeight() + 1;
-    int tileCount = tileset.getTiles().size();
-    int rows = tileCount / TILES_PER_ROW
-            + (tileCount % TILES_PER_ROW > 0 ? 1 : 0);
+    int tileWidth = tileSet.getTileWidth() + 1;
+    int tileHeight = tileSet.getTileHeight() + 1;
+    int tileCount = tileSet.getTiles().size();
+    int rows = tileCount / tilesPerRow
+            + (tileCount % tilesPerRow > 0 ? 1 : 0);
 
-    int tileX = Math.max(0, Math.min(x / tileWidth, TILES_PER_ROW - 1));
+    int tileX = Math.max(0, Math.min(x / tileWidth, tilesPerRow - 1));
     int tileY = Math.max(0, Math.min(y / tileHeight, rows - 1));
 
     return new Point(tileX, tileY);
@@ -333,12 +342,12 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
    * range
    */
   private Tile getTileAt(int x, int y) {
-    int tileAt = y * TILES_PER_ROW + x;
+    int tileAt = y * tilesPerRow + x;
 
-    if (tileAt >= tileset.getTiles().size()) {
+    if (tileAt >= tileSet.getTiles().size()) {
       return null;
     } else {
-      return tileset.getTile(tileAt);
+      return tileSet.getTile(tileAt);
     }
   }
 
