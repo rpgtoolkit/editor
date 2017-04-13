@@ -16,4 +16,7 @@ RPGToolkit Editor is an open source project, and is supported by its community.
 
 The RPGToolkit Editor team is composed of Chris Hutchinson, Joel Moore, and Joshua Michael Daly.
 
-Some icons by Yusuke Kamiyamane. Licensed under a Creative Commons Attribution 3.0 License.
+Some icons by: 
+
+* Yusuke Kamiyamane. Licensed under a Creative Commons Attribution 3.0 License.
+* Icons8. Licensed under a Creative Commons Attribution-NoDerivs 3.0 Unported.

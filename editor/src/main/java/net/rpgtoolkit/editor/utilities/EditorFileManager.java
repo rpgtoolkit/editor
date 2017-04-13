@@ -382,8 +382,11 @@ public class EditorFileManager {
      * match
      */
     public static boolean validateFileChoice(File path, String... extensions) {
+        if (FILE_CHOOSER.getSelectedFiles().length == 0) {
+            return false;
+        }
+        
         boolean valid = true;
-
         for (File file : FILE_CHOOSER.getSelectedFiles()) {
             String fileName = file.getName().toLowerCase();
             boolean extValid = false;

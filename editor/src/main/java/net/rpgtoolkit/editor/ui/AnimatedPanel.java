@@ -1,15 +1,16 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.editor.ui;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,6 +23,7 @@ import net.rpgtoolkit.common.assets.BoardVector;
 import net.rpgtoolkit.common.assets.events.AnimationChangedEvent;
 import net.rpgtoolkit.common.assets.listeners.AnimationChangeListener;
 import net.rpgtoolkit.common.utilities.CoreProperties;
+import net.rpgtoolkit.editor.ui.resources.Icons;
 import net.rpgtoolkit.editor.utilities.TransparentDrawer;
 
 /**
@@ -31,6 +33,10 @@ import net.rpgtoolkit.editor.utilities.TransparentDrawer;
 public class AnimatedPanel extends AbstractImagePanel implements AnimationChangeListener {
 
     public static final int DEFAULT_HEIGHT = 300;
+
+    private Image playImage;
+    private Image stopImage;
+    private Image currentActionImage;
 
     private Animation animation;
     private BufferedImage frameImage;
@@ -51,6 +57,7 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
                 index++;
             } else {
                 index = 0;
+                currentActionImage = playImage;
                 timer.stop();
                 timer = null;
             }
@@ -61,14 +68,12 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
     };
 
     public AnimatedPanel() {
-        baseVectorOffset = new Point(0, 0);
-        activationVectorOffset = new Point(0, 0);
+        init();
     }
 
     public AnimatedPanel(Dimension dimension) {
         super(dimension);
-        baseVectorOffset = new Point(0, 0);
-        activationVectorOffset = new Point(0, 0);
+        init();
     }
 
     public Animation getAnimation() {
@@ -157,9 +162,11 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
     public void paint(Graphics g) {
         TransparentDrawer.drawTransparentBackground(g, getWidth(), getHeight());
 
+        int x;
+        int y;
         if (animation != null) {
-            int x = (getWidth() - (int) animation.getAnimationWidth()) / 2;
-            int y = (getHeight() - (int) animation.getAnimationHeight()) / 2;
+            x = (getWidth() - (int) animation.getAnimationWidth()) / 2;
+            y = (getHeight() - (int) animation.getAnimationHeight()) / 2;
 
             if (frameImage != null) {
                 int width = (int) animation.getAnimationWidth();
@@ -191,9 +198,18 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
             }
         }
 
+        x = getWidth();
+        y = getHeight();
+        x -= currentActionImage.getWidth(null);
+        y -= currentActionImage.getHeight(null);
+        
+        // Draw the current action button (i.e. play or stop).
+        g.drawImage(currentActionImage, x, y, null);
     }
 
     public void animate() {
+        currentActionImage = stopImage;
+
         timer = new Timer((int) (animation.getFrameRate() * 1000), animate);
         timer.start();
 
@@ -214,7 +230,17 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
         }
 
         frameImage = animation.getFrame(0).getFrameImage();
+        currentActionImage = playImage;
         repaint();
+    }
+
+    private void init() {
+        playImage = Icons.getLargeIcon("animation-play").getImage();
+        stopImage = Icons.getLargeIcon("animation-stop").getImage();
+        currentActionImage = playImage;
+
+        baseVectorOffset = new Point(0, 0);
+        activationVectorOffset = new Point(0, 0);
     }
 
     private void updateAnimation() {
