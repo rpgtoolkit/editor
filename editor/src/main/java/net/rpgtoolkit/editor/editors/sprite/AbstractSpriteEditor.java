@@ -11,9 +11,12 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -279,7 +282,11 @@ public abstract class AbstractSpriteEditor extends AssetEditorWindow implements 
             animatedPanel.setActivationVectorOffset(sprite.getActivationVectorOffset());
         }
 
-        animatedPanel.setAnimation(selectedAnim);
+        try {
+            animatedPanel.setAnimation(selectedAnim);
+        } catch (IOException ex) {
+            Logger.getLogger(AbstractSpriteEditor.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void openAnimation(String path) {
@@ -350,10 +357,7 @@ public abstract class AbstractSpriteEditor extends AssetEditorWindow implements 
 
         if (!profileImagePath.isEmpty()) {
             profilePanel.addImage(new File(
-                    System.getProperty("project.path")
-                    + File.separator
-                    + CoreProperties.getProperty("toolkit.directory.bitmap")
-                    + File.separator
+                    EditorFileManager.getGraphicsPath()
                     + profileImagePath));
         }
 
@@ -461,11 +465,7 @@ public abstract class AbstractSpriteEditor extends AssetEditorWindow implements 
 
     protected void checkProfileImagePath() {
         if (profilePanel.getFile() != null) {
-            String remove
-                    = System.getProperty("project.path")
-                    + File.separator
-                    + CoreProperties.getProperty("toolkit.directory.bitmap")
-                    + File.separator;
+            String remove = EditorFileManager.getGraphicsPath();
             String path = profilePanel.getFile().getAbsolutePath().replace(remove, "");
             sprite.getGraphics().put(GraphicEnum.PROFILE.toString(), path);
         }

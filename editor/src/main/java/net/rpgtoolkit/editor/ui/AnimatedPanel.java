@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import javax.swing.Timer;
 import net.rpgtoolkit.common.assets.Animation;
 import net.rpgtoolkit.common.assets.BoardVector;
@@ -62,7 +63,7 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
                 timer = null;
             }
 
-            frameImage = animation.getFrame(index).getFrameImage();
+            frameImage = animation.getFrame(index);
             repaint();
         }
     };
@@ -80,7 +81,7 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
         return animation;
     }
 
-    public void setAnimation(Animation animation) {
+    public void setAnimation(Animation animation) throws IOException {
         if (this.animation != null) {
             this.animation.removeAnimationChangeListener(this);
             this.animation.addAnimationChangeListener(this);
@@ -91,8 +92,9 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
         if (animation == null) {
             timer = null;
             frameImage = null;
-        } else if (animation.getFrameCount() > 0) {
-            frameImage = animation.getFrame(0).getFrameImage();
+        } else if (animation.getSpriteSheet() != null) {
+            animation.getSpriteSheet().loadImage();
+            frameImage = animation.getFrame(0);
         }
 
         repaint();
@@ -165,8 +167,8 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
         int x;
         int y;
         if (animation != null) {
-            x = (getWidth() - (int) animation.getAnimationWidth()) / 2;
-            y = (getHeight() - (int) animation.getAnimationHeight()) / 2;
+            x = (getWidth() / 2) - animation.getAnimationWidth();
+            y = (getHeight() / 2) - animation.getAnimationHeight();
 
             if (frameImage != null) {
                 int width = (int) animation.getAnimationWidth();
@@ -202,7 +204,7 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
         y = getHeight();
         x -= currentActionImage.getWidth(null);
         y -= currentActionImage.getHeight(null);
-        
+
         // Draw the current action button (i.e. play or stop).
         g.drawImage(currentActionImage, x, y, null);
     }
@@ -210,7 +212,10 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
     public void animate() {
         currentActionImage = stopImage;
 
-        timer = new Timer((int) (animation.getFrameRate() * 1000), animate);
+        int fps = animation.getFrameRate();
+        double framePerMillsecond = 1.0 / fps;
+        int milliseconds = (int) (framePerMillsecond * 1000);
+        timer = new Timer(milliseconds, animate);
         timer.start();
 
         if (!animation.getSoundEffect().isEmpty()) {
@@ -229,7 +234,7 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
             timer = null;
         }
 
-        frameImage = animation.getFrame(0).getFrameImage();
+        frameImage = animation.getFrame(0);
         currentActionImage = playImage;
         repaint();
     }
@@ -245,7 +250,7 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
 
     private void updateAnimation() {
         if (animation.getFrameCount() > 0) {
-            frameImage = animation.getFrame(0).getFrameImage();
+            frameImage = animation.getFrame(0);
             repaint();
         } else {
             frameImage = null;

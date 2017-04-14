@@ -392,7 +392,7 @@ public class BoardLayerView {
 
             try {
                 // Attempt to get the south facing frame.
-                BufferedImage frame = sprite.getSouthAnimationFrame().getFrameImage();
+                BufferedImage frame = sprite.getSouthImage();
 
                 int width = frame.getWidth();
                 int height = frame.getHeight();

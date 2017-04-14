@@ -69,6 +69,13 @@ public class EditorFileManager {
                 relativeTo.getPath() + File.separator, "");
     }
 
+    public static String getGraphicsPath() {
+        return System.getProperty("project.path")
+                + File.separator
+                + CoreProperties.getProperty("toolkit.directory.bitmap")
+                + File.separator;
+    }
+
     public static String getTypeSubdirectory(Class<? extends AbstractAsset> type) {
         if (type == Animation.class) {
             return CoreProperties.getProperty("toolkit.directory.misc");
@@ -317,7 +324,7 @@ public class EditorFileManager {
             }
         }
         FILE_CHOOSER.setMultiSelectionEnabled(false);
-        
+
         return files;
     }
 
@@ -391,11 +398,11 @@ public class EditorFileManager {
         } else if (FILE_CHOOSER.getSelectedFile() != null) {
             files.add(FILE_CHOOSER.getSelectedFile());
         }
-        
+
         if (files.isEmpty()) {
             return false;
         }
-        
+
         boolean valid = true;
         for (File file : files) {
             String fileName = file.getName().toLowerCase();

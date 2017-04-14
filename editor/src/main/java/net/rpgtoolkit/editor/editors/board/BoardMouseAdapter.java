@@ -11,6 +11,8 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import net.rpgtoolkit.common.assets.Board;
+import net.rpgtoolkit.common.assets.Tile;
 
 import net.rpgtoolkit.editor.editors.BoardEditor;
 import net.rpgtoolkit.editor.MainWindow;
@@ -194,9 +196,40 @@ public class BoardMouseAdapter extends MouseAdapter {
             if (shapeBrush.paintTile == null) {
                 return false;
             }
+            
+            return isSameTileSize(editor.getBoard(), shapeBrush.paintTile);
+        } else if (brush instanceof BucketBrush) {
+            BucketBrush bucketBrush = (BucketBrush) brush;
+            
+            if (bucketBrush.pourTile == null) {
+                return false;
+            }
+            
+            return isSameTileSize(editor.getBoard(), bucketBrush.getPourTile());
+        } else if (brush instanceof CustomBrush) {
+            CustomBrush customBrush = (CustomBrush) brush;
+            
+            if (customBrush.tiles.length > 0) {
+                if (customBrush.tiles[0].length > 0) {
+                    if (customBrush.tiles[0][0] == null) {
+                        return true; // Selection brush.
+                    }
+                    
+                    return isSameTileSize(editor.getBoard(), customBrush.tiles[0][0]);
+                }
+            }
         }
 
         return true;
+    }
+    
+    private boolean isSameTileSize(Board board, Tile tile) {
+        if (tile.getTileSet() == null) { // Eraser brush.
+            return true;
+        }
+        
+        return board.getTileWidth() == tile.getTileSet().getTileWidth() &&
+                board.getTileHeight() == tile.getTileSet().getTileHeight();
     }
 
 }

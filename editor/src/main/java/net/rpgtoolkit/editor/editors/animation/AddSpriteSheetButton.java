@@ -11,10 +11,14 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import net.rpgtoolkit.common.assets.Animation;
-import net.rpgtoolkit.common.assets.AnimationFrame;
-import net.rpgtoolkit.common.utilities.CoreProperties;
+import net.rpgtoolkit.common.assets.SpriteSheet;
 import net.rpgtoolkit.editor.utilities.EditorFileManager;
 import net.rpgtoolkit.editor.ui.resources.Icons;
 import net.rpgtoolkit.editor.utilities.TransparentDrawer;
@@ -23,11 +27,11 @@ import net.rpgtoolkit.editor.utilities.TransparentDrawer;
  *
  * @author Joshua Michael Daly
  */
-public class AddTimelineFrame extends TimelineFrame {
+public class AddSpriteSheetButton extends SpriteSheetImage {
 
-    public AddTimelineFrame(Animation animation) {
+    public AddSpriteSheetButton(Animation animation) {
         this.animation = animation;
-        dimension = new Dimension((int) animation.getAnimationWidth(), (int) animation.getAnimationHeight());
+        dimension = new Dimension(50, 50);
     }
 
     @Override
@@ -43,22 +47,27 @@ public class AddTimelineFrame extends TimelineFrame {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        File[] imageFiles = EditorFileManager.browseLocationBySubdirMultiSelect(
+        File imageFile = EditorFileManager.browseLocationBySubdir(
                 EditorFileManager.getGraphicsSubdirectory(),
                 EditorFileManager.getImageFilterDescription(),
                 EditorFileManager.getImageExtensions()
         );
 
-        if (imageFiles.length > 0) {
-            for (File imageFile : imageFiles) {
-                String remove
-                        = System.getProperty("project.path")
-                        + File.separator
-                        + CoreProperties.getProperty("toolkit.directory.bitmap")
-                        + File.separator;
-                String path = imageFile.getAbsolutePath().replace(remove, "");
+        if (imageFile != null) {
+            try {
+                BufferedImage image = ImageIO.read(imageFile);
 
-                animation.addFrame(new AnimationFrame(path, 0, ""));
+                // TODO: Work around until user can specifiy region.
+                int x = 0;
+                int y = 0;
+                int width = image.getWidth();
+                int height = image.getHeight();
+
+                String remove = EditorFileManager.getGraphicsPath();
+                String path = imageFile.getAbsolutePath().replace(remove, "");
+                animation.setSpriteSheet(new SpriteSheet(path, x, y, width, height));
+            } catch (IOException ex) {
+                Logger.getLogger(AddSpriteSheetButton.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

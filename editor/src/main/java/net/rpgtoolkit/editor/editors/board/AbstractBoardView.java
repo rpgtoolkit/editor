@@ -381,11 +381,11 @@ public abstract class AbstractBoardView extends JPanel implements
      * @return tile coordinates
      */
     public Point getTileCoordinates(int x, int y) {
-        int tileWidth = board.getTileWidth() + 1;
-        int tileHeight = board.getTileHeight() + 1;
+        int tileWidth = board.getTileWidth();
+        int tileHeight = board.getTileHeight();
 
-        int tileX = Math.max(0, Math.min(x / tileWidth, board.getWidth() - 1));
-        int tileY = Math.max(0, Math.min(y / tileHeight, board.getHeight() - 1));
+        int tileX = Math.round(x / tileWidth);
+        int tileY = Math.round(y / tileHeight);
 
         return new Point(tileX, tileY);
     }

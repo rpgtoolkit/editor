@@ -1,9 +1,9 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.editor;
 
@@ -578,7 +578,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         dialog.setVisible(true);
 
         if (dialog.getValue() != null) {
-            Board board = new Board(null, 
+            Board board = new Board(null,
                     dialog.getValue()[0], dialog.getValue()[1],
                     dialog.getValue()[2], dialog.getValue()[3]
             );
@@ -610,7 +610,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
                             + tileSet.getName();
                     openTileset(new File(path));
                 }
-                
+
                 board.loadTiles();
 
                 return board;
@@ -745,7 +745,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         if (dialog.getValue() != null) {
             int tileWidth = dialog.getValue()[0];
             int tileHeight = dialog.getValue()[1];
-            
+
             String path = CoreProperties.getProperty("toolkit.directory.bitmap");
             String description = "Image Files";
             String[] extensions = EditorFileManager.getImageExtensions();
@@ -764,7 +764,10 @@ public class MainWindow extends JFrame implements InternalFrameListener {
                     );
                     tileSet.setDescriptor(new AssetDescriptor(tileSetFile.toURI()));
                     tileSet.setName(tileSetFile.getName());
-                    tileSet.getImages().add(file.getName());
+
+                    String remove = EditorFileManager.getGraphicsPath();
+                    String imagePath = file.getAbsolutePath().replace(remove, "");
+                    tileSet.getImages().add(imagePath);
 
                     AssetManager.getInstance().serialize(
                             AssetManager.getInstance().getHandle(tileSet));

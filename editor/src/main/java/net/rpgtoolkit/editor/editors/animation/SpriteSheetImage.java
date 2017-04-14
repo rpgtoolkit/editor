@@ -10,53 +10,49 @@ package net.rpgtoolkit.editor.editors.animation;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import javax.swing.JPanel;
 import net.rpgtoolkit.common.assets.Animation;
-import net.rpgtoolkit.common.assets.AnimationFrame;
-import net.rpgtoolkit.common.utilities.CoreProperties;
+import net.rpgtoolkit.common.assets.SpriteSheet;
 import net.rpgtoolkit.editor.utilities.EditorFileManager;
+import net.rpgtoolkit.editor.utilities.GuiHelper;
 import net.rpgtoolkit.editor.utilities.TransparentDrawer;
 
 /**
  *
  * @author Joshua Michael Daly
  */
-public class TimelineFrame extends JPanel implements MouseListener {
+public class SpriteSheetImage extends JPanel implements MouseListener {
+    
+    protected Animation animation;
+    private SpriteSheet spriteSheet;
 
     protected Dimension dimension;
 
     private boolean entered;
 
-    private int index;
-    protected Animation animation;
-    private AnimationFrame animationFrame;
-
-    public TimelineFrame() {
-        entered = false;
+    public SpriteSheetImage() {
         animation = null;
-        animationFrame = null;
-        addMouseListener(this);
-        dimension = new Dimension(150, 150);
-    }
-
-    public TimelineFrame(Animation animation, int index) {
+        spriteSheet = null;
         entered = false;
-        this.index = index;
-        this.animation = animation;
-        this.animationFrame = animation.getFrame(index);
-        dimension = new Dimension((int) animation.getAnimationWidth(), (int) animation.getAnimationHeight());
+        dimension = new Dimension(150, 150);
+        
         addMouseListener(this);
     }
 
-    public Animation getAnimation() {
-        return animation;
-    }
-
-    public void setAnimation(Animation animation) {
+    public SpriteSheetImage(Animation animation, SpriteSheet sheet) {
         this.animation = animation;
+        spriteSheet = sheet;
+        entered = false;
+        dimension = new Dimension(150, 150);
+        
+        addMouseListener(this);
     }
 
     @Override
@@ -76,10 +72,19 @@ public class TimelineFrame extends JPanel implements MouseListener {
 
     @Override
     public void paint(Graphics g) {
-        TransparentDrawer.drawTransparentBackground(g, dimension.width, dimension.height);
+        TransparentDrawer.drawTransparentBackground(
+                g, dimension.width, dimension.height
+        );
 
-        if (animationFrame != null) {
-            g.drawImage(animationFrame.getFrameImage(), 0, 0, null);
+        BufferedImage image = spriteSheet.getImage();
+        if (image != null) {
+            g.drawImage(image, 0, 0, null);
+            GuiHelper.drawGrid(
+                    (Graphics2D) g, 
+                    animation.getAnimationWidth(), 
+                    animation.getAnimationHeight(), 
+                    new Rectangle(image.getWidth(), image.getHeight())
+            );
         }
 
         if (entered) {
@@ -98,23 +103,19 @@ public class TimelineFrame extends JPanel implements MouseListener {
             );
 
             if (imageFile != null) {
-                String remove
-                        = System.getProperty("project.path")
-                        + File.separator
-                        + CoreProperties.getProperty("toolkit.directory.bitmap")
-                        + File.separator;
+                String remove = EditorFileManager.getGraphicsPath();
                 String path = imageFile.getAbsolutePath().replace(remove, "");
-
-                animationFrame = new AnimationFrame(
-                        path,
-                        animationFrame.getTransparentColour(),
-                        animationFrame.getFrameSound());
-                animation.setFrame(animationFrame, index);
-
+                
+                spriteSheet = new SpriteSheet(
+                        path, 
+                        0, 0, 
+                        dimension.width, dimension.height
+                );
+                animation.setSpriteSheet(spriteSheet);
                 repaint();
             }
         } else if (e.getButton() == MouseEvent.BUTTON2) {
-            animation.removeFrame(index);
+            animation.removeSpriteSheet();
         }
     }
 
@@ -136,6 +137,12 @@ public class TimelineFrame extends JPanel implements MouseListener {
     public void mouseExited(MouseEvent e) {
         entered = !entered;
         repaint();
+    }
+    
+    public BufferedImage loadImage() throws IOException {
+        BufferedImage image = spriteSheet.loadImage();
+        dimension = new Dimension(image.getWidth(), image.getHeight());
+        return image;
     }
 
 }

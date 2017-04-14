@@ -24,6 +24,7 @@ import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.assets.TilePixelOutOfRangeException;
 import net.rpgtoolkit.editor.editors.BoardEditor;
 import net.rpgtoolkit.editor.MainWindow;
+import net.rpgtoolkit.editor.utilities.GuiHelper;
 import net.rpgtoolkit.editor.utilities.TransparentDrawer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,32 +180,19 @@ public final class BoardView2D extends AbstractBoardView {
      */
     @Override
     protected void paintGrid(Graphics2D g) {
-        // Determine tile size
-        Dimension tileSize = new Dimension(board.getTileWidth(), board.getTileHeight());
-
-        if (tileSize.width <= 0 || tileSize.height <= 0) {
+        if (board.getTileWidth() <= 0 || board.getTileHeight() <= 0) {
             return;
         }
 
         // Determine lines to draw from clipping rectangle
         Rectangle clipRectangle = new Rectangle(bufferedImage.getWidth(),
                 bufferedImage.getHeight());
-        int startX = (clipRectangle.x / tileSize.width * tileSize.width);
-        int startY = (clipRectangle.y / tileSize.height * tileSize.height);
-        int endX = (clipRectangle.x + clipRectangle.width);
-        int endY = (clipRectangle.y + clipRectangle.height);
-
-        g.setColor(getGridColor());
-
-        for (int x = startX; x < endX; x += tileSize.width) {
-            g.drawLine(x, clipRectangle.y, x, clipRectangle.y
-                    + clipRectangle.height - 1);
-        }
-
-        for (int y = startY; y < endY; y += tileSize.height) {
-            g.drawLine(clipRectangle.x, y, clipRectangle.x
-                    + clipRectangle.width - 1, y);
-        }
+        GuiHelper.drawGrid(
+                g, 
+                board.getTileWidth(), 
+                board.getTileHeight(), 
+                clipRectangle
+        );
     }
 
     /**

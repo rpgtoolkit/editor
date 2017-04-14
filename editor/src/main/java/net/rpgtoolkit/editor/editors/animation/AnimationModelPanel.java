@@ -69,12 +69,12 @@ public class AnimationModelPanel extends AbstractModelPanel {
     widthSpinner = getJSpinner(animation.getAnimationWidth());
     widthSpinner.setModel(new SpinnerNumberModel(animation.getAnimationWidth(), 10, 1000, 1));
     widthSpinner.addChangeListener((ChangeEvent e) -> {
-        long value = ((Double)widthSpinner.getValue()).longValue();
+        int value = (int)widthSpinner.getValue();
         
         if (value > 0 && value != animation.getAnimationWidth()) {
             animation.setAnimationWidth(value);
         } else {
-            widthSpinner.setValue(((Long)animation.getAnimationWidth()).intValue());
+            widthSpinner.setValue(animation.getAnimationWidth());
         }
     });
     ///
@@ -83,21 +83,21 @@ public class AnimationModelPanel extends AbstractModelPanel {
     heightSpinner = getJSpinner(animation.getAnimationHeight());
     heightSpinner.setModel(new SpinnerNumberModel(animation.getAnimationHeight(), 10, 1000, 1));
     heightSpinner.addChangeListener((ChangeEvent e) -> {
-        long value = ((Double)heightSpinner.getValue()).longValue();
+        int value = (int) heightSpinner.getValue();
         
         if (value > 0 && value != animation.getAnimationHeight()) {
             animation.setAnimationHeight(value);
         } else {
-            heightSpinner.setValue(((Long)animation.getAnimationHeight()).intValue());
+            heightSpinner.setValue(animation.getAnimationHeight());
         }
     });
     ///
     /// frameRateSpinner
     ///
     frameRateSpinner = getJSpinner(animation.getFrameRate());
-    frameRateSpinner.setModel(new SpinnerNumberModel(animation.getFrameRate(), 0, 100, 0.01));
+    frameRateSpinner.setModel(new SpinnerNumberModel(animation.getFrameRate(), 0, 100, 1));
     frameRateSpinner.addChangeListener((ChangeEvent e) -> {
-        double value = (double) frameRateSpinner.getValue();
+        int value = (int) frameRateSpinner.getValue();
         
         if (value > 0 && value != animation.getFrameRate()) {
             animation.setFramRate(value);

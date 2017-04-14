@@ -204,6 +204,11 @@ public class BucketBrush extends AbstractBrush {
     public void doMouseButton1Pressed(Point point, AssetEditorWindow editor) {
         if (editor instanceof BoardEditor) {
             BoardEditor boardEditor = (BoardEditor) editor;
+            
+            if (boardEditor.getSelection() == null) {
+                return;
+            }
+            
             // To compensate for the fact that the selection
             // is 1 size too small in both width and height.
             // Bit of a hack really.
