@@ -140,7 +140,7 @@ public class MainWindow extends JFrame implements InternalFrameListener {
         lowerTabbedPane.addTab("Layers", layerPanel);
 
         toolboxPanel = new JPanel(new GridLayout(2, 1));
-        toolboxPanel.setPreferredSize(new Dimension(352, 0));
+        toolboxPanel.setPreferredSize(new Dimension(384, 0));
         toolboxPanel.add(upperTabbedPane);
         toolboxPanel.add(lowerTabbedPane);
 

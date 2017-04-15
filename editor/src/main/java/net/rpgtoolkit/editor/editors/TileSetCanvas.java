@@ -17,13 +17,10 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
-import javafx.scene.input.KeyCode;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
@@ -43,7 +40,7 @@ import net.rpgtoolkit.editor.utilities.GuiHelper;
  */
 public final class TileSetCanvas extends JPanel implements Scrollable {
 
-    private static final int DEFAULT_WIDTH = 320;
+    private static final int DEFAULT_WIDTH = 352;
 
     private int tilesPerRow;
     private final int maxTilesPerRow;
@@ -67,7 +64,7 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
         this.tileSet = tileSet;
 
         tilesPerRow = DEFAULT_WIDTH / tileSet.getTileWidth();
-        maxTilesPerRow = tilesPerRow;
+        maxTilesPerRow = tileSet.getTiles().size();
 
         int width = DEFAULT_WIDTH;
         int height = tileSet.getTileHeight() * (int) (Math.ceil(tileSet.getTiles().size() / (double) tilesPerRow));

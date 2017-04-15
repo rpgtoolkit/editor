@@ -1,9 +1,9 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.editor.editors;
 
@@ -167,6 +167,25 @@ public class BoardEditor extends AssetEditorWindow implements BoardChangeListene
      */
     public Rectangle getSelection() {
         return selection;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public Rectangle getSelectionExpaned() {
+        if (selection == null) {
+            return null;
+        }
+        
+        // TODO: To compensate for the fact that the selection
+        // is 1 size too small in both width and height.
+        // Bit of a hack really.
+        Rectangle cloned = (Rectangle) selection.clone();
+        cloned.width++;
+        cloned.height++;
+
+        return cloned;
     }
 
     /**

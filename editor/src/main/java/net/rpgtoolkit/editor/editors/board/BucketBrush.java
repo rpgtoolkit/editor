@@ -36,11 +36,6 @@ public class BucketBrush extends AbstractBrush {
     /**
      *
      */
-    protected Rectangle bucketSelection;
-
-    /**
-     *
-     */
     public BucketBrush() {
 
     }
@@ -103,22 +98,6 @@ public class BucketBrush extends AbstractBrush {
 
     /**
      *
-     * @return
-     */
-    public Rectangle getBucketSelection() {
-        return bucketSelection;
-    }
-
-    /**
-     *
-     * @param bucketSelection
-     */
-    public void setBucketSelection(Rectangle bucketSelection) {
-        this.bucketSelection = bucketSelection;
-    }
-
-    /**
-     *
      *
      * @param g2d
      * @param view
@@ -164,7 +143,16 @@ public class BucketBrush extends AbstractBrush {
             return null;
         }
 
-        if (selection == null) {
+        if (selection != null && selection.contains(x, y)) {
+            if (selection.contains(x, y)) {
+                for (int y2 = selection.y; y2 < selection.height + selection.y; y2++) {
+                    for (int x2 = selection.x; x2 < selection.width + selection.x; x2++) {
+                        layer.getLayer().setTileAt(x2, y2, pourTile);
+                    }
+                }
+            }
+            return selection;
+        } else {
             Rectangle area = new Rectangle(new Point(x, y));
             Stack<Point> stack = new Stack<>();
 
@@ -187,16 +175,6 @@ public class BucketBrush extends AbstractBrush {
             }
 
             return new Rectangle(area.x, area.y, area.width + 1, area.height + 1);
-        } else {
-            if (selection.contains(x, y)) {
-                for (int y2 = selection.y; y2 < selection.height + selection.y; y2++) {
-                    for (int x2 = selection.x; x2 < selection.width + selection.x; x2++) {
-                        layer.getLayer().setTileAt(x2, y2, pourTile);
-                    }
-                }
-            }
-
-            return selection;
         }
     }
 
@@ -204,24 +182,6 @@ public class BucketBrush extends AbstractBrush {
     public void doMouseButton1Pressed(Point point, AssetEditorWindow editor) {
         if (editor instanceof BoardEditor) {
             BoardEditor boardEditor = (BoardEditor) editor;
-            
-            if (boardEditor.getSelection() == null) {
-                return;
-            }
-            
-            // To compensate for the fact that the selection
-            // is 1 size too small in both width and height.
-            // Bit of a hack really.
-            boardEditor.getSelection().width++;
-            boardEditor.getSelection().height++;
-
-            if (boardEditor.getSelection().contains(point)) {
-                bucketSelection = (Rectangle) boardEditor.getSelection().clone();
-            }
-
-            // Revert back to original dimensions.
-            boardEditor.getSelection().width--;
-            boardEditor.getSelection().height--;
         }
     }
 
@@ -237,7 +197,7 @@ public class BucketBrush extends AbstractBrush {
 
     @Override
     public void doMouseButton1Dragged(Point point, Point origin, AssetEditorWindow editor) {
-        
+
     }
 
     @Override

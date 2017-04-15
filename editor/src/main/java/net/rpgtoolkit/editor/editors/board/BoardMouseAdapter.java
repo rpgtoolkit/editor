@@ -87,7 +87,8 @@ public class BoardMouseAdapter extends MouseAdapter {
 
             if (brush instanceof ShapeBrush
                     || brush instanceof SelectionBrush
-                    || brush instanceof CustomBrush) {
+                    || brush instanceof CustomBrush
+                    || brush instanceof EraserBrush) {
                 doMouseButton1Dragged(brush, x, y);
             }
         }
@@ -114,7 +115,7 @@ public class BoardMouseAdapter extends MouseAdapter {
      * @param brush
      */
     private void doMouseButton1Pressed(AbstractBrush brush, int x, int y) {
-        Rectangle selection = null;
+        Rectangle selection = editor.getSelectionExpaned();
 
         Point point;
         if (brush.isPixelBased()) {
@@ -125,12 +126,7 @@ public class BoardMouseAdapter extends MouseAdapter {
 
         origin = point;
         brush.doMouseButton1Pressed(point, editor);
-
-        if (brush instanceof BucketBrush && editor.getSelection() != null) {
-            BucketBrush bucketBrush = (BucketBrush) brush;
-            selection = bucketBrush.getBucketSelection();
-        }
-
+        
         editor.doPaint(brush, point, selection);
     }
 
@@ -227,10 +223,6 @@ public class BoardMouseAdapter extends MouseAdapter {
     }
 
     private boolean isSameTileSize(Board board, Tile tile) {
-        if (tile.getTileSet() == null) { // Eraser brush.
-            return true;
-        }
-
         return board.getTileWidth() == tile.getTileSet().getTileWidth()
                 && board.getTileHeight() == tile.getTileSet().getTileHeight();
     }

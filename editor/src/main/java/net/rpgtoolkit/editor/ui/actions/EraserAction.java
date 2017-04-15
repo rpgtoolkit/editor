@@ -12,8 +12,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import net.rpgtoolkit.common.assets.Tile;
 import net.rpgtoolkit.editor.editors.BoardEditor;
-import net.rpgtoolkit.editor.editors.board.ShapeBrush;
 import net.rpgtoolkit.editor.MainWindow;
+import net.rpgtoolkit.editor.editors.board.EraserBrush;
 
 /**
  *
@@ -25,7 +25,7 @@ public class EraserAction extends AbstractAction {
   public void actionPerformed(ActionEvent e) {
     BoardEditor.toggleSelectedOnBoardEditor();
 
-    ShapeBrush brush = new ShapeBrush();
+    EraserBrush brush = new EraserBrush();
     brush.makeRectangleBrush(new Rectangle(0, 0, 1, 1));
     brush.setTile(new Tile());
     MainWindow.getInstance().setCurrentBrush(brush);
