@@ -9,7 +9,6 @@ package net.rpgtoolkit.editor.ui;
 
 import net.rpgtoolkit.editor.MainWindow;
 import java.awt.Font;
-import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
@@ -20,7 +19,6 @@ import javax.swing.event.ChangeEvent;
 import net.rpgtoolkit.common.assets.TileSet;
 import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.editors.TileSetCanvas;
-import net.rpgtoolkit.editor.editors.board.ShapeBrush;
 
 /**
  *

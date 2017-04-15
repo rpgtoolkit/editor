@@ -333,11 +333,10 @@ public class BoardEditor extends AssetEditorWindow implements BoardChangeListene
     public Tile[][] createTileLayerFromRegion(Rectangle rectangle) {
         Tile[][] tiles = new Tile[rectangle.width + 1][rectangle.height + 1];
 
+        BoardLayer boardLayer = boardView.getCurrentSelectedLayer().getLayer();
         for (int y = rectangle.y; y <= rectangle.y + rectangle.height; y++) {
             for (int x = rectangle.x; x <= rectangle.x + rectangle.width; x++) {
-                tiles[x - rectangle.x][y - rectangle.y]
-                        = boardView.getCurrentSelectedLayer().
-                                getLayer().getTileAt(x, y);
+                tiles[x - rectangle.x][y - rectangle.y] = boardLayer.getTileAt(x, y);
             }
         }
 

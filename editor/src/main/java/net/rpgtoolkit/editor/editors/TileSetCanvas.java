@@ -15,11 +15,20 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
+import javafx.scene.input.KeyCode;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.Scrollable;
 
 import net.rpgtoolkit.common.assets.Tile;
@@ -34,16 +43,19 @@ import net.rpgtoolkit.editor.utilities.GuiHelper;
  */
 public final class TileSetCanvas extends JPanel implements Scrollable {
 
-    private final int tilesPerRow;
+    private static final int DEFAULT_WIDTH = 320;
+
+    private int tilesPerRow;
+    private final int maxTilesPerRow;
 
     private final LinkedList<TileSelectionListener> tileSelectionListeners = new LinkedList<>();
 
     private final TileSet tileSet;
-    private final BufferedImage bufferedImage;
+    private BufferedImage bufferedImage;
 
     private Rectangle selection;
 
-    private final TilesetMouseAdapter tilesetMouseAdapter;
+    private final TileSetMouseAdapter tileSetMouseAdapter;
 
     /**
      *
@@ -53,19 +65,43 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
         super();
 
         this.tileSet = tileSet;
-        tilesPerRow = 320 / tileSet.getTileWidth();
-        int width = tileSet.getTileWidth();
+
+        tilesPerRow = DEFAULT_WIDTH / tileSet.getTileWidth();
+        maxTilesPerRow = tilesPerRow;
+
+        int width = DEFAULT_WIDTH;
         int height = tileSet.getTileHeight() * (int) (Math.ceil(tileSet.getTiles().size() / (double) tilesPerRow));
+        init(width, height);
 
-        if (height == 0) {
-            height = 32;
-        }
+        Action increaseTilesAction = new AbstractAction() {
+            private static final long serialVersionUID = 1L;
 
-        bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!(tilesPerRow + 1 > maxTilesPerRow)) {
+                    changeTilesPerRow(1);
+                }
+            }
+        };
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, 0), "increaseTilesAction");
+        this.getActionMap().put("increaseTilesAction", increaseTilesAction);
 
-        tilesetMouseAdapter = new TilesetMouseAdapter();
-        addMouseListener(tilesetMouseAdapter);
-        addMouseMotionListener(tilesetMouseAdapter);
+        Action decreaseTilesAction = new AbstractAction() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (tilesPerRow - 1 > 0) {
+                    changeTilesPerRow(-1);
+                }
+            }
+        };
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, 0), "decreaseTilesAction");
+        this.getActionMap().put("decreaseTilesAction", decreaseTilesAction);
+
+        tileSetMouseAdapter = new TileSetMouseAdapter();
+        addMouseListener(tileSetMouseAdapter);
+        addMouseMotionListener(tileSetMouseAdapter);
     }
 
     /**
@@ -182,6 +218,15 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
         return false;
     }
 
+    public void changeTilesPerRow(int increment) {
+        tilesPerRow += increment;
+        int width = tileSet.getTileHeight() * tilesPerRow;
+        int height = tileSet.getTileHeight() * (int) (Math.ceil(tileSet.getTiles().size() / (double) tilesPerRow));
+        init(width, height);
+        revalidate();
+        repaint();
+    }
+
     private void fireTileSelectionEvent(Tile selectedTile) {
         TileSelectionEvent event = new TileSelectionEvent(this, selectedTile);
 
@@ -257,9 +302,9 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
 
     private void paintGrid(Graphics2D g2d) {
         GuiHelper.drawGrid(
-                g2d, 
+                g2d,
                 tileSet.getTileWidth(),
-                tileSet.getTileHeight(), 
+                tileSet.getTileHeight(),
                 new Rectangle(bufferedImage.getWidth(), bufferedImage.getHeight())
         );
     }
@@ -338,11 +383,19 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
         repaint();
     }
 
-    private class TilesetMouseAdapter extends MouseAdapter {
+    private void init(int width, int height) {
+        if (height == 0) {
+            height = 32;
+        }
+        bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+    }
+
+    private class TileSetMouseAdapter extends MouseAdapter {
 
         private Point origin;
 
-        public TilesetMouseAdapter() {
+        public TileSetMouseAdapter() {
 
         }
 
@@ -362,6 +415,11 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
         @Override
         public void mouseDragged(MouseEvent e) {
             Point point = getTileCoordinates(e.getX(), e.getY());
+            
+            if (point.x >= tilesPerRow) {
+                return;
+            }
+            
             Rectangle select = new Rectangle(origin.x, origin.y, 0, 0);
             select.add(point);
 
@@ -373,7 +431,9 @@ public final class TileSetCanvas extends JPanel implements Scrollable {
             if (selection.getWidth() > 0 || selection.getHeight() > 0) {
                 fireTileRegionSelectionEvent(selection);
             }
+
         }
+
     }
 
 }

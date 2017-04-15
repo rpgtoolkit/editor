@@ -24,10 +24,8 @@ import net.rpgtoolkit.common.assets.listeners.BoardChangeListener;
 import net.rpgtoolkit.common.assets.events.BoardChangedEvent;
 import net.rpgtoolkit.common.assets.BoardLayer;
 import net.rpgtoolkit.common.assets.Board;
-import net.rpgtoolkit.common.assets.BoardSprite;
 import net.rpgtoolkit.common.assets.TilePixelOutOfRangeException;
 import net.rpgtoolkit.editor.editors.BoardEditor;
-import net.rpgtoolkit.editor.MainWindow;
 
 /**
  * This class is an Abstract model for the visual representation of a
@@ -397,6 +395,20 @@ public abstract class AbstractBoardView extends JPanel implements
     public BoardEditor getBoardEditor() {
         return boardEditor;
     }
+    
+    /**
+     * Checks that the x and y pixel based coordinates are within the bounds
+     * of the board.
+     * 
+     * @param x pixel coordinate
+     * @param y pixel coordinate
+     * @return 
+     */
+    public boolean checkInBounds(int x, int y) {
+        if (x >= board.getWidth() || y >= board.getHeight())
+            return false;
+        return !(x < 0 || y < 0);
+    }
 
     /**
      * A concrete BoardView will implement its own layer drawing code here.
@@ -700,11 +712,18 @@ public abstract class AbstractBoardView extends JPanel implements
         affineTransform = new AffineTransform();
 
         loadTiles(board);
-        setPreferredSize(new Dimension((board.getWidth() * board.getTileWidth()),
-                (board.getHeight() * board.getTileHeight())));
+        setPreferredSize(
+                new Dimension(
+                        (board.getWidth() * board.getTileWidth()),
+                        (board.getHeight() * board.getTileHeight())
+                )
+        );
 
-        bufferedImage = new BufferedImage((board.getWidth() * board.getTileWidth()),
-                (board.getHeight() * board.getTileHeight()), BufferedImage.TYPE_INT_ARGB);
+        bufferedImage = new BufferedImage(
+                (board.getWidth() * board.getTileWidth()),
+                (board.getHeight() * board.getTileHeight()), 
+                BufferedImage.TYPE_INT_ARGB
+        );
 
         antialiasGrid = true;
         gridColor = DEFAULT_GRID_COLOR;

@@ -70,7 +70,6 @@ public class SelectionBrush extends CustomBrush {
 
     @Override
     public void doMouseButton1Dragged(Point point, Point origin, AssetEditorWindow editor) {
-
         if (editor instanceof BoardEditor) {
             BoardEditor boardEditor = (BoardEditor) editor;
 
@@ -80,10 +79,11 @@ public class SelectionBrush extends CustomBrush {
             if (!select.equals(boardEditor.getSelection())) {
                 boardEditor.setSelection(select);
             }
-
             boardEditor.setSelectedTiles(
                     boardEditor.createTileLayerFromRegion(
-                            boardEditor.getSelection()));
+                            boardEditor.getSelection()
+                    )
+            );
         }
     }
 

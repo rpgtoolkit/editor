@@ -29,6 +29,7 @@ import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.editor.ui.SingleRootFileSystemView;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  *
@@ -343,6 +344,7 @@ public class EditorFileManager {
     public static File saveLocationBySubdir(
             String subdirectory, String description, String... extensions) {
         File path = setFileChooserSubdirAndFilters(subdirectory, description, extensions);
+        
         if (FILE_CHOOSER.showSaveDialog(MainWindow.getInstance()) == JFileChooser.APPROVE_OPTION) {
             if (validateFileChoice(path, extensions)) {
                 return FILE_CHOOSER.getSelectedFile();
