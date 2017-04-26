@@ -156,7 +156,7 @@ public class EraserBrush extends AbstractBrush {
         super.doPaint(x, y, selection);
 
         if (selection != null && selection.contains(x, y)) {
-            BoardLayerView layer = affectedContainer.getLayer(initialLayer);
+            BoardLayerView layer = affectedContainer.getLayer(currentLayer);
 
             if (layer == null) {
                 return null;
@@ -176,7 +176,7 @@ public class EraserBrush extends AbstractBrush {
 
             for (int layer = 0; layer < affectedLayers; layer++) {
                 BoardLayerView boardLayer = affectedContainer.getLayer(
-                        initialLayer + layer);
+                        currentLayer + layer);
 
                 if (boardLayer != null) {
                     for (int i = 0; i <= shapeBounds.height + 1; i++) {

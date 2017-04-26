@@ -22,7 +22,7 @@ import net.rpgtoolkit.common.assets.BoardSprite;
 import net.rpgtoolkit.common.assets.BoardVector;
 import net.rpgtoolkit.common.assets.Tile;
 import net.rpgtoolkit.common.assets.TilePixelOutOfRangeException;
-import net.rpgtoolkit.editor.MainWindow;
+import net.rpgtoolkit.editor.utilities.GuiHelper;
 
 /**
  *
@@ -329,7 +329,7 @@ public class BoardLayerView {
                     Tile tile = layer.getTiles()[x][y];
 
                     g.drawImage(
-                            tile.getTileAsImage(), 
+                            tile.getTileAsImage(),
                             (x * layer.getBoard().getTileWidth()),
                             (y * layer.getBoard().getTileHeight()),
                             null
@@ -360,7 +360,7 @@ public class BoardLayerView {
 
             switch (vector.getType()) {
                 case PASSABLE:
-                    g.setColor(Color.WHITE);
+                    g.setColor(Color.YELLOW);
                     break;
                 case SOLID:
                     g.setColor(Color.RED);
@@ -433,20 +433,37 @@ public class BoardLayerView {
         int count = vector.getPointCount();
 
         for (int i = 0; i < count - 1; i++) {
-            g.drawLine(
+            int[] points = GuiHelper.ensureVectorVisible(
+                    layer.getBoard(),
                     vector.getPointX(i),
                     vector.getPointY(i),
                     vector.getPointX(i + 1),
-                    vector.getPointY(i + 1));
+                    vector.getPointY(i + 1)
+            );
+            g.drawLine(
+                    points[0],
+                    points[1],
+                    points[2],
+                    points[3]
+            );
         }
 
         if (vector.isClosed()) {
             // Draw the final lines
-            g.drawLine(
+            int[] points = GuiHelper.ensureVectorVisible(
+                    layer.getBoard(),
                     vector.getPointX(count - 1),
                     vector.getPointY(count - 1),
                     vector.getPointX(0),
-                    vector.getPointY(0));
+                    vector.getPointY(0)
+            );
+            g.drawLine(
+                    points[0],
+                    points[1],
+                    points[2],
+                    points[3]
+            );
         }
     }
+
 }

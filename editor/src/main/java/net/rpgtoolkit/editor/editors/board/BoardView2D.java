@@ -96,6 +96,10 @@ public final class BoardView2D extends AbstractBoardView {
             g.drawImage(bufferedImage, 0, 0, null);
         }
 
+        if (MainWindow.getInstance().isShowCoordinates()) {
+            paintCoordinates(g2d);
+        }
+
         g.dispose();
         g2d.dispose();
     }
@@ -113,8 +117,8 @@ public final class BoardView2D extends AbstractBoardView {
 
         // Draw background first.
         TransparentDrawer.drawTransparentBackground(
-                g, 
-                (board.getWidth() * board.getTileWidth()), 
+                g,
+                (board.getWidth() * board.getTileWidth()),
                 (board.getHeight() * board.getTileHeight())
         );
 
@@ -128,10 +132,6 @@ public final class BoardView2D extends AbstractBoardView {
 
         if (MainWindow.getInstance().isShowGrid()) {
             paintGrid(g);
-        }
-
-        if (MainWindow.getInstance().isShowCoordinates()) {
-            paintCoordinates(g);
         }
 
         if (boardEditor.getSelection() != null) {
@@ -188,9 +188,9 @@ public final class BoardView2D extends AbstractBoardView {
         Rectangle clipRectangle = new Rectangle(bufferedImage.getWidth(),
                 bufferedImage.getHeight());
         GuiHelper.drawGrid(
-                g, 
-                board.getTileWidth(), 
-                board.getTileHeight(), 
+                g,
+                board.getTileWidth(),
+                board.getTileHeight(),
                 clipRectangle
         );
     }
@@ -235,13 +235,10 @@ public final class BoardView2D extends AbstractBoardView {
      */
     @Override
     protected void paintStartPostion(Graphics2D g) {
-        int x = board.getStartingPositionX();
-        int y = board.getStartingPositionY();
-        int length = 15;
+        int x = board.getStartingPositionX() - (startPositionImage.getWidth(this) / 2);
+        int y = board.getStartingPositionY() - (startPositionImage.getHeight(this) / 2);
 
-        g.setColor(getDefaultStartPositionColor());
-        g.drawLine(x - length, y, x + length, y);
-        g.drawLine(x, y - length, x, y + length);
+        g.drawImage(startPositionImage, x, y, this);
     }
 
     /**
@@ -275,14 +272,14 @@ public final class BoardView2D extends AbstractBoardView {
         g.setColor(Color.WHITE);
 
         // Determine area to draw from clipping rectangle
-        Rectangle clipRectangle = new Rectangle(bufferedImage.getWidth(),
-                bufferedImage.getHeight());
-        int startX = clipRectangle.x / tileSize.width;
+        Rectangle clipRectangle = new Rectangle(
+                bufferedImage.getWidth(),
+                bufferedImage.getHeight()
+        );
+        int startX = (clipRectangle.x / tileSize.width);
         int startY = clipRectangle.y / tileSize.height;
-        int endX = (clipRectangle.x + clipRectangle.width) / tileSize.width
-                + 1;
-        int endY = (clipRectangle.y + clipRectangle.height) / tileSize.height
-                + 1;
+        int endX = (clipRectangle.x + clipRectangle.width) / tileSize.width;
+        int endY = (clipRectangle.y + clipRectangle.height) / tileSize.height;
 
         // Draw the coordinates
         int gy = startY * tileSize.height;

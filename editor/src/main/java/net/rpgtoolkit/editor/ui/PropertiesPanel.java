@@ -52,7 +52,6 @@ public class PropertiesPanel extends JPanel implements ListSelectionListener {
 
     propertiesScrollPane.setViewportView(intermediate);
     propertiesScrollPane.getViewport().revalidate();
-    MainWindow.getInstance().setLowerTabbedPane(this);
   }
 
   @Override

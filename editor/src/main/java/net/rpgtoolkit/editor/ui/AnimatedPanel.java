@@ -167,8 +167,8 @@ public class AnimatedPanel extends AbstractImagePanel implements AnimationChange
         int x;
         int y;
         if (animation != null) {
-            x = (getWidth() / 2) - animation.getAnimationWidth();
-            y = (getHeight() / 2) - animation.getAnimationHeight();
+            x = (getWidth() / 2) - (animation.getAnimationWidth() / 2);
+            y = (getHeight() / 2) - (animation.getAnimationHeight() / 2);
 
             if (frameImage != null) {
                 int width = (int) animation.getAnimationWidth();

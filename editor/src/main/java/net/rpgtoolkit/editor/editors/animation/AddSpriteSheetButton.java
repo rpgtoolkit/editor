@@ -66,6 +66,7 @@ public class AddSpriteSheetButton extends SpriteSheetImage {
                 String remove = EditorFileManager.getGraphicsPath();
                 String path = imageFile.getAbsolutePath().replace(remove, "");
                 animation.setSpriteSheet(new SpriteSheet(path, x, y, width, height));
+                animation.setAnimationHeight(height); // Save the user an extra step.
             } catch (IOException ex) {
                 Logger.getLogger(AddSpriteSheetButton.class.getName()).log(Level.SEVERE, null, ex);
             }

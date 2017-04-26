@@ -50,6 +50,7 @@ public class BoardPanel extends AbstractModelPanel {
     /// widthSpinner
     ///
     widthSpinner = getJSpinner(board.getWidth());
+    widthSpinner.setEnabled(false);
     widthSpinner.addChangeListener(new ChangeListener() {
 
       @Override
@@ -62,6 +63,7 @@ public class BoardPanel extends AbstractModelPanel {
     /// heightSpinner
     ///
     heightSpinner = getJSpinner(board.getHeight());
+    heightSpinner.setEnabled(false);
     heightSpinner.addChangeListener(new ChangeListener() {
 
       @Override

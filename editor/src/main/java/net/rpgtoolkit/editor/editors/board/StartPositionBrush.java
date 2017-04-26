@@ -46,9 +46,10 @@ public class StartPositionBrush extends AbstractBrush {
      */
     @Override
     public Rectangle doPaint(int x, int y, Rectangle selection) throws Exception {
-        Board board = affectedContainer.getLayer(initialLayer).getLayer().getBoard();
+        Board board = affectedContainer.getLayer(currentLayer).getLayer().getBoard();
         board.setStartingPositionX(x);
         board.setStartingPositionY(y);
+        board.setStartingLayer(currentLayer);
         board.fireBoardChanged();
 
         return null;

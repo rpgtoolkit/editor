@@ -39,7 +39,7 @@ public abstract class AbstractBrush implements Brush {
   /**
    *
    */
-  protected int initialLayer;
+  protected int currentLayer;
 
   /**
    *
@@ -74,7 +74,7 @@ public abstract class AbstractBrush implements Brush {
    * @return
    */
   public int getInitialLayer() {
-    return initialLayer;
+    return currentLayer;
   }
 
   /**
@@ -86,7 +86,7 @@ public abstract class AbstractBrush implements Brush {
   @Override
   public void startPaint(MultiLayerContainer container, int layer) {
     affectedContainer = container;
-    initialLayer = layer;
+    currentLayer = layer;
     isPainting = true;
   }
 

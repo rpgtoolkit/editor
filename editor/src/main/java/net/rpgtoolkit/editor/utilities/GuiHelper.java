@@ -27,6 +27,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
+import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.editor.ui.listeners.PopupListFilesListener;
 
 /**
@@ -182,9 +183,9 @@ public abstract class GuiHelper {
 
     /**
      * Draws a grid on the target Graphics2D context.
-     * 
+     *
      * @param g2d
-     * @param tileWidth 
+     * @param tileWidth
      * @param tileHeight
      * @param clipRectangle
      */
@@ -198,18 +199,37 @@ public abstract class GuiHelper {
 
         for (int x = startX; x <= endX; x += tileWidth) {
             g2d.drawLine(
-                    x, clipRectangle.y, 
+                    x, clipRectangle.y,
                     x, clipRectangle.y + clipRectangle.height - 1);
         }
         for (int y = startY; y <= endY; y += tileHeight) {
             g2d.drawLine(
-                    clipRectangle.x, y, 
+                    clipRectangle.x, y,
                     clipRectangle.x + clipRectangle.width - 1, y);
         }
-        
+
         // Draw the final lines.
         g2d.drawLine(0, endY, endX, endY);
         g2d.drawLine(endX, 0, endX, endY);
+    }
+
+    public static int[] ensureVectorVisible(Board board, int x1, int y1, int x2, int y2) {
+        int width = board.getWidth() * board.getTileWidth();
+        int height = board.getHeight() * board.getTileHeight();
+        
+        System.out.println(String.format("%d, %d, %d, %d", x1, y2, x2, y2));
+        System.out.println(String.format("%d, %d", width, height));
+
+        if (x1 == width && x2 == width) {
+            x1 -= 1;
+            x2 -= 1;
+        }
+        if (y1 == height && y2 == height) {
+            y1 -= 1;
+            y2 -= 1;
+        }
+
+        return new int[]{x1, y1, x2, y2};
     }
 
 }

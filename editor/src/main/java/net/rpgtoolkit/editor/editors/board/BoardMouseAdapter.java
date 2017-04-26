@@ -173,7 +173,7 @@ public class BoardMouseAdapter extends MouseAdapter {
     private void doMouseButton1Dragged(AbstractBrush brush, int x, int y) {
         // Ensure that the dragging remains within the bounds of the board.
         Point point = editor.getBoardView().getTileCoordinates(x, y);
-        if (!editor.getBoardView().checkInBounds(point.x, point.y)) {
+        if (!editor.getBoardView().checkTileInBounds(point.x, point.y)) {
             return;
         }
         

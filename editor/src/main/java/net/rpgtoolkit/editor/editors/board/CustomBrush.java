@@ -139,7 +139,7 @@ public class CustomBrush extends AbstractBrush {
      */
     @Override
     public Rectangle doPaint(int x, int y, Rectangle selection) throws Exception {
-        BoardLayerView layer = affectedContainer.getLayer(initialLayer);
+        BoardLayerView layer = affectedContainer.getLayer(currentLayer);
 
         if (layer == null) {
             return null;

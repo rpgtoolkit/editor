@@ -128,7 +128,7 @@ public class BucketBrush extends AbstractBrush {
      */
     @Override
     public Rectangle doPaint(int x, int y, Rectangle selection) {
-        BoardLayerView layer = affectedContainer.getLayer(initialLayer);
+        BoardLayerView layer = affectedContainer.getLayer(currentLayer);
 
         if (layer == null) {
             return null;

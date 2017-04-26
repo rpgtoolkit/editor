@@ -90,7 +90,7 @@ public class BoardSpritePanel extends BoardModelPanel {
             + File.separator
             + CoreProperties.getProperty("toolkit.directory.program") 
             + File.separator);
-    exts = new String[]{"prg"};
+    exts = new String[]{"prg", "js"};
     eventProgramComboBox = GuiHelper.getFileListJComboBox(directory, exts, true);
     eventProgramComboBox.setSelectedItem(boardSprite.getEventProgram());
     eventProgramComboBox.addActionListener((ActionEvent e) -> {

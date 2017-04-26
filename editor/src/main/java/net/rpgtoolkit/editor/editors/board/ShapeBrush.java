@@ -169,7 +169,7 @@ public class ShapeBrush extends AbstractBrush {
 
         for (int layer = 0; layer < affectedLayers; layer++) {
             BoardLayerView boardLayer = affectedContainer.getLayer(
-                    initialLayer + layer);
+                    currentLayer + layer);
 
             if (boardLayer != null) {
                 for (int i = 0; i <= shapeBounds.height + 1; i++) {

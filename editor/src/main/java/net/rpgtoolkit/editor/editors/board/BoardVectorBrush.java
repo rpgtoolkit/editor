@@ -7,6 +7,7 @@
  */
 package net.rpgtoolkit.editor.editors.board;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -17,6 +18,7 @@ import net.rpgtoolkit.common.assets.BoardVector;
 import net.rpgtoolkit.editor.MainWindow;
 import net.rpgtoolkit.editor.editors.BoardEditor;
 import net.rpgtoolkit.editor.ui.AssetEditorWindow;
+import net.rpgtoolkit.editor.utilities.GuiHelper;
 
 /**
  *
@@ -128,8 +130,18 @@ public class BoardVectorBrush extends AbstractBrush {
                     calculateSnapCoordinates(cursor.x, cursor.y);
         }
 
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 1.0f));
         g2d.setColor(previewColor);
-        g2d.drawLine(lastVectorPoint.x, lastVectorPoint.y, coordinates[0], coordinates[1]);
+
+        int[] points = GuiHelper.ensureVectorVisible(
+                view.getBoard(),
+                lastVectorPoint.x,
+                lastVectorPoint.y,
+                coordinates[0],
+                coordinates[1]
+        );
+
+        g2d.drawLine(points[0], points[1], points[2], points[3]);
     }
 
     /**
@@ -155,8 +167,7 @@ public class BoardVectorBrush extends AbstractBrush {
      */
     @Override
     public Rectangle doPaint(int x, int y, Rectangle selection) throws Exception {
-        BoardLayerView boardLayerView = affectedContainer.getLayer(
-                initialLayer);
+        BoardLayerView boardLayerView = affectedContainer.getLayer(currentLayer);
 
         super.doPaint(x, y, selection);
 
@@ -164,9 +175,9 @@ public class BoardVectorBrush extends AbstractBrush {
             if (!stillDrawing) {
                 stillDrawing = true;
                 boardVector = new BoardVector();
-                boardVector.setLayer(initialLayer);
+                boardVector.setLayer(currentLayer);
 
-                affectedContainer.getLayer(initialLayer).
+                affectedContainer.getLayer(currentLayer).
                         getLayer().getVectors().add(boardVector);
             }
 
@@ -194,7 +205,7 @@ public class BoardVectorBrush extends AbstractBrush {
      */
     public void finish() {
         if (boardVector.getPointCount() < 2) {
-            affectedContainer.getLayer(initialLayer).getLayer()
+            affectedContainer.getLayer(currentLayer).getLayer()
                     .getVectors().remove(boardVector);
         }
 
@@ -265,7 +276,7 @@ public class BoardVectorBrush extends AbstractBrush {
 
     @Override
     public void doMouseButton1Dragged(Point point, Point origin, AssetEditorWindow editor) {
-        
+
     }
 
     @Override

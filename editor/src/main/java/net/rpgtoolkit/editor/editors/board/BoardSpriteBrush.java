@@ -94,8 +94,7 @@ public class BoardSpriteBrush extends AbstractBrush {
     public Rectangle doPaint(int x, int y, Rectangle selection) throws Exception {
         super.doPaint(x, y, selection);
 
-        BoardLayerView boardLayerView = affectedContainer.getLayer(
-                initialLayer);
+        BoardLayerView boardLayerView = affectedContainer.getLayer(currentLayer);
 
         if (boardLayerView != null) {
             boolean snap = MainWindow.getInstance().isSnapToGrid();
@@ -116,7 +115,7 @@ public class BoardSpriteBrush extends AbstractBrush {
             boardSprite = new BoardSprite();
             boardSprite.setX(x);
             boardSprite.setY(y);
-            boardSprite.setLayer(initialLayer);
+            boardSprite.setLayer(currentLayer);
 
             board.addSprite(boardSprite);
 

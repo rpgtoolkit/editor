@@ -1,15 +1,16 @@
 /**
  * Copyright (c) 2015, rpgtoolkit.net <help@rpgtoolkit.net>
  *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/.
  */
 package net.rpgtoolkit.editor.editors.board;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
@@ -26,6 +27,7 @@ import net.rpgtoolkit.common.assets.BoardLayer;
 import net.rpgtoolkit.common.assets.Board;
 import net.rpgtoolkit.common.assets.TilePixelOutOfRangeException;
 import net.rpgtoolkit.editor.editors.BoardEditor;
+import net.rpgtoolkit.editor.ui.resources.Icons;
 
 /**
  * This class is an Abstract model for the visual representation of a
@@ -43,7 +45,6 @@ public abstract class AbstractBoardView extends JPanel implements
     // Constants
     private static final int ZOOM_NORMALSIZE = 5;
     private static final Color DEFAULT_GRID_COLOR = Color.BLACK;
-    private static final Color DEFAULT_START_POSITION_COLOR = Color.CYAN;
     private static final Color DEFAULT_BACKGROUND_COLOR = new Color(64, 64, 64);
     private static final double[] ZOOM_LEVELS
             = {
@@ -87,8 +88,7 @@ public abstract class AbstractBoardView extends JPanel implements
     private Color gridColor;
     private int gridOpacity;
 
-    // Start position properties.
-    private Color startPositionColor;
+    protected Image startPositionImage;
 
     /**
      * Default constructor.
@@ -127,15 +127,6 @@ public abstract class AbstractBoardView extends JPanel implements
      */
     public Color getDefaultGridColor() {
         return DEFAULT_GRID_COLOR;
-    }
-
-    /**
-     * Gets the default color for the start position.
-     *
-     * @return The color.
-     */
-    public Color getDefaultStartPositionColor() {
-        return DEFAULT_START_POSITION_COLOR;
     }
 
     /**
@@ -292,7 +283,22 @@ public abstract class AbstractBoardView extends JPanel implements
      */
     @Override
     public Rectangle getBounds() {
-        return new Rectangle(bounds);
+        return bounds;
+    }
+
+    /**
+     * Returns a <code>Rectangle</code> representing the maximum bounds in
+     * pixels.
+     *
+     * @return A new rectangle containing the maximum bounds of this container.
+     */
+    @Override
+    public Rectangle getPixelBounds() {
+        Rectangle pixelBounds = new Rectangle();
+        pixelBounds.width = bounds.width * board.getTileWidth();
+        pixelBounds.height = bounds.height * board.getTileHeight();
+
+        return pixelBounds;
     }
 
     /**
@@ -395,18 +401,19 @@ public abstract class AbstractBoardView extends JPanel implements
     public BoardEditor getBoardEditor() {
         return boardEditor;
     }
-    
+
     /**
-     * Checks that the x and y pixel based coordinates are within the bounds
-     * of the board.
-     * 
-     * @param x pixel coordinate
-     * @param y pixel coordinate
-     * @return 
+     * Checks that the x and y tile based coordinates are within the bounds of
+     * the board.
+     *
+     * @param x tile coordinate
+     * @param y tile coordinate
+     * @return
      */
-    public boolean checkInBounds(int x, int y) {
-        if (x >= board.getWidth() || y >= board.getHeight())
+    public boolean checkTileInBounds(int x, int y) {
+        if (x >= board.getWidth() || y >= board.getHeight()) {
             return false;
+        }
         return !(x < 0 || y < 0);
     }
 
@@ -721,7 +728,7 @@ public abstract class AbstractBoardView extends JPanel implements
 
         bufferedImage = new BufferedImage(
                 (board.getWidth() * board.getTileWidth()),
-                (board.getHeight() * board.getTileHeight()), 
+                (board.getHeight() * board.getTileHeight()),
                 BufferedImage.TYPE_INT_ARGB
         );
 
@@ -729,7 +736,7 @@ public abstract class AbstractBoardView extends JPanel implements
         gridColor = DEFAULT_GRID_COLOR;
         gridOpacity = 100;
 
-        startPositionColor = DEFAULT_START_POSITION_COLOR;
+        startPositionImage = Icons.getSmallIcon("flag-checker").getImage();
 
         if (!layers.isEmpty()) {
             currentSelectedLayer = layers.get(0);
@@ -740,8 +747,7 @@ public abstract class AbstractBoardView extends JPanel implements
      * Re-scales this board view based on the current zoom level.
      */
     private void rescale() {
-        affineTransform = AffineTransform.getScaleInstance(zoom,
-                zoom);
+        affineTransform = AffineTransform.getScaleInstance(zoom, zoom);
         int width = (int) ((board.getWidth() * board.getTileWidth()) * zoom);
         int height = (int) ((board.getHeight() * board.getTileHeight()) * zoom);
         setPreferredSize(new Dimension(width, height));

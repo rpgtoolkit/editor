@@ -113,7 +113,7 @@ public class AnimationModelPanel extends AbstractModelPanel {
                     .addComponent(soundEffectLabel = getJLabel("Sound Effect"))
                     .addComponent(widthLabel = getJLabel("Width"))
                     .addComponent(heightLabel = getJLabel("Height"))
-                    .addComponent(frameRateLabel = getJLabel("Frame Duration (seconds)")));
+                    .addComponent(frameRateLabel = getJLabel("FPS")));
     
     horizontalGroup.addGroup(
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
