@@ -17,6 +17,7 @@ import javax.swing.event.ChangeEvent;
 import net.rpgtoolkit.common.assets.BoardSprite;
 import net.rpgtoolkit.common.assets.EventType;
 import net.rpgtoolkit.common.assets.Item;
+import net.rpgtoolkit.common.assets.Program;
 import net.rpgtoolkit.editor.editors.board.BoardLayerView;
 import net.rpgtoolkit.common.utilities.CoreProperties;
 import net.rpgtoolkit.editor.utilities.EditorFileManager;
@@ -90,7 +91,7 @@ public class BoardSpritePanel extends BoardModelPanel {
             + File.separator
             + CoreProperties.getProperty("toolkit.directory.program") 
             + File.separator);
-    exts = new String[]{"prg", "js"};
+    exts = EditorFileManager.getTypeExtensions(Program.class);
     eventProgramComboBox = GuiHelper.getFileListJComboBox(directory, exts, true);
     eventProgramComboBox.setSelectedItem(boardSprite.getEventProgram());
     eventProgramComboBox.addActionListener((ActionEvent e) -> {

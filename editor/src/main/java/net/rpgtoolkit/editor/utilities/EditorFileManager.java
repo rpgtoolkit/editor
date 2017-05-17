@@ -151,7 +151,7 @@ public class EditorFileManager {
         } else if (type == Player.class) {
             return new String[]{CoreProperties.getProperty("toolkit.character.extension.default")};
         } else if (type == Program.class) {
-            return new String[]{CoreProperties.getProperty("toolkit.program.extension.default")};
+            return CoreProperties.getProperty("toolkit.program.extension.default").split(",");
         } else if (type == Project.class) {
             return new String[]{CoreProperties.getProperty("toolkit.project.extension.default")};
         } else if (type == StatusEffect.class) {
