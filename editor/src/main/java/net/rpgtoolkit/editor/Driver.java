@@ -10,6 +10,8 @@ package net.rpgtoolkit.editor;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.logging.Level;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -28,6 +30,7 @@ import net.rpgtoolkit.common.assets.serialization.legacy.LegacyAnimatedTileSeria
 import net.rpgtoolkit.editor.properties.EditorProperties;
 import net.rpgtoolkit.editor.properties.EditorProperty;
 import net.rpgtoolkit.editor.utilities.FileTools;
+import net.rpgtoolkit.pluginsystem.Engine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.fortsoft.pf4j.JarPluginManager;
@@ -119,14 +122,28 @@ public class Driver {
                 mainWindow.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                 mainWindow.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
-                    public void windowClosing(WindowEvent windowEvent) {
+                    public void windowClosing(WindowEvent windowEvent) {                        
                         mainWindow.closeEditors();
                         mainWindow.dispose();
+                        
+                        // Quietly stop any engines.
+                        List<Engine> engines = pluginManager.getExtensions(Engine.class);
+                        engines.forEach((engine) -> {
+                            try {
+                                engine.stop();
+                            } catch (Exception ex) {
+                                LOGGER.error("Failed to stop engine!", ex);
+                            }
+                        });
+                        
+                        System.exit(0);
                     }
                 });
                 
                 mainWindow.setVisible(true);
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException | URISyntaxException ex) {
+            } catch (ClassNotFoundException | InstantiationException | 
+                    IllegalAccessException | UnsupportedLookAndFeelException | 
+                    URISyntaxException ex) {
                 LOGGER.error("Failed to start the editor!", ex);
             }
         });
